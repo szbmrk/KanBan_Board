@@ -9,13 +9,13 @@ export default function Example() {
         axios.get('http://127.0.0.1:8000/test')
             .then(res => {
                 setData(res.data)
-                console.log(data)
+                console.log(res.data)
             })
             .catch(err => console.log(err))
     }, [])
 
 
     return (
-        <div>{data}</div>
+        <div>{JSON.stringify(data)}</div>
     )
 }
