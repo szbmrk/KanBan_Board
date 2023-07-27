@@ -19,6 +19,9 @@ Route::get('/', function () {
 
 
 Route::get('/test', function () {
-    return view('test.home');
+    $data = [
+        'message' => 'Hello World',
+    ];
+    return response()->json($data);
 });
 
