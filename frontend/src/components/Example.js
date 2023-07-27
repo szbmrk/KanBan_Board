@@ -6,7 +6,7 @@ export default function Example() {
     const [data, setData] = useState([])
 
     useEffect(() => {
-        axios.get('http://127.0.0.1:8000/test')
+        axios.get('/test')
             .then(res => {
                 setData(res.data)
                 console.log(res.data)
