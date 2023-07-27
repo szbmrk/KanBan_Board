@@ -7,15 +7,15 @@ cd frontend -> npm install (ez először kell csak / minden pullnál) -> npm sta
 
 backend setupolása:
 
-cd backend
-composer install
-'.env' fájl létrehozása
-'.env.example' tartalmának átmásolása a '.env-be'
-ezen belül: DB_DATABASE=kanban board
-php artisan key:generate
-php artisan serve
+- cd backend
+- composer install
+- '.env' fájl létrehozása
+- '.env.example' tartalmának átmásolása a '.env-be'
+- ezen belül: DB_DATABASE=kanban board
+- php artisan key:generate
+- php artisan serve
 
 backend elindítása:
 
-cd backend
-php artisan serve
+- cd backend
+- php artisan serve
