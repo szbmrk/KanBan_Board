@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('team_members_role', function (Blueprint $table) {
             $table->id('team_members_role_id');
-            $table->unsignedInteger('team_member_id')->nullable(false);
-            $table->unsignedInteger('role_id')->nullable(false);
+            $table->unsignedBigInteger('team_member_id')->nullable(false);
+            $table->unsignedBigInteger('role_id')->nullable(false);
         });
     }
 
