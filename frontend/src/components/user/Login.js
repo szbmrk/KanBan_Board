@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../../styles/signup.css';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from '../../api/axios';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -9,6 +10,7 @@ const Login = () => {
         email: '',
         password: '',
     });
+    const [token, setToken] = useState('');
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -19,15 +21,18 @@ const Login = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // backend
-        console.log(formData);
-        navigate('/dashboard');
+    const handleLogin = async () => {
+        try {
+            const response = await axios.post(`/user/login`, formData);
+            setToken(response.data.token);
+            localStorage.setItem('token', response.data.token);
+        } catch (error) {
+            console.error('Login failed:', error.response.data.error);
+        }
     };
 
     return (
-        <form className="login-form" onSubmit={handleSubmit}>
+        <form className="login-form" onSubmit={handleLogin}>
             <Link to="/signup">Don't have an account?</Link>
             <h2>Login</h2>
             <div className="form-group">
