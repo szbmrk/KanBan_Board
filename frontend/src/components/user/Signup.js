@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../../styles/signup.css';
-import '../../api/axios';
+import axios from '../../api/axios';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Signup = () => {
@@ -31,7 +31,7 @@ const Signup = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (formData.password !== formData.confirmPassword) {
             setFormData((prevFormData) => ({
@@ -42,10 +42,15 @@ const Signup = () => {
             setError('Passwords do not match');
             return;
         }
+        try {
+            await axios.post('/user/signup', formData);
+            navigate('/login')
+        }
+        catch (error) {
+            console.error('Signup failed:', error.response.data.error);
+            setError(error.response.data.error);
+        }
 
-        // post a axios request to the backend
-        console.log(formData);
-        navigate('/login')
     };
 
     return (

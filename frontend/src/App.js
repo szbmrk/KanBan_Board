@@ -15,7 +15,12 @@ const App = () => {
 
     const checkLoginStatus = async () => {
         try {
-            const response = await axios.get('/user/check-login');
+            const token = localStorage.getItem('token');
+            const response = await axios.get('/user/check-login', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
             if (response.data.isLoggedIn) {
                 setIsLoggedIn(true);
             }
