@@ -22,8 +22,8 @@ return new class extends Migration
             $table->timestamp('updated_at')->useCurrent();
 
             $table->foreign('column_id')->references('column_id')->on('columns');
-            #$table->foreign('priority_id')->references('priority_id')->on('priorities');
             $table->foreign('parent_task_id')->references('task_id')->on('tasks');
+            $table->foreign('priority_id')->references('priority_id')->on('priorities');
         });
     }
 
