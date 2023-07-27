@@ -25,3 +25,7 @@ Route::get('/test', function () {
     return response()->json($data);
 });
 
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
