@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import '../../styles/signup.css';
 import '../../api/axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Signup = () => {
+    const navigate = useNavigate();
+    const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -16,7 +18,7 @@ const Signup = () => {
         e.preventDefault();
         setFormData((prevFormData) => ({
             ...prevFormData,
-            ['confirmPassword']: '',
+            confirmPassword: '',
         }));
     };
 
@@ -31,8 +33,19 @@ const Signup = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (formData.password !== formData.confirmPassword) {
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                password: '',
+                confirmPassword: '',
+            }));
+            setError('Passwords do not match');
+            return;
+        }
+
         // post a axios request to the backend
         console.log(formData);
+        navigate('/login')
     };
 
     return (
@@ -99,6 +112,7 @@ const Signup = () => {
                 </div>
                 <button type="submit">Sign Up</button>
             </form>
+            <h1>{error}</h1>
         </div>
     );
 };
