@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../../styles/signup.css';
 import '../../api/axios';
+import { Link } from 'react-router-dom';
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -36,6 +37,7 @@ const Signup = () => {
 
     return (
         <form className="signup-form" onSubmit={handleSubmit}>
+            <Link to="/login">Already have an account?</Link>
             <h2>Sign Up</h2>
             <div className="form-group">
                 <label htmlFor="username">Username</label>
