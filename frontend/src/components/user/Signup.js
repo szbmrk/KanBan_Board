@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../../styles/signup.css';
+import '../../styles/login-signup.css';
 import axios from '../../api/axios';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -56,7 +56,6 @@ const Signup = () => {
     return (
         <div className="background">
             <form className="signup-form" onSubmit={handleSubmit}>
-                <Link to="/login">Already have an account?</Link>
                 <h2>Sign Up</h2>
                 <div className="form-group">
                     <label htmlFor="username">Username</label>
@@ -66,6 +65,7 @@ const Signup = () => {
                         name="username"
                         value={formData.username}
                         onChange={handleChange}
+                        placeholder="Enter your username"
                         required
                     />
                 </div>
@@ -77,6 +77,7 @@ const Signup = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
+                        placeholder="Enter your email"
                         required
                     />
                 </div>
@@ -88,6 +89,7 @@ const Signup = () => {
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
+                        placeholder="Enter your password"
                         required
                     />
                 </div>
@@ -99,12 +101,13 @@ const Signup = () => {
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleChange}
+                        placeholder="Enter your password again"
                         required
                         onPaste={handlePaste}
                     />
                 </div>
                 <div className="form-group">
-                    <label>
+                    <label id="checkbox">
                         <input
                             type="checkbox"
                             name="acceptedTerms"
@@ -116,6 +119,7 @@ const Signup = () => {
                     </label>
                 </div>
                 <button type="submit">Sign Up</button>
+                <Link to="/login">Already have an account?</Link>
             </form>
             <h1>{error}</h1>
         </div>
