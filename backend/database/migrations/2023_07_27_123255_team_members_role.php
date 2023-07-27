@@ -12,6 +12,9 @@ return new class extends Migration
             $table->id('team_members_role_id');
             $table->unsignedBigInteger('team_member_id')->nullable(false);
             $table->unsignedBigInteger('role_id')->nullable(false);
+
+            $table->foreign('team_member_id')->references('team_members_id')->on('team_members');
+            $table->foreign('role_id')->references('role_id')->on('roles');
         });
     }
 
