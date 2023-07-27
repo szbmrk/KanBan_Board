@@ -14,7 +14,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->timestamp('due_date')->nullable();
             $table->unsignedBigInteger('column_id')->nullable(false);
-            $table->unsignedInteger('project_id')->nullable();
+            $table->unsignedBigInteger('project_id')->nullable();
             $table->unsignedBigInteger('priority_id')->nullable();
             $table->unsignedBigInteger('parent_task_id')->nullable();
             $table->decimal('position', 6, 5)->nullable(false);
