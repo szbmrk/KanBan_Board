@@ -11,7 +11,7 @@ backend setupolása:
 - composer install
 - '.env' fájl létrehozása
 - '.env.example' tartalmának átmásolása a '.env-be'
-- ezen belül: DB_DATABASE=kanban board
+- ezen belül: DB_DATABASE=kanban_board
 - php artisan key:generate
 - php artisan serve
 
