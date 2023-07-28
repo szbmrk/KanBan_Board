@@ -3,17 +3,17 @@ import { useDrag, useDrop } from "react-dnd";
 import Popup from "./Popup";
 import ConfirmationPopup from "./ConfirmationPopup";
 import "../styles/general.css";
-import "../styles/general.css";
 import "../styles/card.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const ItemTypes = {
   CARD: "card",
 };
 
 export const plusIcon = <FontAwesomeIcon icon={faPlus} />;
-export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
+export const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
+export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
 
 export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
   const [isDragging, setIsDragging] = useState(false);
@@ -79,12 +79,12 @@ export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
         }}
       >
         {text}
-        <span className="dots" onClick={handleClick}>
-          {dotsIcon}
+        <span className="pencil" onClick={handleClick}>
+          {pencilIcon}
         </span>
-        <button className="delete-button" onClick={handleDelete}>
-          X
-        </button>
+        <span className="delete-button" onClick={handleDelete}>
+          {trashIcon}
+        </span>
       </div>
       {showDeletePopup && (
         <ConfirmationPopup
