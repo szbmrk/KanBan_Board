@@ -135,8 +135,8 @@ const DragDrop = () => {
                   }
                 />
               ))}
+              <button id="addbtn" onClick={() => handleAddCard("div1")}>Add</button>
             </div>
-            <button onClick={() => handleAddCard("div1")}>Add</button>
           </div>
 
           <div className="div">
@@ -154,8 +154,8 @@ const DragDrop = () => {
                   }
                 />
               ))}
+              <button id="addbtn" onClick={() => handleAddCard("div2")}>Add</button>
             </div>
-            <button onClick={() => handleAddCard("div2")}>Add</button>
           </div>
 
           <div className="div">
@@ -173,8 +173,8 @@ const DragDrop = () => {
                   }
                 />
               ))}
+              <button id="addbtn" onClick={() => handleAddCard("div3")}>Add</button>
             </div>
-            <button onClick={() => handleAddCard("div3")}>Add</button>
           </div>
         </div>
       </div>

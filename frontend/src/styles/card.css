@@ -1,12 +1,15 @@
 .card-container {
-  display: flex; 
-  flex-direction: column; 
-  margin: 20px 10px; 
+  display: grid; 
+  flex-direction: column;
+  margin: 20px 10px;
+  padding: 10px;
   background-color: rgba(var(--dark-grayRGB), 0.5);
+  border-radius: 5px;
 }
 
 .card {
   background-color: var(--dark-gray);
+  color: var(--light-gray);
   border: 1px solid var(--dark-gray);
   border-radius: 5px;
   padding: 10px;
@@ -20,4 +23,18 @@
 }
 .card:active {
   cursor: grabbing;
+}
+
+#addbtn {
+  background-color: var(--light-gray);
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+#addbtn:hover {
+  background-color: var(--button);
+  color: var(--light-gray);
 }

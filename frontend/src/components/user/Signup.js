@@ -125,7 +125,7 @@ const Signup = () => {
                 <div className="errorBox" style={{display}}>
                     <p>{error}</p>
                 </div>
-                <button type="submit">Sign Up</button>
+                <button id="signupbtn" type="submit">Sign Up</button>
                 <Link to="/login">Already have an account?</Link>
             </form>
         </div>

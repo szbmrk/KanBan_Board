@@ -15,5 +15,10 @@
 
 body {
     font-family: 'Raleway', sans-serif;
+    color: var(--dark-gray);
     line-height: 1.6;
+    background: url('./imgs/background.jpg') no-repeat center;
+    background-size: cover;
+    height: 100vh;
+    width: 100vw;
 }
