@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import '../../styles/dashboard.css';
+import axios from '../../api/axios';
 
 export default function Dashboard() {
     const [userID, setUserID] = useState(null);
@@ -31,40 +32,25 @@ export default function Dashboard() {
 
 
         //backendről fetchelés
-
-        //ez majd nem kell, ehelyett a backendről fetchelt adatokkal lesz használva a setTeams
-        //hasonló formában kéne visszakapni / átalakítani a visszakapott adatok mint itt lentebb látható, hogy jól működjön a html
-        setTeams([
-            {
-                team_id: 1,
-                team_name: 'Team A',
-                boards: [
-                    {
-                        board_id: 1,
-                        board_name: 'Board 1',
-                    },
-                    {
-                        board_id: 2,
-                        board_name: 'Board 2',
-                    },
-                ],
-            },
-            {
-                team_id: 2,
-                team_name: 'Team B',
-                boards: [
-                    {
-                        board_id: 3,
-                        board_name: 'Board 1',
-                    },
-                    {
-                        board_id: 4,
-                        board_name: 'Board 2',
-                    },
-                ],
-            },
-        ]);
+        fetchDashboardData();
     }, []);
+
+    const fetchDashboardData = async () => {
+        const token = sessionStorage.getItem('token');
+
+        try {
+            const response = await axios.get('/dashboard', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+            console.log(response.data.teams)
+            setTeams(response.data.teams);
+        }
+        catch (e) {
+            console.error(e)
+        }
+    };
 
     // Function to add a new board to a team
     const addBoardToTeam = (teamId, newBoardName) => {
@@ -173,11 +159,11 @@ export default function Dashboard() {
                     <div className="teams">
                         {teams.map((team) => (
                             <div className="team" key={team.team_id}>
-                                <h3>{team.team_name}</h3>
+                                <h3>{team.name}</h3>
                                 <div className="boards">
                                     {team.boards.map((board) => (
                                         <div className="board" key={board.board_id}>
-                                            <h4>{board.board_name}</h4>
+                                            <h4>{board.name}</h4>
                                             <div className="board-actions">
                                                 <button
                                                     className="edit-board"
