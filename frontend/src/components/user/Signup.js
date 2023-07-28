@@ -43,7 +43,8 @@ const Signup = () => {
             return;
         }
         try {
-            await axios.post('/user/signup', formData);
+            const response = await axios.post('/user/signup', formData);
+            console.log(response);
             console.log('Signup successful');
             navigate('/login')
         }
