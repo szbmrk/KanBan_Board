@@ -5,8 +5,8 @@ import Signup from './components/user/Signup';
 import axios from './api/axios'
 import Dashboard from './components/Dashboard';
 import DragDrop from './components/DragDrop';
-import AuthProvider from "./components/auth/AuthProvider";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
+import AuthProvider from "./auth/AuthProvider";
+import ProtectedRoute from "./auth/ProtectedRoute";
 
 const App = () => {
     return (
