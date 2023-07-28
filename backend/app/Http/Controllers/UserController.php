@@ -28,11 +28,11 @@ class UserController extends Controller
     public function signup(Request $request)
     {
         $emailExists = \App\Models\User::where('email', $request->email)->count();
-
+    
         if ($emailExists > 0) {
             return response()->json(['error' => 'Email already exists'], 400);
         }
-
+    
         $user = new \App\Models\User;
         $user->username = $request->username;
         $user->email = $request->email;
@@ -42,11 +42,10 @@ class UserController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['error' => 'Signup failed'], 500);
         }
-
-        $token = JWTAuth::fromUser($user);
-
-        return response()->json(['token' => $token]);
+    
+        return response()->json(['message' => 'Signup successful']);
     }
+    
 
     public function login(Request $request)
     {
@@ -54,7 +53,7 @@ class UserController extends Controller
 
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'invalid_credentials'], 400);
+                return response()->json(['error' => 'Incorrect email address or password'], 400);
             }
 
             $user = JWTAuth::user();
