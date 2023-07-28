@@ -1,6 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import '../../styles/login-signup.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from '../../api/axios';
 import AuthContext from '../../auth/AuthContext';
 
@@ -45,6 +45,11 @@ const Login = () => {
         }
     };
 
+    useEffect(() => {
+        authCtx.onLogout();
+    }, []);
+
+
     return (
         <div className="background">
             <form className="login-form" onSubmit={handleLogin}>
@@ -73,7 +78,7 @@ const Login = () => {
                         required
                     />
                 </div>
-                <button type="submit">Login</button>
+                <button id="loginbtn" type="submit">Login</button>
                 <Link to="/signup">Don't have an account?</Link>
             </form>
             <h1>{error}</h1>

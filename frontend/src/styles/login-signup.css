@@ -60,7 +60,8 @@
     margin-right: 5px;
 }
 
-button {
+#loginbtn,
+#signupbtn {
     width: 100%;
     margin: 50px auto;
     padding: 10px;
@@ -72,7 +73,8 @@ button {
     cursor: pointer;
 }
 
-button:hover {
+#loginbtn:hover,
+#signupbtn:hover {
     background-color: var(--button);
     color: var(--light-gray);
 }
