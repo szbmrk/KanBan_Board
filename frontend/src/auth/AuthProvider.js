@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import AuthContext from "./AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -9,6 +9,7 @@ const AuthProvider = (props) => {
     // Function to call when the user logs in
     const loginHandler = (data) => {
         sessionStorage.setItem('token', data.token);
+        sessionStorage.setItem('user_id', data.user.user_id);
         sessionStorage.setItem('username', data.user.username);
         sessionStorage.setItem('email', data.user.email);
         setIsLoggedIn(true);
@@ -18,6 +19,7 @@ const AuthProvider = (props) => {
     // Function to call when the user logs out
     const logoutHandler = () => {
         sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user_id');
         sessionStorage.removeItem('username');
         sessionStorage.removeItem('email');
         setIsLoggedIn(false);
