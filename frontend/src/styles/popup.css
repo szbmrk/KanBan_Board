@@ -11,6 +11,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 100; /* Set a high z-index to place it above other elements */
 }
 
 /* Popup content */

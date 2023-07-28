@@ -115,6 +115,42 @@ const DragDrop = () => {
     }
   };
 
+  const handleDeleteCard = (cardId, divName) => {
+    let targetCards;
+
+    switch (divName) {
+      case "div1":
+        targetCards = div1Cards;
+        break;
+      case "div2":
+        targetCards = div2Cards;
+        break;
+      case "div3":
+        targetCards = div3Cards;
+        break;
+      default:
+        return;
+    }
+
+    // Filter out the card with the matching ID
+    const updatedCards = targetCards.filter((card) => card.id !== cardId);
+
+    // Update the state for the respective div
+    switch (divName) {
+      case "div1":
+        setDiv1Cards(updatedCards);
+        break;
+      case "div2":
+        setDiv2Cards(updatedCards);
+        break;
+      case "div3":
+        setDiv3Cards(updatedCards);
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="Test">
@@ -133,6 +169,7 @@ const DragDrop = () => {
                   moveCard={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
                     moveCard(dragIndex, hoverIndex, sourceDiv, targetDiv)
                   }
+                  deleteCard={handleDeleteCard}
                 />
               ))}
               <div className="addbtn" onClick={() => handleAddCard("div1")}>{plusIcon} Add item</div>
@@ -152,6 +189,7 @@ const DragDrop = () => {
                   moveCard={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
                     moveCard(dragIndex, hoverIndex, sourceDiv, targetDiv)
                   }
+                  deleteCard={handleDeleteCard}
                 />
               ))}
               <div className="addbtn" onClick={() => handleAddCard("div2")}>{plusIcon} Add item</div>
@@ -171,6 +209,7 @@ const DragDrop = () => {
                   moveCard={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
                     moveCard(dragIndex, hoverIndex, sourceDiv, targetDiv)
                   }
+                  deleteCard={handleDeleteCard}
                 />
               ))}
               <div className="addbtn" onClick={() => handleAddCard("div3")}>{plusIcon} Add item</div>
