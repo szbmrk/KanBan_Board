@@ -90,6 +90,24 @@ body {
     background-color: #d32f2f;
 }
 
+/* Styling for the delete board button */
+.edit-board {
+    color: #fff;
+    background-color: #06917a;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    /* Reduced padding */
+    font-size: 12px;
+    /* Reduced font size */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-board:hover {
+    background-color: #06917a;
+}
+
 .overlay {
     position: fixed;
     top: 0;
@@ -103,11 +121,57 @@ body {
 
 .popup {
     position: fixed;
-    top: 50%;
-    left: 50%;
     transform: translate(-50%, -50%);
     background-color: white;
     padding: 16px;
     border-radius: 8px;
     z-index: 10000;
+    width: 200px;
+    height: 125px;
+}
+
+.popup-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.board-input {
+    width: 175px;
+    /* Adjust the width as needed */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    /* Adjust the gap between buttons as needed */
+}
+
+.save-button,
+.cancel-button {
+    padding: 8px 15px;
+    /* Adjust the padding to make the buttons smaller */
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.save-button:hover,
+.cancel-button:hover {
+    background-color: #0056b3;
+}
+
+.cancel-button {
+    background-color: #ccc;
+}
+
+.cancel-button:hover {
+    background-color: #a6a6a6;
 }

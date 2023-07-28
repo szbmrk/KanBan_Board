@@ -6,6 +6,7 @@ export default function Dashboard() {
     const [teams, setTeams] = useState([]);
     const [showAddBoardPopup, setShowAddBoardPopup] = useState(false);
     const [selectedTeamId, setSelectedTeamId] = useState(null);
+    const [selectedBoardId, setSelectedBoardId] = useState(null);
     const [containerPosition, setContainerPosition] = useState({ x: 0, y: 0 });
     const [initialCursorPosition, setInitialCursorPosition] = useState({ x: 0, y: 0 });
 
@@ -28,6 +29,11 @@ export default function Dashboard() {
             setUserID(user_id);
         }
 
+
+        //backendről fetchelés
+
+        //ez majd nem kell, ehelyett a backendről fetchelt adatokkal lesz használva a setTeams
+        //hasonló formában kéne visszakapni / átalakítani a visszakapott adatok mint itt lentebb látható, hogy jól működjön a html
         setTeams([
             {
                 team_id: 1,
@@ -62,6 +68,9 @@ export default function Dashboard() {
 
     // Function to add a new board to a team
     const addBoardToTeam = (teamId, newBoardName) => {
+        //insert a backenden és adatok ujrafetchelése
+
+        //ez majd nem kell ha backend lesz
         setTeams((prevTeams) => {
             return prevTeams.map((team) => {
                 if (team.team_id === teamId) {
@@ -83,6 +92,9 @@ export default function Dashboard() {
 
     // Function to delete a board from a team
     const deleteBoardFromTeam = (teamId, boardId) => {
+        //delete a backenden és adatok ujrafetchelése
+
+        //ez majd nem kell ha backend lesz
         setTeams((prevTeams) => {
             return prevTeams.map((team) => {
                 if (team.team_id === teamId) {
@@ -96,8 +108,35 @@ export default function Dashboard() {
         });
     };
 
-    const openAddBoardPopup = (teamId) => {
+    const editBoardName = (teamId, boardId, updatedBoardName) => {
+        // Edit the board name on the backend and fetch updated data
+        // This part would be implemented when you have backend functionality
+
+        // For now, we'll update the state directly
+        setTeams((prevTeams) => {
+            return prevTeams.map((team) => {
+                if (team.team_id === teamId) {
+                    return {
+                        ...team,
+                        boards: team.boards.map((board) => {
+                            if (board.board_id === boardId) {
+                                return {
+                                    ...board,
+                                    board_name: updatedBoardName,
+                                };
+                            }
+                            return board;
+                        }),
+                    };
+                }
+                return team;
+            });
+        });
+    };
+
+    const openAddBoardPopup = (teamId, boardId) => {
         setSelectedTeamId(teamId);
+        setSelectedBoardId(boardId);
         setShowAddBoardPopup(true);
         setInitialCursorPosition({ x: containerPosition.x, y: containerPosition.y });
     };
@@ -107,8 +146,13 @@ export default function Dashboard() {
         setShowAddBoardPopup(false);
     };
 
-    const handleSaveBoard = (newBoardName) => {
-        if (selectedTeamId && newBoardName) {
+    const handleSaveBoard = (teamId, boardId, newBoardName) => {
+        if (boardId) {
+            editBoardName(teamId, boardId, newBoardName);
+            closeAddBoardPopup();
+            setShowAddBoardPopup(false);
+        }
+        else {
             addBoardToTeam(selectedTeamId, newBoardName);
             setShowAddBoardPopup(false);
         }
@@ -119,7 +163,6 @@ export default function Dashboard() {
         top: initialCursorPosition.y + 50,
         left: initialCursorPosition.x,
         transform: 'translate(-50%, -50%)',
-        with: '50px',
     };
 
     return (
@@ -135,18 +178,26 @@ export default function Dashboard() {
                                     {team.boards.map((board) => (
                                         <div className="board" key={board.board_id}>
                                             <h4>{board.board_name}</h4>
-                                            <button
-                                                className="delete-board"
-                                                onClick={() =>
-                                                    deleteBoardFromTeam(team.team_id, board.board_id)
-                                                }
-                                            >
-                                                Delete board
-                                            </button>
+                                            <div className="board-actions">
+                                                <button
+                                                    className="edit-board"
+                                                    onClick={() => openAddBoardPopup(team.team_id, board.board_id)}
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    className="delete-board"
+                                                    onClick={() =>
+                                                        deleteBoardFromTeam(team.team_id, board.board_id)
+                                                    }
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
-                                <button className="add-board" onClick={() => openAddBoardPopup(team.team_id)}>
+                                <button className="add-board" onClick={() => openAddBoardPopup(team.team_id, null)}>
                                     Add board
                                 </button>
                             </div>
@@ -157,6 +208,8 @@ export default function Dashboard() {
                             <div className="overlay" />
                             <div className="popup" style={popupStyle}>
                                 <AddBoardPopup
+                                    teamId={selectedTeamId}
+                                    boardId={selectedBoardId} // Use 'boardId' instead of 'selectedBoardId'
                                     onClose={closeAddBoardPopup}
                                     onSave={handleSaveBoard}
                                 />
@@ -167,26 +220,44 @@ export default function Dashboard() {
             )}
         </div>
     );
-}
+};
 
-const AddBoardPopup = ({ onClose, onSave }) => {
-    const [newBoardName, setNewBoardName] = useState('');
+//ez maga a popup componens az addnál és editnél
+const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
+    const [boardName, setBoardName] = useState('');
+
+    useEffect(() => {
+        // If a board ID is passed, fetch the existing board name for editing
+        if (boardId) {
+            // Fetch the board name from the backend based on teamId and boardId
+            // This part would be implemented when you have backend functionality
+            // For now, we'll update the state directly with the existing board name
+            setBoardName(/* fetch board name from the backend */);
+        }
+    }, [boardId]);
 
     const handleSave = () => {
-        onSave(newBoardName);
-        setNewBoardName('');
+        onSave(teamId, boardId, boardName);
+        setBoardName('');
     };
 
     return (
-        <div className="popup-content" style={{ width: "85%" }}>
+        <div className="popup-content">
             <input
                 type="text"
-                value={newBoardName}
-                onChange={(e) => setNewBoardName(e.target.value)}
-                placeholder="New board name"
+                value={boardName}
+                onChange={(e) => setBoardName(e.target.value)}
+                placeholder="Board name"
+                className="board-input"
             />
-            <button onClick={handleSave}>Save</button>
-            <button onClick={onClose}>Cancel</button>
+            <div className="button-container">
+                <button onClick={handleSave} className="save-button">
+                    Save
+                </button>
+                <button onClick={onClose} className="cancel-button">
+                    Cancel
+                </button>
+            </div>
         </div>
     );
 };
