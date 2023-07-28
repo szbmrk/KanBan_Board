@@ -2,6 +2,7 @@ import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Card from "./Card";
+import "../styles/general.css";
 import "../styles/dragdrop.css";
 
 const DragDrop = () => {

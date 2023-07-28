@@ -2,6 +2,7 @@
 
 :root{
     --dark-gray: #404040;
+    --dark-grayRGB: 64, 64, 64;
     --light-gray: #cbcbcb;
     --button: #3d506b;
 }

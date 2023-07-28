@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import Popup from "./Popup";
+import "../styles/general.css";
 import "../styles/card.css";
 
 const ItemTypes = {
