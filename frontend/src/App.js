@@ -13,10 +13,11 @@ const App = () => {
         <BrowserRouter>
             <AuthProvider>
                 <Routes>
+                    <Route path="/" element={<ProtectedRoute> <Navigate to="/dashboard" /> </ProtectedRoute>} />
                     <Route exact path="/login" element={<Login />} />
                     <Route exact path="/signup" element={<Signup />} />
                     <Route exact path="/test" element={<DragDrop />} />
-                    <Route exact path="/dashboard" element={<ProtectedRoute><Dashboard /> </ProtectedRoute>} />
+                    <Route exact path="/dashboard" element={<ProtectedRoute> <Dashboard /> </ProtectedRoute>} />
                 </Routes>
             </AuthProvider>
         </BrowserRouter>
