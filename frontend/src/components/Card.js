@@ -3,12 +3,16 @@ import { useDrag, useDrop } from "react-dnd";
 import Popup from "./Popup";
 import "../styles/general.css";
 import "../styles/card.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const ItemTypes = {
   CARD: "card",
 };
 
-const Card = ({ id, text, index, divName, moveCard }) => {
+export const plusIcon = <FontAwesomeIcon icon={faPlus} />;
+
+export const Card = ({ id, text, index, divName, moveCard }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [{ isDragging: dragging }, drag] = useDrag({
     type: ItemTypes.CARD,
@@ -62,5 +66,3 @@ const Card = ({ id, text, index, divName, moveCard }) => {
     </>
   );
 };
-
-export default Card;

@@ -25,16 +25,13 @@
   cursor: grabbing;
 }
 
-#addbtn {
-  background-color: var(--light-gray);
-  border: none;
+.addbtn {
+  width: 40%;
   border-radius: 5px;
   padding: 10px;
-  margin: 5px;
   cursor: pointer;
 }
 
-#addbtn:hover {
-  background-color: var(--button);
+.addbtn:hover {
   color: var(--light-gray);
 }

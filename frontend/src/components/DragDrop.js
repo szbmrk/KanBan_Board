@@ -1,7 +1,7 @@
 import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import Card from "./Card";
+import {Card, plusIcon} from "./Card";
 import "../styles/general.css";
 import "../styles/dragdrop.css";
 
@@ -135,7 +135,7 @@ const DragDrop = () => {
                   }
                 />
               ))}
-              <button id="addbtn" onClick={() => handleAddCard("div1")}>Add</button>
+              <div className="addbtn" onClick={() => handleAddCard("div3")}>{plusIcon} Add item</div>
             </div>
           </div>
 
@@ -154,7 +154,7 @@ const DragDrop = () => {
                   }
                 />
               ))}
-              <button id="addbtn" onClick={() => handleAddCard("div2")}>Add</button>
+              <div className="addbtn" onClick={() => handleAddCard("div3")}>{plusIcon} Add item</div>
             </div>
           </div>
 
@@ -173,7 +173,7 @@ const DragDrop = () => {
                   }
                 />
               ))}
-              <button id="addbtn" onClick={() => handleAddCard("div3")}>Add</button>
+              <div className="addbtn" onClick={() => handleAddCard("div3")}>{plusIcon} Add item</div>
             </div>
           </div>
         </div>
