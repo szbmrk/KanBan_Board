@@ -9,6 +9,7 @@ use Illuminate\Database\Seeder;
 use Database\Factories\UserFactory;
 use Database\Seeders\RolesTableSeeder;
 use Database\Seeders\TeamsTableSeeder;
+use Database\Seeders\NotificationsTableSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -30,6 +31,7 @@ class DatabaseSeeder extends Seeder
             ColumnsTableSeeder::class,
             PrioritiesTableSeeder::class,
             TagsTableSeeder::class,
+            NotificationsTableSeeder::class,
         ]);
     }
 }
