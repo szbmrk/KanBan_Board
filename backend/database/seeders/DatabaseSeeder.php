@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             BoardsTableSeeder::class,
             ColumnsTableSeeder::class,
             PrioritiesTableSeeder::class,
+            TagsTableSeeder::class,
         ]);
     }
 }
