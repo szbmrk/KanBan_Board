@@ -49,6 +49,7 @@ class DatabaseSeeder extends Seeder
             MentionsTableSeeder::class,
             FeedbacksTableSeeder::class,
             FavouriteTasksTableSeeder::class,
+            attachmentsTableSeeder::class,
         ]);
     }
 }
