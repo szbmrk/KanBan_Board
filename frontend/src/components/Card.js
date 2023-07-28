@@ -4,13 +4,14 @@ import Popup from "./Popup";
 import "../styles/general.css";
 import "../styles/card.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faEllipsis } from "@fortawesome/free-solid-svg-icons";
 
 const ItemTypes = {
   CARD: "card",
 };
 
 export const plusIcon = <FontAwesomeIcon icon={faPlus} />;
+export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
 
 export const Card = ({ id, text, index, divName, moveCard }) => {
   const [isDragging, setIsDragging] = useState(false);
@@ -61,6 +62,7 @@ export const Card = ({ id, text, index, divName, moveCard }) => {
         }}
       >
         {text}
+        <span className="dots">{dotsIcon}</span>
       </div>
       {showPopup && <Popup text={text} onClose={handleClosePopup} />}
     </>

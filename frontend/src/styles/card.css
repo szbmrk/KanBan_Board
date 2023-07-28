@@ -26,6 +26,7 @@
 }
 
 .addbtn {
+  font-size: larger;
   width: 40%;
   border-radius: 5px;
   padding: 10px;
@@ -34,4 +35,12 @@
 
 .addbtn:hover {
   color: var(--light-gray);
+}
+
+.dots {
+  float: right;
+}
+
+.dots:hover {
+  cursor: pointer;
 }
