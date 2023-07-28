@@ -24,7 +24,7 @@ const Popup = ({ text, onClose }) => {
 
   return (
     <div className="overlay">
-      <div className="card-popup" ref={popupRef}>
+      <div className="popup" ref={popupRef}>
         <span className="close-btn" onClick={onClose}>
           {closeIcon}
         </span>

@@ -1,71 +1,45 @@
-/* CSS for the custom popup window */
-
-/* Popup container */
-.popup-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100; /* Set a high z-index to place it above other elements */
-}
-
-/* Popup content */
-.card-popup {
-  position: relative; /* Ensure the close button is positioned relative to the popup */
-  background-color: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 80%;
-}
-
-/* Close button */
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 18px;
-  cursor: pointer;
-  color: var(--dark-gray);
-}
-
-/* Popup text content */
-.popup-content {
-  font-size: 16px;
-  line-height: 1.6;
-  margin-bottom: 10px;
-}
-
-/* styles/confirmationPopup.css */
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark background */
-  z-index: 99; /* Set a high z-index to place it above other elements */
+  background-color: rgba(0, 0, 0, 0.1);
+  z-index: 99;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.confirmation-popup {
-  background-color: #ffffff;
-  border: 1px solid #dddddd;
+.popup {
+  position: relative;
+  margin: auto;
+  background-color: var(--dark-gray);
+  color: var(--light-gray);
+  border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-width: 300px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  width: 80%;
+  max-width: 400px;
   text-align: center;
 }
 
-.confirmation-popup p {
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--light-gray);
+}
+
+.popup-content {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.popup p {
   margin-bottom: 20px;
 }
 

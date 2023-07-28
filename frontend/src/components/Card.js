@@ -74,12 +74,11 @@ export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
         ref={(node) => drag(drop(node))}
         className="card"
         style={{
-          opacity: isDragging ? 0.8 : 1,
           cursor: "grab",
         }}
       >
         {text}
-        <span className="pencil" onClick={handleClick}>
+        <span className="edit" onClick={handleClick}>
           {pencilIcon}
         </span>
         <span className="delete-button" onClick={handleDelete}>

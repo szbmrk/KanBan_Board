@@ -1,5 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import "../styles/popup.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+
+const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
 const ConfirmationPopup = ({ text, onCancel, onConfirm }) => {
   const popupRef = useRef(null);
@@ -20,7 +24,10 @@ const ConfirmationPopup = ({ text, onCancel, onConfirm }) => {
 
   return (
     <div className="overlay">
-      <div ref={popupRef} className="confirmation-popup">
+      <div className="popup" ref={popupRef}>
+        <span className="close-btn" onClick={onCancel}>
+            {closeIcon}
+        </span>
         <p>Are you sure you want to delete "{text}"?</p>
         <div className="button-container">
           <button onClick={onCancel}>Cancel</button>

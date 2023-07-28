@@ -86,7 +86,7 @@ a {
 }
 
 .errorBox {
-    background-color: rgba(255, 0, 0, 0.4);
+    background-color: var(--important);
     color: var(--dark-gray);
     font-weight: bold;
     text-align: center;
