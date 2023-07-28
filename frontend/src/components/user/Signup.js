@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../../styles/general.css';
 import '../../styles/login-signup.css';
 import axios from '../../api/axios';
 import { Link, useNavigate } from 'react-router-dom';
@@ -6,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 const Signup = () => {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
+    const [display, setDisplay] = useState('none');
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -39,11 +41,14 @@ const Signup = () => {
                 password: '',
                 confirmPassword: '',
             }));
+            setDisplay('block');
             setError('Passwords do not match');
             return;
         }
         try {
-            await axios.post('/user/signup', formData);
+            const response = await axios.post('/user/signup', formData);
+            console.log(response);
+            console.log('Signup successful');
             navigate('/login')
         }
         catch (error) {
@@ -118,10 +123,12 @@ const Signup = () => {
                         I accept the terms and conditions
                     </label>
                 </div>
+                <div className="errorBox" style={{display}}>
+                    <p>{error}</p>
+                </div>
                 <button type="submit">Sign Up</button>
                 <Link to="/login">Already have an account?</Link>
             </form>
-            <h1>{error}</h1>
         </div>
     );
 };

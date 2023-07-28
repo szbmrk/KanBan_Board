@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../../styles/general.css';
 import '../../styles/login-signup.css';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from '../../api/axios';
@@ -24,8 +25,11 @@ const Login = () => {
     const handleLogin = async () => {
         try {
             const response = await axios.post(`/user/login`, formData);
+            console.log(response);
             setToken(response.data.token);
             localStorage.setItem('token', response.data.token);
+            console.log('Login successful');
+            navigate('/dashboard');
         } catch (error) {
             console.error('Login failed:', error.response.data.error);
         }
