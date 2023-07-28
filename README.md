@@ -19,3 +19,10 @@ backend elindítása:
 
 - cd backend
 - php artisan serve
+
+
+main:
+cd backend
+- php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
+- composer require tymon/jwt-auth
+- php artisan jwt:secret
