@@ -1,0 +1,113 @@
+/* Global styles */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+}
+
+/* CSS for the container */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* CSS for each team card */
+.team {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #dadada;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.team-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* CSS for the boards container inside each team card */
+.boards {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* CSS for each board card */
+.board {
+    flex: 0 0 calc(33.33% - 20px);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.board-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Styling for the add board button */
+.add-board {
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    /* Reduced padding */
+    font-size: 12px;
+    /* Reduced font size */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-board:hover {
+    background-color: #45a049;
+}
+
+/* Styling for the delete board button */
+.delete-board {
+    color: #fff;
+    background-color: #f44336;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    /* Reduced padding */
+    font-size: 12px;
+    /* Reduced font size */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.delete-board:hover {
+    background-color: #d32f2f;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+}
+
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 16px;
+    border-radius: 8px;
+    z-index: 10000;
+}
