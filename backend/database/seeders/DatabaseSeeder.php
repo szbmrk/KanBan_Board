@@ -7,9 +7,18 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 
 use Database\Factories\UserFactory;
+use Database\Seeders\TagsTableSeeder;
 use Database\Seeders\RolesTableSeeder;
+use Database\Seeders\TasksTableSeeder;
 use Database\Seeders\TeamsTableSeeder;
 use Database\Seeders\NotificationsTableSeeder;
+use Database\Seeders\BoardsTableSeeder;
+use Database\Seeders\ColumnsTableSeeder;
+use Database\Seeders\CommentsTableSeeder;
+use Database\Seeders\TaskTagsTableSeeder;
+use Database\Seeders\UserTasksTableSeeder;
+use Database\Seeders\PrioritiesTableSeeder;
+use Database\Seeders\TeamMembersTableSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -32,6 +41,10 @@ class DatabaseSeeder extends Seeder
             PrioritiesTableSeeder::class,
             TagsTableSeeder::class,
             NotificationsTableSeeder::class,
+            TasksTableSeeder::class,
+            TaskTagsTableSeeder::class,
+            CommentsTableSeeder::class,
+            UserTasksTableSeeder::class,
         ]);
     }
 }
