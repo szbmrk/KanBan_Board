@@ -236,13 +236,14 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
         }
     }, [boardId]);
 
-    const handleSave = () => {
+    const handleSave = (e) => {
+        e.preventDefault();
         onSave(teamId, boardId, boardName);
         setBoardName('');
     };
 
     return (
-        <div className="popup-content">
+        <form className="popup-content" onSubmit={handleSave}>
             <input
                 type="text"
                 value={boardName}
@@ -252,13 +253,13 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
                 required
             />
             <div className="button-container">
-                <button onClick={handleSave} className="save-button">
+                <button type="submit" className="save-button">
                     Save
                 </button>
                 <button onClick={onClose} className="cancel-button">
                     Cancel
                 </button>
             </div>
-        </div>
+        </form>
     );
 };
