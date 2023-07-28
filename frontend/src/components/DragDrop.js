@@ -135,7 +135,7 @@ const DragDrop = () => {
                   }
                 />
               ))}
-              <div className="addbtn" onClick={() => handleAddCard("div3")}>{plusIcon} Add item</div>
+              <div className="addbtn" onClick={() => handleAddCard("div1")}>{plusIcon} Add item</div>
             </div>
           </div>
 
@@ -154,7 +154,7 @@ const DragDrop = () => {
                   }
                 />
               ))}
-              <div className="addbtn" onClick={() => handleAddCard("div3")}>{plusIcon} Add item</div>
+              <div className="addbtn" onClick={() => handleAddCard("div2")}>{plusIcon} Add item</div>
             </div>
           </div>
 

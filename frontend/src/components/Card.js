@@ -54,11 +54,10 @@ export const Card = ({ id, text, index, divName, moveCard }) => {
     <>
       <div
         ref={(node) => drag(drop(node))}
-        onClick={handleClick}
         className="card"
         style={{
-          opacity: isDragging ? 0.5 : 1,
-          cursor: "move",
+          opacity: isDragging ? 0.8 : 1,
+          cursor: "grab",
         }}
       >
         {text}
