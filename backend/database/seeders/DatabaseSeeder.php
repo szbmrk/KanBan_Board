@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             TagsTableSeeder::class,
             TasksTableSeeder::class,
             TaskTagsTableSeeder::class,
+            CommentsTableSeeder::class,
         ]);
     }
 }
