@@ -5,13 +5,11 @@ import axios from '../../api/axios';
 
 const Login = () => {
     const navigate = useNavigate();
-
+    const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         email: '',
         password: '',
     });
-    const [token, setToken] = useState('');
-
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         const val = type === 'checkbox' ? checked : value;
@@ -21,16 +19,17 @@ const Login = () => {
         }));
     };
 
-    const handleLogin = async () => {
+    const handleLogin = async (e) => {
+        e.preventDefault();
         try {
             const response = await axios.post(`/user/login`, formData);
             console.log(response);
-            setToken(response.data.token);
             localStorage.setItem('token', response.data.token);
             console.log('Login successful');
             navigate('/dashboard');
         } catch (error) {
             console.error('Login failed:', error.response.data.error);
+            setError(error.response.data.error);
         }
     };
 
@@ -65,6 +64,7 @@ const Login = () => {
                 <button type="submit">Login</button>
                 <Link to="/signup">Don't have an account?</Link>
             </form>
+            <h1>{error}</h1>
         </div>
     );
 };
