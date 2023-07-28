@@ -1,5 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import "../styles/popup.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+
+const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
 const Popup = ({ text, onClose }) => {
   const popupRef = useRef(null);
@@ -19,10 +23,10 @@ const Popup = ({ text, onClose }) => {
   }, [onClose]);
 
   return (
-    <div className="popup-container">
-      <div className="popup" ref={popupRef}>
+    <div className="overlay">
+      <div className="card-popup" ref={popupRef}>
         <span className="close-btn" onClick={onClose}>
-          &times;
+          {closeIcon}
         </span>
         <div className="popup-content">{text}</div>
       </div>

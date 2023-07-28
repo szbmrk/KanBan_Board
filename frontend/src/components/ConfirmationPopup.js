@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import "../styles/confirmationPopup.css";
+import "../styles/popup.css";
 
 const ConfirmationPopup = ({ text, onCancel, onConfirm }) => {
   const popupRef = useRef(null);
