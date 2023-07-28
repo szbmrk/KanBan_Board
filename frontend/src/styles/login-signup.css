@@ -1,22 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,400;1,100;1,400&display=swap');
-
-:root{
-    --dark-gray: #404040;
-    --light-gray: #cbcbcb;
-    --button: #3d506b;
-}
-
-*{
-    box-sizing: border-box;
-    padding: 0;
-    margin: 0;
-}
-
-body {
-    font-family: 'Raleway', sans-serif;
-    line-height: 1.6;
-}
-
 .background {
     background: url('./imgs/background.jpg') no-repeat center;
     background-size: cover;
