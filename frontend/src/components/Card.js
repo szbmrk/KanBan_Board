@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import Popup from "./Popup";
+import ConfirmationPopup from "./ConfirmationPopup";
+import "../styles/general.css";
 import "../styles/general.css";
 import "../styles/card.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,7 +15,7 @@ const ItemTypes = {
 export const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
 
-export const Card = ({ id, text, index, divName, moveCard }) => {
+export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [{ isDragging: dragging }, drag] = useDrag({
     type: ItemTypes.CARD,
@@ -38,16 +40,32 @@ export const Card = ({ id, text, index, divName, moveCard }) => {
     },
   });
 
-  const [showPopup, setShowPopup] = useState(false);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [showCustomPopup, setShowCustomPopup] = useState(false);
 
   const handleClick = () => {
-    if (!dragging) {
-      setShowPopup(true);
+    if (!dragging && !showDeletePopup) {
+      setShowCustomPopup(true);
+      setShowDeletePopup(false);
     }
   };
 
   const handleClosePopup = () => {
-    setShowPopup(false);
+    setShowCustomPopup(false);
+  };
+
+  const handleDelete = () => {
+    setShowCustomPopup(false); // Close the custom popup
+    setShowDeletePopup(true); // Show the delete confirmation popup
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeletePopup(false); // Close the delete confirmation popup
+  };
+
+  const handleConfirmDelete = () => {
+    setShowDeletePopup(false); // Close the delete confirmation popup
+    deleteCard(id, divName); // Call the deleteCard method with the correct arguments
   };
 
   return (
@@ -61,9 +79,21 @@ export const Card = ({ id, text, index, divName, moveCard }) => {
         }}
       >
         {text}
-        <span className="dots">{dotsIcon}</span>
+        <span className="dots" onClick={handleClick}>
+          {dotsIcon}
+        </span>
+        <button className="delete-button" onClick={handleDelete}>
+          X
+        </button>
       </div>
-      {showPopup && <Popup text={text} onClose={handleClosePopup} />}
+      {showDeletePopup && (
+        <ConfirmationPopup
+          text={text}
+          onCancel={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
+      {showCustomPopup && <Popup text={text} onClose={handleClosePopup} />}
     </>
   );
 };

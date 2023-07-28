@@ -16,6 +16,9 @@
   margin: 5px;
   min-width: 150px;
   cursor: pointer;
+  position: relative;
+  display: flex; /* Add this to make the contents of the card flexbox items */
+  align-items: center; /* Vertically align the contents in the center */
 }
 
 .card:hover {
@@ -38,9 +41,31 @@
 }
 
 .dots {
-  float: right;
+  padding: 5px; /* Add padding for clickable space */
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--light-gray);
+  margin-right: 5px;
 }
 
 .dots:hover {
   cursor: pointer;
+}
+
+.delete-button {
+  /* Existing delete-button styles */
+  position: absolute;
+  top: 50%;
+  right: 10px; /* Adjust the value as needed for desired spacing */
+  transform: translateY(-50%);
+  padding: 5px; /* Add padding for clickable space */
+  background-color: transparent; /* Set background to transparent */
+  border: none; /* Remove border */
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--light-gray);
+}
+
+.delete-button:focus {
+  outline: none; /* Remove focus outline */
 }
