@@ -47,13 +47,12 @@ const Signup = () => {
         }
         try {
             const response = await axios.post('/user/signup', formData);
-            console.log(response);
             console.log('Signup successful');
             navigate('/login')
         }
         catch (error) {
-            console.error('Signup failed:', error.response.data.error);
-            setError(error.response.data.error);
+            console.log(error.response.data.error)
+            setError(error.response.data.error)
         }
 
     };

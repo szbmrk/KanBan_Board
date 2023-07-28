@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     public function checkLogin(Request $request)
     {
         try {
-            if (! $user = JWTAuth::parseToken()->authenticate()) {
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['isLoggedIn' => false]);
             }
         } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
@@ -26,42 +27,47 @@ class UserController extends Controller
 
     public function signup(Request $request)
     {
+        $emailExists = \App\Models\User::where('email', $request->email)->count();
+
+        if ($emailExists > 0) {
+            return response()->json(['error' => 'Email already exists'], 400);
+        }
+
         $user = new \App\Models\User;
         $user->username = $request->username;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
-    
         try {
             $user->save();
         } catch (\Illuminate\Database\QueryException $e) {
-            // ellenőrizzük, hogy az email cím már létezik-e
-            if ($e->getCode() == 23000) { // 23000 az SQLSTATE kódja az 'integrity constraint violation'-nek
-                return response()->json(['error' => 'A user with this email already exists.'], 400);
-            }
-    
-            // egyéb adatbázis hibák
-            return response()->json(['error' => 'Signup failed: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'Signup failed'], 500);
         }
-    
-        // generáljuk a JWT tokent
+
         $token = JWTAuth::fromUser($user);
-    
+
         return response()->json(['token' => $token]);
     }
-    
 
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
 
-        if ($token = JWTAuth::attempt($credentials)) {
-            $user = Auth::user();
-            $user->token = $token;
-            $user->save();
+        try {
+            if (!$token = JWTAuth::attempt($credentials)) {
+                return response()->json(['error' => 'invalid_credentials'], 400);
+            }
 
-            return response()->json(['token' => $token]);
-        } else {
-            return response()->json(['error' => 'Invalid credentials'], 400);
+            $user = JWTAuth::user();
+
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'could_not_create_token'], 500);
         }
+
+        return response()->json(['token' => $token, 'user' => $user]);
     }
+
+
+
+
+
 }
