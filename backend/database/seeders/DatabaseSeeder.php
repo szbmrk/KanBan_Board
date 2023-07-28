@@ -30,6 +30,8 @@ class DatabaseSeeder extends Seeder
             ColumnsTableSeeder::class,
             PrioritiesTableSeeder::class,
             TagsTableSeeder::class,
+            TasksTableSeeder::class,
+            TaskTagsTableSeeder::class,
         ]);
     }
 }
