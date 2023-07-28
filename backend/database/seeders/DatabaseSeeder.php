@@ -18,12 +18,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-        // Create 5 users
-        UserFactory::new()->count(5)->create();
+        // Create 10 users
+        UserFactory::new()->count(10)->create();
 
+        // Calling the other seeders
         $this->call([
             RolesTableSeeder::class,
-            TeamsTableSeeder::class
+            TeamsTableSeeder::class,
+            TeamMembersTableSeeder::class,
         ]);
     }
 }
