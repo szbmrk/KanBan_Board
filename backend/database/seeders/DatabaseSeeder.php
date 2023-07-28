@@ -20,6 +20,7 @@ use Database\Seeders\FeedbacksTableSeeder;
 use Database\Seeders\UserTasksTableSeeder;
 use Database\Seeders\PrioritiesTableSeeder;
 use Database\Seeders\TeamMembersTableSeeder;
+use Database\Seeders\TeamMembersRoleTableSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -47,6 +48,7 @@ class DatabaseSeeder extends Seeder
             UserTasksTableSeeder::class,
             MentionsTableSeeder::class,
             FeedbacksTableSeeder::class,
+            TeamMembersRoleTableSeeder::class,
         ]);
     }
 }
