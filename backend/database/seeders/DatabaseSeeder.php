@@ -11,6 +11,7 @@ use Database\Seeders\TagsTableSeeder;
 use Database\Seeders\RolesTableSeeder;
 use Database\Seeders\TasksTableSeeder;
 use Database\Seeders\TeamsTableSeeder;
+use Database\Seeders\NotificationsTableSeeder;
 use Database\Seeders\BoardsTableSeeder;
 use Database\Seeders\ColumnsTableSeeder;
 use Database\Seeders\CommentsTableSeeder;
@@ -39,6 +40,7 @@ class DatabaseSeeder extends Seeder
             ColumnsTableSeeder::class,
             PrioritiesTableSeeder::class,
             TagsTableSeeder::class,
+            NotificationsTableSeeder::class,
             TasksTableSeeder::class,
             TaskTagsTableSeeder::class,
             CommentsTableSeeder::class,
