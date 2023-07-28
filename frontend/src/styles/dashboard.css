@@ -1,0 +1,177 @@
+/* Global styles */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+}
+
+/* CSS for the container */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* CSS for each team card */
+.team {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #dadada;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.team-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* CSS for the boards container inside each team card */
+.boards {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* CSS for each board card */
+.board {
+    flex: 0 0 calc(33.33% - 20px);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.board-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Styling for the add board button */
+.add-board {
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    /* Reduced padding */
+    font-size: 12px;
+    /* Reduced font size */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-board:hover {
+    background-color: #45a049;
+}
+
+/* Styling for the delete board button */
+.delete-board {
+    color: #fff;
+    background-color: #f44336;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    /* Reduced padding */
+    font-size: 12px;
+    /* Reduced font size */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.delete-board:hover {
+    background-color: #d32f2f;
+}
+
+/* Styling for the delete board button */
+.edit-board {
+    color: #fff;
+    background-color: #06917a;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    /* Reduced padding */
+    font-size: 12px;
+    /* Reduced font size */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-board:hover {
+    background-color: #06917a;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+}
+
+.popup {
+    position: fixed;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 16px;
+    border-radius: 8px;
+    z-index: 10000;
+    width: 200px;
+    height: 125px;
+}
+
+.popup-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.board-input {
+    width: 175px;
+    /* Adjust the width as needed */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    /* Adjust the gap between buttons as needed */
+}
+
+.save-button,
+.cancel-button {
+    padding: 8px 15px;
+    /* Adjust the padding to make the buttons smaller */
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.save-button:hover,
+.cancel-button:hover {
+    background-color: #0056b3;
+}
+
+.cancel-button {
+    background-color: #ccc;
+}
+
+.cancel-button:hover {
+    background-color: #a6a6a6;
+}
