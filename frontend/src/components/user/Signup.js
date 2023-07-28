@@ -44,6 +44,7 @@ const Signup = () => {
         }
         try {
             await axios.post('/user/signup', formData);
+            console.log('Signup successful');
             navigate('/login')
         }
         catch (error) {
