@@ -93,6 +93,27 @@ const DragDrop = () => {
     }
   };
 
+  const handleAddCard = (divName) => {
+    const newCard = {
+      id: Date.now(), // Create a unique ID (can use any other method to generate a unique ID)
+      text: `New Card in ${divName}`, // Modify the text as per your requirement
+    };
+
+    switch (divName) {
+      case "div1":
+        setDiv1Cards((prevCards) => [...prevCards, newCard]);
+        break;
+      case "div2":
+        setDiv2Cards((prevCards) => [...prevCards, newCard]);
+        break;
+      case "div3":
+        setDiv3Cards((prevCards) => [...prevCards, newCard]);
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="Test">
@@ -107,13 +128,14 @@ const DragDrop = () => {
                   id={card.id}
                   text={card.text}
                   index={index}
-                  divName="div1" // Specify the div name for each card
+                  divName="div1"
                   moveCard={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
                     moveCard(dragIndex, hoverIndex, sourceDiv, targetDiv)
                   }
                 />
               ))}
             </div>
+            <button onClick={() => handleAddCard("div1")}>Add</button>
           </div>
 
           <div className="div">
@@ -125,13 +147,14 @@ const DragDrop = () => {
                   id={card.id}
                   text={card.text}
                   index={index}
-                  divName="div2" // Specify the div name for each card
+                  divName="div2"
                   moveCard={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
                     moveCard(dragIndex, hoverIndex, sourceDiv, targetDiv)
                   }
                 />
               ))}
             </div>
+            <button onClick={() => handleAddCard("div2")}>Add</button>
           </div>
 
           <div className="div">
@@ -143,13 +166,14 @@ const DragDrop = () => {
                   id={card.id}
                   text={card.text}
                   index={index}
-                  divName="div3" // Specify the div name for each card
+                  divName="div3"
                   moveCard={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
                     moveCard(dragIndex, hoverIndex, sourceDiv, targetDiv)
                   }
                 />
               ))}
             </div>
+            <button onClick={() => handleAddCard("div3")}>Add</button>
           </div>
         </div>
       </div>
