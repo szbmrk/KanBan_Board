@@ -24,6 +24,7 @@ use Database\Seeders\AttachmentsTableSeeder;
 use Database\Seeders\TeamMembersTableSeeder;
 use Database\Seeders\TeamMembersRoleTableSeeder;
 use Database\Seeders\FavouriteTasksTableSeeder;
+use Database\Seeders\NotificationsTableSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -51,6 +52,7 @@ class DatabaseSeeder extends Seeder
             UserTasksTableSeeder::class,
             MentionsTableSeeder::class,
             FeedbacksTableSeeder::class,
+            NotificationsTableSeeder::class,
             TeamMembersRoleTableSeeder::class,
             FavouriteTasksTableSeeder::class,
             AttachmentsTableSeeder::class,
