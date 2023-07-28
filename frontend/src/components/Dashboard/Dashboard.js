@@ -249,6 +249,7 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
                 onChange={(e) => setBoardName(e.target.value)}
                 placeholder="Board name"
                 className="board-input"
+                required
             />
             <div className="button-container">
                 <button onClick={handleSave} className="save-button">
