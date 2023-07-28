@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import '../../styles/login-signup.css';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from '../../api/axios';
@@ -44,6 +44,11 @@ const Login = () => {
             setError(error.response.data.error);
         }
     };
+
+    useEffect(() => {
+        authCtx.onLogout();
+    }, []);
+
 
     return (
         <div className="background">
