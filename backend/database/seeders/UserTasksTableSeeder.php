@@ -46,6 +46,7 @@ class UserTasksTableSeeder extends Seeder
             ],
             
 
+
         ];
 
         DB::table('user_tasks')->insert($userTasks);

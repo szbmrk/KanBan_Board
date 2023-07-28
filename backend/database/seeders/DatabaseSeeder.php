@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 
 use Database\Factories\UserFactory;
+use Database\Seeders\LogsTableSeeder;
 use Database\Seeders\TagsTableSeeder;
 use Database\Seeders\RolesTableSeeder;
 use Database\Seeders\TasksTableSeeder;
@@ -19,6 +20,7 @@ use Database\Seeders\TaskTagsTableSeeder;
 use Database\Seeders\FeedbacksTableSeeder;
 use Database\Seeders\UserTasksTableSeeder;
 use Database\Seeders\PrioritiesTableSeeder;
+use Database\Seeders\AttachmentsTableSeeder;
 use Database\Seeders\TeamMembersTableSeeder;
 use Database\Seeders\FavouriteTasksTableSeeder;
 
@@ -49,7 +51,8 @@ class DatabaseSeeder extends Seeder
             MentionsTableSeeder::class,
             FeedbacksTableSeeder::class,
             FavouriteTasksTableSeeder::class,
-            attachmentsTableSeeder::class,
+            AttachmentsTableSeeder::class,
+            LogsTableSeeder::class,
         ]);
     }
 }
