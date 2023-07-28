@@ -50,7 +50,20 @@
   margin-right: 5px;
 }
 
+@keyframes rotate {
+  0% {
+    transform: rotate(10deg);
+  }
+  50% {
+    transform: rotate(-20deg);
+  }
+  100% {
+    transform: rotate(10deg);
+  }
+}
+
 .edit:hover {
+  animation: rotate 0.5s;
   cursor: pointer;
 }
 
