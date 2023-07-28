@@ -53,7 +53,7 @@ class UserController extends Controller
 
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'Incorrect email adress or password'], 400);
+                return response()->json(['error' => 'Incorrect email address or password'], 400);
             }
 
             $user = JWTAuth::user();
