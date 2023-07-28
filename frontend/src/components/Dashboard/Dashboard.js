@@ -66,7 +66,7 @@ export default function Dashboard() {
                             ...team.boards,
                             {
                                 board_id: team.boards.length + 1,
-                                board_name: newBoardName,
+                                name: newBoardName,
                             },
                         ],
                     };
@@ -108,7 +108,7 @@ export default function Dashboard() {
                             if (board.board_id === boardId) {
                                 return {
                                     ...board,
-                                    board_name: updatedBoardName,
+                                    name: updatedBoardName,
                                 };
                             }
                             return board;
