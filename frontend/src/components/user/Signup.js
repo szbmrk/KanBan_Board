@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 const Signup = () => {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
+    const [display, setDisplay] = useState('none');
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -39,6 +40,7 @@ const Signup = () => {
                 password: '',
                 confirmPassword: '',
             }));
+            setDisplay('block');
             setError('Passwords do not match');
             return;
         }
@@ -120,10 +122,12 @@ const Signup = () => {
                         I accept the terms and conditions
                     </label>
                 </div>
+                <div className="errorBox" style={{display}}>
+                    <p>{error}</p>
+                </div>
                 <button type="submit">Sign Up</button>
                 <Link to="/login">Already have an account?</Link>
             </form>
-            <h1>{error}</h1>
         </div>
     );
 };

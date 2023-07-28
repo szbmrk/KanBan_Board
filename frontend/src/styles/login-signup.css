@@ -102,6 +102,16 @@ a {
     color: var(--dark-gray);
 }
 
+.errorBox {
+    background-color: rgba(255, 0, 0, 0.4);
+    color: var(--dark-gray);
+    font-weight: bold;
+    text-align: center;
+    padding: 5px;
+    border: solid 1px var(--dark-gray);
+    border-radius: 5px;
+}
+
 /* Tablets and under */
 @media(max-width: 768px){
     .signup-form {
