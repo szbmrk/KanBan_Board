@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import '../../styles/login-signup.css';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from '../../api/axios';
+import AuthContext from '../auth/AuthContext';
 
 const Login = () => {
-    const navigate = useNavigate();
+    const authCtx = useContext(AuthContext);
     const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         email: '',
@@ -23,12 +24,23 @@ const Login = () => {
         e.preventDefault();
         try {
             const response = await axios.post(`/user/login`, formData);
-            console.log(response);
-            localStorage.setItem('token', response.data.token);
-            console.log('Login successful');
-            navigate('/dashboard');
+            const data = response.data;
+            const token = response.data.token;
+
+            try {
+                const response = await axios.get('/user/check-login', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+                if (response.data.isLoggedIn) {
+                    authCtx.onLogin(data);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+
         } catch (error) {
-            console.error('Login failed:', error.response.data.error);
             setError(error.response.data.error);
         }
     };

@@ -5,44 +5,20 @@ import Signup from './components/user/Signup';
 import axios from './api/axios'
 import Dashboard from './components/Dashboard';
 import DragDrop from './components/DragDrop';
+import AuthProvider from "./components/auth/AuthProvider";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const App = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    function PrivateRoute({ children }) {
-
-        return isLoggedIn ? children : <Navigate to="/login" />;
-    }
-
-    const checkLoginStatus = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('/user/check-login', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-            if (response.data.isLoggedIn) {
-                setIsLoggedIn(true);
-            }
-        } catch (error) {
-            setIsLoggedIn(false);
-        }
-    };
-
-    useEffect(() => {
-        checkLoginStatus();
-    }, []);
-
-
     return (
         <BrowserRouter>
-            <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/test" element={<DragDrop />} />
-                <Route path="/dashboard" element={<PrivateRoute > <Dashboard /> </ PrivateRoute>} />
-            </Routes>
+            <AuthProvider>
+                <Routes>
+                    <Route exact path="/login" element={<Login />} />
+                    <Route exact path="/signup" element={<Signup />} />
+                    <Route exact path="/test" element={<DragDrop />} />
+                    <Route exact path="/dashboard" element={<ProtectedRoute><Dashboard /> </ProtectedRoute>} />
+                </Routes>
+            </AuthProvider>
         </BrowserRouter>
     );
 };
