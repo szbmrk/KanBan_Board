@@ -27,6 +27,8 @@ class DatabaseSeeder extends Seeder
             TeamsTableSeeder::class,
             TeamMembersTableSeeder::class,
             BoardsTableSeeder::class,
+            ColumnsTableSeeder::class,
+            PrioritiesTableSeeder::class,
         ]);
     }
 }
