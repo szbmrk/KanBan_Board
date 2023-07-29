@@ -57,10 +57,11 @@
 }
 
 .button-container button:nth-child(1) {
-  background-color: #dddddd;
+  background-color: var(--light-gray);
+  color: var(--dark-gray);
 }
 
 .button-container button:nth-child(2) {
-  background-color: #ff0000;
-  color: #ffffff;
+  background-color: var(--important);
+  color: var(--light-gray);
 }
