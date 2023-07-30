@@ -2,6 +2,8 @@
   display: flex; /* Display cards under each other */
   flex-direction: column; /* Stack cards vertically */
   margin-top: 20px; /* Add space between div and cards */
+  width: 350px;
+  min-width: 250px;
 }
 
 .Test {
@@ -11,9 +13,32 @@
 
 .div-container {
   display: flex; /* Display divs next to each other */
+  flex-wrap: wrap; /* Allow divs to wrap to next line */
   justify-content: space-between; /* Add space between divs */
 }
 
 .div {
   flex: 1; /* Allow divs to take equal space */
+}
+
+@media (max-width: 830px) {
+  .div-container {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .div-container {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .div-container {
+    flex-direction: column;
+  }
+
+  .Test {
+    padding: 20px 5px;
+  }
 }

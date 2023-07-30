@@ -81,8 +81,8 @@ const DragDrop = () => {
         <div className="div-container">
           {divData.map((div, divIndex) => (
             <div className="div" key={divIndex}>
-              <h2>{div.title}</h2>
               <div className="card-container">
+              <h2>{div.title}</h2>
                 {div.cards.map((card, index) => (
                   <Card
                     key={card.id}
