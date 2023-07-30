@@ -43,6 +43,9 @@ const Signup = () => {
             }));
             setDisplay('block');
             setError('Passwords do not match');
+            setTimeout(() => {
+                setDisplay('none');
+            }, 8000);
             return;
         }
         try {

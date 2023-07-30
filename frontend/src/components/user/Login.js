@@ -44,6 +44,9 @@ const Login = () => {
         } catch (error) {
             setDisplay('block');
             setError(error.response.data.error);
+            setTimeout(() => {
+                setDisplay('none');
+            }, 8000);
         }
     };
 
