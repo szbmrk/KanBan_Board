@@ -7,6 +7,7 @@ import AuthContext from '../../auth/AuthContext';
 const Login = () => {
     const authCtx = useContext(AuthContext);
     const [error, setError] = useState(null);
+    const [display, setDisplay] = useState('none');
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -41,6 +42,7 @@ const Login = () => {
             }
 
         } catch (error) {
+            setDisplay('block');
             setError(error.response.data.error);
         }
     };
@@ -78,10 +80,12 @@ const Login = () => {
                         required
                     />
                 </div>
+                <div className="errorBox" style={{display}}>
+                    <p>{error}</p>
+                </div>
                 <button id="loginbtn" type="submit">Login</button>
                 <Link to="/signup">Don't have an account?</Link>
             </form>
-            <h1>{error}</h1>
         </div>
     );
 };
