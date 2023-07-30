@@ -51,7 +51,7 @@ const Login = () => {
 
 
     return (
-        <div className="background">
+        <div>
             <form className="login-form" onSubmit={handleLogin}>
                 <h2>Login</h2>
                 <div className="form-group">

@@ -6,6 +6,7 @@
     --light-gray: #cbcbcb;
     --button: #3d506b;
     --important: rgba(255, 0, 0, 0.4);
+    --basic-font: 'Raleway', sans-serif;
 }
 
 *{
@@ -15,11 +16,21 @@
 }
 
 body {
-    font-family: 'Raleway', sans-serif;
+    font-family: var(--basic-font);
     color: var(--dark-gray);
     line-height: 1.6;
-    background: url('./imgs/background.jpg') no-repeat center;
+    background: url('./imgs/background-small.jpg') no-repeat center;
     background-size: cover;
     height: 100vh;
     width: 100vw;
+}
+
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: url('./imgs/background.jpg') no-repeat center;
+    background-size: cover;
 }

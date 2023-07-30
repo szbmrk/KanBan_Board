@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import '../../styles/popup.css';
 import '../../styles/dashboard.css';
 import axios from '../../api/axios';
 

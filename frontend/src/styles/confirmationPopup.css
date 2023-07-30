@@ -36,6 +36,7 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+  font-family: var(--basic-font);
 }
 
 .button-container button:nth-child(1) {
