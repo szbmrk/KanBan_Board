@@ -113,13 +113,6 @@
     margin-bottom: 15px;
 }
 
-.button-container {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    /* Adjust the gap between buttons as needed */
-}
-
 .save-button,
 .cancel-button {
     padding: 8px 15px;

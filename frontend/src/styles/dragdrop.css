@@ -14,7 +14,7 @@
 .div-container {
   display: flex; /* Display divs next to each other */
   flex-wrap: wrap; /* Allow divs to wrap to next line */
-  justify-content: space-between; /* Add space between divs */
+  justify-content: flex-start; 
 }
 
 .div {
