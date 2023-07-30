@@ -16,7 +16,6 @@ export const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
 
 export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
-  const [isDragging, setIsDragging] = useState(false);
   const [{ isDragging: dragging }, drag] = useDrag({
     type: ItemTypes.CARD,
     item: { id, index, divName },
@@ -28,12 +27,17 @@ export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
   const [, drop] = useDrop({
     accept: ItemTypes.CARD,
     hover: (item, monitor) => {
-      if (!item) return;
+      if (!item || !divName) return;
       if (item.id === id && item.divName === divName) return;
+
       const dragIndex = item.index;
       const hoverIndex = index;
       const sourceDiv = item.divName;
       const targetDiv = divName;
+
+      if (dragIndex === hoverIndex && sourceDiv === targetDiv) {
+        return;
+      }
       moveCard(dragIndex, hoverIndex, sourceDiv, targetDiv);
       item.index = hoverIndex;
       item.divName = targetDiv;
@@ -42,6 +46,8 @@ export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [showCustomPopup, setShowCustomPopup] = useState(false);
+
+  const opacity = dragging ? 0 : 1;
 
   const handleClick = () => {
     if (!dragging && !showDeletePopup) {
@@ -74,6 +80,7 @@ export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
         ref={(node) => drag(drop(node))}
         className="card"
         style={{
+          opacity,
           cursor: "grab",
         }}
       >
