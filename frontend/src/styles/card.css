@@ -29,15 +29,18 @@
 }
 
 .addbtn {
-  font-size: larger;
+  color: var(--light-gray);
   width: 40%;
+  min-width: 60%;
+  margin: 15px 0 0 5px;
   border-radius: 5px;
   padding: 10px;
   cursor: pointer;
+  text-align: left;
 }
 
 .addbtn:hover {
-  color: var(--light-gray);
+  color: var(--dark-gray);
 }
 
 .edit {

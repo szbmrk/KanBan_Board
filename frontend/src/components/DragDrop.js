@@ -82,7 +82,7 @@ const DragDrop = () => {
           {divData.map((div, divIndex) => (
             <div className="div" key={divIndex}>
               <div className="card-container">
-              <h2>{div.title}</h2>
+              <h2 className="card-title">{div.title}</h2>
                 {div.cards.map((card, index) => (
                   <Card
                     key={card.id}
@@ -104,7 +104,7 @@ const DragDrop = () => {
                   />
                 ))}
                 <div className="addbtn" onClick={() => handleAddCard(divIndex)}>
-                  {plusIcon} Add item
+                  {plusIcon} Add new task
                 </div>
               </div>
             </div>
