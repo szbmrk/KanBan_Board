@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import Popup from "./Popup";
 import ConfirmationPopup from "./ConfirmationPopup";
-import "../styles/general.css";
 import "../styles/card.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import '../../styles/general.css';
 import '../../styles/login-signup.css';
 import axios from '../../api/axios';
 import { Link, useNavigate } from 'react-router-dom';
