@@ -37,5 +37,5 @@ Route::put('/dashboard/teams/{id}', [TeamController::class, 'update'])->middlewa
 Route::delete('/dashboard/teams/{id}', [TeamController::class, 'destroy'])->middleware('api');
 
 Route::get('/boards/{board_id}', [BoardController::class, 'show'])->middleware('api');
+Route::post('/boards/{board_id}', [BoardController::class, 'columnStore'])->middleware('api');
 Route::put('/board/column/{column}', [BoardController::class, 'updateColumn'])->middleware('api');
-

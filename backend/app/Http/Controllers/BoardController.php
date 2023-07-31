@@ -27,7 +27,39 @@ class BoardController extends Controller
         }
        
     }
+  
+    public function columnStore(Request $request, $board_id)
+    {
+        $user = auth()->user();
+        $board = Board::find($board_id);
 
+        if (!$board) {
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+
+        if (!$user->isMemberOfBoard($board_id)) {
+            return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+
+        $this->validate($request, [
+            'position' => 'required|integer',
+        ]);
+
+        //check if there is already a column with the same position)
+        if($column = $board->columns()->where('position', $request->input('position'))->first() != null){
+            return response()->json(['error' => 'There is already a column with this position'], 403);
+        }
+
+        $column = new Column([
+            'position' => $request->input('position'),
+            'board_id' => $board->board_id,
+        ]);
+
+        $board->columns()->save($column);
+
+        return response()->json(['message' => 'Column created successfully', 'column' => $column]);
+    }
+    
     public function updateColumn(Request $request, $column_id)
     {
         $user = auth()->user();
@@ -49,5 +81,4 @@ class BoardController extends Controller
             return response()->json(['column' => $column]);
         }
     }
-    
 }
