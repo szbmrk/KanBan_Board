@@ -27,7 +27,7 @@ class BoardController extends Controller
         }
        
     }
-
+  
     public function columnStore(Request $request, $board_id)
     {
         $user = auth()->user();
@@ -58,5 +58,27 @@ class BoardController extends Controller
         $board->columns()->save($column);
 
         return response()->json(['message' => 'Column created successfully', 'column' => $column]);
+    }
+    
+    public function updateColumn(Request $request, $column_id)
+    {
+        $user = auth()->user();
+        $column = Column::find($column_id);
+    
+        if (!$column) {
+            return response()->json(['error' => 'Column not found'], 404);
+        }
+    
+        if (!$user->isMemberOfBoard($column->board_id)) {
+            return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+        else {
+            $column->name = $request->name;
+            $column->is_finished = $request->is_finished;
+            $column->task_limit = $request->task_limit;
+            $column->save();
+    
+            return response()->json(['column' => $column]);
+        }
     }
 }
