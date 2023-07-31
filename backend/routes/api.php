@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\TeamController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,3 +25,8 @@ Route::post('/user/signup', [UserController::class, 'signup']);
 Route::post('/user/login', [UserController::class, 'login']);
 Route::get('/user/check-login', [UserController::class, 'checkLogin']);
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('api');
+Route::get('/dashboard/teams', [TeamController::class, 'index'])->middleware('api');
+Route::post('/dashboard/teams', [DashboardController::class, 'create'])->middleware('api');
+Route::post('/dashboard/teams', [TeamController::class, 'store'])->middleware('api');
+Route::put('/dashboard/teams/{id}', [TeamController::class, 'update'])->middleware('api');
+Route::delete('/dashboard/teams/{id}', [TeamController::class, 'destroy'])->middleware('api');
