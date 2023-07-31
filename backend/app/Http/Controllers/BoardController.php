@@ -111,11 +111,13 @@ class BoardController extends Controller
         ]);
     
         // Find the last task position in the column
-        $lastTask = Task::where('column_id', $request->input('column_id'))
+
+            $lastTask = Task::where('column_id', $request->input('column_id'))
             ->orderBy('position', 'desc')
             ->first();
-    
-        $position = $lastTask ? $lastTask->position + 1 : 0;
+        
+        $position = $lastTask['position'] + 1.00;
+
     
         $task = new Task([
             'title' => $request->input('title'),
