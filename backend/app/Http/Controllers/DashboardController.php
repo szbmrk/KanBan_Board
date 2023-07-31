@@ -11,7 +11,7 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $teams = Team::where('created_by', $user->user_id)->with('boards')->get();
+        $teams = $user->teams()->with('boards')->get();
 
         return response()->json(['teams' => $teams]);
     }
