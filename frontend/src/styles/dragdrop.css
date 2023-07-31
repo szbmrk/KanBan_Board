@@ -14,7 +14,7 @@
 .div-container {
   display: flex; /* Display divs next to each other */
   flex-wrap: wrap; /* Allow divs to wrap to next line */
-  justify-content: flex-start; 
+  justify-content: flex-start;
 }
 
 .div {
@@ -47,19 +47,19 @@
   }
 }
 
-@media (max-width: 415px){
+@media (max-width: 415px) {
   .Test {
     padding: 20px 10px;
   }
 }
 
-@media (max-width: 380px){
+@media (max-width: 380px) {
   .Test {
     padding: 20px 5px;
   }
 }
 
-@media (max-width: 370px){
+@media (max-width: 370px) {
   .Test {
     padding: 20px 0px;
   }

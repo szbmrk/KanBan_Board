@@ -1,5 +1,5 @@
 import React from "react";
-import { DndProvider } from "react-dnd";
+import { DndProvider, useDrop, useDrag } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { Card, plusIcon } from "./Card";
 import "../styles/general.css";
@@ -74,40 +74,88 @@ const DragDrop = () => {
     setDivData(newDivData);
   };
 
+  const Column = ({ divIndex, moveColumn, children }) => {
+    const [{ isDragging }, drag] = useDrag({
+      type: "DIV",
+      item: { index: divIndex },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+    });
+
+    const [, drop] = useDrop({
+      accept: "DIV",
+      hover(item, monitor) {
+        const sourceDivIndex = item.index;
+        const targetDivIndex = divIndex;
+
+        if (sourceDivIndex === targetDivIndex) {
+          return;
+        }
+
+        moveColumn(sourceDivIndex, targetDivIndex);
+        item.index = targetDivIndex;
+      },
+    });
+
+    const opacity = isDragging ? 0.5 : 1;
+
+    return (
+      <div ref={(node) => drag(drop(node))} style={{ opacity }}>
+        {children}
+      </div>
+    );
+  };
+
+  const moveColumn = (dragIndex, hoverIndex) => {
+    const draggedDiv = divData[dragIndex];
+
+    const newDivData = [...divData];
+    newDivData.splice(dragIndex, 1);
+    newDivData.splice(hoverIndex, 0, draggedDiv);
+
+    setDivData(newDivData);
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="Test">
         <h1>React Drag and Drop Page</h1>
         <div className="div-container">
           {divData.map((div, divIndex) => (
-            <div className="div" key={divIndex}>
-              <div className="card-container">
-              <h2 className="card-title">{div.title}</h2>
-                {div.cards.map((card, index) => (
-                  <Card
-                    key={card.id}
-                    id={card.id}
-                    text={card.text}
-                    index={index}
-                    divName={`div${divIndex + 1}`}
-                    moveCard={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
-                      moveCard(
-                        dragIndex,
-                        hoverIndex,
-                        parseInt(sourceDiv.substr(3)) - 1,
-                        parseInt(targetDiv.substr(3)) - 1
-                      )
-                    }
-                    deleteCard={(cardId, divName) =>
-                      handleDeleteCard(cardId, divIndex)
-                    }
-                  />
-                ))}
-                <div className="addbtn" onClick={() => handleAddCard(divIndex)}>
-                  {plusIcon} Add new task
+            <Column key={divIndex} divIndex={divIndex} moveColumn={moveColumn}>
+              <div className="div">
+                <div className="card-container">
+                  <h2 className="card-title">{div.title}</h2>
+                  {div.cards.map((card, cardIndex) => (
+                    <Card
+                      key={card.id}
+                      id={card.id}
+                      text={card.text}
+                      index={cardIndex}
+                      divName={`div${divIndex + 1}`}
+                      moveCard={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
+                        moveCard(
+                          dragIndex,
+                          hoverIndex,
+                          parseInt(sourceDiv.substr(3)) - 1,
+                          parseInt(targetDiv.substr(3)) - 1
+                        )
+                      }
+                      deleteCard={(cardId, divName) =>
+                        handleDeleteCard(cardId, divIndex)
+                      }
+                    />
+                  ))}
+                  <div
+                    className="addbtn"
+                    onClick={() => handleAddCard(divIndex)}
+                  >
+                    {plusIcon} Add new task
+                  </div>
                 </div>
               </div>
-            </div>
+            </Column>
           ))}
         </div>
       </div>
