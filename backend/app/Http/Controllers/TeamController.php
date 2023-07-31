@@ -40,7 +40,7 @@ class TeamController extends Controller
         $team = Team::where('team_id', $id)->where('created_by', $user->user_id)->first();
 
         if (!$team) {
-            return response()->json(['message' => 'Team not found'], 404);
+            return response()->json(['message' => 'Unauthorized or team not found'], 404);
         }
 
         $team->name = $request->input('name');
@@ -55,7 +55,7 @@ class TeamController extends Controller
         $team = Team::where('team_id', $id)->where('created_by', $user->user_id)->first();
 
         if (!$team) {
-            return response()->json(['message' => 'Team not found'], 404);
+            return response()->json(['message' => 'Unauthorized or team not found'], 404);
         }
 
         $team->delete();
