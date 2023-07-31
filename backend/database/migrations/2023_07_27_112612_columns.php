@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('columns', function (Blueprint $table) {
             $table->id('column_id');
-            $table->string('name', 50)->nullable(false);
-            $table->unsignedInteger('position')->nullable(false);
+            $table->string('name', 50)->nullable();
+            $table->unsignedBigInteger('position')->nullable(false);
             $table->unsignedBigInteger('board_id')->nullable(false);
             $table->boolean('is_finished')->default(false);
             $table->integer('task_limit')->nullable();
