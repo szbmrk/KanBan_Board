@@ -11,13 +11,13 @@
   padding: 20px;
 }
 
-.div-container {
+.column-container {
   display: flex; /* Display divs next to each other */
   flex-wrap: wrap; /* Allow divs to wrap to next line */
   justify-content: flex-start;
 }
 
-.div {
+.column {
   flex: 1; /* Allow divs to take equal space */
 }
 

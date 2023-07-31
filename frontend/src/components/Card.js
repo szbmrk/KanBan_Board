@@ -15,10 +15,10 @@ export const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 export const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
 
-export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
+export const Card = ({ id, text, index, columnName, moveCard, deleteCard }) => {
   const [{ isDragging: dragging }, drag] = useDrag({
     type: ItemTypes.CARD,
-    item: { id, index, divName },
+    item: { id, index, columnName },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -27,20 +27,20 @@ export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
   const [, drop] = useDrop({
     accept: ItemTypes.CARD,
     hover: (item, monitor) => {
-      if (!item || !divName) return;
-      if (item.id === id && item.divName === divName) return;
+      if (!item || !columnName) return;
+      if (item.id === id && item.columnName === columnName) return;
 
       const dragIndex = item.index;
       const hoverIndex = index;
-      const sourceDiv = item.divName;
-      const targetDiv = divName;
+      const sourceColumn = item.columnName;
+      const targetColumn = columnName;
 
-      if (dragIndex === hoverIndex && sourceDiv === targetDiv) {
+      if (dragIndex === hoverIndex && sourceColumn === targetColumn) {
         return;
       }
-      moveCard(dragIndex, hoverIndex, sourceDiv, targetDiv);
+      moveCard(dragIndex, hoverIndex, sourceColumn, targetColumn);
       item.index = hoverIndex;
-      item.divName = targetDiv;
+      item.columnName = targetColumn;
     },
   });
 
@@ -71,7 +71,7 @@ export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
 
   const handleConfirmDelete = () => {
     setShowDeletePopup(false); // Close the delete confirmation popup
-    deleteCard(id, divName); // Call the deleteCard method with the correct arguments
+    deleteCard(id, columnName); // Call the deleteCard method with the correct arguments
   };
 
   return (
