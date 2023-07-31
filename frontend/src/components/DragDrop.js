@@ -1,7 +1,8 @@
-import React from "react";
-import { DndProvider, useDrop, useDrag } from "react-dnd";
+import React, { useState, useRef } from "react";
+import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { Card, plusIcon } from "./Card";
+import { useDrop, useDrag } from "react-dnd";
 import "../styles/general.css";
 import "../styles/dragdrop.css";
 
@@ -33,7 +34,42 @@ const DragDrop = () => {
     },
   ];
 
-  const [divData, setDivData] = React.useState(initialDivData);
+  const Column = ({ divIndex, moveColumn, children }) => {
+    const [{ isDragging }, drag] = useDrag({
+      type: "DIV",
+      item: { index: divIndex },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+    });
+
+    const [, drop] = useDrop({
+      accept: "DIV",
+      hover(item, monitor) {
+        const sourceDivIndex = item.index;
+        const targetDivIndex = divIndex;
+
+        if (sourceDivIndex === targetDivIndex) {
+          return;
+        }
+
+        moveColumn(sourceDivIndex, targetDivIndex);
+        item.index = targetDivIndex;
+      },
+    });
+
+    const opacity = isDragging ? 0.5 : 1;
+
+    return (
+      <div ref={(node) => drag(drop(node))} style={{ opacity }}>
+        {children}
+      </div>
+    );
+  };
+
+  const [divData, setDivData] = useState(initialDivData);
+  const [editingColumnIndex, setEditingColumnIndex] = useState(null);
+  const inputRef = useRef(null);
 
   const moveCard = (dragIndex, hoverIndex, sourceDivIndex, targetDivIndex) => {
     const sourceDiv = divData[sourceDivIndex];
@@ -74,40 +110,11 @@ const DragDrop = () => {
     setDivData(newDivData);
   };
 
-  const Column = ({ divIndex, moveColumn, children }) => {
-    const [{ isDragging }, drag] = useDrag({
-      type: "DIV",
-      item: { index: divIndex },
-      collect: (monitor) => ({
-        isDragging: monitor.isDragging(),
-      }),
-    });
-
-    const [, drop] = useDrop({
-      accept: "DIV",
-      hover(item, monitor) {
-        const sourceDivIndex = item.index;
-        const targetDivIndex = divIndex;
-
-        if (sourceDivIndex === targetDivIndex) {
-          return;
-        }
-
-        moveColumn(sourceDivIndex, targetDivIndex);
-        item.index = targetDivIndex;
-      },
-    });
-
-    const opacity = isDragging ? 0.5 : 1;
-
-    return (
-      <div ref={(node) => drag(drop(node))} style={{ opacity }}>
-        {children}
-      </div>
-    );
-  };
-
   const moveColumn = (dragIndex, hoverIndex) => {
+    console.log("dragIndex");
+    console.log(dragIndex);
+    console.log("hoverIndex");
+    console.log(hoverIndex);
     const draggedDiv = divData[dragIndex];
 
     const newDivData = [...divData];
@@ -115,6 +122,21 @@ const DragDrop = () => {
     newDivData.splice(hoverIndex, 0, draggedDiv);
 
     setDivData(newDivData);
+  };
+
+  const handleEditButtonClick = (event, columnIndex) => {
+    event.stopPropagation();
+    setEditingColumnIndex(columnIndex);
+  };
+
+  const handleColumnTitleChange = (event, columnIndex) => {
+    const newColumnData = [...divData];
+    newColumnData[columnIndex].title = event.target.value;
+    setDivData(newColumnData);
+  };
+
+  const handleColumnTitleBlur = (columnIndex) => {
+    setEditingColumnIndex(null);
   };
 
   return (
@@ -126,7 +148,38 @@ const DragDrop = () => {
             <Column key={divIndex} divIndex={divIndex} moveColumn={moveColumn}>
               <div className="div">
                 <div className="card-container">
-                  <h2 className="card-title">{div.title}</h2>
+                  {editingColumnIndex === divIndex ? (
+                    <input
+                      type="text"
+                      value={div.title}
+                      onChange={(event) =>
+                        handleColumnTitleChange(event, divIndex)
+                      }
+                      onBlur={handleColumnTitleBlur}
+                      autoFocus
+                      ref={inputRef}
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          inputRef.current.blur();
+                        }
+                      }}
+                    />
+                  ) : (
+                    <>
+                      <div className="column-title-container">
+                        <h2 className="card-title">{div.title}</h2>
+                        <div className="title-buttons">
+                          <button
+                            className="column-edit-button"
+                            onClick={(e) => handleEditButtonClick(e, divIndex)}
+                          >
+                            Edit
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
                   {div.cards.map((card, cardIndex) => (
                     <Card
                       key={card.id}
