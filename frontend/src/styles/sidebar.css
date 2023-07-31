@@ -4,6 +4,7 @@
 
 .sidebar-menu {
     height: 100vh;
+    max-width: 220px;
     background-color: rgba(var(--dark-grayRGB), 0.7);
 }
 

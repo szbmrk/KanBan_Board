@@ -140,7 +140,7 @@ const DragDrop = () => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="Test">
+      <div className="content col-10 col-s-10">
         <h1>React Drag and Drop Page</h1>
         <div className="div-container">
           {divData.map((div, divIndex) => (

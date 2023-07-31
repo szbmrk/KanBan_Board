@@ -153,7 +153,7 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="container">
+        <div className="content col-10">
             <h1 className="header">Dashboard</h1>
             {userID && (
                 <div>
