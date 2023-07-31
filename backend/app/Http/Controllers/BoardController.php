@@ -81,4 +81,32 @@ class BoardController extends Controller
             return response()->json(['column' => $column]);
         }
     }
+
+    public function columnPositionUpdate(Request $request, $board_id)
+    {
+        $user = auth()->user();
+        $board = Board::find($board_id);
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+
+        if (!$user->isMemberOfBoard($board_id)) {
+            return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+
+        $columns = $request->columns;
+
+        foreach ($columns as $position => $column_id) {
+            $column = Column::find($column_id);
+            if ($column && $column->board_id == $board_id) {
+                $column->position = $position;
+                $column->save();
+            } else {
+                return response()->json(['error' => 'Column not found or not belong to this board'], 404);
+            }
+        }
+
+        return response()->json(['message' => 'Columns position updated successfully.']);
+    }
 }
