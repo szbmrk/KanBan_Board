@@ -60,7 +60,7 @@ class BoardController extends Controller
         return response()->json(['message' => 'Column created successfully', 'column' => $column]);
     }
     
-    public function updateColumn(Request $request, $column_id)
+    public function columnUpdate(Request $request, $column_id)
     {
         $user = auth()->user();
         $column = Column::find($column_id);
