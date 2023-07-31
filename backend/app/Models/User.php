@@ -57,5 +57,13 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsToMany(Team::class, 'team_members', 'user_id', 'team_id');
     }
+    
+    public function isMemberOfBoard($board_id)
+    {
+        // Check if the user's teams have the specified board
+        return $this->teams()->whereHas('boards', function ($query) use ($board_id) {
+            $query->where('board_id', $board_id);
+        })->exists();
+    }
 
 }

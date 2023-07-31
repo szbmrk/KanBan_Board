@@ -15,4 +15,10 @@ class Board extends Model
         'name',
         'team_id',
     ];
+
+    // Relationship with the Column model
+    public function columns()
+    {
+        return $this->hasMany(Column::class, 'board_id', 'board_id');
+    }
 }

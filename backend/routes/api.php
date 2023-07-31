@@ -1,9 +1,9 @@
 <?php
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\BoardController; // Import the BoardController
 
 /*
 |--------------------------------------------------------------------------
@@ -24,3 +24,6 @@ Route::post('/user/signup', [UserController::class, 'signup']);
 Route::post('/user/login', [UserController::class, 'login']);
 Route::get('/user/check-login', [UserController::class, 'checkLogin']);
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('api');
+
+// New Route to Get Board's Data
+Route::get('/boards/{board_id}', [BoardController::class, 'show'])->middleware('api');
