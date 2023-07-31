@@ -15,10 +15,10 @@ export const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 export const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
 
-export const Card = ({ id, text, index, columnName, moveCard, deleteCard }) => {
+export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
   const [{ isDragging: dragging }, drag] = useDrag({
     type: ItemTypes.CARD,
-    item: { id, index, columnName },
+    item: { id, index, divName },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -27,20 +27,20 @@ export const Card = ({ id, text, index, columnName, moveCard, deleteCard }) => {
   const [, drop] = useDrop({
     accept: ItemTypes.CARD,
     hover: (item, monitor) => {
-      if (!item || !columnName) return;
-      if (item.id === id && item.columnName === columnName) return;
+      if (!item || !divName) return;
+      if (item.id === id && item.divName === divName) return;
 
       const dragIndex = item.index;
       const hoverIndex = index;
-      const sourceColumn = item.columnName;
-      const targetColumn = columnName;
+      const sourceDiv = item.divName;
+      const targetDiv = divName;
 
-      if (dragIndex === hoverIndex && sourceColumn === targetColumn) {
+      if (dragIndex === hoverIndex && sourceDiv === targetDiv) {
         return;
       }
-      moveCard(dragIndex, hoverIndex, sourceColumn, targetColumn);
+      moveCard(dragIndex, hoverIndex, sourceDiv, targetDiv);
       item.index = hoverIndex;
-      item.columnName = targetColumn;
+      item.divName = targetDiv;
     },
   });
 
@@ -71,7 +71,7 @@ export const Card = ({ id, text, index, columnName, moveCard, deleteCard }) => {
 
   const handleConfirmDelete = () => {
     setShowDeletePopup(false); // Close the delete confirmation popup
-    deleteCard(id, columnName); // Call the deleteCard method with the correct arguments
+    deleteCard(id, divName); // Call the deleteCard method with the correct arguments
   };
 
   return (
