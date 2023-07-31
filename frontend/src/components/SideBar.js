@@ -13,10 +13,10 @@ const Sidebar = () => {
     const { isLoggedIn, onLogout } = React.useContext(AuthContext);
     return (
         <div className="sidebar">
-            <div className="sidebar-header">
+            <div className="sidebar-header col-12 col-s-12">
                 <h3>KanBan Board</h3>
             </div>
-            <div className="sidebar-menu">
+            <div className="sidebar-menu col-2 col-s-2">
                 <ul>
                     <li>
                         <Link to="/dashboard">
