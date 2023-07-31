@@ -95,6 +95,12 @@ class BoardController extends Controller
         if (!$user->isMemberOfBoard($board_id)) {
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
+
+        if($request->input('column_id') == null){
+            return response()->json(['error' => 'Column id is required'], 403);
+        }
+
+        //Ha a columnot nem tartalamazza a board, akkor hiba
     
         $this->validate($request, [
             'title' => 'required|string|max:100',
@@ -116,8 +122,20 @@ class BoardController extends Controller
             ->orderBy('position', 'desc')
             ->first();
         
+        if($lastTask == null){
+            $position = 1.00;
+        }
+        else {
         $position = $lastTask['position'] + 1.00;
+        }
+        //check task limit in the column
+        $column = Column::find($request->input('column_id'));
 
+        if($column['task_limit'] != null){
+            if($column->tasks()->count() >= $column['task_limit']){
+                return response()->json(['error' => 'Task limit reached'], 403);
+            }
+        }
     
         $task = new Task([
             'title' => $request->input('title'),
@@ -132,5 +150,9 @@ class BoardController extends Controller
         $task->save();
     
         return response()->json(['message' => 'Task created successfully', 'task' => $task]);
+
+        //To do:
+        //Columben a max limit
+        //
     }
 }
