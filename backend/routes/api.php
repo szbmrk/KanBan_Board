@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\TeamController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,3 +28,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('api
 Route::post('/dashboard/board', [DashboardController::class, 'store'])->middleware('api');
 Route::put('/dashboard/board/{board}', [DashboardController::class, 'update'])->middleware('api');
 Route::delete('/dashboard/board/{board}', [DashboardController::class, 'destroy'])->middleware('api');
+Route::get('/dashboard/teams', [TeamController::class, 'index'])->middleware('api');
+Route::post('/dashboard/teams', [TeamController::class, 'store'])->middleware('api');
+Route::put('/dashboard/teams/{id}', [TeamController::class, 'update'])->middleware('api');
+Route::delete('/dashboard/teams/{id}', [TeamController::class, 'destroy'])->middleware('api');
