@@ -100,6 +100,14 @@ class BoardController extends Controller
             return response()->json(['error' => 'Column id is required'], 403);
         }
 
+        $columnExists = Column::where('board_id', $board_id)
+        ->where('column_id', $request->input('column_id'))
+        ->exists();
+
+        if (!$columnExists) {
+            return response()->json(['error' => 'Column not found for the given board'], 404);
+        }
+
         //Ha a columnot nem tartalamazza a board, akkor hiba
     
         $this->validate($request, [
