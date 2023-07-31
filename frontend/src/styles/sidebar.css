@@ -1,0 +1,37 @@
+[class*="col-"] {
+    float: left;
+}
+
+.sidebar-menu {
+    height: 100vh;
+    background-color: rgba(var(--dark-grayRGB), 0.7);
+}
+
+.sidebar-menu a {
+    width: 100%;
+    padding: 15px;
+    display: block;
+}
+
+.sidebar-menu svg {
+    color: var(--light-gray);
+}
+
+.sidebar-menu span {
+    color: var(--light-gray);
+    padding: 10px;
+}
+
+.sidebar-menu ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-menu li {
+    color: var(--light-gray);
+  }
+  
+  .sidebar-menu li:hover {
+    background-color: var(--dark-gray);
+  }
