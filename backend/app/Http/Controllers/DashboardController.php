@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Log;
 use App\Models\Team;
-use App\Models\Board;
 use App\Models\User;
+use App\Models\Board;
+use App\Helpers\LogRequest;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -68,8 +69,7 @@ class DashboardController extends Controller
         if ($board && $user->teams()->where('teams.team_id', $board->team_id)->exists()) {
             $board->delete();
 
-            // Log the successful action
-            $this->logAction('DELETED BOARD', $user->user_id, ['board_id' => $board_id]);
+            LogRequest::instance()->logAction('DELETED BOARD', $user->user_id, "board_id: $board_id");
 
             return response()->json(null, 204);
         } else {
@@ -83,7 +83,7 @@ class DashboardController extends Controller
         $log->action = $action;
         $log->user_id = $user_id;
         $log->details = $details; 
-        $log->created_at = now(); // Set the timestamp for the log entry
+        $log->created_at = now(); 
         $log->save();
     }
 }
