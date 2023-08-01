@@ -38,6 +38,7 @@ Route::put('/dashboard/teams/{id}', [TeamController::class, 'update'])->middlewa
 Route::delete('/dashboard/teams/{id}', [TeamController::class, 'destroy'])->middleware('api');
 
 Route::get('/team/{team_id}/management', [TeamManagementController::class, 'show'])->middleware('api');
+Route::post('/team/{team_id}/management', [TeamManagementController::class, 'storeTeamMember'])->middleware('api');
 Route::delete('/team/{team_id}/management/{user_id}', [TeamManagementController::class, 'destroyTeamMember'])->middleware('api');
 
 
