@@ -18,7 +18,7 @@ class ColumnsTableSeeder extends Seeder
         $columns = [
             [
                 'name' => 'To Do',
-                'position' => 1,
+                'position' => 0,
                 'board_id' => 1, 
                 'is_finished' => false,
                 'task_limit' => null,
@@ -27,7 +27,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'In Progress',
-                'position' => 2,
+                'position' => 1,
                 'board_id' => 1,
                 'is_finished' => false,
                 'task_limit' => 5,
@@ -36,7 +36,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'Done',
-                'position' => 3,
+                'position' => 2,
                 'board_id' => 1,
                 'is_finished' => true,
                 'task_limit' => null,
@@ -45,7 +45,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'To Do',
-                'position' => 1,
+                'position' => 0,
                 'board_id' => 2, 
                 'is_finished' => false,
                 'task_limit' => null,
@@ -54,7 +54,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'In Progress',
-                'position' => 2,
+                'position' => 1,
                 'board_id' => 2,
                 'is_finished' => false,
                 'task_limit' => null,
@@ -63,7 +63,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'Done',
-                'position' => 3,
+                'position' => 2,
                 'board_id' => 2,
                 'is_finished' => true,
                 'task_limit' => null,
@@ -72,7 +72,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'To Do',
-                'position' => 1,
+                'position' => 0,
                 'board_id' => 3, 
                 'is_finished' => false,
                 'task_limit' => null,
@@ -81,7 +81,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'In Progress',
-                'position' => 2,
+                'position' => 1,
                 'board_id' => 3,
                 'is_finished' => false,
                 'task_limit' => 3,
@@ -90,7 +90,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'Done',
-                'position' => 3,
+                'position' => 2,
                 'board_id' => 3,
                 'is_finished' => true,
                 'task_limit' => null,
@@ -99,7 +99,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'To Do',
-                'position' => 1,
+                'position' => 0,
                 'board_id' => 4, 
                 'is_finished' => false,
                 'task_limit' => 5,
@@ -108,7 +108,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'In Progress',
-                'position' => 2,
+                'position' => 1,
                 'board_id' => 4,
                 'is_finished' => false,
                 'task_limit' => 5,
@@ -117,7 +117,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'Done',
-                'position' => 3,
+                'position' => 2,
                 'board_id' => 4,
                 'is_finished' => true,
                 'task_limit' => null,
@@ -126,7 +126,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'To Do',
-                'position' => 1,
+                'position' => 0,
                 'board_id' => 5, 
                 'is_finished' => false,
                 'task_limit' => null,
@@ -135,7 +135,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'In Progress',
-                'position' => 2,
+                'position' => 1,
                 'board_id' => 5,
                 'is_finished' => false,
                 'task_limit' => null,
@@ -144,7 +144,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'Done',
-                'position' => 3,
+                'position' => 1,
                 'board_id' => 5,
                 'is_finished' => true,
                 'task_limit' => null,
@@ -153,7 +153,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'To Do',
-                'position' => 1,
+                'position' => 0,
                 'board_id' => 6, 
                 'is_finished' => false,
                 'task_limit' => null,
@@ -162,7 +162,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'In Progress',
-                'position' => 2,
+                'position' => 1,
                 'board_id' => 6,
                 'is_finished' => false,
                 'task_limit' => 10,
@@ -171,7 +171,7 @@ class ColumnsTableSeeder extends Seeder
             ],
             [
                 'name' => 'Done',
-                'position' => 3,
+                'position' => 2,
                 'board_id' => 6,
                 'is_finished' => true,
                 'task_limit' => null,

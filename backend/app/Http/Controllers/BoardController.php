@@ -33,33 +33,33 @@ class BoardController extends Controller
     {
         $user = auth()->user();
         $board = Board::find($board_id);
-
+    
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
         }
-
+    
         if (!$user->isMemberOfBoard($board_id)) {
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
-
+    
         $this->validate($request, [
-            'position' => 'required|integer',
+            'name' => 'required|string|max:50',
         ]);
-
-        //check if there is already a column with the same position)
-        if($column = $board->columns()->where('position', $request->input('position'))->first() != null){
-            return response()->json(['error' => 'There is already a column with this position'], 403);
-        }
-
+    
+        $maxPosition = $board->columns()->max('position');
+    
         $column = new Column([
-            'position' => $request->input('position'),
+            'name' => $request->input('name'),
+            'position' => $maxPosition !== null ? $maxPosition + 1 : 0,
             'board_id' => $board->board_id,
+            'is_finished' => $request->input('is_finished', false),
+            'task_limit' => $request->input('task_limit', null),
         ]);
-
+    
         $board->columns()->save($column);
-
+    
         return response()->json(['message' => 'Column created successfully', 'column' => $column]);
-    }
+    }    
     
     public function columnUpdate(Request $request, $column_id)
     {
@@ -83,7 +83,7 @@ class BoardController extends Controller
         }
     }
 
-    public function taskStore(Request $request, $board_id)
+    public function columnPositionUpdate(Request $request, $board_id)
     {
         $user = auth()->user();
         $board = Board::find($board_id);
@@ -95,72 +95,23 @@ class BoardController extends Controller
         if (!$user->isMemberOfBoard($board_id)) {
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
-
-        if($request->input('column_id') == null){
-            return response()->json(['error' => 'Column id is required'], 403);
-        }
-
-        $columnExists = Column::where('board_id', $board_id)
-        ->where('column_id', $request->input('column_id'))
-        ->exists();
-
-        if (!$columnExists) {
-            return response()->json(['error' => 'Column not found for the given board'], 404);
-        }
-
-        //Ha a columnot nem tartalamazza a board, akkor hiba
     
-        $this->validate($request, [
-            'title' => 'required|string|max:100',
-            'description' => 'nullable|string',
-            'due_date' => 'nullable|date',
-            'column_id' => [
-                'required',
-                'integer',
-                Rule::exists('columns', 'column_id')->where(function ($query) use ($board_id) {
-                    $query->where('board_id', $board_id);
-                }),
-            ],
-            'priority_id' => 'nullable|integer|exists:priorities,priority_id',
-        ]);
+        $columns = $request->columns;
     
-        // Find the last task position in the column
-
-            $lastTask = Task::where('column_id', $request->input('column_id'))
-            ->orderBy('position', 'desc')
-            ->first();
-        
-        if($lastTask == null){
-            $position = 1.00;
+        if (count($columns) !== count(array_unique($columns))) {
+            return response()->json(['error' => 'Duplicate positions are not allowed'], 400);
         }
-        else {
-        $position = $lastTask['position'] + 1.00;
-        }
-        //check task limit in the column
-        $column = Column::find($request->input('column_id'));
-
-        if($column['task_limit'] != null){
-            if($column->tasks()->count() >= $column['task_limit']){
-                return response()->json(['error' => 'Task limit reached'], 403);
+    
+        foreach ($columns as $position => $column_id) {
+            $column = Column::find($column_id);
+            if ($column && $column->board_id == $board_id) {
+                $column->position = $position;
+                $column->save();
+            } else {
+                return response()->json(['error' => 'Column not found or not belong to this board'], 404);
             }
         }
     
-        $task = new Task([
-            'title' => $request->input('title'),
-            'description' => $request->input('description'),
-            'due_date' => $request->input('due_date'),
-            'column_id' => $request->input('column_id'),
-            'project_id' => $board->project_id,
-            'priority_id' => $request->input('priority_id'),
-            'position' => $position, // Set the position to the next available position
-        ]);
-    
-        $task->save();
-    
-        return response()->json(['message' => 'Task created successfully', 'task' => $task]);
-
-        //To do:
-        //Columben a max limit
-        //
-    }
+        return response()->json(['message' => 'Columns position updated successfully.']);
+    }    
 }
