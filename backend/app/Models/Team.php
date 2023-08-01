@@ -40,6 +40,10 @@ class Team extends Model
     {
         return $this->belongsTo(User::class, 'created_by', 'user_id');
     }
+    public function boards()
+    {
+        return $this->hasMany(Board::class, 'team_id');
+    }
 
     // Other model code...
 }

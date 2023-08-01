@@ -37,7 +37,8 @@ Route::post('/dashboard/teams', [TeamController::class, 'store'])->middleware('a
 Route::put('/dashboard/teams/{id}', [TeamController::class, 'update'])->middleware('api');
 Route::delete('/dashboard/teams/{id}', [TeamController::class, 'destroy'])->middleware('api');
 
-Route::get('/team/{id}/management', [TeamManagementController::class, 'show'])->middleware('api');
+Route::get('/team/{team_id}/management', [TeamManagementController::class, 'show'])->middleware('api');
+Route::delete('/team/{team_id}/management/{user_id}', [TeamManagementController::class, 'destroyTeamMember'])->middleware('api');
 
 
 Route::get('/boards/{board_id}', [BoardController::class, 'show'])->middleware('api');
