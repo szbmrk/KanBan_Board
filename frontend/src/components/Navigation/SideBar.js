@@ -1,10 +1,10 @@
 // Sidebar component that using among the application
 import React from 'react';
 import { Link } from 'react-router-dom';
-import '../styles/sidebar.css';
+import '../../styles/sidebar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faTable, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
-import { AuthContext } from '../auth/AuthContext';
+import { AuthContext } from '../../auth/AuthContext';
 
 const homeIcon = <FontAwesomeIcon icon={faHome} />;
 const userIcon = <FontAwesomeIcon icon={faTable} />;

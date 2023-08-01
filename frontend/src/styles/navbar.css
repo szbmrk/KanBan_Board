@@ -1,0 +1,30 @@
+.navbar {
+    background-color: rgba(var(--dark-grayRGB), 0.7);
+    color: var(--light-gray);
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+}
+
+
+.navbar a {
+    color: var(--light-gray);
+    text-decoration: none;
+    padding: 10px;
+}
+
+.navbar-menu {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+}
+
+.navbar-menu ul {
+    list-style-type: none;
+}
+
+.navbar-menu li {
+    float: left;
+}
