@@ -261,8 +261,54 @@ class BoardController extends Controller
     
         return response()->json(['message' => 'Task deleted successfully']);
     }
-    
-    
-    
+
+    public function columnDestroy($board_id, $column_id)
+    {
+        $user = auth()->user();
+        $board = Board::find($board_id);
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+
+        if (!$user->isMemberOfBoard($board_id)) {
+            return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+
+        $column = Column::where('board_id', $board_id)->find($column_id);
+
+        if (!$column) {
+            return response()->json(['error' => 'Column not found'], 404);
+        }
+
+        // Töröld a columnhoz tartozó összes taskot
+        foreach ($column->tasks as $task) {
+            // Töröld az összes kapcsolódó attachment-et a task-hoz
+            $task->attachments()->delete();
+
+            // Töröld az összes kapcsolódó commentet a task-hoz
+            Comment::whereIn('comment_id', $task->comments->pluck('comment_id'))->delete();
+
+            // Töröld az összes kapcsolódó favourite_tasket a task-hoz
+            FavouriteTask::where('task_id', $task->task_id)->delete();
+
+            // Töröld az összes kapcsolódó logot a task-hoz
+            Log::where('task_id', $task->task_id)->delete();
+
+            // Töröld az összes kapcsolódó task_taget a task-hoz
+            TaskTag::where('task_id', $task->task_id)->delete();
+
+            // Töröld az összes kapcsolódó user_taskot a task-hoz
+            UserTask::where('task_id', $task->task_id)->delete();
+
+            // Töröld a task-ot
+            $task->delete();
+        }
+
+        // Töröld a column-t
+        $column->delete();
+
+        return response()->json(['message' => 'Column deleted successfully']);
+    }
     
 }
