@@ -22,10 +22,10 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
 
-            $table->foreign('board_id')->references('board_id')->on('boards');
-            $table->foreign('column_id')->references('column_id')->on('columns');
-            $table->foreign('parent_task_id')->references('task_id')->on('tasks');
-            $table->foreign('priority_id')->references('priority_id')->on('priorities');
+            $table->foreign('board_id')->references('board_id')->on('boards')->onDelete('cascade');
+            $table->foreign('column_id')->references('column_id')->on('columns')->onDelete('cascade');
+            $table->foreign('parent_task_id')->references('task_id')->on('tasks')->onDelete('cascade');
+            $table->foreign('priority_id')->references('priority_id')->on('priorities')->onDelete('cascade');
         });
     }
 
