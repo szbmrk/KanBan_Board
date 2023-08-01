@@ -41,3 +41,4 @@ Route::post('/boards/{board_id}', [BoardController::class, 'columnStore'])->midd
 Route::put('/boards/column/{column}', [BoardController::class, 'columnUpdate'])->middleware('api');
 
 Route::post('/boards/{board_id}/task', [BoardController::class, 'taskStore'])->middleware('api');
+Route::put('/boards/{board_id}/tasks/{task_id}', [BoardController::class, 'taskUpdate'])->middleware('api');

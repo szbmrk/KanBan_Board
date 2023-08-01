@@ -14,6 +14,7 @@ class Task extends Model
         'title',
         'description',
         'due_date',
+        'board_id',
         'column_id',
         'project_id',
         'priority_id',
@@ -27,6 +28,11 @@ class Task extends Model
         return $this->belongsTo(Column::class, 'column_id', 'column_id');
     }
 
+    public function board()
+    {
+        return $this->belongsTo(Board::class);
+    }
+    
     // Relationship with the Parent Task (self-referencing)
     public function parentTask()
     {

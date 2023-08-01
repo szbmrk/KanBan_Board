@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('title', 100)->nullable(false);
             $table->text('description')->nullable();
             $table->timestamp('due_date')->nullable();
+            $table->unsignedBigInteger('board_id');
             $table->unsignedBigInteger('column_id')->nullable(false);
             $table->unsignedBigInteger('project_id')->nullable();
             $table->unsignedBigInteger('priority_id')->nullable();
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
 
+            $table->foreign('board_id')->references('board_id')->on('boards');
             $table->foreign('column_id')->references('column_id')->on('columns');
             $table->foreign('parent_task_id')->references('task_id')->on('tasks');
             $table->foreign('priority_id')->references('priority_id')->on('priorities');

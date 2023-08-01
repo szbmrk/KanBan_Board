@@ -83,6 +83,144 @@ class BoardController extends Controller
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     public function taskStore(Request $request, $board_id)
     {
         $user = auth()->user();
@@ -95,20 +233,18 @@ class BoardController extends Controller
         if (!$user->isMemberOfBoard($board_id)) {
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
-
-        if($request->input('column_id') == null){
+    
+        if ($request->input('column_id') == null) {
             return response()->json(['error' => 'Column id is required'], 403);
         }
-
+    
         $columnExists = Column::where('board_id', $board_id)
-        ->where('column_id', $request->input('column_id'))
-        ->exists();
-
+            ->where('column_id', $request->input('column_id'))
+            ->exists();
+    
         if (!$columnExists) {
             return response()->json(['error' => 'Column not found for the given board'], 404);
         }
-
-        //Ha a columnot nem tartalamazza a board, akkor hiba
     
         $this->validate($request, [
             'title' => 'required|string|max:100',
@@ -124,43 +260,65 @@ class BoardController extends Controller
             'priority_id' => 'nullable|integer|exists:priorities,priority_id',
         ]);
     
-        // Find the last task position in the column
-
-            $lastTask = Task::where('column_id', $request->input('column_id'))
+        $lastTask = Task::where('column_id', $request->input('column_id'))
             ->orderBy('position', 'desc')
             ->first();
-        
-        if($lastTask == null){
-            $position = 1.00;
-        }
-        else {
-        $position = $lastTask['position'] + 1.00;
-        }
-        //check task limit in the column
-        $column = Column::find($request->input('column_id'));
-
-        if($column['task_limit'] != null){
-            if($column->tasks()->count() >= $column['task_limit']){
-                return response()->json(['error' => 'Task limit reached'], 403);
-            }
-        }
     
+        if ($lastTask == null) {
+            $position = 1.00;
+        } else {
+            $position = $lastTask['position'] + 1.00;
+        }
+        
         $task = new Task([
             'title' => $request->input('title'),
             'description' => $request->input('description'),
             'due_date' => $request->input('due_date'),
             'column_id' => $request->input('column_id'),
+            'board_id' => $board_id,
             'project_id' => $board->project_id,
             'priority_id' => $request->input('priority_id'),
-            'position' => $position, // Set the position to the next available position
+            'position' => $position,
         ]);
     
         $task->save();
     
         return response()->json(['message' => 'Task created successfully', 'task' => $task]);
+    }
 
-        //To do:
-        //Columben a max limit
-        //
+    public function taskUpdate(Request $request, $board_id, $task_id)
+    {
+        $user = auth()->user();
+        $board = Board::find($board_id);
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+
+        if (!$user->isMemberOfBoard($board_id)) {
+            return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+
+        $task = Task::where('board_id', $board_id)->find($task_id);
+
+        if (!$task) {
+            return response()->json(['error' => 'Task not found'], 404);
+        }
+
+        $this->validate($request, [
+            'title' => 'required|string|max:100',
+            'description' => 'nullable|string',
+            'due_date' => 'nullable|date',
+            'priority_id' => 'nullable|integer|exists:priorities,priority_id',
+        ]);
+
+        $task->title = $request->input('title');
+        $task->description = $request->input('description');
+        $task->due_date = $request->input('due_date');
+        $task->priority_id = $request->input('priority_id');
+
+        $task->save();
+
+        return response()->json(['message' => 'Task updated successfully', 'task' => $task]);
     }
 }
