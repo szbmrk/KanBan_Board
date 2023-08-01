@@ -22,6 +22,7 @@ return new class extends Migration
             $table->unsignedBigInteger('board_id')->nullable();
             $table->unsignedBigInteger('team_id')->nullable();
             $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
 
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
             $table->foreign('task_id')->references('task_id')->on('tasks')->onDelete('cascade');
