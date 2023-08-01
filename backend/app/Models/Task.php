@@ -51,7 +51,7 @@ class Task extends Model
     }
 
     public function comments()
-{
-    return $this->hasMany(Comment::class, 'task_id');
-}
+    {
+        return $this->hasMany(Comment::class, 'task_id');
+    }
 }
