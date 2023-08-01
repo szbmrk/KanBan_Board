@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Board;
 use App\Models\Column;
 use App\Models\Task;
+use Illuminate\Validation\Rule;
 
 class BoardController extends Controller
 {
