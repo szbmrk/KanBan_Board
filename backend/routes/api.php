@@ -43,3 +43,4 @@ Route::post('/boards/{board}/columns/positions', [BoardController::class, 'colum
 
 Route::post('/boards/{board_id}/task', [BoardController::class, 'taskStore'])->middleware('api');
 Route::put('/boards/{board_id}/tasks/{task_id}', [BoardController::class, 'taskUpdate'])->middleware('api');
+Route::delete('/boards/{board_id}/tasks/{task_id}', [BoardController::class, 'taskDestroy'])->middleware('api');

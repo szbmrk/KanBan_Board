@@ -6,6 +6,13 @@ use Illuminate\Http\Request;
 use App\Models\Board;
 use App\Models\Column;
 use App\Models\Task;
+use App\Models\Attachment;
+use App\Models\Comment;
+use App\Models\Mention;
+use App\Models\FavouriteTask;
+use App\Models\Log; 
+use App\Models\TaskTag;
+use App\Models\UserTask;
 use Illuminate\Validation\Rule;
 
 class BoardController extends Controller
@@ -215,4 +222,47 @@ class BoardController extends Controller
 
         return response()->json(['message' => 'Task updated successfully', 'task' => $task]);
     }
+
+    public function taskDestroy(Request $request, $board_id, $task_id)
+    {
+        $user = auth()->user();
+        $board = Board::find($board_id);
+    
+        if (!$board) {
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+    
+        if (!$user->isMemberOfBoard($board_id)) {
+            return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+    
+        $task = Task::where('board_id', $board_id)->find($task_id);
+    
+        if (!$task) {
+            return response()->json(['error' => 'Task not found'], 404);
+        }
+    
+        $task->attachments()->delete();
+    
+        foreach ($task->comments as $comment) {
+            $comment->mentions()->delete();
+            $comment->delete();
+        }
+
+        FavouriteTask::where('task_id', $task_id)->delete();
+
+        Log::where('task_id', $task_id)->delete();
+    
+        TaskTag::where('task_id', $task_id)->delete();
+
+        UserTask::where('task_id', $task_id)->delete();
+
+        $task->delete();
+    
+        return response()->json(['message' => 'Task deleted successfully']);
+    }
+    
+    
+    
+    
 }
