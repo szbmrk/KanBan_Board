@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BoardController; // Import the BoardController
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\TeamManagementController;
 
 
 /*
@@ -35,6 +36,11 @@ Route::get('/dashboard/teams', [TeamController::class, 'index'])->middleware('ap
 Route::post('/dashboard/teams', [TeamController::class, 'store'])->middleware('api');
 Route::put('/dashboard/teams/{id}', [TeamController::class, 'update'])->middleware('api');
 Route::delete('/dashboard/teams/{id}', [TeamController::class, 'destroy'])->middleware('api');
+
+Route::get('/team/{team_id}/management', [TeamManagementController::class, 'show'])->middleware('api');
+Route::post('/team/{team_id}/management', [TeamManagementController::class, 'storeTeamMember'])->middleware('api');
+Route::delete('/team/{team_id}/management/{user_id}', [TeamManagementController::class, 'destroyTeamMember'])->middleware('api');
+
 
 Route::get('/boards/{board_id}', [BoardController::class, 'show'])->middleware('api');
 Route::post('/boards/{board_id}', [BoardController::class, 'columnStore'])->middleware('api');

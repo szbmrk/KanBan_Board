@@ -13,8 +13,9 @@ return new class extends Migration
             $table->unsignedBigInteger('team_member_id')->nullable(false);
             $table->unsignedBigInteger('role_id')->nullable(false);
 
-            $table->foreign('team_member_id')->references('team_members_id')->on('team_members');
-            $table->foreign('role_id')->references('role_id')->on('roles');
+            // Add the onDelete('cascade') option to both foreign key definitions
+            $table->foreign('team_member_id')->references('team_members_id')->on('team_members')->onDelete('cascade');
+            $table->foreign('role_id')->references('role_id')->on('roles')->onDelete('cascade');
         });
     }
 
