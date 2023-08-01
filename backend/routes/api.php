@@ -3,7 +3,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\BoardController; // Import the BoardController
+use App\Http\Controllers\BoardController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamManagementController;
 
@@ -41,13 +43,13 @@ Route::get('/team/{team_id}/management', [TeamManagementController::class, 'show
 Route::post('/team/{team_id}/management', [TeamManagementController::class, 'storeTeamMember'])->middleware('api');
 Route::delete('/team/{team_id}/management/{user_id}', [TeamManagementController::class, 'destroyTeamMember'])->middleware('api');
 
-
 Route::get('/boards/{board_id}', [BoardController::class, 'show'])->middleware('api');
-Route::post('/boards/{board_id}', [BoardController::class, 'columnStore'])->middleware('api');
-Route::put('/boards/column/{column}', [BoardController::class, 'columnUpdate'])->middleware('api');
-Route::post('/boards/{board}/columns/positions', [BoardController::class, 'columnPositionUpdate'])->middleware('api');
-Route::delete('/boards/{board_id}/columns/{column_id}', [BoardController::class, 'columnDestroy'])->middleware('api');
 
-Route::post('/boards/{board_id}/task', [BoardController::class, 'taskStore'])->middleware('api');
-Route::put('/boards/{board_id}/tasks/{task_id}', [BoardController::class, 'taskUpdate'])->middleware('api');
-Route::delete('/boards/{board_id}/tasks/{task_id}', [BoardController::class, 'taskDestroy'])->middleware('api');
+Route::post('/boards/{board_id}', [ColumnController::class, 'columnStore'])->middleware('api');
+Route::put('/boards/column/{column}', [ColumnController::class, 'columnUpdate'])->middleware('api');
+Route::post('/boards/{board}/columns/positions', [ColumnController::class, 'columnPositionUpdate'])->middleware('api');
+Route::delete('/boards/{board_id}/columns/{column_id}', [ColumnController::class, 'columnDestroy'])->middleware('api');
+
+Route::post('/boards/{board_id}/task', [TaskController::class, 'taskStore'])->middleware('api');
+Route::put('/boards/{board_id}/tasks/{task_id}', [TaskController::class, 'taskUpdate'])->middleware('api');
+Route::delete('/boards/{board_id}/tasks/{task_id}', [TaskController::class, 'taskDestroy'])->middleware('api');
