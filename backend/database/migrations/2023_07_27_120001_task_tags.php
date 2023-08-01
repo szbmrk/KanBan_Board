@@ -13,8 +13,8 @@ return new class extends Migration
             $table->unsignedBigInteger('tag_id')->nullable(false);
             $table->unsignedBigInteger('task_id')->nullable(false);
 
-            $table->foreign('tag_id')->references('tag_id')->on('tags');
-            $table->foreign('task_id')->references('task_id')->on('tasks');
+            $table->foreign('tag_id')->references('tag_id')->on('tags')->onDelete('cascade');
+            $table->foreign('task_id')->references('task_id')->on('tasks')->onDelete('cascade');
         });
     }
 
