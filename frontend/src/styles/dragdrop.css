@@ -70,3 +70,8 @@
   cursor: pointer;
   color: var(--light-gray);
 }
+
+.edit-action-button {
+  padding: 3px;
+  margin-inline: 3px;
+}

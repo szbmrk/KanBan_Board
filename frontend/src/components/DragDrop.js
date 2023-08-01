@@ -4,6 +4,8 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { Card, plusIcon, trashIcon } from "./Card";
 import { useDrop, useDrag } from "react-dnd";
 import ConfirmationPopup from "./ConfirmationPopup";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import "../styles/dragdrop.css";
 
 const DragDrop = () => {
@@ -33,6 +35,9 @@ const DragDrop = () => {
       ],
     },
   ];
+
+  const checkIcon = <FontAwesomeIcon icon={faCheck} />;
+  const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
 
   const Column = ({ divIndex, moveColumn, children }) => {
     const [{ isDragging }, drag] = useDrag({
@@ -69,10 +74,10 @@ const DragDrop = () => {
 
   const [divData, setDivData] = useState(initialDivData);
   const [editingColumnIndex, setEditingColumnIndex] = useState(null);
-  const inputRef = useRef(null);
   const [showDeleteConfirmation, setShowDeleteColumnConfirmation] =
     useState(false);
   const [columnToDeleteIndex, setColumnToDeleteIndex] = useState(null);
+  const originalTitle = useRef(null);
 
   const moveCard = (dragIndex, hoverIndex, sourceDivIndex, targetDivIndex) => {
     const sourceDiv = divData[sourceDivIndex];
@@ -133,11 +138,18 @@ const DragDrop = () => {
     setDivData(newColumnData);
   };
 
-  const handleColumnTitleBlur = (columnIndex) => {
+  const handleColumnTitleBlur = (columnIndex, isCancelled) => {
     setEditingColumnIndex(null);
+    if (isCancelled) {
+      // Reset the title if the changes were cancelled
+      const newColumnData = [...divData];
+      newColumnData[columnIndex].title = originalTitle.current;
+      setDivData(newColumnData);
+    }
   };
 
   const handleColumnTitleDoubleClick = (columnIndex) => {
+    originalTitle.current = divData[columnIndex].title;
     setEditingColumnIndex(columnIndex);
   };
 
@@ -176,22 +188,36 @@ const DragDrop = () => {
               <div className="div">
                 <div className="card-container">
                   {editingColumnIndex === divIndex ? (
-                    <input
-                      type="text"
-                      value={div.title}
-                      onChange={(event) =>
-                        handleColumnTitleChange(event, divIndex)
-                      }
-                      onBlur={handleColumnTitleBlur}
-                      autoFocus
-                      ref={inputRef}
-                      onClick={(e) => e.stopPropagation()}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          inputRef.current.blur();
+                    <div>
+                      <input
+                        type="text"
+                        value={div.title}
+                        onChange={(event) =>
+                          handleColumnTitleChange(event, divIndex)
                         }
-                      }}
-                    />
+                        autoFocus
+                        onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handleColumnTitleBlur(divIndex);
+                          } else if (e.key === "Escape") {
+                            handleColumnTitleBlur(divIndex, true); // Pass `true` to indicate that changes are cancelled
+                          }
+                        }}
+                      />
+                      <span
+                        className="edit-action-button"
+                        onClick={() => handleColumnTitleBlur(divIndex)}
+                      >
+                        {checkIcon}
+                      </span>
+                      <span
+                        className="edit-action-button"
+                        onClick={() => handleColumnTitleBlur(divIndex, true)}
+                      >
+                        {xMarkIcon}
+                      </span>
+                    </div>
                   ) : (
                     <>
                       <div
