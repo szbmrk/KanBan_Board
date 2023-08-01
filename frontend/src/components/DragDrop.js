@@ -218,7 +218,7 @@ const DragDrop = () => {
               <div className="div">
                 <div className="card-container">
                   {editingColumnIndex === divIndex ? (
-                    <div>
+                    <div className="name-edit">
                       <input
                         type="text"
                         value={div.title}

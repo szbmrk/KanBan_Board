@@ -27,6 +27,41 @@
   border-bottom: 1px solid var(--light-gray);
 }
 
+.name-edit { 
+  display: flex;
+  justify-content: space-between;
+  color: var(--light-gray);
+  margin: 0 30px 30px;
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.name-edit input{
+  width: 70%;
+  color: var(--light-gray);
+  font-family: var(--basic-font);
+  font-size: 1.5em;
+  margin: 5px 0px;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.name-edit input:focus,
+.name-edit input:hover,
+.name-edit input:active {
+  outline: none;
+  border: none;
+}
+
+.name-edit input::selection {
+  color: var(--dark-gray);
+  background: var(--light-gray);
+}
+
+.name-edit span {
+  margin: 4px 0px 6px 0px;
+}
+
 @media (max-width: 830px) {
   body {
     font-size: 0.9rem;
