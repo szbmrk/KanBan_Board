@@ -73,6 +73,7 @@ class DashboardController extends Controller
 
             return response()->json(null, 204);
         } else {
+            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Message: Board not found on delete -> board_id: $board_id, username: $user->username");
             return response()->json(['error' => 'Unauthenticated or board not found.'], 401);
         }
     }

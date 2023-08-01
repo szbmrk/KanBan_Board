@@ -14,7 +14,10 @@ return new class extends Migration
             $table->enum('action', [
                 'UPDATED TEAM', 'DELETED TEAM', 'CREATED TEAM',
                 'UPDATED COLUMN', 'DELETED COLUMN', 'CREATED COLUMN',
-                'UPDATED BOARD', 'DELETED BOARD', 'CREATED BOARD',
+                'UPDATED BOARD', 'DELETED BOARD', 'CREATED BOARD','BOARD NOT FOUND',
+                'SYSTEM ERROR',
+                'USER ERROR', 'UPDATED USER', 'DELETED USER', 'CREATED USER',
+                'AUTHENTICATION ERROR', 'NO PERMISSION',
                 'UPDATED TASK', 'DELETED TASK', 'CREATED TASK', 'FINISHED TASK', 'COMMENTED ON TASK'
             ])->nullable(false);
             $table->text('details')->nullable();
