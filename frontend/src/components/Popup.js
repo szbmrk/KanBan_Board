@@ -1,12 +1,18 @@
-import React, { useEffect, useRef } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import "../styles/popup.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
-const Popup = ({ text, onClose }) => {
+const Popup = ({ text, onClose, onSave }) => {
   const popupRef = useRef(null);
+
+  const [editedText, setEditedText] = useState(text);
+
+  const handleChange = (event) => {
+    setEditedText(event.target.value)
+  }
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -28,7 +34,15 @@ const Popup = ({ text, onClose }) => {
         <span className="close-btn" onClick={onClose}>
           {closeIcon}
         </span>
-        <div className="popup-content">{text}</div>
+        <div className="popup-content">
+          <input
+              type="text"
+              className="board-input"
+              value={editedText}
+              onChange={handleChange}
+          />
+          <button className="save-button" onClick={() => onSave(editedText)}>Save</button>
+        </div>
       </div>
     </div>
   );

@@ -23,6 +23,8 @@ export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
     }),
   });
 
+  const [editedText, setEditedText] = useState(text);
+
   const [, drop] = useDrop({
     accept: ItemTypes.CARD,
     hover: (item, monitor) => {
@@ -59,6 +61,14 @@ export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
     setShowCustomPopup(false);
   };
 
+  const handleSavePopup = (newText) => {
+    // Update the text with the edited value
+    setEditedText(newText);
+
+    // Close the popup
+    setShowCustomPopup(false);
+  }
+
   const handleDelete = () => {
     setShowCustomPopup(false); // Close the custom popup
     setShowDeletePopup(true); // Show the delete confirmation popup
@@ -83,7 +93,7 @@ export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
           cursor: "grab",
         }}
       >
-        {text}
+        {editedText}
         <span className="edit" onClick={handleClick}>
           {pencilIcon}
         </span>
@@ -98,7 +108,7 @@ export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
           onConfirm={handleConfirmDelete}
         />
       )}
-      {showCustomPopup && <Popup text={text} onClose={handleClosePopup} />}
+      {showCustomPopup && <Popup text={editedText} onClose={handleClosePopup} onSave={handleSavePopup}/>}
     </>
   );
 };
