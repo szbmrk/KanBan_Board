@@ -44,4 +44,14 @@ class Task extends Model
     {
         return $this->belongsTo(Priority::class, 'priority_id', 'priority_id');
     }
+
+    public function attachments()
+    {
+        return $this->hasMany(Attachment::class, 'task_id');
+    }
+
+    public function comments()
+{
+    return $this->hasMany(Comment::class, 'task_id');
+}
 }
