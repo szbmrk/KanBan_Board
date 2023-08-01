@@ -78,6 +78,7 @@ const DragDrop = () => {
     useState(false);
   const [columnToDeleteIndex, setColumnToDeleteIndex] = useState(null);
   const originalTitle = useRef(null);
+  const editBoxRef = useRef(null);
 
   const moveCard = (dragIndex, hoverIndex, sourceDivIndex, targetDivIndex) => {
     const sourceDiv = divData[sourceDivIndex];
@@ -119,6 +120,7 @@ const DragDrop = () => {
   };
 
   const moveColumn = (dragIndex, hoverIndex) => {
+    setEditingColumnIndex(null);
     console.log("dragIndex");
     console.log(dragIndex);
     console.log("hoverIndex");
@@ -133,9 +135,22 @@ const DragDrop = () => {
   };
 
   const handleColumnTitleChange = (event, columnIndex) => {
-    const newColumnData = [...divData];
-    newColumnData[columnIndex].title = event.target.value;
-    setDivData(newColumnData);
+    const newTitle = event.target.value;
+
+    // Check if the new title length is within the allowed range (3 to 20 characters)
+    if (newTitle.length <= 20) {
+      const newColumnData = [...divData];
+      newColumnData[columnIndex].title = newTitle;
+      setDivData(newColumnData);
+    } else if (newTitle.length > 20) {
+      // Truncate the title to a maximum of 20 characters
+      const truncatedTitle = newTitle.substring(0, 20);
+      const newColumnData = [...divData];
+      newColumnData[columnIndex].title = truncatedTitle;
+      setDivData(newColumnData);
+    }
+    // You can choose to handle the case when the new title length is less than 3, if desired.
+    // In this example, the title will not be updated if it's less than 3 characters.
   };
 
   const handleColumnTitleBlur = (columnIndex, isCancelled) => {
@@ -147,6 +162,21 @@ const DragDrop = () => {
       setDivData(newColumnData);
     }
   };
+
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Check if the click was outside the title edit input box
+      if (editBoxRef.current && !editBoxRef.current.contains(event.target)) {
+        handleColumnTitleBlur(editingColumnIndex);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [editingColumnIndex]);
 
   const handleColumnTitleDoubleClick = (columnIndex) => {
     originalTitle.current = divData[columnIndex].title;
@@ -196,6 +226,7 @@ const DragDrop = () => {
                           handleColumnTitleChange(event, divIndex)
                         }
                         autoFocus
+                        ref={editBoxRef} // Set the ref to the title edit input box
                         onClick={(e) => e.stopPropagation()}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {

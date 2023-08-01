@@ -74,4 +74,5 @@
 .edit-action-button {
   padding: 3px;
   margin-inline: 3px;
+  cursor: pointer;
 }
