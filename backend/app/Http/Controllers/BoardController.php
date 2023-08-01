@@ -298,7 +298,7 @@ class BoardController extends Controller
 
             UserTask::where('task_id', $task->task_id)->delete();
 
-            Feedback::where('task_id', $task->$task_id)->delete();
+            Feedback::where('task_id', $task->task_id)->delete();
 
             $task->delete();
         }
