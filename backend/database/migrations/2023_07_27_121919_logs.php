@@ -13,6 +13,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable(false);
             $table->enum('action', [
                 'UPDATED TEAM', 'DELETED TEAM', 'CREATED TEAM',
+                'UPDATED COLUMN', 'DELETED COLUMN', 'CREATED COLUMN',
                 'UPDATED BOARD', 'DELETED BOARD', 'CREATED BOARD',
                 'UPDATED TASK', 'DELETED TASK', 'CREATED TASK', 'FINISHED TASK', 'COMMENTED ON TASK'
             ])->nullable(false);
