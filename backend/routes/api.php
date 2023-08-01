@@ -7,7 +7,7 @@ use App\Http\Controllers\BoardController; // Import the BoardController
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamManagementController;
 use App\Http\Controllers\TagController;
-
+use App\Http\Controllers\TaskTagController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,3 +57,5 @@ Route::get('/tags', [TagController::class, 'index'])->middleware('api');
 Route::post('/tags', [TagController::class, 'store'])->middleware('api');
 Route::put('/tags/{id}', [TagController::class, 'update'])->middleware('api');
 Route::delete('/tags/{id}', [TagController::class, 'destroy'])->middleware('api');
+
+Route::get('/tasks/{task_id}/tags', [TaskTagController::class, 'index'])->middleware('api');
