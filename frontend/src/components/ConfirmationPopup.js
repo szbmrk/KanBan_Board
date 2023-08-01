@@ -26,7 +26,7 @@ const ConfirmationPopup = ({ text, onCancel, onConfirm }) => {
     <div className="overlay">
       <div className="popup" ref={popupRef}>
         <span className="close-btn" onClick={onCancel}>
-            {closeIcon}
+          {closeIcon}
         </span>
         <p>Are you sure you want to delete "{text}"?</p>
         <div className="button-container">

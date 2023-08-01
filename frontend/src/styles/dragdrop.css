@@ -64,3 +64,9 @@
     padding: 20px 0px;
   }
 }
+
+.delete-column-button {
+  padding: 5px;
+  cursor: pointer;
+  color: var(--light-gray);
+}

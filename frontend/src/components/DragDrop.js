@@ -1,8 +1,9 @@
 import React, { useState, useRef } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { Card, plusIcon } from "./Card";
+import { Card, plusIcon, trashIcon } from "./Card";
 import { useDrop, useDrag } from "react-dnd";
+import ConfirmationPopup from "./ConfirmationPopup";
 import "../styles/dragdrop.css";
 
 const DragDrop = () => {
@@ -69,6 +70,9 @@ const DragDrop = () => {
   const [divData, setDivData] = useState(initialDivData);
   const [editingColumnIndex, setEditingColumnIndex] = useState(null);
   const inputRef = useRef(null);
+  const [showDeleteConfirmation, setShowDeleteColumnConfirmation] =
+    useState(false);
+  const [columnToDeleteIndex, setColumnToDeleteIndex] = useState(null);
 
   const moveCard = (dragIndex, hoverIndex, sourceDivIndex, targetDivIndex) => {
     const sourceDiv = divData[sourceDivIndex];
@@ -123,11 +127,6 @@ const DragDrop = () => {
     setDivData(newDivData);
   };
 
-  const handleEditButtonClick = (event, columnIndex) => {
-    event.stopPropagation();
-    setEditingColumnIndex(columnIndex);
-  };
-
   const handleColumnTitleChange = (event, columnIndex) => {
     const newColumnData = [...divData];
     newColumnData[columnIndex].title = event.target.value;
@@ -136,6 +135,35 @@ const DragDrop = () => {
 
   const handleColumnTitleBlur = (columnIndex) => {
     setEditingColumnIndex(null);
+  };
+
+  const handleColumnTitleDoubleClick = (columnIndex) => {
+    setEditingColumnIndex(columnIndex);
+  };
+
+  const handleDeleteButtonClick = (event, columnIndex) => {
+    event.stopPropagation();
+    setShowDeleteColumnConfirmation(true);
+    setColumnToDeleteIndex(columnIndex);
+  };
+
+  const handleColumnDeleteConfirm = () => {
+    console.log("confirm");
+    // Create a copy of the divData array
+    const newDivData = [...divData];
+    // Remove the column with the given columnIndex
+    newDivData.splice(columnToDeleteIndex, 1);
+    // Update the state with the modified data
+    setDivData(newDivData);
+    // Close the delete confirmation popup
+    setShowDeleteColumnConfirmation(false);
+    setColumnToDeleteIndex(null);
+  };
+
+  const handleColumnDeleteCancel = () => {
+    console.log("cancel");
+    setShowDeleteColumnConfirmation(false);
+    setColumnToDeleteIndex(null);
   };
 
   return (
@@ -166,17 +194,20 @@ const DragDrop = () => {
                     />
                   ) : (
                     <>
-                      <div className="column-title-container">
+                      <div
+                        className="column-title-container"
+                        onDoubleClick={() =>
+                          handleColumnTitleDoubleClick(divIndex)
+                        }
+                      >
                         <h2 className="card-title">{div.title}</h2>
-                        <div className="title-buttons">
-                          <button
-                            className="column-edit-button"
-                            onClick={(e) => handleEditButtonClick(e, divIndex)}
-                          >
-                            Edit
-                          </button>
-                        </div>
                       </div>
+                      <span
+                        className="delete-column-button"
+                        onClick={(e) => handleDeleteButtonClick(e, divIndex)}
+                      >
+                        {trashIcon}
+                      </span>
                     </>
                   )}
                   {div.cards.map((card, cardIndex) => (
@@ -211,6 +242,13 @@ const DragDrop = () => {
           ))}
         </div>
       </div>
+      {showDeleteConfirmation && (
+        <ConfirmationPopup
+          text={divData[columnToDeleteIndex]?.title}
+          onCancel={handleColumnDeleteCancel}
+          onConfirm={handleColumnDeleteConfirm}
+        />
+      )}
     </DndProvider>
   );
 };
