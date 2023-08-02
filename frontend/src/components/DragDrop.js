@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { Card, plusIcon, trashIcon } from "./Card";
+import { Card, plusIcon } from "./Card";
 import { useDrop, useDrag } from "react-dnd";
 import ConfirmationPopup from "./ConfirmationPopup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,25 +13,25 @@ const DragDrop = () => {
     {
       title: "Div 1",
       cards: [
-        { id: 1, text: "Div 1 - Card 1", isFavourite: false },
-        { id: 2, text: "Div 1 - Card 2", isFavourite: true },
-        { id: 3, text: "Div 1 - Card 3", isFavourite: false },
+        { id: 1, text: "Div 1 - Card 1", description: "Div 1 - Card 1 Description", isFavourite: false },
+        { id: 2, text: "Div 1 - Card 2", description: "Div 1 - Card 2 Description", isFavourite: true },
+        { id: 3, text: "Div 1 - Card 3", description: "Div 1 - Card 3 Description", isFavourite: false },
       ],
     },
     {
       title: "Div 2",
       cards: [
-        { id: 4, text: "Div 2 - Card 1", isFavourite: false },
-        { id: 5, text: "Div 2 - Card 2", isFavourite: false },
-        { id: 6, text: "Div 2 - Card 3", isFavourite: false },
+        { id: 4, text: "Div 2 - Card 1", description: "Div 2 - Card 1 Description", isFavourite: false },
+        { id: 5, text: "Div 2 - Card 2", description: "Div 2 - Card 2 Description", isFavourite: false },
+        { id: 6, text: "Div 2 - Card 3", description: "Div 2 - Card 3 Description", isFavourite: false },
       ],
     },
     {
       title: "Div 3",
       cards: [
-        { id: 7, text: "Div 3 - Card 1", isFavourite: false },
-        { id: 8, text: "Div 3 - Card 2", isFavourite: false },
-        { id: 9, text: "Div 3 - Card 3", isFavourite: false },
+        { id: 7, text: "Div 3 - Card 1", description: "Div 3 - Card 1 Description", isFavourite: false },
+        { id: 8, text: "Div 3 - Card 2", description: "Div 3 - Card 2 Description", isFavourite: false },
+        { id: 9, text: "Div 3 - Card 3", description: "Div 3 - Card 3 Description", isFavourite: false },
       ],
     },
   ];
@@ -102,6 +102,7 @@ const DragDrop = () => {
     const newCard = {
       id: Date.now(),
       text: `New Card in ${divData[divIndex].title}`,
+      description: `Description of New Card in ${divData[divIndex].title}`,
     };
 
     const newDivData = [...divData];
@@ -288,6 +289,7 @@ const DragDrop = () => {
                       key={card.id}
                       id={card.id}
                       text={card.text}
+                      description={card.description}
                       isFavourite={card.isFavourite}
                       index={cardIndex}
                       divName={`div${divIndex + 1}`}

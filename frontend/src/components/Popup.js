@@ -1,18 +1,24 @@
 import React, {useEffect, useRef, useState} from "react";
 import "../styles/popup.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import {faFileAlt, faXmark} from "@fortawesome/free-solid-svg-icons";
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
+const descriptionIcon = <FontAwesomeIcon icon={faFileAlt} />
 
-const Popup = ({ text, onClose, onSave }) => {
+const Popup = ({ text, description, onClose, onSave }) => {
   const popupRef = useRef(null);
 
   const [editedText, setEditedText] = useState(text);
+  const [editedDescription, setEditedDescription] = useState(description)
 
   const handleChange = (event) => {
     setEditedText(event.target.value)
   }
+
+  const handleDescriptionChange = (event) => {
+    setEditedDescription(event.target.value);
+  };
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -41,7 +47,16 @@ const Popup = ({ text, onClose, onSave }) => {
               value={editedText}
               onChange={handleChange}
           />
-          <button className="save-button" onClick={() => onSave(editedText)}>Save</button>
+          <div className="description-header">
+            {descriptionIcon}
+            <h2 className="description-title">Description</h2>
+          </div>
+          <textarea
+              className="description-textarea"
+              value={editedDescription}
+              onChange={handleDescriptionChange}
+          />
+          <button className="save-button" onClick={() => onSave(editedText, editedDescription)}>Save</button>
         </div>
       </div>
     </div>

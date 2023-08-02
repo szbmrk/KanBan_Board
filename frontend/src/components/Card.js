@@ -25,6 +25,7 @@ export const solidStarIcon = <FontAwesomeIcon icon={faSolidStar} />;
 export const Card = ({
   id,
   text,
+  description,
   isFavourite,
   index,
   divName,
@@ -41,6 +42,7 @@ export const Card = ({
   });
 
   const [editedText, setEditedText] = useState(text);
+  const [editedDescription, setEditedDescription] = useState(description);
 
   const [, drop] = useDrop({
     accept: ItemTypes.CARD,
@@ -78,9 +80,10 @@ export const Card = ({
     setShowCustomPopup(false);
   };
 
-  const handleSavePopup = (newText) => {
+  const handleSavePopup = (newText, newDescription) => {
     // Update the text with the edited value
     setEditedText(newText);
+    setEditedDescription(newDescription);
 
     // Close the popup
     setShowCustomPopup(false);
@@ -136,6 +139,7 @@ export const Card = ({
       {showCustomPopup && (
         <Popup
           text={editedText}
+          description={editedDescription}
           onClose={handleClosePopup}
           onSave={handleSavePopup}
         />
