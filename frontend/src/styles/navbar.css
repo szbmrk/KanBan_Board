@@ -2,10 +2,10 @@
     background-color: rgba(var(--dark-grayRGB), 0.7);
     color: var(--light-gray);
     padding: 10px;
-    position: fixed;
-    top: 0;
     width: 100%;
-    z-index: 1;
+    height: 50px;
+    border-bottom: 1px solid var(--dark-gray);
+    z-index: 99;
 }
 
 
