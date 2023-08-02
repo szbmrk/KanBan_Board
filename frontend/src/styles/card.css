@@ -95,5 +95,18 @@
 
 .regular-icon:hover{
   color: var(--starred);
-  
+}
+
+.task-title {
+  max-width: calc(100% - 100px);
+  margin: 0 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-title:hover {
+  background-color: var(--dark-gray);
+  overflow: visible;
+  white-space: nowrap;
 }
