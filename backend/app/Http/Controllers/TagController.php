@@ -15,14 +15,14 @@ class TagController extends Controller
             return response()->json(['error' => 'Unauthorized.'], 404);
         }
 
-        $board = Board::where('board_id', $boardId)
-                      ->whereHas('team.teamMembers', function ($query) use ($user) {
-                          $query->where('user_id', $user->user_id);
-                      })
-                      ->first();
+        $board = Board::where('board_id', $boardId)->first();
 
         if (!$board) {
-            return response()->json(['error' => 'Board not found or you are not a member of the team.'], 404);
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
         $tags = Tag::where('board_id', $boardId)->get();
@@ -44,7 +44,7 @@ class TagController extends Controller
                       ->first();
 
         if (!$board) {
-            return response()->json(['error' => 'Board not found or you are not a member of the team.'], 404);
+            return response()->json(['error' => 'Board not found.'], 404);
         }
 
         $team = $board->team;
@@ -81,14 +81,16 @@ class TagController extends Controller
             return response()->json(['error' => 'Unauthorized.'], 404);
         }
 
-        $board = Board::where('board_id', $boardId)
-                      ->whereHas('team.teamMembers', function ($query) use ($user) {
-                          $query->where('user_id', $user->user_id);
-                      })
-                      ->first();
+        $board = Board::where('board_id', $boardId)->first();
 
         if (!$board) {
-            return response()->json(['error' => 'Board not found or you are not a member of the team.'], 404);
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        $team = $board->team;
+
+        if (!$team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team.'], 404);
         }
 
         $tag = Tag::where('tag_id', $tagId)
@@ -112,7 +114,7 @@ class TagController extends Controller
             return response()->json(['error' => 'A tag with the same name already exists for this board.'], 422);
         }
     
-        // Check if a tag with the same color already exists for the board (excluding the current tag being updated)
+        
         if ($board->tags()->where('color', $request->input('color'))->where('tag_id', '!=', $tagId)->exists()) {
             return response()->json(['error' => 'A tag with the same color already exists for this board.'], 422);
         }
@@ -133,16 +135,18 @@ class TagController extends Controller
             return response()->json(['error' => 'Unauthorized.'], 404);
         }
       
-        $board = Board::where('board_id', $boardId)
-          ->whereHas('team.teamMembers', function ($query) use ($user) {
-            $query->where('user_id', $user->user_id);
-          })
-          ->first();
-      
+        $board = Board::where('board_id', $boardId)->first();
+
         if (!$board) {
-          return response()->json(['error' => 'Board not found or you are not a member of the team.'], 404);
+            return response()->json(['error' => 'Board not found.'], 404);
         }
-      
+        
+        $team = $board->team;
+
+        if (!$team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 404);
+        }
+
         $tag = Tag::where('tag_id', $tagId)
                     ->where('board_id', $boardId)
                     ->first();
