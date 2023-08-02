@@ -9,6 +9,8 @@
 
 .card {
   display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap;
   align-items: center;
   background-color: var(--dark-gray);
   color: var(--light-gray);
@@ -16,9 +18,8 @@
   border-radius: 5px;
   padding: 10px;
   margin: 5px;
-  min-width: 150px;
-  cursor: pointer;
-  position: relative;
+  flex: 1 1 auto;
+  width: auto;
 }
 
 .card:hover {
@@ -44,13 +45,10 @@
 }
 
 .edit {
-  position: absolute;
-  right: 30px;
   padding: 5px;
   cursor: pointer;
   font-size: 16px;
   color: var(--light-gray);
-  margin-right: 5px;
 }
 
 @keyframes rotate {
@@ -71,8 +69,6 @@
 }
 
 .delete-button {
-  position: absolute;
-  right: 10px;
   padding: 5px;
   cursor: pointer;
   color: var(--light-gray);
@@ -85,8 +81,6 @@
 .favourite-button {
   padding: 5px;
   cursor: pointer;
-  position: absolute;
-  right: 60px;
 }
 
 .solid-icon {
@@ -98,8 +92,9 @@
 }
 
 .task-title {
-  max-width: calc(100% - 100px);
-  margin: 0 10px;
+  width: 65%;
+  text-align: left;
+  margin: 0 10px 0 5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -109,4 +104,11 @@
   background-color: var(--dark-gray);
   overflow: visible;
   white-space: nowrap;
+}
+
+.icon-container {
+  width: 35%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }

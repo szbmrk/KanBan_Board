@@ -3,8 +3,7 @@
   display: flex; /* Display cards under each other */
   flex-direction: column; /* Stack cards vertically */
   margin-top: 20px; /* Add space between div and cards */
-  max-width: 350px;
-  min-width: 250px;
+  width: 300px;
 }
 
 .content {
@@ -16,10 +15,6 @@
   display: flex; /* Display divs next to each other */
   flex-wrap: wrap; /* Allow divs to wrap to next line */
   justify-content: flex-start;
-}
-
-.div {
-  flex: 1; /* Allow divs to take equal space */
 }
 
 .card-title {

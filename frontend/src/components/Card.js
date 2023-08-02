@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import Popup from "./Popup";
 import ConfirmationPopup from "./ConfirmationPopup";
@@ -63,6 +63,8 @@ export const Card = ({
     },
   });
 
+
+
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [showCustomPopup, setShowCustomPopup] = useState(false);
 
@@ -107,12 +109,28 @@ export const Card = ({
 
   const [bouncingStarIcon, setBouncingStarIcon] = useState(regularStarIcon);
 
-  const handleMouseEnter = () => {
+  const handleMouseEnterOnStarIcon = () => {
     setBouncingStarIcon(regularStarIconBouncing);
   };
 
-  const handleMouseLeave = () => {
+  const handleMouseLeaveOnStarIcon = () => {
     setBouncingStarIcon(regularStarIcon);
+  };
+
+  const [isHovered, setIsHovered] = useState(false);
+  const [isOverflown, setIsOverflown] = useState(false);
+
+  const handleMouseEnterOnTaskTitle = () => {
+    const taskTitle = document.getElementsByClassName("task-title")[index];
+    if (taskTitle.style.width > "200px)") {
+      setIsOverflown(true);
+      setIsHovered(true);
+    }
+  };
+
+  const handleMouseLeaveOnTaskTitle = () => {
+    setIsOverflown(false);
+    setIsHovered(false);
   };
 
 
@@ -126,23 +144,42 @@ export const Card = ({
           cursor: "grab",
         }}
       >
-        {editedText}
-        <span className="edit" onClick={handleClick}>
-          {pencilIcon}
-        </span>
-        <span className="delete-button" onClick={handleDelete}>
-          {trashIcon}
-        </span>
-        {isFavourite ? 
-          <span className="favourite-button solid-icon" onClick={handleFavourite}>
-            {solidStarIcon}
-          </span> : 
-          <span className="favourite-button regular-icon" onClick={handleFavourite}
-                                                          onMouseEnter={handleMouseEnter}
-                                                          onMouseLeave={handleMouseLeave}>
-            {bouncingStarIcon}
-          </span>
+        <div className="task-title" 
+              onMouseEnter={handleMouseEnterOnTaskTitle}
+              onMouseLeave={handleMouseLeaveOnTaskTitle}
+        >
+            {editedText}
+        </div>
+        <div className="icon-container">
+          {isFavourite ? 
+            <span className="favourite-button solid-icon" 
+                  onClick={handleFavourite}
+                  style={{ display: isHovered ? "none" : "block" }}
+                  >
+              {solidStarIcon}
+            </span> : 
+            <span className="favourite-button regular-icon" 
+                  onClick={handleFavourite}
+                  onMouseEnter={handleMouseEnterOnStarIcon}
+                  onMouseLeave={handleMouseLeaveOnStarIcon}
+                  style={{ display: isHovered ? "none" : "block" }}
+                  >
+              {bouncingStarIcon}
+            </span>
           }
+          <span className="edit" 
+                onClick={handleClick}
+                style={{ display: isHovered ? "none" : "block" }}
+          >
+            {pencilIcon}
+          </span>
+          <span className="delete-button" 
+                onClick={handleDelete}
+                style={{ display: isHovered ? "none" : "block" }}
+          >
+            {trashIcon}
+          </span>
+        </div>
       </div>
       {showDeletePopup && (
         <ConfirmationPopup

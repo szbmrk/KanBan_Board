@@ -64,9 +64,10 @@ const DragDrop = () => {
     });
 
     const opacity = isDragging ? 0.5 : 1;
+    const display = "flex";
 
     return (
-      <div ref={(node) => drag(drop(node))} style={{ opacity }}>
+      <div ref={(node) => drag(drop(node))} style={{ opacity, display }}>
         {children}
       </div>
     );
@@ -230,91 +231,89 @@ const DragDrop = () => {
         <div className="div-container">
           {divData.map((div, divIndex) => (
             <Column key={divIndex} divIndex={divIndex} moveColumn={moveColumn}>
-              <div className="div">
-                <div className="card-container">
-                  {editingColumnIndex === divIndex ? (
-                    <div className="name-edit">
-                      <input
-                        type="text"
-                        value={div.title}
-                        onChange={(event) =>
-                          handleColumnTitleChange(event, divIndex)
+              <div className="card-container">
+                {editingColumnIndex === divIndex ? (
+                  <div className="name-edit">
+                    <input
+                      type="text"
+                      value={div.title}
+                      onChange={(event) =>
+                        handleColumnTitleChange(event, divIndex)
+                      }
+                      autoFocus
+                      ref={editBoxRef} // Set the ref to the title edit input box
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleColumnTitleBlur(divIndex);
+                        } else if (e.key === "Escape") {
+                          handleColumnTitleBlur(divIndex, true); // Pass `true` to indicate that changes are cancelled
                         }
-                        autoFocus
-                        ref={editBoxRef} // Set the ref to the title edit input box
-                        onClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            handleColumnTitleBlur(divIndex);
-                          } else if (e.key === "Escape") {
-                            handleColumnTitleBlur(divIndex, true); // Pass `true` to indicate that changes are cancelled
-                          }
-                        }}
-                      />
-                      <span
-                        className="edit-action-button"
-                        id="check-button"
-                        onClick={() => handleColumnTitleBlur(divIndex)}
-                      >
-                        {checkIcon}
-                      </span>
-                      <span
-                        className="edit-action-button"
-                        id="cancel-button"
-                        onClick={() => handleColumnTitleBlur(divIndex, true)}
-                      >
-                        {xMarkIcon}
-                      </span>
-                    </div>
-                  ) : (
-                    <>
-                      <div
-                        className="column-title-container"
-                        onDoubleClick={() =>
-                          handleColumnTitleDoubleClick(divIndex)
-                        }
-                      >
-                        <h2 className="card-title">{div.title}</h2>
-                      </div>
-                      <span
-                        className="delete-column-button"
-                        onClick={(e) => handleDeleteButtonClick(e, divIndex)}
-                      >
-                        {xMarkIcon}
-                      </span>
-                    </>
-                  )}
-                  {div.cards.map((card, cardIndex) => (
-                    <Card
-                      key={card.id}
-                      id={card.id}
-                      text={card.text}
-                      description={card.description}
-                      isFavourite={card.isFavourite}
-                      index={cardIndex}
-                      divName={`div${divIndex + 1}`}
-                      moveCard={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
-                        moveCard(
-                          dragIndex,
-                          hoverIndex,
-                          parseInt(sourceDiv.substr(3)) - 1,
-                          parseInt(targetDiv.substr(3)) - 1
-                        )
-                      }
-                      deleteCard={(cardId, divName) =>
-                        handleDeleteCard(cardId, divIndex)
-                      }
-                      favouriteCard={(cardId, divName) =>
-                        favouriteCard(cardId, divIndex)
-                      }
+                      }}
                     />
-                  ))}
-                  <div
-                    className="addbtn"
-                    onClick={() => handleAddCard(divIndex)}
-                  >
-                    {plusIcon} Add new task
+                    <span
+                      className="edit-action-button"
+                      id="check-button"
+                      onClick={() => handleColumnTitleBlur(divIndex)}
+                    >
+                      {checkIcon}
+                    </span>
+                    <span
+                      className="edit-action-button"
+                      id="cancel-button"
+                      onClick={() => handleColumnTitleBlur(divIndex, true)}
+                    >
+                      {xMarkIcon}
+                    </span>
                   </div>
+                ) : (
+                  <>
+                    <div
+                      className="column-title-container"
+                      onDoubleClick={() =>
+                        handleColumnTitleDoubleClick(divIndex)
+                      }
+                    >
+                      <h2 className="card-title">{div.title}</h2>
+                    </div>
+                    <span
+                      className="delete-column-button"
+                      onClick={(e) => handleDeleteButtonClick(e, divIndex)}
+                    >
+                      {xMarkIcon}
+                    </span>
+                  </>
+                )}
+                {div.cards.map((card, cardIndex) => (
+                  <Card
+                    key={card.id}
+                    id={card.id}
+                    text={card.text}
+                    description={card.description}
+                    isFavourite={card.isFavourite}
+                    index={cardIndex}
+                    divName={`div${divIndex + 1}`}
+                    moveCard={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
+                      moveCard(
+                        dragIndex,
+                        hoverIndex,
+                        parseInt(sourceDiv.substr(3)) - 1,
+                        parseInt(targetDiv.substr(3)) - 1
+                      )
+                    }
+                    deleteCard={(cardId, divName) =>
+                      handleDeleteCard(cardId, divIndex)
+                    }
+                    favouriteCard={(cardId, divName) =>
+                      favouriteCard(cardId, divIndex)
+                    }
+                  />
+                ))}
+                <div
+                  className="addbtn"
+                  onClick={() => handleAddCard(divIndex)}
+                >
+                  {plusIcon} Add new task
                 </div>
               </div>
             </Column>
