@@ -9,8 +9,8 @@ import {
   faPencil,
   faTrash,
   faStar as faSolidStar,
+  faStar as faRegularStar
 } from "@fortawesome/free-solid-svg-icons";
-import { faStar as faRegularStar } from "@fortawesome/free-regular-svg-icons";
 
 const ItemTypes = {
   CARD: "card",
