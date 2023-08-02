@@ -11,6 +11,7 @@ use App\Http\Controllers\TeamManagementController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskTagController;
+use App\Http\Controllers\AttachmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,3 +65,8 @@ Route::delete('/boards/{board_id}/tasks/{task_id}', [TaskController::class, 'tas
 
 Route::get('/tasks/{task_id}/comments', [CommentController::class, 'index'])->middleware('api');
 Route::post('/tasks/{task_id}/comments', [CommentController::class, 'commentStore'])->middleware('api');
+
+Route::get('/tasks/{task_id}/attachments', [AttachmentController::class, 'index'])->middleware('api');
+Route::post('/tasks/{task_id}/attachments', [AttachmentController::class, 'store'])->middleware('api');
+Route::put('/attachments/{attachment_id}', [AttachmentController::class, 'update'])->middleware('api');
+Route::delete('/attachments/{attachment_id}', [AttachmentController::class, 'destroy'])->middleware('api');

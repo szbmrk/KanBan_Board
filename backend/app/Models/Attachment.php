@@ -11,6 +11,14 @@ class Attachment extends Model
 
     protected $primaryKey = 'attachment_id';
 
+    protected $fillable = [
+        'task_id',
+        'link',
+        'description',
+        'created_at',
+        'updated_at',
+    ];
+
     public function task()
     {
         return $this->belongsTo(Task::class, 'task_id');

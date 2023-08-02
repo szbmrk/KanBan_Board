@@ -13,7 +13,8 @@ return new class extends Migration
             $table->string('link', 255)->nullable(false);
             $table->text('description')->nullable();
             $table->unsignedBigInteger('task_id')->nullable(false);
-
+            $table->timestamps();
+            
             $table->foreign('task_id')->references('task_id')->on('tasks')->onDelete('cascade');
         });
     }
