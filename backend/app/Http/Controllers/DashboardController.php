@@ -65,16 +65,22 @@ class DashboardController extends Controller
         $user = auth()->user();
         
         $board = Board::find($board_id);
+        if(!$board) {
+            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Message: Board not found on delete -> board_id: $board_id");
+            return response()->json(['error' => 'Board not found.'], 401);
+        }
+
         // Check if user belongs to the team
-        if ($board && $user->teams()->where('teams.team_id', $board->team_id)->exists()) {
+        if ($user->teams()->where('teams.team_id', $board->team_id)->exists()) {
             $board->delete();
 
             LogRequest::instance()->logAction('DELETED BOARD', $user->user_id, "board_id: $board_id");
 
             return response()->json(null, 204);
         } else {
-            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Message: Board not found on delete -> board_id: $board_id, username: $user->username");
-            return response()->json(['error' => 'Unauthenticated or board not found.'], 401);
+
+            LogRequest::instance()->logActionMoreDetails('NO PERMISSION', $user->user_id, "Message: No permission to delete board -> board_id: $board_id", null, $board_id, null);
+            return response()->json(['error' => 'No permission to delete board'], 401);
         }
     }
 
