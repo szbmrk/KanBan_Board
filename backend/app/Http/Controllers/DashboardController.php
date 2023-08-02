@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Log;
 use App\Models\Team;
+use App\Models\User;
 use App\Models\Board;
+use App\Helpers\LogRequest;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -28,6 +31,9 @@ class DashboardController extends Controller
             $board->team_id = $team_id;
             $board->save();
     
+            // Log the successful action
+            $this->logAction('CREATED BOARD', $user->user_id, "Board name: $board->name, Team ID: $team_id");
+
             return response()->json(['board' => $board], 201);
         } else {
             return response()->json(['error' => 'User does not belong to this team.'], 403);
@@ -45,6 +51,9 @@ class DashboardController extends Controller
             $board->name = $request->name;
             $board->save();
 
+            // Log the successful action
+            $this->logAction('UPDATED BOARD', $user->user_id, $board);
+
             return response()->json(['board' => $board]);
         } else {
             return response()->json(['error' => 'Unauthenticated or board not found.'], 401);
@@ -60,10 +69,22 @@ class DashboardController extends Controller
         if ($board && $user->teams()->where('teams.team_id', $board->team_id)->exists()) {
             $board->delete();
 
+            LogRequest::instance()->logAction('DELETED BOARD', $user->user_id, "board_id: $board_id");
+
             return response()->json(null, 204);
         } else {
+            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Message: Board not found on delete -> board_id: $board_id, username: $user->username");
             return response()->json(['error' => 'Unauthenticated or board not found.'], 401);
         }
     }
 
+    private function logAction($action, $user_id, $details)
+    {
+        $log = new Log;
+        $log->action = $action;
+        $log->user_id = $user_id;
+        $log->details = $details; 
+        $log->created_at = now(); 
+        $log->save();
+    }
 }

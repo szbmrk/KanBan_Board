@@ -14,7 +14,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->unsignedBigInteger('task_id')->nullable(false);
 
-            $table->foreign('task_id')->references('task_id')->on('tasks');
+            $table->foreign('task_id')->references('task_id')->on('tasks')->onDelete('cascade');
         });
     }
 

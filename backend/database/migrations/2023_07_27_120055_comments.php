@@ -16,8 +16,8 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
 
-            $table->foreign('task_id')->references('task_id')->on('tasks');
-            $table->foreign('user_id')->references('user_id')->on('users');
+            $table->foreign('task_id')->references('task_id')->on('tasks')->onDelete('cascade');
+            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
         });
     }
 
