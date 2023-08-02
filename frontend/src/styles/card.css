@@ -88,3 +88,12 @@
   position: absolute;
   right: 60px;
 }
+
+.solid-icon {
+  color: var(--starred);
+}
+
+.regular-icon:hover{
+  color: var(--starred);
+  
+}

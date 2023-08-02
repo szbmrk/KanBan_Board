@@ -20,6 +20,7 @@ export const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 export const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
 export const regularStarIcon = <FontAwesomeIcon icon={faRegularStar} />;
+export const regularStarIconBouncing = <FontAwesomeIcon icon={faRegularStar} bounce />;
 export const solidStarIcon = <FontAwesomeIcon icon={faSolidStar} />;
 
 export const Card = ({
@@ -99,10 +100,21 @@ export const Card = ({
     setShowDeletePopup(false); // Close the delete confirmation popup
     deleteCard(id, divName); // Call the deleteCard method with the correct arguments
   };
-
+  
   const handleFavourite = () => {
     favouriteCard(id, divName);
   };
+
+  const [bouncingStarIcon, setBouncingStarIcon] = useState(regularStarIcon);
+
+  const handleMouseEnter = () => {
+    setBouncingStarIcon(regularStarIconBouncing);
+  };
+
+  const handleMouseLeave = () => {
+    setBouncingStarIcon(regularStarIcon);
+  };
+
 
   return (
     <>
@@ -121,10 +133,16 @@ export const Card = ({
         <span className="delete-button" onClick={handleDelete}>
           {trashIcon}
         </span>
-        <span className="favourite-button" onClick={handleFavourite}>
-          {" "}
-          {isFavourite ? solidStarIcon : regularStarIcon}
-        </span>
+        {isFavourite ? 
+          <span className="favourite-button solid-icon" onClick={handleFavourite}>
+            {solidStarIcon}
+          </span> : 
+          <span className="favourite-button regular-icon" onClick={handleFavourite}
+                                                          onMouseEnter={handleMouseEnter}
+                                                          onMouseLeave={handleMouseLeave}>
+            {bouncingStarIcon}
+          </span>
+          }
       </div>
       {showDeletePopup && (
         <ConfirmationPopup
