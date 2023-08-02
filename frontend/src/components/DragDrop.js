@@ -13,25 +13,25 @@ const DragDrop = () => {
     {
       title: "Div 1",
       cards: [
-        { id: 1, text: "Div 1 - Card 1" },
-        { id: 2, text: "Div 1 - Card 2" },
-        { id: 3, text: "Div 1 - Card 3" },
+        { id: 1, text: "Div 1 - Card 1", isFavourite: false },
+        { id: 2, text: "Div 1 - Card 2", isFavourite: true },
+        { id: 3, text: "Div 1 - Card 3", isFavourite: false },
       ],
     },
     {
       title: "Div 2",
       cards: [
-        { id: 4, text: "Div 2 - Card 1" },
-        { id: 5, text: "Div 2 - Card 2" },
-        { id: 6, text: "Div 2 - Card 3" },
+        { id: 4, text: "Div 2 - Card 1", isFavourite: false },
+        { id: 5, text: "Div 2 - Card 2", isFavourite: false },
+        { id: 6, text: "Div 2 - Card 3", isFavourite: false },
       ],
     },
     {
       title: "Div 3",
       cards: [
-        { id: 7, text: "Div 3 - Card 1" },
-        { id: 8, text: "Div 3 - Card 2" },
-        { id: 9, text: "Div 3 - Card 3" },
+        { id: 7, text: "Div 3 - Card 1", isFavourite: false },
+        { id: 8, text: "Div 3 - Card 2", isFavourite: false },
+        { id: 9, text: "Div 3 - Card 3", isFavourite: false },
       ],
     },
   ];
@@ -208,6 +208,20 @@ const DragDrop = () => {
     setColumnToDeleteIndex(null);
   };
 
+  const favouriteCard = (id, divIndex) => {
+    const updatedDivData = [...divData];
+    const cardIndex = updatedDivData[divIndex].cards.findIndex(
+      (card) => card.id === id
+    );
+
+    if (cardIndex !== -1) {
+      updatedDivData[divIndex].cards[cardIndex].isFavourite =
+        !updatedDivData[divIndex].cards[cardIndex].isFavourite;
+    }
+
+    setDivData(updatedDivData); // Update the state with the updated div data
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="content col-10 col-s-10">
@@ -274,6 +288,7 @@ const DragDrop = () => {
                       key={card.id}
                       id={card.id}
                       text={card.text}
+                      isFavourite={card.isFavourite}
                       index={cardIndex}
                       divName={`div${divIndex + 1}`}
                       moveCard={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
@@ -286,6 +301,9 @@ const DragDrop = () => {
                       }
                       deleteCard={(cardId, divName) =>
                         handleDeleteCard(cardId, divIndex)
+                      }
+                      favouriteCard={(cardId, divName) =>
+                        favouriteCard(cardId, divIndex)
                       }
                     />
                   ))}

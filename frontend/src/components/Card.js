@@ -4,7 +4,13 @@ import Popup from "./Popup";
 import ConfirmationPopup from "./ConfirmationPopup";
 import "../styles/card.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faPencil,
+  faTrash,
+  faStar as faSolidStar,
+} from "@fortawesome/free-solid-svg-icons";
+import { faStar as faRegularStar } from "@fortawesome/free-regular-svg-icons";
 
 const ItemTypes = {
   CARD: "card",
@@ -13,8 +19,19 @@ const ItemTypes = {
 export const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 export const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
+export const regularStarIcon = <FontAwesomeIcon icon={faRegularStar} />;
+export const solidStarIcon = <FontAwesomeIcon icon={faSolidStar} />;
 
-export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
+export const Card = ({
+  id,
+  text,
+  isFavourite,
+  index,
+  divName,
+  moveCard,
+  deleteCard,
+  favouriteCard,
+}) => {
   const [{ isDragging: dragging }, drag] = useDrag({
     type: ItemTypes.CARD,
     item: { id, index, divName },
@@ -67,7 +84,7 @@ export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
 
     // Close the popup
     setShowCustomPopup(false);
-  }
+  };
 
   const handleDelete = () => {
     setShowCustomPopup(false); // Close the custom popup
@@ -81,6 +98,10 @@ export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
   const handleConfirmDelete = () => {
     setShowDeletePopup(false); // Close the delete confirmation popup
     deleteCard(id, divName); // Call the deleteCard method with the correct arguments
+  };
+
+  const handleFavourite = () => {
+    favouriteCard(id, divName);
   };
 
   return (
@@ -100,6 +121,10 @@ export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
         <span className="delete-button" onClick={handleDelete}>
           {trashIcon}
         </span>
+        <span className="favourite-button" onClick={handleFavourite}>
+          {" "}
+          {isFavourite ? solidStarIcon : regularStarIcon}
+        </span>
       </div>
       {showDeletePopup && (
         <ConfirmationPopup
@@ -108,7 +133,13 @@ export const Card = ({ id, text, index, divName, moveCard, deleteCard }) => {
           onConfirm={handleConfirmDelete}
         />
       )}
-      {showCustomPopup && <Popup text={editedText} onClose={handleClosePopup} onSave={handleSavePopup}/>}
+      {showCustomPopup && (
+        <Popup
+          text={editedText}
+          onClose={handleClosePopup}
+          onSave={handleSavePopup}
+        />
+      )}
     </>
   );
 };

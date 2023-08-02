@@ -1,5 +1,5 @@
 .card-container {
-  display: flex; 
+  display: flex;
   flex-direction: column;
   margin: 20px 10px;
   padding: 10px;
@@ -8,8 +8,8 @@
 }
 
 .card {
-  display: flex; 
-  align-items: center; 
+  display: flex;
+  align-items: center;
   background-color: var(--dark-gray);
   color: var(--light-gray);
   border: 1px solid var(--dark-gray);
@@ -72,7 +72,7 @@
 
 .delete-button {
   position: absolute;
-  right: 10px; 
+  right: 10px;
   padding: 5px;
   cursor: pointer;
   color: var(--light-gray);
@@ -80,4 +80,11 @@
 
 .delete-button:hover {
   color: var(--important);
+}
+
+.favourite-button {
+  padding: 5px;
+  cursor: pointer;
+  position: absolute;
+  right: 70px;
 }
