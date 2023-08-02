@@ -15,6 +15,8 @@ use App\Models\TaskTag;
 use App\Models\UserTask;
 use App\Models\Feedback;
 use Illuminate\Validation\Rule;
+use App\Helpers\LogRequest;
+
 
 class ColumnController extends Controller
 {
@@ -24,6 +26,7 @@ class ColumnController extends Controller
         $board = Board::find($board_id);
     
         if (!$board) {
+            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found'], 404);
         }
     
