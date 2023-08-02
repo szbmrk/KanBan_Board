@@ -2,6 +2,10 @@
     float: left;
 }
 
+.sidebar {
+    transition: 0.5s;
+}
+
 .sidebar-menu {
     height: 100vh;
     max-width: 220px;
@@ -35,4 +39,9 @@
   
   .sidebar-menu li:hover {
     background-color: var(--dark-gray);
+  }
+
+  .sidebar-hidden {
+    transform: translateX(-220px);
+    transition: transform 0.5s ease-in-out;
   }

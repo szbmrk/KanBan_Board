@@ -9,10 +9,18 @@ const profileIcon = <FontAwesomeIcon icon={faUser} />;
 const menuIcon = <FontAwesomeIcon icon={faBars} />;
 
 const Navbar = () => {
+    const hideSidebar = () => {
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.toggle('sidebar-hidden');
+    };
     return (
         <div className="navbar">
             <div className="navbar-menu col-12 col-s-12">
-                <button id="menu-btn">{menuIcon}</button>
+                <button 
+                    id="menu-btn"
+                    onClick={hideSidebar}>
+                        {menuIcon}
+                </button>
                 <ul>
                     <li>
                         <Link to="/notifications">
