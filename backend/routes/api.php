@@ -8,7 +8,8 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamManagementController;
-
+use App\Http\Controllers\TagController;
+use App\Http\Controllers\TaskTagController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +45,11 @@ Route::post('/team/{team_id}/management', [TeamManagementController::class, 'sto
 Route::delete('/team/{team_id}/management/{user_id}', [TeamManagementController::class, 'destroyTeamMember'])->middleware('api');
 
 Route::get('/boards/{board_id}', [BoardController::class, 'show'])->middleware('api');
+
+Route::get('/boards/{boardId}/tags', [TagController::class, 'index'])->middleware('api');
+Route::post('/boards/{boardId}/tags', [TagController::class, 'store'])->middleware('api');
+Route::put('/boards/{boardId}/tags/{tagId}', [TagController::class, 'update'])->middleware('api');
+Route::delete('/boards/{boardId}/tags/{tagId}', [TagController::class, 'destroy'])->middleware('api');
 
 Route::post('/boards/{board_id}', [ColumnController::class, 'columnStore'])->middleware('api');
 Route::put('/boards/column/{column}', [ColumnController::class, 'columnUpdate'])->middleware('api');

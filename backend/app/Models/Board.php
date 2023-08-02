@@ -21,4 +21,14 @@ class Board extends Model
     {
         return $this->hasMany(Column::class, 'board_id', 'board_id');
     }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class, 'team_id', 'team_id');
+    }
+
+    public function tags()
+    {
+        return $this->hasMany(Tag::class, 'board_id', 'board_id');
+    }
 }
