@@ -8,6 +8,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamManagementController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskTagController;
 
@@ -60,3 +61,6 @@ Route::post('/boards/{board_id}/task', [TaskController::class, 'taskStore'])->mi
 Route::put('/boards/{board_id}/tasks/{task_id}', [TaskController::class, 'taskUpdate'])->middleware('api');
 Route::post('/columns/{column_id}/tasks/positions', [TaskController::class, 'taskPositionUpdate'])->middleware('api');
 Route::delete('/boards/{board_id}/tasks/{task_id}', [TaskController::class, 'taskDestroy'])->middleware('api');
+
+Route::get('/tasks/{task_id}/comments', [CommentController::class, 'index'])->middleware('api');
+Route::post('/tasks/{task_id}/comments', [CommentController::class, 'commentStore'])->middleware('api');
