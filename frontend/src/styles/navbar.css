@@ -8,23 +8,39 @@
     z-index: 99;
 }
 
-
 .navbar a {
     color: var(--light-gray);
     text-decoration: none;
-    padding: 10px;
+    justify-self: center;
 }
 
 .navbar-menu {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     flex-wrap: nowrap;
+    align-items: center;
 }
 
 .navbar-menu ul {
     list-style-type: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .navbar-menu li {
-    float: left;
+    margin: 0 10px;
+    font-size: 1.2em;
+}
+
+#menu-btn {
+    display: inline-block;
+    margin: 0 10px;
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    color: var(--light-gray);
+    font-size: 1.5em;
+    align-self: center;
 }
