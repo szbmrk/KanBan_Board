@@ -18,6 +18,7 @@ class BoardController extends Controller
         }
 
         if (!$user->isMemberOfBoard($board_id)) {
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "Error message: You are not a member of this board -> board_id: $board_id, user_id: $user->user_id, username: $user->username");
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
         else{

@@ -13,7 +13,11 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable(false);
             $table->enum('action', [
                 'UPDATED TEAM', 'DELETED TEAM', 'CREATED TEAM',
-                'UPDATED BOARD', 'DELETED BOARD', 'CREATED BOARD',
+                'UPDATED COLUMN', 'DELETED COLUMN', 'CREATED COLUMN',
+                'UPDATED BOARD', 'DELETED BOARD', 'CREATED BOARD','BOARD NOT FOUND',
+                'SYSTEM ERROR',
+                'USER ERROR', 'UPDATED USER', 'DELETED USER', 'CREATED USER',
+                'AUTHENTICATION ERROR', 'NO PERMISSION',
                 'UPDATED TASK', 'DELETED TASK', 'CREATED TASK', 'FINISHED TASK', 'COMMENTED ON TASK'
             ])->nullable(false);
             $table->text('details')->nullable();
@@ -21,6 +25,7 @@ return new class extends Migration
             $table->unsignedBigInteger('board_id')->nullable();
             $table->unsignedBigInteger('team_id')->nullable();
             $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
 
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
             $table->foreign('task_id')->references('task_id')->on('tasks')->onDelete('cascade');
