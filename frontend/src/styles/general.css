@@ -8,6 +8,7 @@
     --important: rgba(255, 0, 0, 0.4);
     --important-light: rgba(255, 0, 0, 0.6);
     --basic-font: 'Raleway', sans-serif;
+    --confirm: #359138;
 }
 
 *{

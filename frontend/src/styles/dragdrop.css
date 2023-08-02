@@ -30,10 +30,11 @@
 
 .name-edit { 
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   color: var(--light-gray);
   margin: 0 30px 30px;
   border-bottom: 1px solid var(--light-gray);
+  column-gap: 10px;
 }
 
 .name-edit input{
@@ -41,7 +42,7 @@
   color: var(--light-gray);
   font-family: var(--basic-font);
   font-size: 1.5em;
-  margin: 5px 0px;
+  margin: 5px 20px 5px 0;
   background: transparent;
   border: none;
   outline: none;
@@ -80,6 +81,14 @@
   padding: 3px;
   margin-inline: 3px;
   cursor: pointer;
+}
+
+#check-button:hover {
+  color: var(--confirm);
+}
+
+#cancel-button:hover {
+  color: var(--important);
 }
 
 @media (max-width: 830px) {

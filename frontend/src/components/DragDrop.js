@@ -238,12 +238,14 @@ const DragDrop = () => {
                       />
                       <span
                         className="edit-action-button"
+                        id="check-button"
                         onClick={() => handleColumnTitleBlur(divIndex)}
                       >
                         {checkIcon}
                       </span>
                       <span
                         className="edit-action-button"
+                        id="cancel-button"
                         onClick={() => handleColumnTitleBlur(divIndex, true)}
                       >
                         {xMarkIcon}
