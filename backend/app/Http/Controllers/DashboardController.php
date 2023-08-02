@@ -32,10 +32,11 @@ class DashboardController extends Controller
             $board->save();
     
             // Log the successful action
-            $this->logAction('CREATED BOARD', $user->user_id, "Board name: $board->name, Team ID: $team_id");
+            LogRequest::instance()->logAction('CREATED BOARD', $user->user_id, "Board created successfully!", $team_id, $board->board_id, null);
 
             return response()->json(['board' => $board], 201);
         } else {
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not belong to this team. -> Create Board", null, null, null);
             return response()->json(['error' => 'User does not belong to this team.'], 403);
         }
     }
@@ -46,17 +47,23 @@ class DashboardController extends Controller
         $user = auth()->user();
         
         $board = Board::find($board_id);
+        if(!$board) {
+            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found on update -> board_id: $board_id", null, null, null);
+            return response()->json(['error' => 'Board not found.'], 401);
+        }
         // Check if user belongs to the team
-        if ($board && $user->teams()->where('teams.team_id', $board->team_id)->exists()) {
+        if ($user->teams()->where('teams.team_id', $board->team_id)->exists()) {
             $board->name = $request->name;
             $board->save();
 
             // Log the successful action
-            $this->logAction('UPDATED BOARD', $user->user_id, $board);
+            LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "Board Updated successfully!", $team_id, $board->board_id, null);
 
             return response()->json(['board' => $board]);
         } else {
-            return response()->json(['error' => 'Unauthenticated or board not found.'], 401);
+
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not belong to this team. -> Update Board", null, null, null);
+            return response()->json(['error' => 'Unauthenticated'], 401);
         }
     }
 
@@ -66,7 +73,7 @@ class DashboardController extends Controller
         
         $board = Board::find($board_id);
         if(!$board) {
-            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Message: Board not found on delete -> board_id: $board_id");
+            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found on Delete. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found.'], 401);
         }
 
@@ -74,23 +81,14 @@ class DashboardController extends Controller
         if ($user->teams()->where('teams.team_id', $board->team_id)->exists()) {
             $board->delete();
 
-            LogRequest::instance()->logAction('DELETED BOARD', $user->user_id, "board_id: $board_id");
+            LogRequest::instance()->logAction('DELETED BOARD', $user->user_id, "Board Deleted successfully! -> board_id: $board_id", $board->team_id, $board_id, null );
 
             return response()->json(null, 204);
         } else {
 
-            LogRequest::instance()->logActionMoreDetails('NO PERMISSION', $user->user_id, "Message: No permission to delete board -> board_id: $board_id", null, $board_id, null);
-            return response()->json(['error' => 'No permission to delete board'], 401);
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not belong to this team. -> Delete Board", null, null, null);
+            return response()->json(['error' => 'Unauthenticated'], 401);
         }
     }
 
-    private function logAction($action, $user_id, $details)
-    {
-        $log = new Log;
-        $log->action = $action;
-        $log->user_id = $user_id;
-        $log->details = $details; 
-        $log->created_at = now(); 
-        $log->save();
-    }
 }

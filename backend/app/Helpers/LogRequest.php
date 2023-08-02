@@ -14,17 +14,7 @@ class LogRequest
         return self::$instance;
     }
 
-    public static function logAction($action, $user_id, $details)
-    {
-        
-        $log = new \App\Models\Log;
-        $log->action = $action;
-        $log->user_id = $user_id;
-        $log->details = $details;
-        $log->save();
-    }
-
-    public static function logActionMoreDetails($action, $user_id, $details, $task_id, $board_id, $team_id)
+    public static function logAction($action, $user_id, $details, $team_id, $board_id, $task_id  )
     {
         
         $log = new \App\Models\Log;
