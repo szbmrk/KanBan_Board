@@ -13,8 +13,8 @@ return new class extends Migration
             $table->unsignedBigInteger('team_id')->nullable(false);
             $table->unsignedBigInteger('user_id')->nullable(false);
             $table->timestamps();
-            $table->foreign('team_id')->references('team_id')->on('teams');
-            $table->foreign('user_id')->references('user_id')->on('users');
+            $table->foreign('team_id')->references('team_id')->on('teams')->onDelete('cascade');
+            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
         });
     }
 

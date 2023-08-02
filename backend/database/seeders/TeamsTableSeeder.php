@@ -36,6 +36,13 @@ class TeamsTableSeeder extends Seeder
                 'parent_team_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
+            ],
+            [
+                'name' => 'Team 4 (Empty)',
+                'created_by' => 10, 
+                'parent_team_id' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
 
 

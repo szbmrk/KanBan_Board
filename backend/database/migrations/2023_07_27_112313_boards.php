@@ -15,7 +15,7 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
 
-            $table->foreign('team_id')->references('team_id')->on('teams');
+            $table->foreign('team_id')->references('team_id')->on('teams')->onDelete('cascade');
         });
     }
 
