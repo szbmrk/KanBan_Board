@@ -263,7 +263,7 @@ const DragDrop = () => {
                         className="delete-column-button"
                         onClick={(e) => handleDeleteButtonClick(e, divIndex)}
                       >
-                        {trashIcon}
+                        {xMarkIcon}
                       </span>
                     </>
                   )}
