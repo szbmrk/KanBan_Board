@@ -9,6 +9,7 @@ use Illuminate\Database\Seeder;
 use Database\Factories\UserFactory;
 use Database\Seeders\LogsTableSeeder;
 use Database\Seeders\TagsTableSeeder;
+use Database\Seeders\UserTableSeeder;
 use Database\Seeders\RolesTableSeeder;
 use Database\Seeders\TasksTableSeeder;
 use Database\Seeders\TeamsTableSeeder;
@@ -22,9 +23,9 @@ use Database\Seeders\UserTasksTableSeeder;
 use Database\Seeders\PrioritiesTableSeeder;
 use Database\Seeders\AttachmentsTableSeeder;
 use Database\Seeders\TeamMembersTableSeeder;
-use Database\Seeders\TeamMembersRoleTableSeeder;
-use Database\Seeders\FavouriteTasksTableSeeder;
 use Database\Seeders\NotificationsTableSeeder;
+use Database\Seeders\FavouriteTasksTableSeeder;
+use Database\Seeders\TeamMembersRoleTableSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -34,11 +35,13 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-        // Create 10 users
-        UserFactory::new()->count(10)->create();
+        // Create 10 users (every time they are different!)
+        #UserFactory::new()->count(10)->create();
 
         // Calling the other seeders
-        $this->call([
+        //Every time they are the same!
+        $this->call([ 
+            UserTableSeeder::class,
             RolesTableSeeder::class,
             TeamsTableSeeder::class,
             TeamMembersTableSeeder::class,
@@ -57,6 +60,8 @@ class DatabaseSeeder extends Seeder
             FavouriteTasksTableSeeder::class,
             AttachmentsTableSeeder::class,
             LogsTableSeeder::class,
+           
+            
         ]);
     }
 }
