@@ -25,4 +25,9 @@ class Tag extends Model
         return $this->belongsToMany(Task::class, 'task_tags', 'tag_id', 'task_id');
     }
 
+    public function board()
+    {
+        return $this->belongsTo(Board::class, 'board_id', 'board_id');
+    }
+
 }

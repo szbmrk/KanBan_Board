@@ -53,9 +53,7 @@ Route::post('/boards/{board_id}/task', [BoardController::class, 'taskStore'])->m
 Route::put('/boards/{board_id}/tasks/{task_id}', [BoardController::class, 'taskUpdate'])->middleware('api');
 Route::delete('/boards/{board_id}/tasks/{task_id}', [BoardController::class, 'taskDestroy'])->middleware('api');
 
-Route::get('/tags', [TagController::class, 'index'])->middleware('api');
-Route::post('/tags', [TagController::class, 'store'])->middleware('api');
-Route::put('/tags/{id}', [TagController::class, 'update'])->middleware('api');
-Route::delete('/tags/{id}', [TagController::class, 'destroy'])->middleware('api');
-
-Route::get('/tasks/{task_id}/tags', [TaskTagController::class, 'index'])->middleware('api');
+Route::get('/boards/{boardId}/tags', [TagController::class, 'index'])->middleware('api');
+Route::post('/boards/{boardId}/tags', [TagController::class, 'store'])->middleware('api');
+Route::put('/boards/{boardId}/tags/{tagId}', [TagController::class, 'update'])->middleware('api');
+Route::delete('/boards/{boardId}/tags/{tagId}', [TagController::class, 'destroy'])->middleware('api');

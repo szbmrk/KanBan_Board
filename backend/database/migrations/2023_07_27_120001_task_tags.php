@@ -12,11 +12,13 @@ return new class extends Migration
             $table->id('task_tag_id');
             $table->unsignedBigInteger('tag_id')->nullable(false);
             $table->unsignedBigInteger('task_id')->nullable(false);
+            $table->unsignedBigInteger('board_id')->nullable(false);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
 
             $table->foreign('tag_id')->references('tag_id')->on('tags');
             $table->foreign('task_id')->references('task_id')->on('tasks');
+            $table->foreign('board_id')->references('board_id')->on('boards');
         });
     }
 
