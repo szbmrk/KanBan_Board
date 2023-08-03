@@ -2,28 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Log; 
+use App\Models\Task;
+use App\Models\Team;
 use App\Models\Board;
 use App\Models\Column;
-use App\Models\Task;
-use App\Models\Attachment;
 use App\Models\Comment;
 use App\Models\Mention;
-use App\Models\FavouriteTask;
-use App\Models\Log; 
 use App\Models\TaskTag;
-use App\Models\UserTask;
 use App\Models\Feedback;
-use Illuminate\Validation\Rule;
+use App\Models\UserTask;
+use App\Models\Attachment;
 use App\Helpers\LogRequest;
+use Illuminate\Http\Request;
+use App\Models\FavouriteTask;
+use Illuminate\Validation\Rule;
 
 
 class ColumnController extends Controller
 {
     public function columnStore(Request $request, $board_id)
     {
+
         $user = auth()->user();
         $board = Board::find($board_id);
+        $teamModel = new Team();
+        $teamId = $teamModel->findTeamIdByBoardId($board_id);
     
         if (!$board) {
             LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
@@ -31,6 +35,7 @@ class ColumnController extends Controller
         }
     
         if (!$user->isMemberOfBoard($board_id)) {
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of this board. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
     
@@ -49,7 +54,9 @@ class ColumnController extends Controller
         ]);
     
         $board->columns()->save($column);
-    
+
+        LogRequest::instance()->logAction('CREATED COLUMN', $user->user_id, "Column Created successfully!", $teamId, $board_id, null);
+
         return response()->json(['message' => 'Column created successfully', 'column' => $column]);
     }    
     
@@ -57,12 +64,16 @@ class ColumnController extends Controller
     {
         $user = auth()->user();
         $column = Column::find($column_id);
+        $teamModel = new Team();
+        $teamId = $teamModel->findTeamIdByBoardId($column->board_id);
     
         if (!$column) {
+            LogRequest::instance()->logAction('COLUMN NOT FOUND', $user->user_id, "Column not found. -> column_id: $column_id", null, null, null);
             return response()->json(['error' => 'Column not found'], 404);
         }
     
         if (!$user->isMemberOfBoard($column->board_id)) {
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of this board. -> board_id: $column->board_id", null, null, null);
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
         else {
@@ -70,7 +81,8 @@ class ColumnController extends Controller
             $column->is_finished = $request->is_finished;
             $column->task_limit = $request->task_limit;
             $column->save();
-    
+
+            LogRequest::instance()->logAction('UPDATED COLUMN', $user->user_id, "Column Updated successfully!", $teamId, $column->board_id, null);
             return response()->json(['column' => $column]);
         }
     }
@@ -79,6 +91,8 @@ class ColumnController extends Controller
     {
         $user = auth()->user();
         $board = Board::find($board_id);
+        $teamModel = new Team();
+        $teamId = $teamModel->findTeamIdByBoardId($board_id);
     
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
@@ -111,6 +125,8 @@ class ColumnController extends Controller
     {
         $user = auth()->user();
         $board = Board::find($board_id);
+        $teamModel = new Team();
+        $teamId = $teamModel->findTeamIdByBoardId($board_id);
 
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
