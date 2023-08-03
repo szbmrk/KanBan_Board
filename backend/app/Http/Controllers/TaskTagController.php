@@ -94,7 +94,7 @@ class TaskTagController extends Controller
         $taskTag->tag_id = $tag_id;
         $taskTag->save();
 
-        return response()->json($taskTag);
+        return response()->json(['message' => 'Task tag created successfully.'], 201);
     }
 
     public function destroy($board_id, $task_id, $tag_id) {
