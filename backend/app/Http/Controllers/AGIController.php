@@ -7,41 +7,31 @@ use Illuminate\Support\Facades\Http;
 
 class AGIController extends Controller
 {
-    // Your other controller methods can go here
-
     public function generateSubtasks(Request $request)
     {
+        $task = "Create a kanban board";
+        $column = "To Do";
+
         // Replace 'YOUR_API_KEY' with your actual ChatGPT API key or token
-        $apiKey = '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';
+        $apiKey = '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';
 
-        $task = "React backend development - login page";
-        $column = "In progress";
+        // Prepare the prompt to be sent to the Python script
+        $prompt = "Generate kanban tickets for {$task}. Write estimations to the tickets as well and add a tag to each ticket. The tickets should be in the column '{$column}'. Write a description to each of them as well";
 
-        // Extract the prompt from the JSON payload
-        $prompt = "Generate kanban tickets for {$task}. Write estimations to the tickets as well and add a tagg to each ticket. The tickets should be in the column '{$column}'.Write a descreption to each of them as well";
-
-        $maxTokens = 100; // Adjust this value based on your requirement
+        // Construct the Python command with the required arguments and path to the script
+        $pythonScriptPath = storage_path('app/PythonScripts/subtask_generator.py');
+        $command = "python {$pythonScriptPath}";
 
         try {
-            $response = Http::withHeaders([
-                'Authorization' => "Bearer $apiKey",
-                'Content-Type' => 'application/json',
-            ])->post('https://api.openai.com/v1/engines/text-davinci-003/completions', [
-                'prompt' => $prompt,
-                'max_tokens' => $maxTokens,
-            ]);
+            // Execute the Python script and capture the output
+            $subtask = shell_exec("{$command} 2>&1"); // Redirect stderr to stdout to capture any potential errors
 
-            $responseData = $response->json();
+            // Parse the response from the Python script
+            $subtask = trim($subtask); // Remove leading/trailing whitespace
+            $subtask = json_decode($subtask, true); // Convert JSON response to PHP array
 
-            if (isset($responseData['choices']) && !empty($responseData['choices'])) {
-                // Handle the response here (e.g., extract the generated subtask from the response).
-                $subtask = $responseData['choices'][0]['text'];
-
-                // Return the subtask as a JSON response to the frontend
-                return response()->json(['subtask' => $subtask]);
-            } else {
-                return response()->json(['error' => 'Invalid response from OpenAI API']);
-            }
+            // Return the subtask as a JSON response to the frontend
+            return response()->json(['subtask' => $subtask]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
         }
