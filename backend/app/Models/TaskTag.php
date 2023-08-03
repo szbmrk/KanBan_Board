@@ -21,4 +21,9 @@ class TaskTag extends Model
     {
         return $this->belongsTo(Task::class, 'task_id', 'task_id');
     }
+    
+    public function board()
+    {
+        return $this->belongsTo(Board::class, 'board_id', 'board_id');
+    }
 }

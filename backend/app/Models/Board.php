@@ -31,4 +31,14 @@ class Board extends Model
     {
         return $this->hasMany(Tag::class, 'board_id', 'board_id');
     }
+    
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'team_members', 'team_id', 'user_id');
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 }
