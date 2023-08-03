@@ -45,5 +45,15 @@ class Team extends Model
         return $this->hasMany(Board::class, 'team_id');
     }
 
+    public function findTeamIdByBoardId($boardId)
+    {
+        $board = Board::find($boardId);
+        if ($board) {
+            return $board->team->team_id;
+        } else {
+            return null; // or you can throw an exception or handle the case when the board is not found
+        }
+    }
+
     // Other model code...
 }
