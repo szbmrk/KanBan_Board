@@ -12,6 +12,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskTagController;
 use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\FavouriteTaskController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,3 +76,5 @@ Route::post('/tasks/{task_id}/attachments', [AttachmentController::class, 'store
 Route::put('/attachments/{attachment_id}', [AttachmentController::class, 'update'])->middleware('api');
 Route::delete('/attachments/{attachment_id}', [AttachmentController::class, 'destroy'])->middleware('api');
 
+Route::post('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'store'])->middleware('api');
+Route::delete('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'destroy'])->middleware('api');
