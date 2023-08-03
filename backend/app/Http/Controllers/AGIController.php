@@ -12,9 +12,6 @@ class AGIController extends Controller
         $task = "Create a kanban board";
         $column = "To Do";
 
-        // Replace 'YOUR_API_KEY' with your actual ChatGPT API key or token
-        $apiKey = env('OPENAI_API_KEY');
-
         // Prepare the prompt to be sent to the Python script
         $prompt = "Generate kanban tickets for {$task}. Write estimations to the tickets as well and add a tag to each ticket. The tickets should be in the column '{$column}'. Write a description to each of them as well";
 

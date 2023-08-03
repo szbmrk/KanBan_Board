@@ -1,10 +1,11 @@
 # subtask.py
 
+import os
 import requests
 
 def generate_subtasks():
     # Replace 'YOUR_API_KEY' with your actual ChatGPT API key or token
-    api_key = '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'
+    api_key = os.environ.get('OPENAI_API_KEY')
 
     task = 'Create a kanban board'
     column = 'To Do'
@@ -26,6 +27,10 @@ def generate_subtasks():
         }
 
         response = requests.post('https://api.openai.com/v1/engines/text-davinci-003/completions', headers=headers, json=data)
+
+        if response.status_code != 200:
+            return f"Error: {response.status_code}, {response.text}"
+
 
         responseData = response.json()
 
