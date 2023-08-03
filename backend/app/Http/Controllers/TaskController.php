@@ -207,4 +207,69 @@ class TaskController extends Controller
     
         return response()->json(['message' => 'Tasks position updated successfully.']);
     }
+
+    public function showSubtasks(Request $request, $board_id, $task_id)
+    {
+        $user = auth()->user();
+        $board = Board::find($board_id);
+    
+        if (!$board) {
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+    
+        if (!$user->isMemberOfBoard($board_id)) {
+            return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+    
+        $task = Task::where('board_id', $board_id)->find($task_id);
+    
+        if (!$task) {
+            return response()->json(['error' => 'Task not found'], 404);
+        }
+    
+        $subtasks = $task->where('parent_task_id', $task_id)->get();
+    
+        if($subtasks->isEmpty()){
+            return response()->json(['error' => 'No subtasks found for the given task'], 404);
+        }
+    
+        return response()->json(['message' => 'Subtasks retrieved successfully', 'subtasks' => $subtasks]);
+    }
+    
+
+    public function subtaskStore(Request $request, $board_id, $parent_task_id)
+    {
+        $user = auth()->user();
+        $board = Board::find($board_id);
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+
+        if (!$user->isMemberOfBoard($board_id)) {
+            return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+
+        $parentTask = Task::find($parent_task_id);
+
+        if (!$parentTask || $parentTask->board_id != $board_id) {
+            return response()->json(['error' => 'Parent task not found or does not belong to this board'], 404);
+        }
+
+        $subTask = new Task([
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'due_date' => $request->input('due_date'),
+            'column_id' => $parentTask->column_id,
+            'board_id' => $board_id,
+            'project_id' => $board->project_id,
+            'priority_id' => $request->input('priority_id'),
+            'parent_task_id' => $parentTask->task_id,
+            'position' => null,
+        ]);
+
+        $subTask->save();
+
+        return response()->json(['message' => 'Subtask created successfully', 'task' => $subTask]);
+    }
 }
