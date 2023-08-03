@@ -1,17 +1,18 @@
 <?php
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\BoardController;
-use App\Http\Controllers\TaskController;
-use App\Http\Controllers\ColumnController;
-use App\Http\Controllers\TeamController;
-use App\Http\Controllers\TeamManagementController;
-use App\Http\Controllers\CommentController;
+use App\Http\Controllers\AGIController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\BoardController;
+use App\Http\Controllers\ColumnController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\TaskTagController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\TeamManagementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,3 +71,6 @@ Route::get('/tasks/{task_id}/attachments', [AttachmentController::class, 'index'
 Route::post('/tasks/{task_id}/attachments', [AttachmentController::class, 'store'])->middleware('api');
 Route::put('/attachments/{attachment_id}', [AttachmentController::class, 'update'])->middleware('api');
 Route::delete('/attachments/{attachment_id}', [AttachmentController::class, 'destroy'])->middleware('api');
+
+Route::post('/generate-subtasks', [AGIController::class, 'generateSubtasks']);
+
