@@ -4,7 +4,7 @@ import requests
 
 def generate_subtasks():
     # Replace 'YOUR_API_KEY' with your actual ChatGPT API key or token
-    api_key = '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'
+    api_key = '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'
 
     task = 'Create a kanban board'
     column = 'To Do'
