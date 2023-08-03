@@ -26,3 +26,9 @@ cd backend
 - php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
 - composer require tymon/jwt-auth
 - php artisan jwt:secret
+
+AGI_Integration_Tests branchben
+.env fájlban
+
+OPENAI_API_KEY=ide jön a openai kulcs
+PYTHON_SCRIPT_PATH='ide jön a python script elérési útvonala'
