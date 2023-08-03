@@ -272,4 +272,57 @@ class TaskController extends Controller
 
         return response()->json(['message' => 'Subtask created successfully', 'task' => $subTask]);
     }
+
+    public function subtaskUpdate(Request $request, $board_id, $subtask_id)
+    {
+        $user = auth()->user();
+        $board = Board::find($board_id);
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+
+        if (!$user->isMemberOfBoard($board_id)) {
+            return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+
+        $subTask = Task::find($subtask_id);
+
+        if (!$subTask || $subTask->board_id != $board_id || $subTask->parent_task_id === null) {
+            return response()->json(['error' => 'Subtask not found or does not belong to this board'], 404);
+        }
+
+        $subTask->title = $request->input('title', $subTask->title);
+        $subTask->description = $request->input('description', $subTask->description);
+        $subTask->due_date = $request->input('due_date', $subTask->due_date);
+        $subTask->priority_id = $request->input('priority_id', $subTask->priority_id);
+
+        $subTask->save();
+
+        return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTask]);
+    }
+
+    public function subtaskDestroy(Request $request, $board_id, $subtask_id)
+    {
+        $user = auth()->user();
+        $board = Board::find($board_id);
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+
+        if (!$user->isMemberOfBoard($board_id)) {
+            return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+
+        $subTask = Task::find($subtask_id);
+
+        if (!$subTask || $subTask->board_id != $board_id || $subTask->parent_task_id === null) {
+            return response()->json(['error' => 'Subtask not found or does not belong to this board'], 404);
+        }
+
+        $subTask->delete();
+
+        return response()->json(['message' => 'Subtask deleted successfully']);
+    }
 }
