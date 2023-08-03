@@ -13,13 +13,14 @@ class AGIController extends Controller
         $column = "To Do";
 
         // Replace 'YOUR_API_KEY' with your actual ChatGPT API key or token
-        $apiKey = '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';
+        $apiKey = env('OPENAI_API_KEY');
 
         // Prepare the prompt to be sent to the Python script
         $prompt = "Generate kanban tickets for {$task}. Write estimations to the tickets as well and add a tag to each ticket. The tickets should be in the column '{$column}'. Write a description to each of them as well";
 
         // Construct the Python command with the required arguments and path to the script
-        $pythonScriptPath = 'C:\xampp\htdocs\KanbanBoard\KanBan_Board\backend\app\PythonScripts\subtask.py';
+        
+        $pythonScriptPath = env('PYTHON_SCRIPT_PATH');
         $command = "python {$pythonScriptPath}";
 
         try {
