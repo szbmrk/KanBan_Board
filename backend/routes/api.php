@@ -66,7 +66,12 @@ Route::delete('/boards/{board_id}/tasks/{task_id}', [TaskController::class, 'tas
 Route::get('/tasks/{task_id}/comments', [CommentController::class, 'index'])->middleware('api');
 Route::post('/tasks/{task_id}/comments', [CommentController::class, 'commentStore'])->middleware('api');
 
+Route::get('/boards/{boardId}/tasks/{taskId}/tags', [TaskTagController::class, 'index'])->middleware('api');
+Route::post('/boards/{boardId}/tasks/{taskId}/tags/{tag_id}', [TaskTagController::class, 'store'])->middleware('api');
+Route::delete('/boards/{board_id}/tasks/{task_id}/tags/{tag_id}', [TaskTagController::class, 'destroy'])->middleware('api');
+
 Route::get('/tasks/{task_id}/attachments', [AttachmentController::class, 'index'])->middleware('api');
 Route::post('/tasks/{task_id}/attachments', [AttachmentController::class, 'store'])->middleware('api');
 Route::put('/attachments/{attachment_id}', [AttachmentController::class, 'update'])->middleware('api');
 Route::delete('/attachments/{attachment_id}', [AttachmentController::class, 'destroy'])->middleware('api');
+
