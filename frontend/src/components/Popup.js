@@ -35,31 +35,43 @@ const Popup = ({ text, description, onClose, onSave }) => {
   }, [onClose]);
 
   return (
-    <div className="overlay">
-      <div className="popup" ref={popupRef}>
-        <span className="close-btn" onClick={onClose}>
-          {closeIcon}
-        </span>
-        <div className="popup-content">
-          <input
-              type="text"
-              className="board-input"
-              value={editedText}
-              onChange={handleChange}
-          />
-          <div className="description-header">
-            {descriptionIcon}
-            <h2 className="description-title">Description</h2>
+      <div className="overlay">
+        <div className="popup" ref={popupRef}>
+          {/* Upper Part */}
+          <div className="upper-part">
+            <div className="popup-content">
+              <input
+                  type="text"
+                  className="board-input"
+                  value={editedText}
+                  onChange={handleChange}
+              />
+          <span className="close-btn" onClick={onClose}>
+            {closeIcon}
+          </span>
+            </div>
           </div>
-          <textarea
-              className="description-textarea"
-              value={editedDescription}
-              onChange={handleDescriptionChange}
-          />
-          <button className="save-button" onClick={() => onSave(editedText, editedDescription)}>Save</button>
+          <hr className="horizontal-line" />
+          {/* Lower Part */}
+          <div className="lower-part">
+            <div className="description-header">
+              {descriptionIcon}
+              <h2 className="description-title">Description</h2>
+            </div>
+            <textarea
+                className="description-textarea"
+                value={editedDescription}
+                onChange={handleDescriptionChange}
+            />
+            <button
+                className="save-button"
+                onClick={() => onSave(editedText, editedDescription)}
+            >
+              Save
+            </button>
+          </div>
         </div>
       </div>
-    </div>
   );
 };
 
