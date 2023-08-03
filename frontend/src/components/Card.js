@@ -122,7 +122,7 @@ export const Card = ({
 
   const handleMouseEnterOnTaskTitle = () => {
     const taskTitle = document.getElementsByClassName("task-title")[index];
-    if (taskTitle.style.width > "200px)") {
+    if (taskTitle.textContent.length > 20) {
       setIsOverflown(true);
       setIsHovered(true);
     }
