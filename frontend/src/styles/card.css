@@ -94,7 +94,7 @@
 .task-title {
   width: 65%;
   text-align: left;
-  margin: 0 10px 0 5px;
+  padding: 0 10px 0 5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
