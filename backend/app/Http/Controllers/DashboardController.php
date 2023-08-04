@@ -18,11 +18,12 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $teams = $user->teams()->with('boards')->get();
-        $response = executePythonScript();
+        $response = ExecutePythonScript::instance()->Run();
 
-
-        return response()->json(['teams' => $teams,
-                                 'response' => $response]);
+        return response()->json([
+            'teams' => $teams,
+            'response' => $response,
+        ]);
     }
 
     public function store(Request $request)
