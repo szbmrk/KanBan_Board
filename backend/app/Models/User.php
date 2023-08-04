@@ -71,4 +71,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(Board::class, 'team_members', 'user_id', 'team_id');
     }
 
+    public function mentions()
+    {
+        return $this->hasMany(Mention::class);
+    }
+
 }
