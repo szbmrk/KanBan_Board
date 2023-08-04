@@ -33,13 +33,11 @@ class FavouriteTaskController extends Controller
             return response()->json(['error' => 'Task not found in the specified board'], 404); 
         } 
     
-        // Check if the user is a member of the team that owns this board.
         $team = $board->team;
         if (!$team->teamMembers->contains('user_id', $user->user_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
     
-        // Check if the task is already in the user's favorite tasks
         $existingFavouriteTask = FavouriteTask::where('user_id', $user->user_id)
             ->where('task_id', $task_id)
             ->first();
@@ -47,7 +45,6 @@ class FavouriteTaskController extends Controller
             return response()->json(['error' => 'Task is already in your favorite tasks'], 409);
         }
     
-        // Create a new favorite task
         $favouriteTask = new FavouriteTask();
         $favouriteTask->user_id = $user->user_id;
         $favouriteTask->task_id = $task_id;
@@ -79,13 +76,11 @@ class FavouriteTaskController extends Controller
             return response()->json(['error' => 'Task not found in the specified board'], 404); 
         }
     
-        // Check if the user is a member of the team that owns this board.
         $team = $board->team;
         if (!$team->teamMembers->contains('user_id', $user->user_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
     
-        // Check if the task is in the user's favorite tasks
         $favoriteTask = FavouriteTask::where('user_id', $user->user_id)
             ->where('task_id', $task_id)
             ->first();
@@ -94,7 +89,6 @@ class FavouriteTaskController extends Controller
             return response()->json(['error' => 'Task is not in your favorite tasks'], 404);
         }
     
-        // Task is found in the user's favorite tasks, delete the task
         $favoriteTask->delete();
     
         return response()->json(['message' => 'Task removed from favorite tasks successfully.'], 200);
