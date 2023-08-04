@@ -13,12 +13,11 @@ class AGIController extends Controller
         $column = "To Do";
 
         // Prepare the prompt to be sent to the Python script
-        $prompt = "Generate kanban tickets for {$task}. Write estimations to the tickets as well and add a tag to each ticket. The tickets should be in the column '{$column}'. Write a description to each of them as well";
-
+        $prompt = "Generate kanban tickets for $task. Write estimations to the tickets as well and add a tag to each ticket. The tickets should be in the column $column. Write a description to each of them as well";
         // Construct the Python command with the required arguments and path to the script
         
         $pythonScriptPath = env('PYTHON_SCRIPT_PATH');
-        $command = "python {$pythonScriptPath}";
+        $command = "python $pythonScriptPath \"$prompt\"";
 
         try {
             // Execute the Python script and capture the output

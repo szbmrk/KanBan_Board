@@ -2,16 +2,13 @@
 
 import os
 import requests
+import sys
 
 def generate_subtasks():
     # Replace 'YOUR_API_KEY' with your actual ChatGPT API key or token
     api_key = os.environ.get('OPENAI_API_KEY')
 
-    task = 'Create a kanban board'
-    column = 'To Do'
-
-    # Extract the prompt
-    prompt = f"Generate kanban tickets for {task}. Write estimations to the tickets as well and add a tag to each ticket. The tickets should be in the column '{column}'. Write a description to each of them as well"
+    prompt = sys.argv[1]
 
     max_tokens = 100  # Adjust this value based on your requirement
 
