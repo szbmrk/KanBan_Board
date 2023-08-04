@@ -9,10 +9,9 @@ class LlamaController extends Controller
 {
     public function generateSubtasks(Request $request)
     {
-        $task = "Create a kanban board";
-        $column = "To Do";
+        $task = $request->input('title');  // A taszk címét most a kérésből kapjuk meg
 
-        $prompt = "Generate kanban tickets for {$task}. Write estimations to the tickets as well and add a tag to each ticket. The tickets should be in the column '{$column}'. Write a description to each of them as well";
+        $prompt = "As an AI assistant, generate short and understandable subtasks for the task: '{$task}'";
 
         $pythonScriptPath = env('LLAMA_PYTHON_SCRIPT_PATH');
         $apiToken = env('REPLICATE_API_TOKEN');
