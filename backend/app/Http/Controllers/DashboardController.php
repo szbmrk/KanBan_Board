@@ -98,4 +98,16 @@ class DashboardController extends Controller
         }
     }
 
+    public function executeAGIBoard(Request $request)
+    {
+        $user = auth()->user();
+        $teams = $user->teams()->with('boards')->get();
+        $response = ExecutePythonScript::instance()->Run();
+
+        return response()->json([
+            'teams' => $teams,
+            'response' => $response,
+        ]);
+    }
+
 }
