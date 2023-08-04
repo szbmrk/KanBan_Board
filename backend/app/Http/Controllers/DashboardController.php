@@ -8,6 +8,9 @@ use App\Models\User;
 use App\Models\Board;
 use App\Helpers\LogRequest;
 use Illuminate\Http\Request;
+use App\Helpers\ExecutePythonScript;
+use function app\Helpers\ExecutePythonScript\executePythonScript;
+
 
 class DashboardController extends Controller
 {
@@ -15,8 +18,11 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $teams = $user->teams()->with('boards')->get();
+        $response = executePythonScript();
 
-        return response()->json(['teams' => $teams]);
+
+        return response()->json(['teams' => $teams,
+                                 'response' => $response]);
     }
 
     public function store(Request $request)

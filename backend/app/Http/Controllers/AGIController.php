@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 
 class AGIController extends Controller
 {
-    public function generateSubtasks(Request $request)
+    public function executePythonScript(Request $request)
     {
         $task = "Create a kanban board";
         $column = "To Do";
