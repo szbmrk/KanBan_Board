@@ -21,8 +21,10 @@ class TaskController extends Controller
     public function taskStore(Request $request, $board_id)
     {
         $user = auth()->user();
-        $board = Board::find($board_id);
 
+        $user_id = $user->user_id;
+
+        $board = Board::find($board_id);
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
         }
@@ -85,6 +87,13 @@ class TaskController extends Controller
 
         $task->save();
 
+        $task_id = $task->task_id;
+
+        UserTask::create([
+            'user_id' => $user_id,
+            'task_id' => $task_id 
+        ]);
+        
         return response()->json(['message' => 'Task created successfully', 'task' => $task]);
     }
   
