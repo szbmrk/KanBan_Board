@@ -41,7 +41,7 @@ const DragDrop = () => {
 
 
             console.log(tempBoard);
-            setBoard(response.data.board);
+            setBoard(tempBoard);
         }
         catch (e) {
             console.error(e)
@@ -121,7 +121,7 @@ const DragDrop = () => {
             const newTask = {
                 column_id: board.columns[divIndex].column_id,
                 title: `New Task`,
-                description: `Description of New Card in ${board.columns[divIndex].title}`,
+                description: `Description of New Card in ${board.columns[divIndex].name}`,
             };
 
             const board_id = board.columns[divIndex].board_id;
@@ -349,8 +349,8 @@ const DragDrop = () => {
     return (
         <>
             {permission === false ? <Error error={error}></Error> : <DndProvider backend={HTML5Backend}>
-                {board === null ? (
-                    <div className="loader"></div>
+                {board.columns === undefined ? (
+                    <h1 className="loader">Loading...</h1>
                 ) : (
                     <div className="content col-10 col-s-10">
                         <h1>{board.name}</h1>
