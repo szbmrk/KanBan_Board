@@ -129,14 +129,32 @@ const DragDrop = () => {
         setBoard({ ...board, columns: newBoardData });
     };
 
-    const handleAddColumn = () => {
-        const newColumn = {
-            name: "New Column",
-            tasks: [],
-        };
+    const handleAddColumn = async () => {
 
-        const newBoardData = [...board.columns, newColumn];
-        setBoard({ ...board, columns: newBoardData });
+        try {
+            const token = sessionStorage.getItem('token');
+            const formData = new FormData();
+            formData.append('name', "New Column");
+            formData.append('is_finished', 0);
+            formData.append('task_limit', 5);
+            const res = await axios.post(`/boards/${board_id}`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            const newColumn = res.data.column;
+            newColumn.is_finished = 0;
+            newColumn.task_limit = 5;
+            newColumn.tasks = [];
+
+            const newBoardData = [...board.columns, newColumn];
+            setBoard({ ...board, columns: newBoardData });
+
+        }
+        catch (e) {
+            console.error(e)
+        }
     };
 
     const moveColumn = (dragIndex, hoverIndex) => {
@@ -222,13 +240,23 @@ const DragDrop = () => {
 
     const handleColumnDeleteConfirm = () => {
         console.log("confirm");
-        // Create a copy of the board.columns array
-        const newBoardData = [...board.columns];
-        // Remove the column with the given columnIndex
-        newBoardData.splice(columnToDeleteIndex, 1);
-        // Update the state with the modified data
-        setBoard({ ...board, columns: newBoardData });
-        // Close the delete confirmation popup
+
+        try {
+            const token = sessionStorage.getItem('token');
+            const res = axios.delete(`/boards/${board_id}/columns/${board.columns[columnToDeleteIndex].column_id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            const newBoardData = [...board.columns];
+            newBoardData.splice(columnToDeleteIndex, 1);
+            setBoard({ ...board, columns: newBoardData });
+        }
+        catch (e) {
+            console.error(e)
+        }
+
         setShowDeleteColumnConfirmation(false);
         setColumnToDeleteIndex(null);
     };
@@ -342,12 +370,12 @@ const DragDrop = () => {
                                                 }
                                             />
                                         ))}
-                                        <div
+                                        {column.is_finished === 0 ? <div
                                             className="addbtn"
                                             onClick={() => handleAddCard(index)}
                                         >
                                             {plusIcon} Add new task
-                                        </div>
+                                        </div> : <></>}
                                     </div>
                                 </Column>
                             ))}
