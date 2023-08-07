@@ -4,6 +4,7 @@ import Popup from "./Popup";
 import ConfirmationPopup from "./ConfirmationPopup";
 import "../styles/card.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "../api/axios";
 import {
     faPlus,
     faPencil,
@@ -33,6 +34,7 @@ export const Card = ({
     moveCard,
     deleteCard,
     favouriteCard,
+    board_id
 }) => {
     const [{ isDragging: dragging }, drag] = useDrag({
         type: ItemTypes.CARD,
@@ -83,10 +85,23 @@ export const Card = ({
         setShowCustomPopup(false);
     };
 
-    const handleSavePopup = (newText, newDescription) => {
+    const handleSavePopup = async (newText, newDescription) => {
         // Update the text with the edited value
-        setEditedText(newText);
-        setEditedDescription(newDescription);
+
+        try {
+            const token = sessionStorage.getItem("token");
+            const response = await axios.put(`/boards/${board_id}/tasks/${id}`, { title: newText, description: newDescription },
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+
+                });
+            setEditedText(newText);
+            setEditedDescription(newDescription);
+        }
+        catch (err) {
+            console.log(err);
+        }
+
 
         // Close the popup
         setShowCustomPopup(false);

@@ -32,14 +32,13 @@ const DragDrop = () => {
             });
             setPermission(true);
             let tempBoard = response.data.board;
-
-            const response1 = await axios.get(`/favourites/${user_id}`, {
+            const user_id = sessionStorage.getItem('user_id');
+            const response1 = await axios.get(`/favourite/${user_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
             });
 
-            console.log(response1.data.favourites);
             let tempColumns = tempBoard.columns.map((column) => {
                 const tasks = column.tasks.map((task) => {
                     const is_favourite = response1.data.favourites.some((favourite) => favourite.task_id === task.task_id);
@@ -141,6 +140,7 @@ const DragDrop = () => {
             });
 
             const createdTask = res.data.task;
+            createdTask.board_id = board_id;
             const newBoardData = [...board.columns];
             newBoardData[divIndex].tasks.push(createdTask);
             console.log(newBoardData[divIndex].tasks);
@@ -341,17 +341,40 @@ const DragDrop = () => {
     };
 
     const favouriteCard = (id, divIndex) => {
-        const updatedBoard = [...board.columns];
-        const cardIndex = updatedBoard[divIndex].tasks.findIndex(
-            (card) => card.id === id
-        );
+        try {
+            const token = sessionStorage.getItem('token');
+            const res = axios.post(`/boards/${board_id}/tasks/${id}/favourite`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
 
-        if (cardIndex !== -1) {
-            updatedBoard[divIndex].tasks[cardIndex].isFavourite =
-                !updatedBoard[divIndex].tasks[cardIndex].isFavourite;
+            const newBoardData = [...board.columns];
+            newBoardData[divIndex].tasks.map((task) => { if (task.task_id === id) { task.is_favourite = true } });
+            setBoard({ ...board, columns: newBoardData });
+        }
+        catch (e) {
+            console.error(e)
         }
 
-        setBoard({ ...board, columns: updatedBoard }); // Update the state with the updated div data
+    };
+
+    const unFavouriteCard = (id, divIndex) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const res = axios.delete(`/boards/${board_id}/tasks/${id}/favourite`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            const newBoardData = [...board.columns];
+            newBoardData[divIndex].tasks.map((task) => { if (task.task_id === id) { task.is_favourite = false } });
+            setBoard({ ...board, columns: newBoardData });
+        }
+        catch (e) {
+            console.error(e)
+        }
     };
 
     return (
@@ -421,6 +444,7 @@ const DragDrop = () => {
                                         {column.tasks.map((task, taskIndex) => (
                                             <Card
                                                 key={task.task_id}
+                                                board_id={board_id}
                                                 id={task.task_id}
                                                 text={task.title}
                                                 description={task.description}
@@ -439,7 +463,7 @@ const DragDrop = () => {
                                                     handleDeleteCard(taskId, index)
                                                 }
                                                 favouriteCard={(taskId, divName) =>
-                                                    favouriteCard(taskId, index)
+                                                    task.is_favourite === false ? favouriteCard(taskId, index) : unFavouriteCard(taskId, index)
                                                 }
                                             />
                                         ))}
