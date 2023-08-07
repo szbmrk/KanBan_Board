@@ -13,4 +13,17 @@ class Feedback extends Model
 
     protected $primaryKey = 'feedback_id';
 
+    public function task()
+    {
+        return $this->belongsTo(Task::class, 'task_id'); 
+    }
+
+    public function board()
+    {
+        return $this->belongsTo(Board::class, 'board_id'); 
+    }
+
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
 }
