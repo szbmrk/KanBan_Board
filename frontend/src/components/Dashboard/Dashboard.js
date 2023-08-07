@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import '../../styles/dashboard.css';
+import '../../styles/popup.css';
 import axios from '../../api/axios';
 
 export default function Dashboard() {
@@ -227,8 +228,8 @@ export default function Dashboard() {
                     </div>
                     {showAddBoardPopup && (
                         <>
-                            <div className="overlay_dashboard" />
-                            <div className="popup_dashboard" style={popupStyle}>
+                            <div className="overlay_mini" />
+                            <div className="popup_mini" style={popupStyle}>
                                 <AddBoardPopup
                                     teamId={selectedTeamId}
                                     boardId={selectedBoardId} // Use 'boardId' instead of 'selectedBoardId'
@@ -277,16 +278,16 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
     };
 
     return (
-        <form className="popup-content_dashboard" onSubmit={handleSave}>
+        <form className="popup-content_mini" onSubmit={handleSave}>
             <input
                 type="text"
                 value={boardName}
                 onChange={(e) => setBoardName(e.target.value)}
                 placeholder="Board name"
-                className="board-input_dashboard"
+                className="board-input_mini"
                 required
             />
-            <div className="button-container_dashboard">
+            <div className="button-container_mini">
                 <button type="submit" className="save-button">
                     Save
                 </button>
