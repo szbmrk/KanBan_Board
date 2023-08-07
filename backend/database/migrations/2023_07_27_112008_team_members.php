@@ -12,9 +12,9 @@ return new class extends Migration
             $table->id('team_members_id');
             $table->unsignedBigInteger('team_id')->nullable(false);
             $table->unsignedBigInteger('user_id')->nullable(false);
-            $table->timestamp('created_at')->useCurrent();
-            $table->foreign('team_id')->references('team_id')->on('teams');
-            $table->foreign('user_id')->references('user_id')->on('users');
+            $table->timestamps();
+            $table->foreign('team_id')->references('team_id')->on('teams')->onDelete('cascade');
+            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
         });
     }
 

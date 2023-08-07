@@ -18,8 +18,9 @@ class TasksTableSeeder extends Seeder
         $tasks = [
             [
                 'title' => 'Task 1',
-                'description' => 'Description of Task 1',
-                'due_date' => '2023-07-31', 
+                'description' => 'Board 1 of Task 1',
+                'due_date' => '2023-07-31',
+                'board_id' => 1, 
                 'column_id' => 1, 
                 'project_id' => 1, 
                 'priority_id' => 1, 
@@ -30,8 +31,9 @@ class TasksTableSeeder extends Seeder
             ],
             [
                 'title' => 'Task 2',
-                'description' => 'Description of Task 2',
+                'description' => 'Board 1 of Task 2',
                 'due_date' => '2023-08-05', 
+                'board_id' => 1, 
                 'column_id' => 1, 
                 'project_id' => 1,
                 'priority_id' => 2, 
@@ -42,8 +44,9 @@ class TasksTableSeeder extends Seeder
             ],
             [
                 'title' => 'Task 3',
-                'description' => 'Description of Task 3',
+                'description' => 'Board 1 of Task 3',
                 'due_date' => '2023-08-10', 
+                'board_id' => 1, 
                 'column_id' => 2, 
                 'project_id' => 1,
                 'priority_id' => 3, 
@@ -54,9 +57,10 @@ class TasksTableSeeder extends Seeder
             ],
             [
                 'title' => 'Task 4',
-                'description' => 'Description of Task 4',
+                'description' => 'Board 1 of Task 4',
                 'due_date' => '2023-08-15', 
-                'column_id' => 1, 
+                'board_id' => 1, 
+                'column_id' => 2, 
                 'project_id' => 1,
                 'priority_id' => 2, 
                 'parent_task_id' => null,
@@ -66,8 +70,9 @@ class TasksTableSeeder extends Seeder
             ],
             [
                 'title' => 'Task 5',
-                'description' => 'Description of Task 5',
+                'description' => 'Board 1 of Task 5',
                 'due_date' => '2023-08-20', 
+                'board_id' => 1, 
                 'column_id' => 3, 
                 'project_id' => 1,
                 'priority_id' => 2, 
@@ -78,8 +83,9 @@ class TasksTableSeeder extends Seeder
             ],
             [
                 'title' => 'Task 6',
-                'description' => 'Description of Task 6',
+                'description' => 'Board 1 of Task 6',
                 'due_date' => '2023-08-25', 
+                'board_id' => 1, 
                 'column_id' => 3, 
                 'project_id' => 1,
                 'priority_id' => 4, 
@@ -89,9 +95,10 @@ class TasksTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'title' => 'Task 7',
-                'description' => 'Description of Task 7',
+                'title' => 'Task 1',
+                'description' => 'Board 2 of Task 1',
                 'due_date' => '2023-08-30', 
+                'board_id' => 2, 
                 'column_id' => 4, 
                 'project_id' => 2,
                 'priority_id' => 1, 
@@ -101,9 +108,10 @@ class TasksTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'title' => 'Task 8',
-                'description' => 'Description of Task 8',
+                'title' => 'Task 2',
+                'description' => 'Board 2 of Task 2',
                 'due_date' => '2023-09-05', 
+                'board_id' => 2, 
                 'column_id' => 4, 
                 'project_id' => 2,
                 'priority_id' => 3, 
@@ -113,9 +121,10 @@ class TasksTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'title' => 'Task 9',
-                'description' => 'Description of Task 9',
+                'title' => 'Task 3',
+                'description' => 'Board 2 of Task 3',
                 'due_date' => '2023-09-10', 
+                'board_id' => 2, 
                 'column_id' => 4, 
                 'project_id' => 1,
                 'priority_id' => 2, 
@@ -125,9 +134,10 @@ class TasksTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'title' => 'Task 10',
-                'description' => 'Description of Task 10',
+                'title' => 'Task 4',
+                'description' => 'Board 2 of Task 4',
                 'due_date' => '2023-09-15', 
+                'board_id' => 2, 
                 'column_id' => 5, 
                 'project_id' => 1,
                 'priority_id' => 1, 
@@ -136,9 +146,6 @@ class TasksTableSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
-
-
         ];
 
 

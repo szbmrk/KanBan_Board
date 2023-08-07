@@ -14,6 +14,7 @@ class Task extends Model
         'title',
         'description',
         'due_date',
+        'board_id',
         'column_id',
         'project_id',
         'priority_id',
@@ -27,6 +28,11 @@ class Task extends Model
         return $this->belongsTo(Column::class, 'column_id', 'column_id');
     }
 
+    public function board()
+    {
+        return $this->belongsTo(Board::class);
+    }
+    
     // Relationship with the Parent Task (self-referencing)
     public function parentTask()
     {
@@ -37,5 +43,20 @@ class Task extends Model
     public function priority()
     {
         return $this->belongsTo(Priority::class, 'priority_id', 'priority_id');
+    }
+
+    public function attachments()
+    {
+        return $this->hasMany(Attachment::class, 'task_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'task_id');
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'task_tags', 'task_id', 'tag_id');
     }
 }

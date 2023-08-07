@@ -15,4 +15,30 @@ class Board extends Model
         'name',
         'team_id',
     ];
+
+    // Relationship with the Column model
+    public function columns()
+    {
+        return $this->hasMany(Column::class, 'board_id', 'board_id');
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class, 'team_id', 'team_id');
+    }
+
+    public function tags()
+    {
+        return $this->hasMany(Tag::class, 'board_id', 'board_id');
+    }
+    
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'team_members', 'team_id', 'user_id');
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 }

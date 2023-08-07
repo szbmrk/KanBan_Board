@@ -44,7 +44,6 @@ export default function Dashboard() {
                     Authorization: `Bearer ${token}`,
                 }
             });
-            console.log(response.data.teams)
             setTeams(response.data.teams);
         }
         catch (e) {
@@ -53,72 +52,109 @@ export default function Dashboard() {
     };
 
     // Function to add a new board to a team
-    const addBoardToTeam = (teamId, newBoardName) => {
-        //insert a backenden és adatok ujrafetchelése
+    const addBoardToTeam = async (teamId, newBoardName) => {
+        const token = sessionStorage.getItem('token');
 
-        //ez majd nem kell ha backend lesz
-        setTeams((prevTeams) => {
-            return prevTeams.map((team) => {
-                if (team.team_id === teamId) {
-                    return {
-                        ...team,
-                        boards: [
-                            ...team.boards,
-                            {
-                                board_id: team.boards.length + 1,
-                                name: newBoardName,
-                            },
-                        ],
-                    };
+        try {
+            const response = await axios.post('/dashboard/board', {
+                team_id: teamId,
+                name: newBoardName,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
                 }
-                return team;
             });
-        });
+
+            // Update the state with the newly added board
+            setTeams((prevTeams) => {
+                return prevTeams.map((team) => {
+                    if (team.team_id === teamId) {
+                        return {
+                            ...team,
+                            boards: [
+                                ...team.boards,
+                                {
+                                    board_id: response.data.board.board_id,
+                                    name: response.data.board.name,
+                                },
+                            ],
+                        };
+                    }
+                    return team;
+                });
+            });
+        } catch (error) {
+            console.error(error);
+        }
     };
+
 
     // Function to delete a board from a team
-    const deleteBoardFromTeam = (teamId, boardId) => {
-        //delete a backenden és adatok ujrafetchelése
+    const deleteBoardFromTeam = async (teamId, boardId) => {
+        const token = sessionStorage.getItem('token');
 
-        //ez majd nem kell ha backend lesz
-        setTeams((prevTeams) => {
-            return prevTeams.map((team) => {
-                if (team.team_id === teamId) {
-                    return {
-                        ...team,
-                        boards: team.boards.filter((board) => board.board_id !== boardId),
-                    };
+        try {
+            await axios.delete(`/dashboard/board/${boardId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
                 }
-                return team;
             });
-        });
+
+            // Update the state by removing the deleted board
+            setTeams((prevTeams) => {
+                return prevTeams.map((team) => {
+                    if (team.team_id === teamId) {
+                        return {
+                            ...team,
+                            boards: team.boards.filter((board) => board.board_id !== boardId),
+                        };
+                    }
+                    return team;
+                });
+            });
+        } catch (error) {
+            console.error(error);
+        }
     };
 
-    const editBoardName = (teamId, boardId, updatedBoardName) => {
-        // Edit the board name on the backend and fetch updated data
-        // This part would be implemented when you have backend functionality
 
-        // For now, we'll update the state directly
-        setTeams((prevTeams) => {
-            return prevTeams.map((team) => {
-                if (team.team_id === teamId) {
-                    return {
-                        ...team,
-                        boards: team.boards.map((board) => {
-                            if (board.board_id === boardId) {
-                                return {
-                                    ...board,
-                                    name: updatedBoardName,
-                                };
-                            }
-                            return board;
-                        }),
-                    };
+    const editBoardName = async (teamId, boardId, updatedBoardName) => {
+        const token = sessionStorage.getItem('token');
+
+        try {
+            await axios.put(`/dashboard/board/${boardId}`, {
+                name: updatedBoardName,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
                 }
-                return team;
             });
-        });
+
+            // Update the state with the edited board name
+            setTeams((prevTeams) => {
+                return prevTeams.map((team) => {
+                    if (team.team_id === teamId) {
+                        return {
+                            ...team,
+                            boards: team.boards.map((board) => {
+                                if (board.board_id === boardId) {
+                                    return {
+                                        ...board,
+                                        name: updatedBoardName,
+                                    };
+                                }
+                                return board;
+                            }),
+                        };
+                    }
+                    return team;
+                });
+            });
+        } catch (error) {
+            console.error(error);
+        }
     };
+
 
     const openAddBoardPopup = (teamId, boardId) => {
         setSelectedTeamId(teamId);
@@ -215,12 +251,24 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
     useEffect(() => {
         // If a board ID is passed, fetch the existing board name for editing
         if (boardId) {
-            // Fetch the board name from the backend based on teamId and boardId
-            // This part would be implemented when you have backend functionality
-            // For now, we'll update the state directly with the existing board name
-            setBoardName(/* fetch board name from the backend */);
+            fetchDashboardData();
         }
     }, [boardId]);
+
+    const fetchDashboardData = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`/boards/${boardId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+            setBoardName(response.data.board.name);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    };
 
     const handleSave = (e) => {
         e.preventDefault();

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
 
-            $table->foreign('user_id')->references('user_id')->on('users');
-            $table->foreign('comment_id')->references('comment_id')->on('comments');
+            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
+            $table->foreign('comment_id')->references('comment_id')->on('comments')->onDelete('cascade');
         });
     }
 
