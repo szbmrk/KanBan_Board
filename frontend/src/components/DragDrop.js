@@ -33,14 +33,22 @@ const DragDrop = () => {
             setPermission(true);
             let tempBoard = response.data.board;
 
-            const response1 = await axios.get(`/boards/${board_id}`, {
+            const response1 = await axios.get(`/favourites/${user_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
             });
 
+            console.log(response1.data.favourites);
+            let tempColumns = tempBoard.columns.map((column) => {
+                const tasks = column.tasks.map((task) => {
+                    const is_favourite = response1.data.favourites.some((favourite) => favourite.task_id === task.task_id);
+                    return { ...task, is_favourite };
+                });
+                return { ...column, tasks };
+            });
+            tempBoard.columns = tempColumns;
 
-            console.log(tempBoard);
             setBoard(tempBoard);
         }
         catch (e) {
@@ -416,7 +424,7 @@ const DragDrop = () => {
                                                 id={task.task_id}
                                                 text={task.title}
                                                 description={task.description}
-                                                isFavourite={false}
+                                                isFavourite={task.is_favourite === true}
                                                 index={taskIndex}
                                                 divName={`div${index + 1}`}
                                                 moveCard={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
