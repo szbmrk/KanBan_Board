@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Validation\ValidationException;
-
 
 class NotificationController extends Controller
 {
@@ -60,6 +58,10 @@ class NotificationController extends Controller
         if (!$user) {
           return response()->json(['error' => 'Unauthorized'], 401);
         }
+
+        if ($user->user_id == $userId) {
+            return response()->json(['error' => 'Cannot send notification to yourself'], 400); 
+          }
       
         $validatedData = $request->validate([
           'type' => 'required',
@@ -92,6 +94,74 @@ class NotificationController extends Controller
         }
       
         return response()->json(['message' => 'Notification created successfully'], 201);
+      
+      }
+    
+      public function update(Request $request, $notificationId) {
+
+        $user = auth()->user();
+      
+        if (!$user) {
+          return response()->json(['error' => 'Unauthorized'], 401);
+        }
+      
+        $notification = Notification::find($notificationId);
+      
+        if (!$notification) {
+          return response()->json(['error' => 'Notification not found'], 404); 
+        }
+      
+        if ($notification->user_id != $user->user_id) {
+          return response()->json(['error' => 'You can only edit your own notifications'], 403);
+        }
+      
+        $this->validate($request, [
+          'is_read' => 'required|boolean'
+        ]);
+      
+        $notification->is_read = $request->is_read;
+      
+        try {
+          $notification->save();
+        } catch (\Illuminate\Database\QueryException $e) {
+          return response()->json(['error' => $e->getMessage()], 500);
+        }
+      
+        return response()->json(['message' => 'Notification updated successfully'], 200);
+      
+      }
+
+      public function destroy($notificationId) {
+
+        $user = auth()->user();
+      
+        if (!$user) {
+          return response()->json(['error' => 'Unauthorized'], 401); 
+        }
+      
+        $notification = Notification::find($notificationId);
+      
+        if (!$notification) {
+          return response()->json(['error' => 'Notification not found'], 404);
+        }
+      
+        if ($notification->user_id != $user->user_id) {
+          return response()->json(['error' => 'You can only delete your own notifications'], 403);
+        }
+      
+        try {
+      
+          $notification->delete();
+      
+        } catch (\Illuminate\Database\QueryException $e) {
+      
+          return response()->json(['error' => $e->getMessage()], 500);
+      
+        }
+      
+        return response()->json([
+          'message' => 'Notification deleted successfully'
+        ], 200);
       
       }
 
