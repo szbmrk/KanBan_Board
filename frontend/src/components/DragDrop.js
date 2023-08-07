@@ -18,10 +18,10 @@ const DragDrop = () => {
     const [board, setBoard] = useState([]);
 
     useEffect(() => {
-        fetchDashboardData()
+        fetchBoardData()
     }, []);
 
-    const fetchDashboardData = async () => {
+    const fetchBoardData = async () => {
         const token = sessionStorage.getItem('token');
 
         try {
@@ -88,15 +88,17 @@ const DragDrop = () => {
     const originalTitle = useRef(null);
     const editBoxRef = useRef(null);
 
+    const [columnNewTitle, setColumnNewTitle] = useState("");
+
     const moveCard = (dragIndex, hoverIndex, sourceDivIndex, targetDivIndex) => {
         const sourceDiv = board.columns[sourceDivIndex];
         const targetDiv = board.columns[targetDivIndex];
-        const draggedCard = sourceDiv.cards[dragIndex];
+        const draggedCard = sourceDiv.tasks[dragIndex];
 
         // Remove the card from the source div
-        sourceDiv.cards.splice(dragIndex, 1);
+        sourceDiv.tasks.splice(dragIndex, 1);
         // Add the card to the target div at the hover index
-        targetDiv.cards.splice(hoverIndex, 0, draggedCard);
+        targetDiv.tasks.splice(hoverIndex, 0, draggedCard);
 
         // Update the state for both source and target divs
         const newBoardData = [...board.columns];
@@ -108,29 +110,29 @@ const DragDrop = () => {
     const handleAddCard = (divIndex) => {
         const newCard = {
             id: Date.now(),
-            text: `New Card in ${board.columns[divIndex].title}`,
+            title: `New Task`,
             description: `Description of New Card in ${board.columns[divIndex].title}`,
         };
 
         const newBoardData = [...board.columns];
-        newBoardData[divIndex].cards.push(newCard);
+        newBoardData[divIndex].tasks.push(newCard);
         setBoard({ ...board, columns: newBoardData });
     };
 
     const handleDeleteCard = (taskId, divIndex) => {
         const targetDiv = board.columns[divIndex];
-        const updatedCards = targetDiv.cards.filter((card) => card.id !== taskId);
+        const updatedtasks = targetDiv.tasks.filter((task) => task.task_id !== taskId);
 
         const newBoardData = [...board.columns];
-        newBoardData[divIndex] = { ...targetDiv, cards: updatedCards };
+        newBoardData[divIndex] = { ...targetDiv, tasks: updatedtasks };
 
         setBoard({ ...board, columns: newBoardData });
     };
 
     const handleAddColumn = () => {
         const newColumn = {
-            title: "New Column",
-            cards: [],
+            name: "New Column",
+            tasks: [],
         };
 
         const newBoardData = [...board.columns, newColumn];
@@ -157,15 +159,11 @@ const DragDrop = () => {
 
         // Check if the new title length is within the allowed range (3 to 20 characters)
         if (newTitle.length <= 20) {
-            const newColumnData = [...board.columns];
-            newColumnData[columnIndex].title = newTitle;
-            setBoard({ ...board, columns: newColumnData });
+            setColumnNewTitle(newTitle);
         } else if (newTitle.length > 20) {
             // Truncate the title to a maximum of 20 characters
             const truncatedTitle = newTitle.substring(0, 20);
-            const newColumnData = [...board.columns];
-            newColumnData[columnIndex].title = truncatedTitle;
-            setBoard({ ...board, columns: newColumnData });
+            setColumnNewTitle(truncatedTitle);
         }
         // You can choose to handle the case when the new title length is less than 3, if desired.
         // In this example, the title will not be updated if it's less than 3 characters.
@@ -176,8 +174,22 @@ const DragDrop = () => {
         if (isCancelled) {
             // Reset the title if the changes were cancelled
             const newColumnData = [...board.columns];
-            newColumnData[columnIndex].title = originalTitle.current;
+            newColumnData[columnIndex].name = originalTitle.current;
             setBoard({ ...board, columns: newColumnData });
+        }
+        else {
+            // Update the title if the changes were saved
+            if (columnNewTitle === "") {
+                // Reset the title if the changes were cancelled
+                const newColumnData = [...board.columns];
+                newColumnData[columnIndex].name = originalTitle.current;
+                setBoard({ ...board, columns: newColumnData });
+            }
+            else {
+                const newColumnData = [...board.columns];
+                newColumnData[columnIndex].name = columnNewTitle;
+                setBoard({ ...board, columns: newColumnData });
+            }
         }
     };
 
@@ -197,7 +209,8 @@ const DragDrop = () => {
     }, [editingColumnIndex]);
 
     const handleColumnTitleDoubleClick = (columnIndex) => {
-        originalTitle.current = board.columns[columnIndex].title;
+        originalTitle.current = board.columns[columnIndex].name;
+        setColumnNewTitle(originalTitle.current)
         setEditingColumnIndex(columnIndex);
     };
 
@@ -228,13 +241,13 @@ const DragDrop = () => {
 
     const favouriteCard = (id, divIndex) => {
         const updatedBoard = [...board.columns];
-        const cardIndex = updatedBoard[divIndex].cards.findIndex(
+        const cardIndex = updatedBoard[divIndex].tasks.findIndex(
             (card) => card.id === id
         );
 
         if (cardIndex !== -1) {
-            updatedBoard[divIndex].cards[cardIndex].isFavourite =
-                !updatedBoard[divIndex].cards[cardIndex].isFavourite;
+            updatedBoard[divIndex].tasks[cardIndex].isFavourite =
+                !updatedBoard[divIndex].tasks[cardIndex].isFavourite;
         }
 
         setBoard({ ...board, columns: updatedBoard }); // Update the state with the updated div data
@@ -256,7 +269,7 @@ const DragDrop = () => {
                                             <div className="name-edit">
                                                 <input
                                                     type="text"
-                                                    value={column.name}
+                                                    value={columnNewTitle}
                                                     onChange={(event) =>
                                                         handleColumnTitleChange(event, index)
                                                     }
