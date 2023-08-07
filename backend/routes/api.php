@@ -93,4 +93,3 @@ Route::delete('/roles/{role_id}', [RoleController::class, 'destroy'])->middlewar
 Route::get('/boards/{boardId}/tasks/{taskId}/mentions', [MentionController::class, 'index'])->middleware('api');
 Route::post('/boards/{boardId}/tasks/{taskId}/mentions', [MentionController::class, 'store'])->middleware('api');
 Route::delete('/boards/{boardId}/tasks/{taskId}/mentions/{mentionId}', [MentionController::class, 'destroy'])->middleware('api');
-

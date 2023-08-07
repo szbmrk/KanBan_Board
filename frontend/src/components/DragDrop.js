@@ -31,7 +31,16 @@ const DragDrop = () => {
                 }
             });
             setPermission(true);
-            console.log(response.data.board);
+            let tempBoard = response.data.board;
+
+            const response1 = await axios.get(`/boards/${board_id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+
+            console.log(tempBoard);
             setBoard(response.data.board);
         }
         catch (e) {
@@ -107,26 +116,55 @@ const DragDrop = () => {
         setBoard({ ...board, columns: newBoardData });
     };
 
-    const handleAddCard = (divIndex) => {
-        const newCard = {
-            id: Date.now(),
-            title: `New Task`,
-            description: `Description of New Card in ${board.columns[divIndex].title}`,
-        };
+    const handleAddCard = async (divIndex) => {
+        try {
+            const newTask = {
+                column_id: board.columns[divIndex].column_id,
+                title: `New Task`,
+                description: `Description of New Card in ${board.columns[divIndex].title}`,
+            };
 
-        const newBoardData = [...board.columns];
-        newBoardData[divIndex].tasks.push(newCard);
-        setBoard({ ...board, columns: newBoardData });
+            const board_id = board.columns[divIndex].board_id;
+            const token = sessionStorage.getItem('token');
+            const res = await axios.post(`/boards/${board_id}/task`, newTask, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            const createdTask = res.data.task;
+            const newBoardData = [...board.columns];
+            newBoardData[divIndex].tasks.push(createdTask);
+            console.log(newBoardData[divIndex].tasks);
+            setBoard({ ...board, columns: newBoardData });
+        }
+        catch (e) {
+            console.log(e.response.status)
+            alert(e.response.data.error)
+        }
     };
 
-    const handleDeleteCard = (taskId, divIndex) => {
-        const targetDiv = board.columns[divIndex];
-        const updatedtasks = targetDiv.tasks.filter((task) => task.task_id !== taskId);
+    const handleDeleteCard = async (taskId, divIndex) => {
+        try {
+            const board_id = board.columns[divIndex].board_id;
+            const token = sessionStorage.getItem('token');
+            await axios.delete(`/boards/${board_id}/tasks/${taskId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+            const targetDiv = board.columns[divIndex];
+            const updatedtasks = targetDiv.tasks.filter((task) => task.task_id !== taskId);
 
-        const newBoardData = [...board.columns];
-        newBoardData[divIndex] = { ...targetDiv, tasks: updatedtasks };
+            const newBoardData = [...board.columns];
+            newBoardData[divIndex] = { ...targetDiv, tasks: updatedtasks };
 
-        setBoard({ ...board, columns: newBoardData });
+            setBoard({ ...board, columns: newBoardData });
+        }
+        catch (e) {
+            console.error(e)
+        }
+
     };
 
     const handleAddColumn = async () => {
@@ -187,7 +225,7 @@ const DragDrop = () => {
         // In this example, the title will not be updated if it's less than 3 characters.
     };
 
-    const handleColumnTitleBlur = (columnIndex, isCancelled) => {
+    const handleColumnTitleBlur = async (columnIndex, isCancelled) => {
         setEditingColumnIndex(null);
         if (isCancelled) {
             // Reset the title if the changes were cancelled
@@ -199,14 +237,41 @@ const DragDrop = () => {
             // Update the title if the changes were saved
             if (columnNewTitle === "") {
                 // Reset the title if the changes were cancelled
-                const newColumnData = [...board.columns];
-                newColumnData[columnIndex].name = originalTitle.current;
-                setBoard({ ...board, columns: newColumnData });
+                try {
+                    const token = sessionStorage.getItem('token');
+                    const column_id = board.columns[columnIndex].column_id;
+                    await axios.put(`/boards/column/${column_id}`, { name: columnNewTitle }, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        }
+                    });
+
+                    const newColumnData = [...board.columns];
+                    newColumnData[columnIndex].name = originalTitle.current;
+                    setBoard({ ...board, columns: newColumnData });
+                }
+                catch (e) {
+                    console.error(e)
+                }
+
             }
             else {
-                const newColumnData = [...board.columns];
-                newColumnData[columnIndex].name = columnNewTitle;
-                setBoard({ ...board, columns: newColumnData });
+                try {
+                    const token = sessionStorage.getItem('token');
+                    const column_id = board.columns[columnIndex].column_id;
+                    await axios.put(`/boards/column/${column_id}`, { name: columnNewTitle }, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        }
+                    });
+
+                    const newColumnData = [...board.columns];
+                    newColumnData[columnIndex].name = columnNewTitle;
+                    setBoard({ ...board, columns: newColumnData });
+                }
+                catch (e) {
+                    console.error(e)
+                }
             }
         }
     };

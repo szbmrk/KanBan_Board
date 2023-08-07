@@ -10,7 +10,7 @@ use App\Models\Attachment;
 use App\Models\Comment;
 use App\Models\Mention;
 use App\Models\FavouriteTask;
-use App\Models\Log; 
+use App\Models\Log;
 use App\Models\TaskTag;
 use App\Models\UserTask;
 use App\Models\Feedback;
@@ -91,12 +91,12 @@ class TaskController extends Controller
 
         UserTask::create([
             'user_id' => $user_id,
-            'task_id' => $task_id 
+            'task_id' => $task_id
         ]);
-        
+
         return response()->json(['message' => 'Task created successfully', 'task' => $task]);
     }
-  
+
     public function taskUpdate(Request $request, $board_id, $task_id)
     {
         $user = auth()->user();
@@ -137,23 +137,23 @@ class TaskController extends Controller
     {
         $user = auth()->user();
         $board = Board::find($board_id);
-    
+
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
         }
-    
+
         if (!$user->isMemberOfBoard($board_id)) {
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
-    
+
         $task = Task::where('board_id', $board_id)->find($task_id);
-    
+
         if (!$task) {
             return response()->json(['error' => 'Task not found'], 404);
         }
-    
+
         $task->attachments()->delete();
-    
+
         foreach ($task->comments as $comment) {
             $comment->mentions()->delete();
             $comment->delete();
@@ -162,7 +162,7 @@ class TaskController extends Controller
         FavouriteTask::where('task_id', $task_id)->delete();
 
         Log::where('task_id', $task_id)->delete();
-    
+
         TaskTag::where('task_id', $task_id)->delete();
 
         UserTask::where('task_id', $task_id)->delete();
@@ -170,7 +170,7 @@ class TaskController extends Controller
         Feedback::where('task_id', $task_id)->delete();
 
         $task->delete();
-    
+
         return response()->json(['message' => 'Task deleted successfully']);
     }
 
@@ -178,21 +178,21 @@ class TaskController extends Controller
     {
         $user = auth()->user();
         $column = Column::find($column_id);
-    
+
         if (!$column) {
             return response()->json(['error' => 'Column not found'], 404);
         }
-    
+
         if (!$user->isMemberOfBoard($column->board_id)) {
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
-    
+
         $tasks = $request->tasks;
         $positions = array_column($tasks, 'position');
-        if(count($positions) !== count(array_unique($positions))){
+        if (count($positions) !== count(array_unique($positions))) {
             return response()->json(['error' => 'Duplicate positions are not allowed'], 403);
         }
-    
+
         foreach ($tasks as $task) {
             $taskToUpdate = Task::find($task['task_id']);
             if ($taskToUpdate && $taskToUpdate->column_id == $column_id) {
@@ -213,7 +213,7 @@ class TaskController extends Controller
                 return response()->json(['error' => 'Task not found or does not belong to this column'], 404);
             }
         }
-    
+
         return response()->json(['message' => 'Tasks position updated successfully.']);
     }
 
@@ -221,30 +221,30 @@ class TaskController extends Controller
     {
         $user = auth()->user();
         $board = Board::find($board_id);
-    
+
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
         }
-    
+
         if (!$user->isMemberOfBoard($board_id)) {
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
-    
+
         $task = Task::where('board_id', $board_id)->find($task_id);
-    
+
         if (!$task) {
             return response()->json(['error' => 'Task not found'], 404);
         }
-    
+
         $subtasks = $task->where('parent_task_id', $task_id)->get();
-    
-        if($subtasks->isEmpty()){
+
+        if ($subtasks->isEmpty()) {
             return response()->json(['error' => 'No subtasks found for the given task'], 404);
         }
-    
+
         return response()->json(['message' => 'Subtasks retrieved successfully', 'subtasks' => $subtasks]);
     }
-    
+
 
     public function subtaskStore(Request $request, $board_id, $parent_task_id)
     {
