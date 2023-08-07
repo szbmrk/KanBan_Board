@@ -1,5 +1,6 @@
 <?php
 namespace App\Helpers;
+use Carbon\Carbon;
 
 class ExecutePythonScript
 {
@@ -18,11 +19,12 @@ class ExecutePythonScript
 
     public static function Run()
     {
-        $task = "Create a kanban board";
-        $column = "To Do";
+        $task = "Develop a kanban board application with mysql - laravel - react";
+
+        $todayDate = Carbon::today()->format('Y-m-d');
 
         // Prepare the prompt to be sent to the Python script
-        $prompt = "Generate kanban tickets for $task. Write estimations to the tickets as well and add a tag to each ticket. The tickets should be in the column $column. Write a description to each of them as well";
+        $prompt = "Generate 10 kanban tickets in json format with title, description, deadline (if the start date is now '$todayDate' in yyyy-mm-dd) and tag attributes for this task: '$task'";
         // Construct the Python command with the required arguments and path to the script
 
         $pythonScriptPath = env('PYTHON_SCRIPT_PATH');
@@ -32,8 +34,17 @@ class ExecutePythonScript
             // Execute the Python script and capture the output
             $subtask = shell_exec("{$command} 2>&1"); // Redirect stderr to stdout to capture any potential errors
 
+            //New prompt
+            $prompt = "Please modify this data to be in json format: '$subtask'";
+            
+            //New command
+            $command = "python $pythonScriptPath \"$prompt\"";
+
+            //Second call
+            $result = shell_exec("{$command} 2>&1"); 
+
             // Return the subtask as a simple array
-            return ['subtask' => $subtask];
+            return $result;
         } catch (\Exception $e) {
             // Return the error message as a simple array
             return ['error' => $e->getMessage()];

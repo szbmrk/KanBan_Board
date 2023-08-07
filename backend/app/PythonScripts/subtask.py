@@ -3,6 +3,7 @@
 import os
 import requests
 import sys
+import json
 
 def generate_subtasks():
     # Replace 'YOUR_API_KEY' with your actual ChatGPT API key or token
@@ -10,7 +11,7 @@ def generate_subtasks():
 
     prompt = sys.argv[1]
 
-    max_tokens = 100  # Adjust this value based on your requirement
+    max_tokens = 1000  # Adjust this value based on your requirement
 
     try:
         headers = {
@@ -35,7 +36,7 @@ def generate_subtasks():
             # Handle the response here (e.g., extract the generated subtask from the response).
             subtask = responseData['choices'][0]['text']
 
-            return subtask
+            return eval(subtask)
         else:
             return 'Invalid response from OpenAI API'
     except Exception as e:
