@@ -84,7 +84,7 @@ Route::post('/tasks/{task_id}/attachments', [AttachmentController::class, 'store
 Route::put('/attachments/{attachment_id}', [AttachmentController::class, 'update'])->middleware('api');
 Route::delete('/attachments/{attachment_id}', [AttachmentController::class, 'destroy'])->middleware('api');
 
-Route::get('/boards/{board_id}/favourite', [FavouriteTaskController::class, 'index'])->middleware('api');
+Route::get('/favourite/{user_id}', [FavouriteTaskController::class, 'index'])->middleware('api');
 Route::post('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'store'])->middleware('api');
 Route::delete('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'destroy'])->middleware('api');
 

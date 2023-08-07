@@ -6,31 +6,31 @@ use Illuminate\Http\Request;
 use App\Models\Board;
 use App\Models\FavouriteTask;
 use App\Models\Task;
+use App\Models\User;
 
 
 class FavouriteTaskController extends Controller
 {
 
-    public function index(Request $request, $task_id)
+    public function index(Request $request, $user_id)
     {
-
-      $user = auth()->user();  
     
-      $task = Task::find($task_id);
-
-      if (!$task) {
-        return response()->json(['error' => 'Task not found'], 404);
+      $user = auth()->user();
+    
+      $user = User::find($user_id);
+      if(!$user) {
+        return response()->json(['error' => 'User not found'], 404); 
       }
     
-      $board = $task->column->board;
+      $favourites = $user->favouriteTasks()
+                         ->get();
     
-      if (!$user->isMemberOfBoard($board->board_id)) {
-        return response()->json(['error' => 'No permission'], 403); 
+      if($favourites->isEmpty()) {
+        return response()->json([
+          'message' => 'No favourite tasks found for this user'
+        ], 200);
       }
-    
-      $favourites = FavouriteTask::where('task_id', $task_id)
-                                  ->get();
-    
+
       return response()->json([
          'favourites' => $favourites
       ]);
