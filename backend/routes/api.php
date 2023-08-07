@@ -13,8 +13,10 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskTagController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\FavouriteTaskController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\MentionController;
+use App\Models\Feedback;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,3 +96,7 @@ Route::get('/boards/{boardId}/tasks/{taskId}/mentions', [MentionController::clas
 Route::post('/boards/{boardId}/tasks/{taskId}/mentions', [MentionController::class, 'store'])->middleware('api');
 Route::delete('/boards/{boardId}/tasks/{taskId}/mentions/{mentionId}', [MentionController::class, 'destroy'])->middleware('api');
 
+Route::get('/boards/{boardId}/tasks/{taskId}/feedbacks', [FeedbackController::class, 'index'])->middleware('api');
+Route::post('/boards/{boardId}/tasks/{taskId}/feedbacks', [FeedbackController::class, 'store'])->middleware('api');
+Route::put('/boards/{boardId}/tasks/{taskId}/feedbacks/{feedbackId}', [FeedbackController::class, 'update'])->middleware('api');
+Route::delete('/boards/{boardId}/tasks/{taskId}/feedbacks/{feedbackId}', [FeedbackController::class, 'destroy'])->middleware('api');
