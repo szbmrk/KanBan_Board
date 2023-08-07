@@ -80,4 +80,8 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Feedback::class, 'task_id');
     }
+    public function favouriteTasks()
+    {
+    return $this->hasMany(FavouriteTask::class, 'user_id'); 
+    }
 }
