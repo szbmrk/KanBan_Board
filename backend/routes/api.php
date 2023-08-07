@@ -13,8 +13,10 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskTagController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\FavouriteTaskController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\MentionController;
+use App\Http\Controllers\PriorityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,6 +84,7 @@ Route::post('/tasks/{task_id}/attachments', [AttachmentController::class, 'store
 Route::put('/attachments/{attachment_id}', [AttachmentController::class, 'update'])->middleware('api');
 Route::delete('/attachments/{attachment_id}', [AttachmentController::class, 'destroy'])->middleware('api');
 
+Route::get('/boards/{board_id}/favourite', [FavouriteTaskController::class, 'index'])->middleware('api');
 Route::post('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'store'])->middleware('api');
 Route::delete('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'destroy'])->middleware('api');
 
@@ -93,3 +96,10 @@ Route::delete('/roles/{role_id}', [RoleController::class, 'destroy'])->middlewar
 Route::get('/boards/{boardId}/tasks/{taskId}/mentions', [MentionController::class, 'index'])->middleware('api');
 Route::post('/boards/{boardId}/tasks/{taskId}/mentions', [MentionController::class, 'store'])->middleware('api');
 Route::delete('/boards/{boardId}/tasks/{taskId}/mentions/{mentionId}', [MentionController::class, 'destroy'])->middleware('api');
+
+Route::get('/boards/{boardId}/tasks/{taskId}/feedbacks', [FeedbackController::class, 'index'])->middleware('api');
+Route::post('/boards/{boardId}/tasks/{taskId}/feedbacks', [FeedbackController::class, 'store'])->middleware('api');
+Route::put('/boards/{boardId}/tasks/{taskId}/feedbacks/{feedbackId}', [FeedbackController::class, 'update'])->middleware('api');
+Route::delete('/boards/{boardId}/tasks/{taskId}/feedbacks/{feedbackId}', [FeedbackController::class, 'destroy'])->middleware('api');
+
+Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');

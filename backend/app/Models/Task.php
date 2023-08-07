@@ -59,4 +59,9 @@ class Task extends Model
     {
         return $this->belongsToMany(Tag::class, 'task_tags', 'task_id', 'tag_id');
     }
+
+    public function feedback() {
+        return $this->hasMany(Feedback::class, 'task_id');
+    }
+    
 }
