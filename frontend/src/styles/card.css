@@ -1,104 +1,122 @@
 .card {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: nowrap;
-  align-items: center;
-  background-color: var(--dark-gray);
-  color: var(--light-gray);
-  border: 1px solid var(--dark-gray);
-  border-radius: 5px;
-  padding: 10px;
-  margin: 5px;
-  width: auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    align-items: center;
+    background-color: var(--dark-gray);
+    color: var(--light-gray);
+    border: 1px solid var(--dark-gray);
+    border-radius: 5px;
+    padding: 10px;
+    margin: 5px;
+    width: auto;
 }
 
 .card:hover {
-  cursor: pointer;
+    cursor: pointer;
 }
+
 .card:active {
-  cursor: grabbing;
+    cursor: grabbing;
 }
 
 .addbtn {
-  color: var(--light-gray);
-  width: 40%;
-  min-width: 60%;
-  margin: 15px 0 0 5px;
-  border-radius: 5px;
-  padding: 10px;
-  cursor: pointer;
-  text-align: left;
+    color: var(--light-gray);
+    width: 40%;
+    min-width: 60%;
+    margin: 15px 0 0 5px;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    text-align: left;
 }
 
 .addbtn:hover {
-  color: var(--dark-gray);
+    color: var(--dark-gray);
+}
+
+.addbtn-column {
+    color: #1d1d1d;
+    width: 170px;
+    height: 50px;
+    margin: 15px 0 0 5px;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.addbtn-column:hover {
+    color: var(--dark-gray);
 }
 
 .edit {
-  padding: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  color: var(--light-gray);
+    padding: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--light-gray);
 }
 
 @keyframes rotate {
-  0% {
-    transform: rotate(10deg);
-  }
-  50% {
-    transform: rotate(-20deg);
-  }
-  100% {
-    transform: rotate(10deg);
-  }
+    0% {
+        transform: rotate(10deg);
+    }
+
+    50% {
+        transform: rotate(-20deg);
+    }
+
+    100% {
+        transform: rotate(10deg);
+    }
 }
 
 .edit:hover {
-  animation: rotate 0.5s;
-  cursor: pointer;
+    animation: rotate 0.5s;
+    cursor: pointer;
 }
 
 .delete-button {
-  padding: 5px;
-  cursor: pointer;
-  color: var(--light-gray);
+    padding: 5px;
+    cursor: pointer;
+    color: var(--light-gray);
 }
 
 .delete-button:hover {
-  color: var(--important);
+    color: var(--important);
 }
 
 .favourite-button {
-  padding: 5px;
-  cursor: pointer;
+    padding: 5px;
+    cursor: pointer;
 }
 
 .solid-icon {
-  color: var(--starred);
+    color: var(--starred);
 }
 
-.regular-icon:hover{
-  color: var(--starred);
+.regular-icon:hover {
+    color: var(--starred);
 }
 
 .task-title {
-  width: 65%;
-  text-align: left;
-  padding: 0 10px 0 5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    width: 65%;
+    text-align: left;
+    padding: 0 10px 0 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .task-title:hover {
-  background-color: var(--dark-gray);
-  overflow: visible;
-  white-space: nowrap;
+    background-color: var(--dark-gray);
+    overflow: visible;
+    white-space: nowrap;
 }
 
 .icon-container {
-  width: 35%;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
+    width: 35%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }

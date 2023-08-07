@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import '../../styles/dashboard.css';
 import '../../styles/popup.css';
 import axios from '../../api/axios';
+import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
     const [userID, setUserID] = useState(null);
@@ -200,7 +201,7 @@ export default function Dashboard() {
                                 <div className="boards">
                                     {team.boards.map((board) => (
                                         <div className="board" key={board.board_id}>
-                                            <h4>{board.name}</h4>
+                                            <Link to={`/board/${board.board_id}`}>{board.name}</Link>
                                             <div className="board-actions">
                                                 <button
                                                     className="edit-board"

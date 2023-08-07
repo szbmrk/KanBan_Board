@@ -18,18 +18,18 @@ const App = () => {
                     <Route path="/" element={<ProtectedRoute> <Navigate to="/dashboard" /> </ProtectedRoute>} />
                     <Route exact path="/login" element={<Login />} />
                     <Route exact path="/signup" element={<Signup />} />
-                    <Route exact path="/board" element={
-                    <>
-                        <Navbar />
-                        <Sidebar /> 
-                        <DragDrop />
-                    </>} />
+                    <Route exact path="/board/:board_id" element={
+                        <ProtectedRoute>
+                            <Navbar />
+                            <Sidebar />
+                            <DragDrop />
+                        </ProtectedRoute>} />
                     <Route exact path="/dashboard" element={
-                    <ProtectedRoute> 
-                        <Navbar />
-                        <Sidebar /> 
-                        <Dashboard /> 
-                    </ProtectedRoute>} />
+                        <ProtectedRoute>
+                            <Navbar />
+                            <Sidebar />
+                            <Dashboard />
+                        </ProtectedRoute>} />
                 </Routes>
             </AuthProvider>
         </BrowserRouter>

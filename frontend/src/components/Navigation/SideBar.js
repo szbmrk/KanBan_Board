@@ -21,12 +21,14 @@ const Sidebar = () => {
                             <span>Dashboard</span>
                         </Link>
                     </li>
+                    {/*
                     <li>
                         <Link to="/board">
                             {userIcon}
                             <span>Board</span>
                         </Link>
                     </li>
+                    */}
                     <li>
                         <Link to="/login" onClick={onLogout}>
                             {signOutIcon}
