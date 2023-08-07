@@ -17,6 +17,7 @@ use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\MentionController;
 use App\Models\Feedback;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -100,3 +101,8 @@ Route::get('/boards/{boardId}/tasks/{taskId}/feedbacks', [FeedbackController::cl
 Route::post('/boards/{boardId}/tasks/{taskId}/feedbacks', [FeedbackController::class, 'store'])->middleware('api');
 Route::put('/boards/{boardId}/tasks/{taskId}/feedbacks/{feedbackId}', [FeedbackController::class, 'update'])->middleware('api');
 Route::delete('/boards/{boardId}/tasks/{taskId}/feedbacks/{feedbackId}', [FeedbackController::class, 'destroy'])->middleware('api');
+
+Route::get('/users/{userId}/notifications', [NotificationController::class, 'index'])->middleware('api');
+Route::get('/users/{userId}/notifications/{notificationId}', [NotificationController::class, 'show'])->middleware('api');
+//Route::post('/users/{userId}/notifications', [NotificationController::class, 'store'])->middleware('api');
+Route::post('/notifications/{userId}', [NotificationController::class, 'store'])->middleware('api');
