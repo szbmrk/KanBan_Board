@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
 
-            $table->foreign('board_id')->references('board_id')->on('boards');
+            $table->foreign('board_id')->references('board_id')->on('boards')->onDelete('cascade');
         });
     }
 
