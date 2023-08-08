@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('project_id')->nullable();
             $table->unsignedBigInteger('priority_id')->nullable();
             $table->unsignedBigInteger('parent_task_id')->nullable();
-            $table->float('position')->nullable(false);
+            $table->float('position')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
 

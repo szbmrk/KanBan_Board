@@ -66,4 +66,22 @@ class User extends Authenticatable implements JWTSubject
         })->exists();
     }
 
+    public function boards()
+    {
+        return $this->belongsToMany(Board::class, 'team_members', 'user_id', 'team_id');
+    }
+
+    public function mentions()
+    {
+        return $this->hasMany(Mention::class);
+    }
+
+    public function feedback() 
+    {
+        return $this->hasMany(Feedback::class, 'task_id');
+    }
+    public function favouriteTasks()
+    {
+    return $this->hasMany(FavouriteTask::class, 'user_id'); 
+    }
 }

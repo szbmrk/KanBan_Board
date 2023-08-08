@@ -13,7 +13,11 @@ use App\Http\Controllers\TaskTagController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\TeamManagementController;
-
+use App\Http\Controllers\FavouriteTaskController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\MentionController;
+use App\Http\Controllers\PriorityController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -64,14 +68,39 @@ Route::post('/boards/{board_id}/task', [TaskController::class, 'taskStore'])->mi
 Route::put('/boards/{board_id}/tasks/{task_id}', [TaskController::class, 'taskUpdate'])->middleware('api');
 Route::post('/columns/{column_id}/tasks/positions', [TaskController::class, 'taskPositionUpdate'])->middleware('api');
 Route::delete('/boards/{board_id}/tasks/{task_id}', [TaskController::class, 'taskDestroy'])->middleware('api');
+Route::get('/boards/{board_id}/tasks/{task_id}/subtasks', [TaskController::class, 'showSubtasks'])->middleware('api');
+Route::post('/boards/{board_id}/tasks/{parent_task_id}/subtasks', [TaskController::class, 'subtaskStore'])->middleware('api');
+Route::put('/boards/{board_id}/subtasks/{subtask_id}', [TaskController::class, 'subtaskUpdate'])->middleware('api');
+Route::delete('/boards/{board_id}/subtasks/{subtask_id}', [TaskController::class, 'subtaskDestroy'])->middleware('api');
 
 Route::get('/tasks/{task_id}/comments', [CommentController::class, 'index'])->middleware('api');
 Route::post('/tasks/{task_id}/comments', [CommentController::class, 'commentStore'])->middleware('api');
+
+Route::get('/boards/{boardId}/tasks/{taskId}/tags', [TaskTagController::class, 'index'])->middleware('api');
+Route::post('/boards/{boardId}/tasks/{taskId}/tags/{tag_id}', [TaskTagController::class, 'store'])->middleware('api');
+Route::delete('/boards/{board_id}/tasks/{task_id}/tags/{tag_id}', [TaskTagController::class, 'destroy'])->middleware('api');
 
 Route::get('/tasks/{task_id}/attachments', [AttachmentController::class, 'index'])->middleware('api');
 Route::post('/tasks/{task_id}/attachments', [AttachmentController::class, 'store'])->middleware('api');
 Route::put('/attachments/{attachment_id}', [AttachmentController::class, 'update'])->middleware('api');
 Route::delete('/attachments/{attachment_id}', [AttachmentController::class, 'destroy'])->middleware('api');
+Route::get('/favourite/{user_id}', [FavouriteTaskController::class, 'index'])->middleware('api');
+Route::post('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'store'])->middleware('api');
+Route::delete('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'destroy'])->middleware('api');
 
+Route::get('/roles', [RoleController::class, 'index'])->middleware('api');
+Route::post('/roles', [RoleController::class, 'store'])->middleware('api');
+Route::put('/roles/{role_id}', [RoleController::class, 'update'])->middleware('api');
+Route::delete('/roles/{role_id}', [RoleController::class, 'destroy'])->middleware('api');
+
+Route::get('/boards/{boardId}/tasks/{taskId}/mentions', [MentionController::class, 'index'])->middleware('api');
+Route::post('/boards/{boardId}/tasks/{taskId}/mentions', [MentionController::class, 'store'])->middleware('api');
+Route::delete('/boards/{boardId}/tasks/{taskId}/mentions/{mentionId}', [MentionController::class, 'destroy'])->middleware('api');
+
+Route::get('/boards/{boardId}/tasks/{taskId}/feedbacks', [FeedbackController::class, 'index'])->middleware('api');
+Route::post('/boards/{boardId}/tasks/{taskId}/feedbacks', [FeedbackController::class, 'store'])->middleware('api');
+Route::put('/boards/{boardId}/tasks/{taskId}/feedbacks/{feedbackId}', [FeedbackController::class, 'update'])->middleware('api');
+Route::delete('/boards/{boardId}/tasks/{taskId}/feedbacks/{feedbackId}', [FeedbackController::class, 'destroy'])->middleware('api');
+
+Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');
 Route::post('/generate-subtasks', [AGIController::class, 'generateSubtasks']);
-

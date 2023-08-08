@@ -9,7 +9,7 @@ class Tag extends Model
 {
     use HasFactory;
     protected $primaryKey = 'tag_id';
-    protected $fillable = ['name', 'color', 'created_by'];
+    protected $fillable = ['name', 'color', 'board_id', 'created_by'];
 
     protected static function boot()
     {

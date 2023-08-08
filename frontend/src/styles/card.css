@@ -1,71 +1,122 @@
-.card-container {
-  display: flex; 
-  flex-direction: column;
-  margin: 20px 10px;
-  padding: 10px;
-  background-color: rgba(var(--dark-grayRGB), 0.5);
-  border-radius: 5px;
-}
-
 .card {
-  background-color: var(--dark-gray);
-  color: var(--light-gray);
-  border: 1px solid var(--dark-gray);
-  border-radius: 5px;
-  padding: 10px;
-  margin: 5px;
-  min-width: 150px;
-  cursor: pointer;
-  position: relative;
-  display: flex; /* Add this to make the contents of the card flexbox items */
-  align-items: center; /* Vertically align the contents in the center */
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    align-items: center;
+    background-color: var(--dark-gray);
+    color: var(--light-gray);
+    border: 1px solid var(--dark-gray);
+    border-radius: 5px;
+    padding: 10px;
+    margin: 5px;
+    width: auto;
 }
 
 .card:hover {
-  cursor: pointer;
+    cursor: pointer;
 }
+
 .card:active {
-  cursor: grabbing;
+    cursor: grabbing;
 }
 
 .addbtn {
-  font-size: larger;
-  width: 40%;
-  border-radius: 5px;
-  padding: 10px;
-  cursor: pointer;
+    color: var(--light-gray);
+    width: 40%;
+    min-width: 60%;
+    margin: 15px 0 0 5px;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    text-align: left;
 }
 
 .addbtn:hover {
-  color: var(--light-gray);
+    color: var(--dark-gray);
 }
 
-.dots {
-  padding: 5px; /* Add padding for clickable space */
-  cursor: pointer;
-  font-size: 16px;
-  color: var(--light-gray);
-  margin-right: 5px;
+.addbtn-column {
+    color: #1d1d1d;
+    width: 170px;
+    height: 50px;
+    margin: 15px 0 0 5px;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    text-align: left;
 }
 
-.dots:hover {
-  cursor: pointer;
+.addbtn-column:hover {
+    color: var(--dark-gray);
+}
+
+.edit {
+    padding: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--light-gray);
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(10deg);
+    }
+
+    50% {
+        transform: rotate(-20deg);
+    }
+
+    100% {
+        transform: rotate(10deg);
+    }
+}
+
+.edit:hover {
+    animation: rotate 0.5s;
+    cursor: pointer;
 }
 
 .delete-button {
-  /* Existing delete-button styles */
-  position: absolute;
-  top: 50%;
-  right: 10px; /* Adjust the value as needed for desired spacing */
-  transform: translateY(-50%);
-  padding: 5px; /* Add padding for clickable space */
-  background-color: transparent; /* Set background to transparent */
-  border: none; /* Remove border */
-  cursor: pointer;
-  font-size: 16px;
-  color: var(--light-gray);
+    padding: 5px;
+    cursor: pointer;
+    color: var(--light-gray);
 }
 
-.delete-button:focus {
-  outline: none; /* Remove focus outline */
+.delete-button:hover {
+    color: var(--important);
+}
+
+.favourite-button {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.solid-icon {
+    color: var(--starred);
+}
+
+.regular-icon:hover {
+    color: var(--starred);
+}
+
+.task-title {
+    width: 65%;
+    text-align: left;
+    padding: 0 10px 0 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.task-title:hover {
+    background-color: var(--dark-gray);
+    overflow: visible;
+    white-space: nowrap;
+}
+
+.icon-container {
+    width: 35%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }
