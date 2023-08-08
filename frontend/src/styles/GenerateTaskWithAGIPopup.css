@@ -1,0 +1,30 @@
+.gt-popup-content {
+  /* Other styles */
+
+  display: flex;
+  flex-direction: column;
+}
+
+.gt-scrollable-list {
+  max-height: 70vh;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 15px; /* Add some padding to avoid content covering the scrollbar */
+}
+
+.gt-input-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.gt-input-container p {
+  margin-right: 10px;
+}
+
+.gt-input-container input,
+.gt-input-container textarea,
+.gt-input-container .react-datepicker-wrapper {
+  flex: 1;
+  margin-right: 10px;
+}

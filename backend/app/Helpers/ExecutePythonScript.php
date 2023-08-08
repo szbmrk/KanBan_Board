@@ -24,7 +24,7 @@ class ExecutePythonScript
         $todayDate = Carbon::today()->format('Y-m-d');
 
         // Prepare the prompt to be sent to the Python script
-        $prompt = "Generate 10 kanban tickets in json format with title, description, deadline (if the start date is now '$todayDate' in yyyy-mm-dd) and tag attributes for this task: '$task'";
+        $prompt = "Generate 10 kanban tickets in json format with title, description, due_date (if the start date is now '$todayDate' in yyyy-mm-dd) and tags (as a list) attributes for this task: '$task'";
         // Construct the Python command with the required arguments and path to the script
 
         $pythonScriptPath = env('PYTHON_SCRIPT_PATH');
