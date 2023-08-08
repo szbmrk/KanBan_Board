@@ -91,4 +91,10 @@ class User extends Authenticatable implements JWTSubject
     return $this->hasMany(FavouriteTask::class, 'user_id'); 
     }
 
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id');
+    }
+
+
 }

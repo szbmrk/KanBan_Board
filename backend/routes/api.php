@@ -90,10 +90,10 @@ Route::get('/favourite/{user_id}', [FavouriteTaskController::class, 'index'])->m
 Route::post('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'store'])->middleware('api');
 Route::delete('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'destroy'])->middleware('api');
 
-Route::get('/roles', [RoleController::class, 'index'])->middleware('api');
-Route::post('/roles', [RoleController::class, 'store'])->middleware('api');
-Route::put('/roles/{role_id}', [RoleController::class, 'update'])->middleware('api');
-Route::delete('/roles/{role_id}', [RoleController::class, 'destroy'])->middleware('api');
+Route::get('/boards/{boardId}/roles', [RoleController::class, 'index'])->middleware('api');
+Route::post('/boards/{boardId}/roles', [RoleController::class, 'store'])->middleware('api');
+Route::put('/boards/{boardId}/roles/{roleId}',[RoleController::class, 'update'])->middleware('api');
+Route::delete('/boards/{boardId}/roles/{roleId}', [RoleController::class, 'destroy'])->middleware('api');
 
 Route::get('/boards/{boardId}/tasks/{taskId}/mentions', [MentionController::class, 'index'])->middleware('api');
 Route::post('/boards/{boardId}/tasks/{taskId}/mentions', [MentionController::class, 'store'])->middleware('api');
