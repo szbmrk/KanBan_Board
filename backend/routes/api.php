@@ -103,4 +103,6 @@ Route::put('/boards/{boardId}/tasks/{taskId}/feedbacks/{feedbackId}', [FeedbackC
 Route::delete('/boards/{boardId}/tasks/{taskId}/feedbacks/{feedbackId}', [FeedbackController::class, 'destroy'])->middleware('api');
 
 Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');
-Route::post('/generate-subtasks', [AGIController::class, 'generateSubtasks']);
+
+
+Route::get('/boards/{boardId}/tasks/{taskId}/generate_code', [AGIController::class, 'generateCode'])->middleware('api');

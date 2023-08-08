@@ -2,32 +2,45 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Tag;
+use App\Models\Task;
+use App\Models\TaskTag;
 use Illuminate\Http\Request;
+use App\Helpers\ExecutePythonScript;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+
 
 class AGIController extends Controller
 {
-    public function executePythonScript(Request $request)
+    public function generateCode(Request $request, $boardId, $taskId)
     {
-        $task = "Create a kanban board";
-        $column = "To Do";
+        $user = auth()->user();
+        //find the task for the task id
+        $task = Task::find($taskId);
+        $taskTag = TaskTag::where('task_id', $task->task_id)->get();
+        //find all the tags for the task
+        $tags = Tag::whereIn('tag_id', $taskTag->pluck('tag_id'))->get();
+        $tagNames = $tags->pluck('name');
 
-        // Prepare the prompt to be sent to the Python script
-        $prompt = "Generate kanban tickets for $task. Write estimations to the tickets as well and add a tag to each ticket. The tickets should be in the column $column. Write a description to each of them as well";
-        // Construct the Python command with the required arguments and path to the script
+        $response = ExecutePythonScript::instance()->GenerateCode($task->title, $task->description, $tagNames );
+        //save the response to a txt file
+        //Storage::put('code.txt', $response);
+    
+        //$cleanData = trim($response);
         
-        $pythonScriptPath = env('PYTHON_SCRIPT_PATH');
-        $command = "python $pythonScriptPath \"$prompt\"";
+        $cleanData = str_replace("'", "\"", $response);
 
-        try {
-            // Execute the Python script and capture the output
-            $subtask = shell_exec("{$command} 2>&1"); // Redirect stderr to stdout to capture any potential errors
-            // Parse the response from the Python script
 
-            // Return the subtask as a JSON response to the frontend
-            return response()->json(['subtask' => $subtask]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()]);
-        }
+        //$formattedResponse = json_decode($response, true);
+        
+        
+/*         $responseData = [
+            'code' => $response,
+        ]; */
+
+        return $cleanData;
+        
+
     }
 }

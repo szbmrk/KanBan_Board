@@ -51,6 +51,28 @@ class ExecutePythonScript
         }
     }
 
+    public static function GenerateCode($title, $description, $tags)
+    {
+        $prompt = "Generate usable example code stored in json format for the following kanban board ticket: title: $title, description: $description, tags: $tags .In the json return only the code!";
+        // Construct the Python command with the required arguments and path to the script
+
+
+        $pythonScriptPath = env('PYTHON_SCRIPT_PATH2');
+        $command = "python $pythonScriptPath \"$prompt\"";
+
+
+        try {
+
+            $result = shell_exec("{$command} 2>&1");
+       
+            // Return the subtask as a simple array
+            return $result;
+        } catch (\Exception $e) {
+            // Return the error message as a simple array
+            return ['error' => $e->getMessage()];
+        }
+    }
+
 }
 
 
