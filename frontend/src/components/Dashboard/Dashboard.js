@@ -212,7 +212,7 @@ export default function Dashboard() {
                                     <div className="boards">
                                         {team.boards.map((board) => (
                                             <div className="board" key={board.board_id}>
-                                                <Link to={`/board/${board.board_id}`} className="board-title">{board.name}</Link>
+                                                <Link to={`/board/${board.board_id}`} className="board-title"><p>{board.name}</p></Link>
                                                 <span
                                                     className="delete-column-button"
                                                     onClick={() => deleteBoardFromTeam(team.team_id, board.board_id)}

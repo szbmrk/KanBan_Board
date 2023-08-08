@@ -42,10 +42,16 @@
 }
 
 .board-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    line-height: 100%;
     font-size: 18px;
     font-weight: bold;
     color: var(--light-gray);
 }
+
 
 .board-actions {
     display: flex;
