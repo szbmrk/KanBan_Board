@@ -40,6 +40,17 @@ body {
     background: url('./imgs/background.jpg') no-repeat center;
     background-size: cover;
 }
+.content {
+    text-align: center;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+#root {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+}
 
 
 /* Declaring classNames for responsiveness */

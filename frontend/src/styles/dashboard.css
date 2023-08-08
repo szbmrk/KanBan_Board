@@ -1,9 +1,3 @@
-/* CSS for the container */
-.content {
-    margin: 0 auto;
-    padding: 20px;
-}
-
 /* CSS for each team card */
 .team {
     border: 1px solid #ccc;

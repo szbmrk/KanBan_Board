@@ -6,6 +6,8 @@
     height: 50px;
     border-bottom: 1px solid var(--dark-gray);
     z-index: 99;
+    position: sticky;
+    top: 0;
 }
 
 .navbar a {
