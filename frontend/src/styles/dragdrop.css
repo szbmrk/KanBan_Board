@@ -1,19 +1,129 @@
 .card-container {
+  position: relative;
   display: flex; /* Display cards under each other */
   flex-direction: column; /* Stack cards vertically */
-  margin-top: 20px; /* Add space between div and cards */
+  margin: 20px 10px;
+  padding: 10px;
+  width: 300px;
+  background-color: rgba(var(--dark-grayRGB), 0.5);
+  border-radius: 5px;
 }
 
-.Test {
+.content {
   text-align: center;
   padding: 20px;
 }
 
 .div-container {
   display: flex; /* Display divs next to each other */
-  justify-content: space-between; /* Add space between divs */
+  flex-wrap: wrap; /* Allow divs to wrap to next line */
+  justify-content: flex-start;
 }
 
-.div {
-  flex: 1; /* Allow divs to take equal space */
+.card-title {
+  color: var(--light-gray);
+  margin: 0 30px 30px;
+  border-bottom: 1px solid var(--light-gray);
 }
+
+.name-edit { 
+  display: flex;
+  justify-content: flex-start;
+  color: var(--light-gray);
+  margin: 0 30px 30px;
+  border-bottom: 1px solid var(--light-gray);
+  column-gap: 10px;
+}
+
+.name-edit input{
+  width: 70%;
+  color: var(--light-gray);
+  font-family: var(--basic-font);
+  font-size: 1.5em;
+  margin: 5px 20px 5px 0;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.name-edit input:focus,
+.name-edit input:hover,
+.name-edit input:active {
+  outline: none;
+  border: none;
+}
+
+.name-edit input::selection {
+  color: var(--dark-gray);
+  background: var(--light-gray);
+}
+
+.name-edit span {
+  margin: 4px 0px 6px 0px;
+}
+
+.delete-column-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px 10px;
+  cursor: pointer;
+  color: var(--light-gray);
+}
+
+.delete-column-button:hover {
+  color: var(--important);
+}
+
+.edit-action-button {
+  padding: 3px;
+  margin-inline: 3px;
+  cursor: pointer;
+}
+
+#check-button:hover {
+  color: var(--confirm);
+}
+
+#cancel-button:hover {
+  color: var(--important);
+}
+
+@media (max-width: 830px) {
+  body {
+    font-size: 0.9rem;
+  }
+
+  .div-container {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 0.75rem;
+  }
+
+  .div-container {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 415px) {
+  .content {
+    padding: 20px 10px;
+  }
+}
+
+@media (max-width: 380px) {
+  .content {
+    padding: 20px 5px;
+  }
+}
+
+@media (max-width: 370px) {
+  .content {
+    padding: 20px 0px;
+  }
+}
+

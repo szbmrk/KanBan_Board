@@ -1,43 +1,229 @@
-/* CSS for the custom popup window */
-
-/* Popup container */
-.popup-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100; /* Set a high z-index to place it above other elements */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    z-index: 99;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Popup content */
 .popup {
-  background-color: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 80%;
-  position: relative; /* Ensure the close button is positioned relative to the popup */
+    position: relative;
+    margin: auto;
+    background-color: var(--dark-gray);
+    color: var(--light-gray);
+    border-radius: 8px;
+    padding: 50px 30px 30px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    max-width: 800px;
+    height: 80%;
+    max-height: 800px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* Close button */
 .close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 18px;
-  cursor: pointer;
-  color: #555;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: var(--light-gray);
+    padding: 2px;
 }
 
-/* Popup text content */
+.close-btn:hover {
+    cursor: pointer;
+    animation: rotate 0.5s;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(10deg);
+    }
+
+    50% {
+        transform: rotate(-20deg);
+    }
+
+    100% {
+        transform: rotate(10deg);
+    }
+}
+
 .popup-content {
-  font-size: 16px;
-  line-height: 1.6;
-  margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.popup p {
+    margin-bottom: 30px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.button-container button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: var(--basic-font);
+    font-size: 0.95em;
+}
+
+.button-container button:nth-child(1) {
+    background-color: var(--light-gray);
+    color: var(--dark-gray);
+}
+
+.button-container button:nth-child(1):hover {
+    background-color: var(--button);
+    color: var(--light-gray);
+}
+
+.button-container button:nth-child(2) {
+    background-color: var(--important);
+    color: var(--light-gray);
+}
+
+.button-container button:nth-child(2):hover {
+    background-color: var(--important-light);
+    color: var(--light-gray);
+}
+
+.save-button {
+    padding: 8px 15px;
+    /* Adjust the padding to make the buttons smaller */
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.save-button:hover {
+    background-color: #57c55b;
+}
+
+.delete-button-popup {
+    padding: 8px 15px;
+    /* Adjust the padding to make the buttons smaller */
+    background-color: #d10000;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-button-popup:hover {
+    background-color: #9c0000;
+}
+
+.cancel-button-popup {
+    padding: 8px 15px;
+    /* Adjust the padding to make the buttons smaller */
+    background-color: #747373;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.cancel-button-popup:hover {
+    background-color: #353535;
+}
+
+.board-input {
+    width: 92.5%;
+    /* Adjust the width as needed */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    top: 10px;
+    left: 30px;
+}
+
+.description-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-right: auto;
+}
+
+.description-title {
+    margin-left: 10px;
+}
+
+.description-textarea {
+    width: 100%;
+    height: 150px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    resize: none;
+}
+
+.horizontal-line {
+    width: 100%;
+}
+
+.lower-part {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    flex-wrap: wrap;
+}
+
+
+.popup_mini {
+    background-color: var(--dark-gray);
+    color: var(--light-gray);
+    border-radius: 8px;
+    padding: 30px 30px 30px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 250px;
+    height: 150px;
+}
+
+.popup-content_mini {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.board-input_mini {
+    width: 175px;
+    /* Adjust the width as needed */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.button-container_mini {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }

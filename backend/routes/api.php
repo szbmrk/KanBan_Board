@@ -18,6 +18,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\MentionController;
 use App\Models\Feedback;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PriorityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,6 +86,7 @@ Route::post('/tasks/{task_id}/attachments', [AttachmentController::class, 'store
 Route::put('/attachments/{attachment_id}', [AttachmentController::class, 'update'])->middleware('api');
 Route::delete('/attachments/{attachment_id}', [AttachmentController::class, 'destroy'])->middleware('api');
 
+Route::get('/favourite/{user_id}', [FavouriteTaskController::class, 'index'])->middleware('api');
 Route::post('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'store'])->middleware('api');
 Route::delete('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'destroy'])->middleware('api');
 
@@ -107,3 +109,6 @@ Route::get('/users/{userId}/notifications/{notificationId}', [NotificationContro
 Route::post('/notifications/{userId}', [NotificationController::class, 'store'])->middleware('api');
 Route::put('/notifications/{notificationId}', [NotificationController::class, 'update'])->middleware('api');
 Route::delete('/notifications/{notificationId}', [NotificationController::class, 'destroy'])->middleware('api');
+
+Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');
+

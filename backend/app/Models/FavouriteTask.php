@@ -10,4 +10,14 @@ class FavouriteTask extends Model
     use HasFactory;
 
     protected $primaryKey = 'favourite_id';
+
+    public function user()
+    {
+      return $this->belongsTo(User::class); 
+    }
+  
+    public function task() 
+    {
+      return $this->belongsTo(Task::class);
+    }
 }
