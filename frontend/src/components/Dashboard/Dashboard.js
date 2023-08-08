@@ -20,6 +20,7 @@ export default function Dashboard() {
     const [selectedBoardId, setSelectedBoardId] = useState(null);
     const [containerPosition, setContainerPosition] = useState({ x: 0, y: 0 });
     const [initialCursorPosition, setInitialCursorPosition] = useState({ x: 0, y: 0 });
+    const [hoveredBoardId, setHoveredBoardId] = useState(null);
 
 
 
@@ -192,6 +193,14 @@ export default function Dashboard() {
         }
     };
 
+    const handleMouseEnterOnBoard = (boardId) => {
+        setHoveredBoardId(boardId);
+    };
+
+    const handleMouseLeaveOnBoard = () => {
+        setHoveredBoardId(null);
+    };
+
     const popupStyle = {
         position: 'fixed',
         top: initialCursorPosition.y + 50,
@@ -211,16 +220,22 @@ export default function Dashboard() {
                                     <h3 className="team-title">{team.name}</h3>
                                     <div className="boards">
                                         {team.boards.map((board) => (
-                                            <div className="board" key={board.board_id}>
+                                            <div className="board" 
+                                                key={board.board_id}
+                                                onMouseEnter={() => handleMouseEnterOnBoard(board.board_id)}
+                                                onMouseLeave={() => handleMouseLeaveOnBoard()}
+                                            >
                                                 <Link to={`/board/${board.board_id}`} className="board-title"><p>{board.name}</p></Link>
                                                 <span
-                                                    className="delete-column-button"
+                                                    className="delete-board-button"
+                                                    style={{ display: hoveredBoardId===board.board_id ? 'block' : 'none' }}
                                                     onClick={() => deleteBoardFromTeam(team.team_id, board.board_id)}
                                                 >
                                                     {xMarkIcon}
                                                 </span>
                                                 <span
-                                                    className="edit-column-button"
+                                                    className="edit-board-button"
+                                                    style={{ display: hoveredBoardId===board.board_id ? 'block' : 'none' }}
                                                     onClick={() => openAddBoardPopup(team.team_id, board.board_id)}
                                                 >
                                                     {pencilIcon}
