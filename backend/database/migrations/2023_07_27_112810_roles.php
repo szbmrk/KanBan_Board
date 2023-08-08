@@ -15,6 +15,11 @@ return new class extends Migration
         Schema::create('roles', function (Blueprint $table) {
             $table->id('role_id');
             $table->string('name', 255)->nullable(false);
+            $table->unsignedBigInteger('board_id')->nullable(false);
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
+
+            $table->foreign('board_id')->references('board_id')->on('boards')->onDelete('cascade');
         });
     }
 

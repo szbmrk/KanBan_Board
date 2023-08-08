@@ -42,10 +42,10 @@ class DatabaseSeeder extends Seeder
         //Every time they are the same!
         $this->call([ 
             UserTableSeeder::class,
-            RolesTableSeeder::class,
             TeamsTableSeeder::class,
             TeamMembersTableSeeder::class,
             BoardsTableSeeder::class,
+            RolesTableSeeder::class,
             ColumnsTableSeeder::class,
             PrioritiesTableSeeder::class,
             TagsTableSeeder::class,
@@ -60,6 +60,7 @@ class DatabaseSeeder extends Seeder
             FavouriteTasksTableSeeder::class,
             AttachmentsTableSeeder::class,
             LogsTableSeeder::class,
+            
            
             
         ]);
