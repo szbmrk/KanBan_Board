@@ -5,9 +5,12 @@ import axios from '../../api/axios';
 import { Link } from 'react-router-dom';
 import Loader from '../Loader';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
 
+const plusIcon = <FontAwesomeIcon icon={faPlus} />;
+const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
+
 
 export default function Dashboard() {
     const [userID, setUserID] = useState(null);
@@ -216,28 +219,15 @@ export default function Dashboard() {
                                                 >
                                                     {xMarkIcon}
                                                 </span>
-                                                <div className="board-actions">
-                                                    <button
-                                                        className="edit-board"
-                                                        onClick={() => openAddBoardPopup(team.team_id, board.board_id)}
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                    <button
-                                                        className="delete-board"
-                                                        onClick={() =>
-                                                            deleteBoardFromTeam(team.team_id, board.board_id)
-                                                        }
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </div>
                                             </div>
                                         ))}
+                                        <div className="board add-board"
+                                            onClick={() => openAddBoardPopup(team.team_id, null)}>
+                                            <span>
+                                                {plusIcon} Add new board
+                                            </span>
+                                        </div>
                                     </div>
-                                    <button className="add-board" onClick={() => openAddBoardPopup(team.team_id, null)}>
-                                        Add board
-                                    </button>
                                 </div>
                             ))}
                         </div>
