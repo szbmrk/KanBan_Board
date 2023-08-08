@@ -10,6 +10,7 @@
     --basic-font: 'Raleway', sans-serif;
     --confirm: #359138;
     --starred: #f5d142;
+    --scrollbar-hover: #555;
 }
 
 *{
@@ -40,10 +41,42 @@ body {
     background: url('./imgs/background.jpg') no-repeat center;
     background-size: cover;
 }
+.content {
+    text-align: center;
+    margin: 0 auto;
+    height: calc(100vh - 50px);
+    overflow: auto;
+}
+
+
+/* <Scrollbar> */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    overflow: hidden;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent; 
+    margin: 5px 0;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--dark-gray);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-hover);; 
+}
+
+::-webkit-scrollbar-button {
+    display: none;
+}
+/* </Scrollbar> */
 
 
 /* Declaring classNames for responsiveness */
-
   
 @media only screen and (min-width: 600px) {
 /* For tablets: */

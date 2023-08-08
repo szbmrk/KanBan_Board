@@ -7,17 +7,18 @@
   width: 300px;
   background-color: rgba(var(--dark-grayRGB), 0.5);
   border-radius: 5px;
+  max-height: 700px;
 }
 
-.content {
-  text-align: center;
-  padding: 20px;
+.task-container {
+  overflow: auto;
 }
 
 .div-container {
   display: flex; /* Display divs next to each other */
-  flex-wrap: wrap; /* Allow divs to wrap to next line */
+  flex-wrap: nowrap; /* Allow divs to wrap to next line */
   justify-content: flex-start;
+  align-items: flex-start;
 }
 
 .card-title {

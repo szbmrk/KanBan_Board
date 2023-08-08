@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import Popup from "./Popup";
 import ConfirmationPopup from "./ConfirmationPopup";
@@ -12,6 +12,7 @@ import {
     faStar as faSolidStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as faRegularStar } from "@fortawesome/free-regular-svg-icons";
+import Tag from "./Tag";
 
 const ItemTypes = {
     CARD: "card",
@@ -31,10 +32,14 @@ export const Card = ({
     isFavourite,
     index,
     divName,
-    moveCard,
+    handleEditTask,
+    moveCardFrontend,
+    moveCardBackend,
     deleteCard,
     favouriteCard,
-    board_id
+    board_id,
+    column_id,
+    tags
 }) => {
     const [{ isDragging: dragging }, drag] = useDrag({
         type: ItemTypes.CARD,
@@ -42,10 +47,16 @@ export const Card = ({
         collect: (monitor) => ({
             isDragging: monitor.isDragging(),
         }),
+        end: (item, monitor) => {
+            if (item) {
+                const dragIndex = index;
+                const hoverIndex = item.index;
+                const sourceDiv = item.divName;
+                const targetDiv = divName;
+                moveCardBackend(dragIndex, hoverIndex, sourceDiv, targetDiv);
+            }
+        },
     });
-
-    const [editedText, setEditedText] = useState(text);
-    const [editedDescription, setEditedDescription] = useState(description);
 
     const [, drop] = useDrop({
         accept: ItemTypes.CARD,
@@ -61,7 +72,7 @@ export const Card = ({
             if (dragIndex === hoverIndex && sourceDiv === targetDiv) {
                 return;
             }
-            moveCard(dragIndex, hoverIndex, sourceDiv, targetDiv);
+            moveCardFrontend(dragIndex, hoverIndex, sourceDiv, targetDiv);
             item.index = hoverIndex;
             item.divName = targetDiv;
         },
@@ -90,13 +101,12 @@ export const Card = ({
 
         try {
             const token = sessionStorage.getItem("token");
-            const response = await axios.put(`/boards/${board_id}/tasks/${id}`, { title: newText, description: newDescription },
+            await axios.put(`/boards/${board_id}/tasks/${id}`, { title: newText, description: newDescription },
                 {
                     headers: { Authorization: `Bearer ${token}` }
 
                 });
-            setEditedText(newText);
-            setEditedDescription(newDescription);
+            handleEditTask(id, column_id, newText, newDescription)
         }
         catch (err) {
             console.log(err);
@@ -166,7 +176,13 @@ export const Card = ({
                     onMouseEnter={handleMouseEnterOnTaskTitle}
                     onMouseLeave={handleMouseLeaveOnTaskTitle}
                 >
-                    {editedText}
+                    {text}
+
+                    <div className="tags-container">
+                        {tags && tags.map((tag, tagIndex) => (
+                            <Tag key={tagIndex} name={tag.name} color={tag.color} />
+                        ))}
+                    </div>
                 </div>
                 <div className="icon-container">
                     {isFavourite ?
@@ -208,8 +224,8 @@ export const Card = ({
             )}
             {showCustomPopup && (
                 <Popup
-                    text={editedText}
-                    description={editedDescription}
+                    text={text}
+                    description={description}
                     onClose={handleClosePopup}
                     onSave={handleSavePopup}
                 />

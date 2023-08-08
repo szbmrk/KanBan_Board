@@ -4,6 +4,9 @@
 
 .sidebar {
     transition: 0.5s;
+    position: sticky;
+    left: 0;
+    top: 50px;
 }
 
 .sidebar-menu {
