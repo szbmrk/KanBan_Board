@@ -3,6 +3,7 @@ import '../../styles/dashboard.css';
 import '../../styles/popup.css';
 import axios from '../../api/axios';
 import { Link } from 'react-router-dom';
+import Loader from '../Loader';
 
 export default function Dashboard() {
     const [userID, setUserID] = useState(null);
@@ -190,8 +191,8 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="content col-10">
-            {teams.length === 0 ? <h1>Loading...</h1> : (<>
+        <div className="content">
+            {teams.length === 0 ? <Loader /> : (<>
                 <h1 className="header">Dashboard</h1>
                 {userID && (
                     <div>

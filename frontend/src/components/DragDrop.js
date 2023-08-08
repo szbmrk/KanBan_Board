@@ -10,6 +10,7 @@ import "../styles/dragdrop.css";
 import { useParams } from "react-router";
 import axios from '../api/axios';
 import Error from "./Error";
+import Loader from "./Loader";
 
 const DragDrop = () => {
     const { board_id } = useParams();
@@ -381,9 +382,9 @@ const DragDrop = () => {
         <>
             {permission === false ? <Error error={error}></Error> : <DndProvider backend={HTML5Backend}>
                 {board.columns === undefined ? (
-                    <h1 className="loader">Loading...</h1>
+                    <Loader />
                 ) : (
-                    <div className="content col-10 col-s-10">
+                    <div className="content">
                         <h1>{board.name}</h1>
                         <div className="div-container">
                             {board.columns.map((column, index) => (
