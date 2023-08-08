@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 
 class NotificationController extends Controller
 {
@@ -51,54 +52,55 @@ class NotificationController extends Controller
         return response()->json($notification);
     }
 
-    public function store(Request $request, $userId) {
-
-        $user = auth()->user();
-      
-        if (!$user) {
+    public function store(Request $request, $userId) 
+    {
+      $user = auth()->user();
+  
+      if (!$user) {
           return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        if ($user->user_id == $userId) {
-            return response()->json(['error' => 'Cannot send notification to yourself'], 400); 
-          }
-      
-        $validatedData = $request->validate([
-          'type' => 'required',
+      }
+  
+      if ($user->user_id == $userId) {
+          return response()->json(['error' => 'Cannot send notification to yourself'], 400);
+      }
+  
+      $validator = Validator::make($request->all(), [
+          'type' => 'required|in:BOARD,SYSTEM,TEAM',
           'content' => 'required',
-          'is_read' => 'required|boolean'
-        ]);
-      
-        try {  
-      
+          'is_read' => 'required|in:0,1|boolean',]);
+  
+      if ($validator->fails()) {$errors = $validator->errors(); $response = ['error' => 'Validation error'];
+  
+      if ($errors->has('type')) {$response['details']['type'] = $errors->get('type');}
+  
+      if ($errors->has('content')) {$response['details']['content'] = $errors->get('content');}
+  
+      if ($errors->has('is_read')) {$response['details']['is_read'] = $errors->get('is_read');}
+  
+      return response()->json($response, 422);
+      }
+  
+      try {
           $user = User::findOrFail($userId);
-          
-          $notification = new Notification($validatedData);
+  
+          $notification = new Notification($request->all());
           $notification->user_id = $userId;
           $notification->save();
-      
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-      
-          return response()->json(['error' => 'User not found'], 404);  
-      
-        } catch (\Illuminate\Database\QueryException $e) {
-          
+  
+      } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+          return response()->json(['error' => 'User not found'], 404);
+      } catch (\Illuminate\Database\QueryException $e) {
           return response()->json(['error' => 'Database error: ' . $e->getMessage()], 500);
-      
-        } catch (\Illuminate\Validation\ValidationException $e) {
-      
-          return response()->json(['error' => 'Validation error: ' . $e->errors()], 422);
-      
-        } catch (\Exception $e) {
+      } catch (\Exception $e) {
           return response()->json(['error' => 'Error saving notification: ' . $e->getMessage()], 500);
-        }
-      
-        return response()->json(['message' => 'Notification created successfully'], 201);
-      
       }
+  
+      return response()->json(['message' => 'Notification created successfully'], 201);
+  
+    }
     
-      public function update(Request $request, $notificationId) {
-
+      public function update(Request $request, $notificationId) 
+      {
         $user = auth()->user();
       
         if (!$user) {
@@ -115,11 +117,23 @@ class NotificationController extends Controller
           return response()->json(['error' => 'You can only edit your own notifications'], 403);
         }
       
-        $this->validate($request, [
-          'is_read' => 'required|boolean'
-        ]);
-      
-        $notification->is_read = $request->is_read;
+        $validator = Validator::make($request->all(), [
+          'type' => 'required|in:BOARD,SYSTEM,TEAM',
+          'content' => 'required',
+          'is_read' => 'required|in:0,1|boolean',]);
+  
+        if ($validator->fails()) { 
+          $errors = $validator->errors(); 
+          $response = ['error' => 'Validation error'];
+  
+          if ($errors->has('type')) {$response['details']['type'] = $errors->get('type');}
+  
+          if ($errors->has('content')) {$response['details']['content'] = $errors->get('content');}
+  
+          if ($errors->has('is_read')) {$response['details']['is_read'] = $errors->get('is_read');}
+  
+          return response()->json($response, 422);
+        }
       
         try {
           $notification->save();
@@ -131,8 +145,8 @@ class NotificationController extends Controller
       
       }
 
-      public function destroy($notificationId) {
-
+      public function destroy($notificationId) 
+      {
         $user = auth()->user();
       
         if (!$user) {
@@ -159,13 +173,7 @@ class NotificationController extends Controller
       
         }
       
-        return response()->json([
-          'message' => 'Notification deleted successfully'
-        ], 200);
-      
+        return response()->json(['message' => 'Notification deleted successfully'], 200);
       }
-
-
-
 
 }
