@@ -18,6 +18,7 @@
   display: flex; /* Display divs next to each other */
   flex-wrap: nowrap; /* Allow divs to wrap to next line */
   justify-content: flex-start;
+  align-items: flex-start;
 }
 
 .card-title {
