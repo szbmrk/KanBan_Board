@@ -229,18 +229,8 @@ const DragDrop = () => {
         try {
             setEditingColumnIndex(null);
 
-
             let tempPositions = columnPositions;
-
-            //swap the positions of the columns in the array of positions
-            const temp = tempPositions[dragIndex];
-            console.log(tempPositions)
-
-            tempPositions[dragIndex] = tempPositions[hoverIndex];
-            tempPositions[hoverIndex] = temp;
-            console.log(tempPositions)
-            setColumnPositions(tempPositions);
-
+            tempPositions.splice(hoverIndex, 0, tempPositions.splice(dragIndex, 1)[0]);
             const token = sessionStorage.getItem('token');
             axios.post(`/boards/${board_id}/columns/positions`, { columns: tempPositions }, {
                 headers: {
@@ -375,6 +365,7 @@ const DragDrop = () => {
 
             const newBoardData = [...board.columns];
             newBoardData.splice(columnToDeleteIndex, 1);
+            setColumnPositions(newBoardData.map((column) => column.column_id));
             setBoard({ ...board, columns: newBoardData });
         }
         catch (e) {
