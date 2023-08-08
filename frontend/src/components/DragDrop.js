@@ -172,24 +172,22 @@ const DragDrop = () => {
             });
         }
         catch (e) {
-            if (e.response.data.error === "Task limit for the new column has been reached") {
-                const sourceDiv = board.columns[sourceDivIndex];
-                const targetDiv = board.columns[targetDivIndex];
-                const draggedCard = sourceDiv.tasks[hoverIndex];
+            const sourceDiv = board.columns[sourceDivIndex];
+            const targetDiv = board.columns[targetDivIndex];
+            const draggedCard = sourceDiv.tasks[hoverIndex];
 
-                // Remove the card from the source div
-                sourceDiv.tasks.splice(hoverIndex, 1);
-                // Add the card to the target div at the hover index
-                targetDiv.tasks.splice(dragIndex, 0, draggedCard);
+            // Remove the card from the source div
+            sourceDiv.tasks.splice(hoverIndex, 1);
+            // Add the card to the target div at the hover index
+            targetDiv.tasks.splice(dragIndex, 0, draggedCard);
 
-                // Update the state for both source and target divs
-                const newBoardData = [...board.columns];
-                newBoardData[sourceDivIndex] = { ...sourceDiv };
-                newBoardData[targetDivIndex] = { ...targetDiv };
-                setBoard({ ...board, columns: newBoardData });
+            // Update the state for both source and target divs
+            const newBoardData = [...board.columns];
+            newBoardData[sourceDivIndex] = { ...sourceDiv };
+            newBoardData[targetDivIndex] = { ...targetDiv };
+            setBoard({ ...board, columns: newBoardData });
 
-                alert(e.response.data.error);
-            }
+            alert(e.response.data.error);
         }
     };
 

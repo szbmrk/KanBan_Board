@@ -183,9 +183,7 @@ class TaskController extends Controller
             return response()->json(['error' => 'Column not found'], 404);
         }
 
-        $board = $column->board;
-
-        if (!$user->isMemberOfBoard($board->board_id)) {
+        if (!$user->isMemberOfBoard($column->board_id)) {
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
 
@@ -197,11 +195,11 @@ class TaskController extends Controller
 
         foreach ($tasks as $task) {
             $taskToUpdate = Task::find($task['task_id']);
-            if ($taskToUpdate) {
+            if ($taskToUpdate && $taskToUpdate->column_id == $column_id) {
                 $taskToUpdate->position = $task['position'];
-                if (isset($task['column_id'])) {
+                if (isset($task['column_id']) && $task['column_id'] != $column_id) {
                     $newColumn = Column::find($task['column_id']);
-                    if ($newColumn && $newColumn->board_id === $board->board_id) {
+                    if ($newColumn && $user->isMemberOfBoard($newColumn->board_id)) {
                         if (isset($newColumn->task_limit) && $newColumn->tasks()->count() >= $newColumn->task_limit) {
                             return response()->json(['error' => 'Task limit for the new column has been reached'], 403);
                         }
@@ -212,7 +210,7 @@ class TaskController extends Controller
                 }
                 $taskToUpdate->save();
             } else {
-                return response()->json(['error' => 'Task not found'], 404);
+                return response()->json(['error' => 'Task not found or does not belong to this column'], 404);
             }
         }
 
