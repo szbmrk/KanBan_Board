@@ -1,10 +1,10 @@
 /* CSS for each team card */
 .team {
-    border: 1px solid #ccc;
+    border: 1px solid var(--dark-gray);
     border-radius: 8px;
     padding: 20px;
-    margin-bottom: 20px;
-    background-color: #dadada;
+    margin: 20px;
+    background-color: rgba(var(--dark-grayRGB), 0.5);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -12,6 +12,7 @@
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 10px;
+    color: var(--light-gray);
 }
 
 /* CSS for the boards container inside each team card */
@@ -22,18 +23,29 @@
 
 /* CSS for each board card */
 .board {
+    position: relative;
+    display: flex;
+    flex-direction: column;
     flex: 0 0 calc(33.33% - 20px);
-    border: 1px solid #ccc;
+    border: 1px solid var(--dark-gray);
     border-radius: 8px;
-    padding: 20px;
+    padding: 10px;
     margin: 10px;
-    background-color: #f9f9f9;
+    background-color: var(--dark-gray);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    min-height: 100px;
 }
 
 .board-title {
     font-size: 18px;
     font-weight: bold;
+    margin-bottom: 10px;
+    color: var(--light-gray);
+}
+
+.board-actions {
+    display: flex;
+    justify-content: center;
     margin-bottom: 10px;
 }
 

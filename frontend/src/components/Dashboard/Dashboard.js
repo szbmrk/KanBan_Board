@@ -4,6 +4,10 @@ import '../../styles/popup.css';
 import axios from '../../api/axios';
 import { Link } from 'react-router-dom';
 import Loader from '../Loader';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+
+const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
 
 export default function Dashboard() {
     const [userID, setUserID] = useState(null);
@@ -13,6 +17,8 @@ export default function Dashboard() {
     const [selectedBoardId, setSelectedBoardId] = useState(null);
     const [containerPosition, setContainerPosition] = useState({ x: 0, y: 0 });
     const [initialCursorPosition, setInitialCursorPosition] = useState({ x: 0, y: 0 });
+
+
 
     useEffect(() => {
         const handleMouseMove = (e) => {
@@ -199,11 +205,17 @@ export default function Dashboard() {
                         <div className="teams">
                             {teams.map((team) => (
                                 <div className="team" key={team.team_id}>
-                                    <h3>{team.name}</h3>
+                                    <h3 className="team-title">{team.name}</h3>
                                     <div className="boards">
                                         {team.boards.map((board) => (
                                             <div className="board" key={board.board_id}>
-                                                <Link to={`/board/${board.board_id}`}>{board.name}</Link>
+                                                <Link to={`/board/${board.board_id}`} className="board-title">{board.name}</Link>
+                                                <span
+                                                    className="delete-column-button"
+                                                    onClick={() => deleteBoardFromTeam(team.team_id, board.board_id)}
+                                                >
+                                                    {xMarkIcon}
+                                                </span>
                                                 <div className="board-actions">
                                                     <button
                                                         className="edit-board"

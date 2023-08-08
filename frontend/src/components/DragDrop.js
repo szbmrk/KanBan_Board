@@ -484,7 +484,8 @@ const DragDrop = () => {
                                 {plusIcon} Add new column
                             </div>
                         </div>
-                    </div>)}
+                    </div>
+                )}
                 {showDeleteConfirmation && (
                     <ConfirmationPopup
                         text={board.columns[columnToDeleteIndex]?.title}
