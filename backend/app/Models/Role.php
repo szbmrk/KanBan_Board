@@ -17,6 +17,11 @@ class Role extends Model
         'name'
     ];
 
+    public function board()
+    {
+        return $this->belongsTo(Board::class, 'board_id', 'board_id');
+    }
+
 
 
 }
