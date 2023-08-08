@@ -191,57 +191,58 @@ export default function Dashboard() {
 
     return (
         <div className="content col-10">
-            <h1 className="header">Dashboard</h1>
-            {userID && (
-                <div>
-                    <div className="teams">
-                        {teams.map((team) => (
-                            <div className="team" key={team.team_id}>
-                                <h3>{team.name}</h3>
-                                <div className="boards">
-                                    {team.boards.map((board) => (
-                                        <div className="board" key={board.board_id}>
-                                            <Link to={`/board/${board.board_id}`}>{board.name}</Link>
-                                            <div className="board-actions">
-                                                <button
-                                                    className="edit-board"
-                                                    onClick={() => openAddBoardPopup(team.team_id, board.board_id)}
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    className="delete-board"
-                                                    onClick={() =>
-                                                        deleteBoardFromTeam(team.team_id, board.board_id)
-                                                    }
-                                                >
-                                                    Delete
-                                                </button>
+            {teams.length === 0 ? <h1>Loading...</h1> : (<>
+                <h1 className="header">Dashboard</h1>
+                {userID && (
+                    <div>
+                        <div className="teams">
+                            {teams.map((team) => (
+                                <div className="team" key={team.team_id}>
+                                    <h3>{team.name}</h3>
+                                    <div className="boards">
+                                        {team.boards.map((board) => (
+                                            <div className="board" key={board.board_id}>
+                                                <Link to={`/board/${board.board_id}`}>{board.name}</Link>
+                                                <div className="board-actions">
+                                                    <button
+                                                        className="edit-board"
+                                                        onClick={() => openAddBoardPopup(team.team_id, board.board_id)}
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        className="delete-board"
+                                                        onClick={() =>
+                                                            deleteBoardFromTeam(team.team_id, board.board_id)
+                                                        }
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
+                                    <button className="add-board" onClick={() => openAddBoardPopup(team.team_id, null)}>
+                                        Add board
+                                    </button>
                                 </div>
-                                <button className="add-board" onClick={() => openAddBoardPopup(team.team_id, null)}>
-                                    Add board
-                                </button>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
+                        {showAddBoardPopup && (
+                            <>
+                                <div className="overlay_mini" />
+                                <div className="popup_mini" style={popupStyle}>
+                                    <AddBoardPopup
+                                        teamId={selectedTeamId}
+                                        boardId={selectedBoardId} // Use 'boardId' instead of 'selectedBoardId'
+                                        onClose={closeAddBoardPopup}
+                                        onSave={handleSaveBoard}
+                                    />
+                                </div>
+                            </>
+                        )}
                     </div>
-                    {showAddBoardPopup && (
-                        <>
-                            <div className="overlay_mini" />
-                            <div className="popup_mini" style={popupStyle}>
-                                <AddBoardPopup
-                                    teamId={selectedTeamId}
-                                    boardId={selectedBoardId} // Use 'boardId' instead of 'selectedBoardId'
-                                    onClose={closeAddBoardPopup}
-                                    onSave={handleSaveBoard}
-                                />
-                            </div>
-                        </>
-                    )}
-                </div>
-            )}
+                )}</>)}
         </div>
     );
 };

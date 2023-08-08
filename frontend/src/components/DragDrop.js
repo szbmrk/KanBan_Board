@@ -7,7 +7,7 @@ import ConfirmationPopup from "./ConfirmationPopup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import "../styles/dragdrop.css";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import axios from '../api/axios';
 import Error from "./Error";
 
@@ -466,6 +466,7 @@ const DragDrop = () => {
                                                     favouriteCard={(taskId, divName) =>
                                                         task.is_favourite === false ? favouriteCard(taskId, index) : unFavouriteCard(taskId, index)
                                                     }
+                                                tags={task.tags}
                                                 />
                                             ))}
                                         </div>
