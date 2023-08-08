@@ -16,6 +16,7 @@ const DragDrop = () => {
     const [permission, setPermission] = useState(false);
     const [error, setError] = useState(false);
     const [board, setBoard] = useState([]);
+    const [columnPositions, setColumnPositions] = useState([]);
 
     useEffect(() => {
         fetchBoardData()
@@ -46,7 +47,12 @@ const DragDrop = () => {
                 });
                 return { ...column, tasks };
             });
-            tempBoard.columns = tempColumns;
+
+            // Sort the columns by position
+            tempBoard.columns = tempColumns.sort((a, b) => a.position - b.position);
+
+            let tempColumnPositions = tempBoard.columns.map((column) => column.column_id);
+            setColumnPositions(tempColumnPositions);
 
             setBoard(tempBoard);
         }
@@ -63,13 +69,24 @@ const DragDrop = () => {
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
 
-    const Column = ({ divIndex, moveColumn, children }) => {
+    const Column = ({ divIndex, moveColumnFrontend, moveColumnBackend, children }) => {
+        const [originalPos, setOriginalPos] = useState(null);
+
         const [{ isDragging }, drag] = useDrag({
             type: "DIV",
-            item: { index: divIndex },
+            item() {
+                setOriginalPos(divIndex);
+                return { index: divIndex };
+            },
             collect: (monitor) => ({
                 isDragging: monitor.isDragging(),
             }),
+            end: (item, monitor) => {
+                if (originalPos !== undefined && item.hoverIndex !== undefined) {
+                    if (originalPos === item.hoverIndex) return;
+                    moveColumnBackend(originalPos, item.hoverIndex);
+                }
+            },
         });
 
         const [, drop] = useDrop({
@@ -78,16 +95,18 @@ const DragDrop = () => {
                 const sourceDivIndex = item.index;
                 const targetDivIndex = divIndex;
 
+                // Don't replace items with themselves
                 if (sourceDivIndex === targetDivIndex) {
                     return;
                 }
 
-                moveColumn(sourceDivIndex, targetDivIndex);
+                item.hoverIndex = targetDivIndex;
                 item.index = targetDivIndex;
+                moveColumnFrontend(sourceDivIndex, targetDivIndex);
             },
         });
 
-        const opacity = isDragging ? 0.5 : 1;
+        const opacity = isDragging ? 0.75 : 1;
         const display = "flex";
 
         return (
@@ -195,27 +214,59 @@ const DragDrop = () => {
             newColumn.tasks = [];
 
             const newBoardData = [...board.columns, newColumn];
+            let tempPositions = columnPositions;
+            tempPositions.push(newColumn.column_id);
+            setColumnPositions(tempPositions);
+            console.log(tempPositions);
             setBoard({ ...board, columns: newBoardData });
-
         }
         catch (e) {
             console.error(e)
         }
     };
 
-    const moveColumn = (dragIndex, hoverIndex) => {
-        setEditingColumnIndex(null);
-        console.log("dragIndex");
-        console.log(dragIndex);
-        console.log("hoverIndex");
-        console.log(hoverIndex);
-        const draggedDiv = board.columns[dragIndex];
+    const moveColumnBackend = async (dragIndex, hoverIndex) => {
+        try {
+            setEditingColumnIndex(null);
 
-        const newBoardData = [...board.columns];
-        newBoardData.splice(dragIndex, 1);
-        newBoardData.splice(hoverIndex, 0, draggedDiv);
 
-        setBoard({ ...board, columns: newBoardData });
+            let tempPositions = columnPositions;
+
+            //swap the positions of the columns in the array of positions
+            const temp = tempPositions[dragIndex];
+            console.log(tempPositions)
+
+            tempPositions[dragIndex] = tempPositions[hoverIndex];
+            tempPositions[hoverIndex] = temp;
+            console.log(tempPositions)
+            setColumnPositions(tempPositions);
+
+            const token = sessionStorage.getItem('token');
+            axios.post(`/boards/${board_id}/columns/positions`, { columns: tempPositions }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+        }
+        catch (e) {
+            console.error(e)
+        }
+    };
+
+    const moveColumnFrontend = (dragIndex, hoverIndex) => {
+
+        try {
+            setEditingColumnIndex(null);
+            const draggedDiv = board.columns[dragIndex];
+            const newBoardData = [...board.columns];
+            newBoardData.splice(dragIndex, 1);
+            newBoardData.splice(hoverIndex, 0, draggedDiv);
+
+            setBoard({ ...board, columns: newBoardData });
+        }
+        catch (e) {
+            console.error(e)
+        }
     };
 
     const handleColumnTitleChange = (event, columnIndex) => {
@@ -387,7 +438,7 @@ const DragDrop = () => {
                         <h1>{board.name}</h1>
                         <div className="div-container">
                             {board.columns.map((column, index) => (
-                                <Column key={index} divIndex={index} moveColumn={moveColumn}>
+                                <Column key={index} divIndex={index} moveColumnFrontend={moveColumnFrontend} moveColumnBackend={moveColumnBackend}>
                                     <div className="card-container">
                                         {editingColumnIndex === index ? (
                                             <div className="name-edit">
@@ -466,7 +517,7 @@ const DragDrop = () => {
                                                     favouriteCard={(taskId, divName) =>
                                                         task.is_favourite === false ? favouriteCard(taskId, index) : unFavouriteCard(taskId, index)
                                                     }
-                                                tags={task.tags}
+                                                    tags={task.tags}
                                                 />
                                             ))}
                                         </div>
