@@ -28,13 +28,12 @@ def generate_code():
         try:
             code_json = json.loads(response.text)
             generated_code = code_json['choices'][0]['text']  # Extract the generated code
-            print(generated_code)
         except (json.JSONDecodeError, KeyError) as e:
             print(f"Error parsing response: {e}")
     else:
         print(f"Error: {response.status_code}, {response.text}")
 
-    return response
+    return generated_code
 
 if __name__ == "__main__":
     code = generate_code()

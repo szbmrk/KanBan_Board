@@ -53,7 +53,7 @@ class ExecutePythonScript
 
     public static function GenerateCode($title, $description, $tags)
     {
-        $prompt = "Generate usable example code stored in json format for the following kanban board ticket: title: $title, description: $description, tags: $tags .In the json return only the code!";
+        $prompt = "Generate usable example code for the following kanban board ticket-> title: $title, description: $description, tags: $tags .In your response write only the code!";
         // Construct the Python command with the required arguments and path to the script
 
 

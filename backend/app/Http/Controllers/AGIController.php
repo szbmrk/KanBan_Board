@@ -30,16 +30,16 @@ class AGIController extends Controller
         //$cleanData = trim($response);
         
         $cleanData = str_replace("'", "\"", $response);
+        $cleanData = str_replace("<Response [200]>", "", $response);
 
 
         //$formattedResponse = json_decode($response, true);
         
         
-/*         $responseData = [
-            'code' => $response,
-        ]; */
-
         return $cleanData;
+       /*  return response()->json([
+            'code' => $cleanData,
+        ]); */
         
 
     }
