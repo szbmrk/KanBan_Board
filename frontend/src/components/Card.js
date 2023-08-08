@@ -138,18 +138,15 @@ export const Card = ({
     };
 
     const [isHovered, setIsHovered] = useState(false);
-    const [isOverflown, setIsOverflown] = useState(false);
 
     const handleMouseEnterOnTaskTitle = () => {
         const taskTitle = document.getElementsByClassName("task-title")[index];
         if (taskTitle.textContent.length > 20) {
-            setIsOverflown(true);
             setIsHovered(true);
         }
     };
 
     const handleMouseLeaveOnTaskTitle = () => {
-        setIsOverflown(false);
         setIsHovered(false);
     };
 
@@ -170,11 +167,11 @@ export const Card = ({
                 >
                     {editedText}
 
-                    <div className="tags-container">
-                        {tags && tags.map((tag, tagIndex) => (
-                            <Tag key={tagIndex} name={tag.name} color={tag.color} />
-                        ))}
-                    </div>
+                </div>
+                <div className="tags-container">
+                    {tags && tags.map((tag, tagIndex) => (
+                        <Tag key={tagIndex} name={tag.name} color={tag.color} />
+                    ))}
                 </div>
                 <div className="icon-container">
                     {isFavourite ?
