@@ -120,3 +120,8 @@
     justify-content: flex-end;
     align-items: center;
 }
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+}

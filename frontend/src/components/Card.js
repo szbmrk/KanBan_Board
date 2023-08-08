@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import Popup from "./Popup";
 import ConfirmationPopup from "./ConfirmationPopup";
@@ -12,6 +12,7 @@ import {
     faStar as faSolidStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as faRegularStar } from "@fortawesome/free-regular-svg-icons";
+import Tag from "./Tag";
 
 const ItemTypes = {
     CARD: "card",
@@ -34,7 +35,8 @@ export const Card = ({
     moveCard,
     deleteCard,
     favouriteCard,
-    board_id
+    board_id,
+    tags
 }) => {
     const [{ isDragging: dragging }, drag] = useDrag({
         type: ItemTypes.CARD,
@@ -167,6 +169,12 @@ export const Card = ({
                     onMouseLeave={handleMouseLeaveOnTaskTitle}
                 >
                     {editedText}
+
+                    <div className="tags-container">
+                        {tags && tags.map((tag, tagIndex) => (
+                            <Tag key={tagIndex} name={tag.name} color={tag.color} />
+                        ))}
+                    </div>
                 </div>
                 <div className="icon-container">
                     {isFavourite ?
