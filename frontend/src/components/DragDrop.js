@@ -48,7 +48,8 @@ const DragDrop = () => {
                 return { ...column, tasks };
             });
 
-            // Sort the columns by position
+            // Sort the columns and tasks by position
+            tempColumns.map((column) => column.tasks.sort((a, b) => a.position - b.position));
             tempBoard.columns = tempColumns.sort((a, b) => a.position - b.position);
 
             let tempColumnPositions = tempBoard.columns.map((column) => column.column_id);
@@ -125,7 +126,7 @@ const DragDrop = () => {
 
     const [columnNewTitle, setColumnNewTitle] = useState("");
 
-    const moveCard = (dragIndex, hoverIndex, sourceDivIndex, targetDivIndex) => {
+    const moveCardFrontend = (dragIndex, hoverIndex, sourceDivIndex, targetDivIndex) => {
         const sourceDiv = board.columns[sourceDivIndex];
         const targetDiv = board.columns[targetDivIndex];
         const draggedCard = sourceDiv.tasks[dragIndex];
@@ -140,6 +141,56 @@ const DragDrop = () => {
         newBoardData[sourceDivIndex] = { ...sourceDiv };
         newBoardData[targetDivIndex] = { ...targetDiv };
         setBoard({ ...board, columns: newBoardData });
+    };
+
+    const moveCardBackend = async (dragIndex, hoverIndex, sourceDivIndex, targetDivIndex) => {
+        const sourceDiv = board.columns[sourceDivIndex];
+        const task_to_modify_id = sourceDiv.tasks[hoverIndex].task_id
+        const to_column_id = sourceDiv.column_id
+        if (hoverIndex === 0) {
+            sourceDiv.tasks[hoverIndex].position = sourceDiv.tasks[hoverIndex + 1].position / 2;
+        }
+        else if (hoverIndex === sourceDiv.tasks.length - 1) {
+            sourceDiv.tasks[hoverIndex].position = sourceDiv.tasks[hoverIndex - 1].position + 1;
+        }
+        else {
+            sourceDiv.tasks[hoverIndex].position = (sourceDiv.tasks[hoverIndex - 1].position + sourceDiv.tasks[hoverIndex + 1].position) / 2;
+        }
+
+        const position = sourceDiv.tasks[hoverIndex].position;
+        const token = sessionStorage.getItem('token');
+
+        try {
+            await axios.post(`/columns/${board_id}/tasks/positions`, {
+                tasks: [
+                    { task_id: task_to_modify_id, position: position, column_id: to_column_id }
+                ]
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+        }
+        catch (e) {
+            if (e.response.data.error === "Task limit for the new column has been reached") {
+                const sourceDiv = board.columns[sourceDivIndex];
+                const targetDiv = board.columns[targetDivIndex];
+                const draggedCard = sourceDiv.tasks[hoverIndex];
+
+                // Remove the card from the source div
+                sourceDiv.tasks.splice(hoverIndex, 1);
+                // Add the card to the target div at the hover index
+                targetDiv.tasks.splice(dragIndex, 0, draggedCard);
+
+                // Update the state for both source and target divs
+                const newBoardData = [...board.columns];
+                newBoardData[sourceDivIndex] = { ...sourceDiv };
+                newBoardData[targetDivIndex] = { ...targetDiv };
+                setBoard({ ...board, columns: newBoardData });
+
+                alert(e.response.data.error);
+            }
+        }
     };
 
     const handleAddCard = async (divIndex) => {
@@ -162,7 +213,6 @@ const DragDrop = () => {
             createdTask.board_id = board_id;
             const newBoardData = [...board.columns];
             newBoardData[divIndex].tasks.push(createdTask);
-            console.log(newBoardData[divIndex].tasks);
             setBoard({ ...board, columns: newBoardData });
         }
         catch (e) {
@@ -217,7 +267,6 @@ const DragDrop = () => {
             let tempPositions = columnPositions;
             tempPositions.push(newColumn.column_id);
             setColumnPositions(tempPositions);
-            console.log(tempPositions);
             setBoard({ ...board, columns: newBoardData });
         }
         catch (e) {
@@ -324,6 +373,16 @@ const DragDrop = () => {
             }
         }
     };
+
+    const handleEditTask = (task_id, column_id, title, description) => {
+        const newTaskData = [...board.columns];
+        const columnIndex = newTaskData.findIndex((column) => column.column_id === column_id);
+        const taskIndex = newTaskData[columnIndex].tasks.findIndex((task) => task.task_id === task_id);
+        newTaskData[columnIndex].tasks[taskIndex].title = title;
+        newTaskData[columnIndex].tasks[taskIndex].description = description;
+        setBoard({ ...board, columns: newTaskData });
+    };
+
 
     React.useEffect(() => {
         const handleClickOutside = (event) => {
@@ -488,14 +547,24 @@ const DragDrop = () => {
                                                 <Card
                                                     key={task.task_id}
                                                     board_id={board_id}
+                                                    column_id={column.column_id}
+                                                    handleEditTask={handleEditTask}
                                                     id={task.task_id}
                                                     text={task.title}
                                                     description={task.description}
                                                     isFavourite={task.is_favourite === true}
                                                     index={taskIndex}
                                                     divName={`div${index + 1}`}
-                                                    moveCard={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
-                                                        moveCard(
+                                                    moveCardFrontend={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
+                                                        moveCardFrontend(
+                                                            dragIndex,
+                                                            hoverIndex,
+                                                            parseInt(sourceDiv.substr(3)) - 1,
+                                                            parseInt(targetDiv.substr(3)) - 1
+                                                        )
+                                                    }
+                                                    moveCardBackend={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
+                                                        moveCardBackend(
                                                             dragIndex,
                                                             hoverIndex,
                                                             parseInt(sourceDiv.substr(3)) - 1,
