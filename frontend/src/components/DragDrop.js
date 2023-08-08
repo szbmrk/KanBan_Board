@@ -441,32 +441,34 @@ const DragDrop = () => {
                                                 </span>
                                             </>
                                         )}
-                                        {column.tasks.map((task, taskIndex) => (
-                                            <Card
-                                                key={task.task_id}
-                                                board_id={board_id}
-                                                id={task.task_id}
-                                                text={task.title}
-                                                description={task.description}
-                                                isFavourite={task.is_favourite === true}
-                                                index={taskIndex}
-                                                divName={`div${index + 1}`}
-                                                moveCard={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
-                                                    moveCard(
-                                                        dragIndex,
-                                                        hoverIndex,
-                                                        parseInt(sourceDiv.substr(3)) - 1,
-                                                        parseInt(targetDiv.substr(3)) - 1
-                                                    )
-                                                }
-                                                deleteCard={(taskId, divName) =>
-                                                    handleDeleteCard(taskId, index)
-                                                }
-                                                favouriteCard={(taskId, divName) =>
-                                                    task.is_favourite === false ? favouriteCard(taskId, index) : unFavouriteCard(taskId, index)
-                                                }
-                                            />
-                                        ))}
+                                        <div className="task-container">
+                                            {column.tasks.map((task, taskIndex) => (
+                                                <Card
+                                                    key={task.task_id}
+                                                    board_id={board_id}
+                                                    id={task.task_id}
+                                                    text={task.title}
+                                                    description={task.description}
+                                                    isFavourite={task.is_favourite === true}
+                                                    index={taskIndex}
+                                                    divName={`div${index + 1}`}
+                                                    moveCard={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
+                                                        moveCard(
+                                                            dragIndex,
+                                                            hoverIndex,
+                                                            parseInt(sourceDiv.substr(3)) - 1,
+                                                            parseInt(targetDiv.substr(3)) - 1
+                                                        )
+                                                    }
+                                                    deleteCard={(taskId, divName) =>
+                                                        handleDeleteCard(taskId, index)
+                                                    }
+                                                    favouriteCard={(taskId, divName) =>
+                                                        task.is_favourite === false ? favouriteCard(taskId, index) : unFavouriteCard(taskId, index)
+                                                    }
+                                                />
+                                            ))}
+                                        </div>
                                         {column.is_finished === 0 ? <div
                                             className="addbtn"
                                             onClick={() => handleAddCard(index)}
