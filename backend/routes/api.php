@@ -16,6 +16,8 @@ use App\Http\Controllers\FavouriteTaskController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\MentionController;
+use App\Models\Feedback;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PriorityController;
 
 /*
@@ -102,4 +104,11 @@ Route::post('/boards/{boardId}/tasks/{taskId}/feedbacks', [FeedbackController::c
 Route::put('/boards/{boardId}/tasks/{taskId}/feedbacks/{feedbackId}', [FeedbackController::class, 'update'])->middleware('api');
 Route::delete('/boards/{boardId}/tasks/{taskId}/feedbacks/{feedbackId}', [FeedbackController::class, 'destroy'])->middleware('api');
 
+Route::get('/users/{userId}/notifications', [NotificationController::class, 'index'])->middleware('api');
+Route::get('/users/{userId}/notifications/{notificationId}', [NotificationController::class, 'show'])->middleware('api');
+Route::post('/notifications/{userId}', [NotificationController::class, 'store'])->middleware('api');
+Route::put('/notifications/{notificationId}', [NotificationController::class, 'update'])->middleware('api');
+Route::delete('/notifications/{notificationId}', [NotificationController::class, 'destroy'])->middleware('api');
+
 Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');
+

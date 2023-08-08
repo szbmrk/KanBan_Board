@@ -10,9 +10,8 @@ use Illuminate\Validation\ValidationException;
 
 class FeedbackController extends Controller
 {
-    public function index($boardId, $taskId) {
-
-        // User manuális lekérdezése a sessionből
+    public function index($boardId, $taskId) 
+    {
         $user = auth()->user();
       
         if (!$user) {
@@ -189,45 +188,45 @@ class FeedbackController extends Controller
     }
 
     public function destroy($boardId, $taskId, $feedbackId)
-{
-    $user = auth()->user();
-    if (!$user) {
-        return response()->json(['error' => 'Unauthorized'], 401);
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $board = Board::find($boardId);
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+
+        $task = Task::find($taskId);
+
+        if (!$task) {
+            return response()->json(['error' => 'Task not found'], 404);
+        }
+
+        if ($task->board_id != $boardId) {
+            return response()->json(['error' => 'Task is not found in this board'], 400);
+        }
+
+        $feedback = Feedback::find($feedbackId);
+        if (!$feedback) {
+            return response()->json(['error' => 'Feedback not found'], 404);
+        }
+
+        if ($feedback->user_id != $user->user_id) {
+            return response()->json(['error' => 'Permission denied'], 403);
+        }
+
+        $feedback->delete();
+
+        return response()->json(['message' => 'Feedback deleted successfully']);
     }
-
-    $board = Board::find($boardId);
-
-    if (!$board) {
-        return response()->json(['error' => 'Board not found'], 404);
-    }
-
-    if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
-        return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
-    }
-
-    $task = Task::find($taskId);
-
-    if (!$task) {
-        return response()->json(['error' => 'Task not found'], 404);
-    }
-
-    if ($task->board_id != $boardId) {
-        return response()->json(['error' => 'Task is not found in this board'], 400);
-    }
-
-    $feedback = Feedback::find($feedbackId);
-    if (!$feedback) {
-        return response()->json(['error' => 'Feedback not found'], 404);
-    }
-
-    if ($feedback->user_id != $user->user_id) {
-        return response()->json(['error' => 'Permission denied'], 403);
-    }
-
-    $feedback->delete();
-
-    return response()->json(['message' => 'Feedback deleted successfully']);
-}
 
     
 }
