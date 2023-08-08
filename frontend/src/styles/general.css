@@ -10,6 +10,7 @@
     --basic-font: 'Raleway', sans-serif;
     --confirm: #359138;
     --starred: #f5d142;
+    --scrollbar-hover: #555;
 }
 
 *{
@@ -44,17 +45,37 @@ body {
     text-align: center;
     margin: 0 auto;
     padding: 20px;
-}
-
-#root {
-    height: 100%;
-    width: 100%;
+    height: calc(100vh - 50px);
     overflow: auto;
 }
 
 
-/* Declaring classNames for responsiveness */
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    overflow: hidden;
+}
 
+::-webkit-scrollbar-track {
+    background: transparent; 
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--dark-gray);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-hover);; 
+}
+
+::-webkit-scrollbar-button {
+    display: none;
+}
+
+
+/* Declaring classNames for responsiveness */
   
 @media only screen and (min-width: 600px) {
 /* For tablets: */
