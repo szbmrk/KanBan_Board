@@ -219,6 +219,12 @@ export default function Dashboard() {
                                                 >
                                                     {xMarkIcon}
                                                 </span>
+                                                <span
+                                                    className="edit-column-button"
+                                                    onClick={() => openAddBoardPopup(team.team_id, board.board_id)}
+                                                >
+                                                    {pencilIcon}
+                                                </span>
                                             </div>
                                         ))}
                                         <div className="board add-board"

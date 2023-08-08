@@ -52,11 +52,32 @@
     color: var(--light-gray);
 }
 
+.edit-column-button {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 5px 10px;
+    color: var(--light-gray);
+    font-size: 14px;
+    cursor: pointer;
+}
 
-.board-actions {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 10px;
+@keyframes rotate {
+    0% {
+        transform: rotate(10deg);
+    }
+
+    50% {
+        transform: rotate(-20deg);
+    }
+
+    100% {
+        transform: rotate(10deg);
+    }
+}
+
+.edit-column-button:hover {
+    animation: rotate 0.5s;
 }
 
 /* Styling for the add board button */
