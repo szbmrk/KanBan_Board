@@ -42,10 +42,13 @@ const DragDrop = () => {
             });
 
             let tempColumns = tempBoard.columns.map((column) => {
-                const tasks = column.tasks.map((task) => {
+                const filteredTasks = column.tasks.filter((task) => task.parent_task_id === null);
+
+                const tasks = filteredTasks.map((task) => {
                     const is_favourite = response1.data.favourites.some((favourite) => favourite.task_id === task.task_id);
                     return { ...task, is_favourite };
                 });
+
                 return { ...column, tasks };
             });
 
@@ -55,6 +58,8 @@ const DragDrop = () => {
 
             let tempColumnPositions = tempBoard.columns.map((column) => column.column_id);
             setColumnPositions(tempColumnPositions);
+
+            console.log(tempBoard.columns);
 
             setBoard(tempBoard);
         }
@@ -67,6 +72,7 @@ const DragDrop = () => {
             setPermission(false);
         }
     }
+
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
