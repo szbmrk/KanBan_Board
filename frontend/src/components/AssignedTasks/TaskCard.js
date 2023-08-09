@@ -1,10 +1,19 @@
 import React from "react";
 import '../../styles/taskcard.css'; // Import the CSS file for styling
+import Tag from "../Tag";
 
 const TaskCard = ({ task }) => {
   return (
     <div className="task-card">
       <h2>{task.title}</h2>
+        <h3>Tags:</h3>
+      <div className="tags">
+        {task.tags.map((tag, index) => (
+          <p key={index} style={{backgroundColor: tag.color}}>
+            {tag.name}
+          </p>
+        ))}
+      </div>
       <p>{task.description}</p>
       <p>Due Date: {task.due_date}</p>
       <p>Priority: {task.priority.priority}</p>

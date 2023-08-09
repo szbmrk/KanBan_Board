@@ -9,7 +9,7 @@
     text-align: center;
     margin-left: auto;
     margin-right: auto;
-    
+    min-width: 300px;
   }
   
   .task-card h2 {
@@ -35,9 +35,21 @@
     margin-right: 5px;
   }
   .scrollable-container {
-    max-height: 800px; /* Set a maximum height for scrollability */
+    display: flex;
+    flex-direction: row;
+    gap: 30px; /* Set a maximum height for scrollability */
     overflow: auto; /* Enable scrolling if content overflows */
     padding: 15px; /* Add padding to make the content breathe */
+  }
+  .tags
+  {
+    max-width: max-content;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 15px;
+    margin-left: auto;
+    margin-right: auto;
   }
   
   /* ... your existing styles ... */
