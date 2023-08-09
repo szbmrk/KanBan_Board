@@ -19,6 +19,7 @@ use App\Http\Controllers\MentionController;
 use App\Models\Feedback;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PriorityController;
+use App\Http\Controllers\TeamMemberRoleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -112,3 +113,4 @@ Route::delete('/notifications/{notificationId}', [NotificationController::class,
 
 Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');
 
+Route::get('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'index'])->middleware('api');

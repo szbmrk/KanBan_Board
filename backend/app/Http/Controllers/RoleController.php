@@ -10,7 +10,6 @@ use App\Models\Team;
 use Illuminate\Support\Facades\Validator;
 class RoleController extends Controller
 {
-    
 
     public function index($boardId)
     {
@@ -19,6 +18,11 @@ class RoleController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401); 
         } 
         $board = Board::find($boardId);
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+
         $teamMemberIds = $user->teams->flatMap(function ($team) use ($boardId) {
             return $team->teamMembers->pluck('team_members_id');
         });
@@ -50,6 +54,11 @@ class RoleController extends Controller
         }
 
         $board = Board::find($boardId);
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+        
         if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }

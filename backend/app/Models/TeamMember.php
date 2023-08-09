@@ -23,6 +23,12 @@ class TeamMember extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+    
+
+    public function roles()
+    {
+        return $this->hasManyThrough(Role::class, TeamMemberRole::class, 'team_member_id', 'role_id');
+    }
 
     // Other model code...
 }

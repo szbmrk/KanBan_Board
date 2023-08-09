@@ -14,14 +14,18 @@ class Role extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'name'
+        'name',
+        'board_id'
     ];
 
     public function board()
     {
         return $this->belongsTo(Board::class, 'board_id', 'board_id');
     }
-
+    public function teamMemberRoles()
+    {
+        return $this->hasMany(TeamMemberRole::class, 'role_id', 'role_id');
+    }
 
 
 }
