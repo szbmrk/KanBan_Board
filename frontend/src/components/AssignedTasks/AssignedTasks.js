@@ -40,7 +40,7 @@ const AssignedTasks = () => {
     }
 
     return (
-        <div className="scrollable-container">
+        <div className="content scrollable-container">
             {tasks.map((task, index) => (
                 <TaskCard key={index} task={task} />
             ))}

@@ -1,11 +1,11 @@
 .task-card {
-    background-color: rgba(249, 249, 249, 0.6); /* Slightly transparent background */
-    border: 1px solid #ccc;
+    background-color: var(--bg-dark);
+    border: 1px solid var(--dark-gray);
     border-radius: 10px;
     padding: 15px;
     margin: 10px;
     width: 400px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
     text-align: center;
     margin-left: auto;
     margin-right: auto;
@@ -37,10 +37,11 @@
   .scrollable-container {
     display: flex;
     flex-direction: row;
+    height: fit-content;
     gap: 30px; /* Set a maximum height for scrollability */
-    overflow: auto; /* Enable scrolling if content overflows */
     padding: 15px; /* Add padding to make the content breathe */
   }
+
   .tags
   {
     max-width: max-content;
@@ -52,4 +53,3 @@
     margin-right: auto;
   }
   
-  /* ... your existing styles ... */

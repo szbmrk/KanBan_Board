@@ -11,6 +11,7 @@
     --confirm: #359138;
     --starred: #f5d142;
     --scrollbar-hover: #555;
+    --bg-dark: rgba(var(--dark-grayRGB), 0.5);
 }
 
 *{
@@ -47,6 +48,13 @@ body {
     height: calc(100vh - 50px);
     overflow: auto;
 }
+
+.card-title {
+    color: var(--light-gray);
+    margin: 0 30px 30px;
+    border-bottom: 1px solid var(--light-gray);
+}
+  
 
 
 /* <Scrollbar> */

@@ -4,7 +4,7 @@ import '../../styles/taskcard.css';
 const TaskCard = ({ task }) => {
     return (
         <div className="task-card">
-            <h2>{task.title}</h2>
+            <h2 className="card-title">{task.title}</h2>
             {task.tags && task.tags.length > 0 && (
                 <>
                     <h3>Tags:</h3>
