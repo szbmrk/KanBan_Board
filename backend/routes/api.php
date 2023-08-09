@@ -106,3 +106,4 @@ Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api
 
 
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_code', [AGIController::class, 'generateCode'])->middleware('api');
+Route::get('/boards/{boardId}/tasks/{taskId}/generate_priority', [AGIController::class, 'generatePriority'])->middleware('api');

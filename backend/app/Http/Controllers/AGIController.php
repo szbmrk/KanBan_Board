@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tag;
 use App\Models\Task;
+use App\Models\Column;
 use App\Models\TaskTag;
 use Illuminate\Http\Request;
 use App\Helpers\ExecutePythonScript;
@@ -42,5 +43,27 @@ class AGIController extends Controller
         ]); */
         
 
+    }
+
+    public function generatePriority(Request $request, $boardId, $taskId) 
+    {
+        $user = auth()->user();
+
+        $task = Task::find($taskId);
+        $taskTag = TaskTag::where('task_id', $task->task_id)->get();
+        //find all the tags for the task
+        $tags = Tag::whereIn('tag_id', $taskTag->pluck('tag_id'))->get();
+        $tagNames = $tags->pluck('name');
+
+        $column = Column::find($task->column_id)->tasks()->get();
+        //$column = $column->tasks()->get()
+
+        $response = ExecutePythonScript::instance()->GeneratePriority($task->title, $task->description, $tagNames, $column );
+
+        $cleanData = trim($response);
+        
+        return response()->json([
+            'priority' => $cleanData,
+        ]);
     }
 }

@@ -73,6 +73,32 @@ class ExecutePythonScript
         }
     }
 
+    public static function GeneratePriority($title, $description, $tags, $column)
+    {
+        $otherTasks = $column->pluck('title', 'description');
+
+        $youAre = "a priority manager state machine. You can only answer with only one priority suggestion! You can choose from the following enums: TOP PRIORITY, HIGH PRIORITY, MEDIUM PRIORITY, LOW PRIORITY.";
+        $prompt = "You are $youAre . Estimate the priority of the following kanban board ticket-> title: $title, description: $description. These tasks are in the column-> $otherTasks. Answer with the priortiy enum only, nothing else!";
+        // Construct the Python command with the required arguments and path to the script
+
+
+        $pythonScriptPath = env('PYTHON_SCRIPT_PATH3');
+        $command = "python $pythonScriptPath \"$prompt\"";
+
+
+        try {
+
+            $result = shell_exec("{$command} 2>&1");
+
+       
+            // Return the subtask as a simple array
+            return $result;
+        } catch (\Exception $e) {
+            // Return the error message as a simple array
+            return ['error' => $e->getMessage()];
+        }
+    }
+
 }
 
 
