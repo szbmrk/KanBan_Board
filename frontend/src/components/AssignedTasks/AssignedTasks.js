@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../api/axios";
 import TaskCard from "./TaskCard";
+import '../../styles/taskcard.css'; // Import the CSS file for styling
 
 const AssignedTasks = () =>
 {
@@ -22,8 +23,12 @@ const AssignedTasks = () =>
                         Authorization: `Bearer ${token}`,
                     }
                 });
-                setTasks(response.data.assigned_tasks);
-                console.log(response.data.assigned_tasks);
+                const tempData=response.data.assigned_tasks;
+                tempData.map((task, index) => tempData[index]=task.task);
+
+                setTasks(tempData);
+
+                console.log(tempData);
             }
             catch(error)
             {
@@ -32,7 +37,11 @@ const AssignedTasks = () =>
     }
 
     return(
-        <div></div>
+        <div className="scrollable-container">
+      {tasks.map((task, index) => (
+        <TaskCard key={index} task={task} />
+      ))}
+        </div>
     )
 }
 export default AssignedTasks;
