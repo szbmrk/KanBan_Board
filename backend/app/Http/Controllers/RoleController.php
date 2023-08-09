@@ -5,108 +5,160 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Role;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\Board;
+use App\Models\Team;
+use Illuminate\Support\Facades\Validator;
 class RoleController extends Controller
 {
-    public function index()
+    
+
+    public function index($boardId)
     {
         $user = auth()->user();
         if (!$user) { 
-                return response()->json(['error' => 'Unauthorized'], 401); 
+            return response()->json(['error' => 'Unauthorized'], 401); 
         } 
-            
-        $roles = Role::all();
-
+        $board = Board::find($boardId);
+        $teamMemberIds = $user->teams->flatMap(function ($team) use ($boardId) {
+            return $team->teamMembers->pluck('team_members_id');
+        });
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+    
+        $roles = Role::whereIn('role_id', function ($query) use ($teamMemberIds) {
+            $query->select('role_id')
+                ->from('team_members_role')
+                ->whereIn('team_member_id', $teamMemberIds);
+        })
+        ->where('board_id', $boardId)
+        ->get();
+    
         if ($roles->isEmpty()) {
             return response()->json(['error' => 'No roles found'], 404);
         }
-
+    
         return response()->json(['roles' => $roles]);
     }
+    
 
-    public function store(Request $request) {
-
+    public function store(Request $request, $boardId)
+    {
         $user = auth()->user();
-        if (!$user) { 
-                return response()->json(['error' => 'Unauthorized'], 401); 
-        } 
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
 
-        $name = $request->input('name');
-        if (!$name) {
-            return response()->json(['error' => 'Please provide a name for the role'], 422);
+        $board = Board::find($boardId);
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
-      
-        $existing = DB::table('roles')->where('name', $name)->first();
-        
-        if ($existing) {
-          return response()->json(['error' => 'Role already exists'], 422);
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|min:1',
+        ], [
+            'name.required' => 'The name field is required.',
+            'name.min' => 'The name must be at least 1 character.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
         }
-      
-        DB::insert('insert into roles (name) values (?)', [$name]);
+
+        $existingRole = Role::where('board_id', $boardId)
+                            ->where('name', $request->input('name'))
+                            ->first();
         
-        return response()->json([
-           'message' => 'Role created successfully'
-        ], 201);
-      }
-      
-    public function update(Request $request, $id) {
+        if ($existingRole) {
+            return response()->json(['error' => 'Role already exists for this board.'], 400);
+        }
+
+        $role = new Role();
+        $role->name = $request->input('name');
+        $role->board_id = $boardId;
+        $role->save();
+
+        return response()->json(['message' => 'Role created successfully'], 201);
+    }
+
+    public function update(Request $request, $boardId, $roleId)
+    {
         $user = auth()->user();
-        if (!$user) { 
-                return response()->json(['error' => 'Unauthorized'], 401); 
-        } 
-
-        $input = $request->json()->all();
-        $name = $input['name'];
-
-        if(empty($name)) {
-            return response()->json(['error' => 'Name is required'], 422);
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        try 
-        {
-            $role = Role::findOrFail($id);
-        } 
-        catch (\Illuminate\Database\Eloquent\ModelNotFoundException) 
-        {
+        $board = Board::find($boardId);
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+
+        $role = Role::where('board_id', $boardId)
+                    ->where('role_id', $roleId)
+                    ->first();
+
+        if (!$role) {
             return response()->json(['error' => 'Role not found'], 404);
         }
 
-        if($role->name === $name) {
-            return response()->json([
-              'error' => 'Cannot update role to the same name'
-            ], 422);
-        }
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|min:1',
+        ], [
+            'name.required' => 'The name field is required.',
+            'name.min' => 'The name must be at least 1 character.',
+        ]);
 
-        $existing = Role::where('name', $name)
-                        ->where('role_id', '!=', $id)
-                        ->first();
-                        
-        if($existing) {
-            return response()->json(['error' => 'Role already exists'], 422);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
         }
         
-        $role->name = $name;
+
+        if ($role->name == $request->input('name')) {
+            return response()->json(['error' => 'Role name is already the same.'], 400);
+        }
+
+        $existingRole = Role::where('board_id', $boardId)
+                            ->where('name', $request->input('name'))
+                            ->where('role_id', '<>', $roleId)
+                            ->first();
+        
+        if ($existingRole) {
+            return response()->json(['error' => 'Role name already exists for this board.'], 400);
+        }
+
+        $role->name = $request->input('name');
         $role->save();
 
-        return response()->json([
-            'message' => 'Role updated successfully'
-        ], 200);
-
+        return response()->json(['message' => 'Role updated successfully'], 200);
     }
 
-    public function destroy($id) {
-        
+    public function destroy($boardId, $roleId)
+    {
         $user = auth()->user();
-        if (!$user) { 
-                return response()->json(['error' => 'Unauthorized'], 401); 
-        } 
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
 
-        try 
-        {
-            $role = Role::findOrFail($id);
-        } 
-        catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) 
-        {
+        $board = Board::find($boardId);
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+
+        $role = Role::where('board_id', $boardId)
+                    ->where('role_id', $roleId)
+                    ->first();
+
+        if (!$role) {
             return response()->json(['error' => 'Role not found'], 404);
         }
 
@@ -114,6 +166,6 @@ class RoleController extends Controller
 
         return response()->json(['message' => 'Role deleted successfully'], 200);
     }
-        
+
 
 }
