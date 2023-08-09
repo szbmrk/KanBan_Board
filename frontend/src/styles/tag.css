@@ -11,10 +11,14 @@
 }
 
 .tag-on-card{
-    height: 25px !important;
+    height: 20px !important;
     width: 60px;
     min-width: 50px;
     text-align: center;
+}
+
+.tag-on-card p {
+    font-size: 0.8em;
 }
 
 .tag:hover {
