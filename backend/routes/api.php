@@ -90,4 +90,4 @@ Route::post('/boards/{boardId}/tasks/{taskId}/mentions', [MentionController::cla
 Route::delete('/boards/{boardId}/tasks/{taskId}/mentions/{mentionId}', [MentionController::class, 'destroy'])->middleware('api');
 
 Route::post('/generate-llama-subtasks', [LlamaController::class, 'generateSubtasks']);
-Route::post('/generate-llama-subtasks2', [LlamaController::class, 'testSubtaskParsing']);
+Route::get('/generate-llama-subtasks2', [LlamaController::class, 'testSubtaskParsing']);
