@@ -22,20 +22,23 @@ const AssignedTasks = () => {
             });
             const tempData = response.data.assigned_tasks;
             tempData.map((task, index) => tempData[index] = task.task);
+            tempData.map((task) => {
+                console.log(task.subtasks);
+            });
 
             setTasks(tempData);
 
             console.log(tempData);
         }
         catch (error) {
-            console.log("Error");
+            console.log(error.response);
         }
     }
 
     return (
         <div className="content scrollable-container">
             {tasks.map((task, index) => (
-                <TaskCard key={index} task={task} />
+                task.parent_task_id === null ? <TaskCard key={index} task={task} /> : <></>
             ))}
         </div>
     )
