@@ -3,44 +3,40 @@ import axios from "../../api/axios";
 import TaskCard from "./TaskCard";
 import '../../styles/taskcard.css'; // Import the CSS file for styling
 
-const AssignedTasks = () =>
-{
+const AssignedTasks = () => {
     const [tasks, setTasks] = useState([]);
-    useEffect(() =>
-    {
+    useEffect(() => {
         getAssignedTasks();
-        
-    },[]);
-    
-    const getAssignedTasks = async () =>
-    {
-            const token = sessionStorage.getItem('token');
-            const user_id = sessionStorage.getItem('user_id');
-    
-            try {
-                const response = await axios.get(`/user/${user_id}/tasks`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
-                });
-                const tempData=response.data.assigned_tasks;
-                tempData.map((task, index) => tempData[index]=task.task);
 
-                setTasks(tempData);
+    }, []);
 
-                console.log(tempData);
-            }
-            catch(error)
-            {
-                console.log("Error");
-            }
+    const getAssignedTasks = async () => {
+        const token = sessionStorage.getItem('token');
+        const user_id = sessionStorage.getItem('user_id');
+
+        try {
+            const response = await axios.get(`/user/${user_id}/tasks`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+            const tempData = response.data.assigned_tasks;
+            tempData.map((task, index) => tempData[index] = task.task);
+
+            setTasks(tempData);
+
+            console.log(tempData);
+        }
+        catch (error) {
+            console.log("Error");
+        }
     }
 
-    return(
+    return (
         <div className="scrollable-container">
-      {tasks.map((task, index) => (
-        <TaskCard key={index} task={task} />
-      ))}
+            {tasks.map((task, index) => (
+                <TaskCard key={index} task={task} />
+            ))}
         </div>
     )
 }
