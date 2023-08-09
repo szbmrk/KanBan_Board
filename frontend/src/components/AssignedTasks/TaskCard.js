@@ -1,5 +1,11 @@
 import React from "react";
 import '../../styles/taskcard.css';
+import Tag from "../Tag";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTags, faLink } from "@fortawesome/free-solid-svg-icons";
+
+const tagsIcon = <FontAwesomeIcon icon={faTags} />;
+const linkIcon = <FontAwesomeIcon icon={faLink} />;
 
 const TaskCard = ({ task }) => {
     return (
@@ -7,13 +13,14 @@ const TaskCard = ({ task }) => {
             <h2 className="card-title">{task.title}</h2>
             {task.tags && task.tags.length > 0 && (
                 <>
-                    <h3>Tags:</h3>
+                    <div className="subtitle">
+                        <span className="icon">{tagsIcon}</span>
+                        <h3>Tags:</h3>
+                    </div>
                     <div className="tags">
                         {task.tags.map((tag, index) => (
                             tag && tag.name && tag.color ? (
-                                <p key={index} style={{ backgroundColor: tag.color }}>
-                                    {tag.name}
-                                </p>
+                                <Tag key={index} name={tag.name} color={tag.color} extraClassName="tag-on-card" />
                             ) : null
                         ))}
                     </div>
@@ -24,7 +31,11 @@ const TaskCard = ({ task }) => {
             {task.priority && <p>Priority: {task.priority.priority}</p>}
             {task.attachments && task.attachments.length > 0 && (
                 <>
-                    <h3>Attachments:</h3>
+                    <div className="subtitle">
+                        <span className="icon">{linkIcon}</span>
+                        <h3>Attachments:</h3>
+                    </div>
+
                     {task.attachments.map((attachment, index) => (
                         attachment && attachment.link ? (
                             <p key={index}>{attachment.link}</p>
