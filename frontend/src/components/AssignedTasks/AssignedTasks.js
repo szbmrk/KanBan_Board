@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "../../api/axios";
 import TaskCard from "./TaskCard";
 import '../../styles/taskcard.css'; // Import the CSS file for styling
+import Loader from "../Loader";
 
 const AssignedTasks = () => {
     const [tasks, setTasks] = useState([]);
@@ -40,10 +41,12 @@ const AssignedTasks = () => {
     }
 
     return (
-        <div className="content scrollable-container">
-            {tasks.map((task, index) => (
-                <TaskCard key={index} task={task} />
-            ))}
+        <div className="content">
+            {tasks.length === 0 ? <Loader /> : <div className="scrollable-container">
+                {tasks.map((task, index) => (
+                    <TaskCard key={index} task={task} />
+                ))}
+            </div>}
         </div>
     )
 }
