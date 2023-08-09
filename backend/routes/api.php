@@ -114,3 +114,6 @@ Route::delete('/notifications/{notificationId}', [NotificationController::class,
 Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');
 
 Route::get('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'index'])->middleware('api');
+Route::post('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'store'])->middleware('api');
+Route::put('/boards/{boardId}/team-member-roles/{teamMemberRoleId}',[TeamMemberRoleController::class, 'update'])->middleware('api');
+Route::delete('/boards/{boardId}/team-member-roles/{teamMemberRoleId}',[TeamMemberRoleController::class, 'destroy'])->middleware('api');
