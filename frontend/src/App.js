@@ -8,6 +8,8 @@ import AuthProvider from "./auth/AuthProvider";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import "./styles/general.css";
 import Navbar from './components/Navigation/NavBar';
+import AssignedTasks from './components/AssignedTasks/AssignedTasks';
+import Teams from './components/Teams/Teams';
 
 
 const App = () => {
@@ -29,6 +31,18 @@ const App = () => {
                             <Navbar />
                             <Sidebar />
                             <Dashboard />
+                        </ProtectedRoute>} />
+                        <Route exact path="/assigned_tasks" element={
+                        <ProtectedRoute>
+                            <Navbar />
+                            <Sidebar />
+                            <AssignedTasks />
+                        </ProtectedRoute>} />
+                        <Route exact path="/teams" element={
+                        <ProtectedRoute>
+                            <Navbar />
+                            <Sidebar />
+                            <Teams />
                         </ProtectedRoute>} />
                 </Routes>
             </AuthProvider>
