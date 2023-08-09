@@ -56,7 +56,7 @@ class AGIController extends Controller
         $tagNames = $tags->pluck('name');
 
         $column = Column::find($task->column_id)->tasks()->get();
-        //$column = $column->tasks()->get()
+        
 
         $response = ExecutePythonScript::instance()->GeneratePriority($task->title, $task->description, $tagNames, $column );
 
@@ -64,6 +64,22 @@ class AGIController extends Controller
         
         return response()->json([
             'priority' => $cleanData,
+        ]);
+    }
+
+    public function generatePrioritiesForColumn(Request $request, $boardId, $columnId) 
+    {
+        $user = auth()->user();
+
+
+        $column = Column::find($columnId)->tasks()->get();  
+
+        $response = ExecutePythonScript::instance()->generatePrioritiesForColumn($column );
+
+        $cleanData = trim($response);
+        
+        return response()->json([
+            'priorities' => $cleanData,
         ]);
     }
 }
