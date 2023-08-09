@@ -21,14 +21,18 @@ const AssignedTasks = () => {
                 }
             });
             const tempData = response.data.assigned_tasks;
-            tempData.map((task, index) => tempData[index] = task.task);
-            tempData.map((task) => {
-                console.log(task.subtasks);
+            tempData.map((task, index) => {
+                tempData[index] = task.task
             });
 
-            setTasks(tempData);
+            tempData.map((task, index) => {
+                if (task.parent_task_id !== null) {
+                    tempData.splice(index, 1);
+                }
+            });
 
             console.log(tempData);
+            setTasks(tempData);
         }
         catch (error) {
             console.log(error.response);
@@ -38,7 +42,7 @@ const AssignedTasks = () => {
     return (
         <div className="content scrollable-container">
             {tasks.map((task, index) => (
-                task.parent_task_id === null ? <TaskCard key={index} task={task} /> : <></>
+                <TaskCard key={index} task={task} />
             ))}
         </div>
     )
