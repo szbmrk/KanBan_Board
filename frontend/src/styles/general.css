@@ -49,6 +49,13 @@ body {
     overflow: auto;
 }
 
+.card-title {
+    color: var(--light-gray);
+    margin: 0 30px 30px;
+    border-bottom: 1px solid var(--light-gray);
+}
+  
+
 
 /* <Scrollbar> */
 ::-webkit-scrollbar {

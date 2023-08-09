@@ -21,12 +21,6 @@
   align-items: flex-start;
 }
 
-.card-title {
-  color: var(--light-gray);
-  margin: 0 30px 30px;
-  border-bottom: 1px solid var(--light-gray);
-}
-
 .name-edit { 
   display: flex;
   justify-content: flex-start;
