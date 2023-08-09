@@ -44,4 +44,8 @@ class UserTask extends Model
         return $this->belongsToMany(Tag::class, 'task_tags', 'task_id', 'tag_id');
     }
     
+    public function attachments()
+    {
+        return $this->hasMany(Attachment::class, 'task_id');
+    }
 }
