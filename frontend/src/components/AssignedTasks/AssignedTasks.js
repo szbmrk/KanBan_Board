@@ -4,54 +4,35 @@ import TaskCard from "./TaskCard";
 
 const AssignedTasks = () =>
 {
-    const [columnPositions, setColumnPositions] = useState([]);
+    const [tasks, setTasks] = useState([]);
     useEffect(() =>
     {
-        
+        getAssignedTasks();
         
     },[]);
-
-    const exampleData = {
-        Tasks: [
-          {
-            Title: "Example Task 1",
-            Tags: [{ title: "example" }],
-            Priority: "High",
-            description: "This is an example task.",
-            deadline: "August 15, 2023",
-            Users: [{ UserName: "exampleUser" }],
-            Attachments: [{link: "example-link"}, {link: "example-link2"}],
-            Subtasks: [
-              {
-                Title: "Example Subtask 1",
-              },
-              {
-                Title: "Example Subtask 2"
-              }
-            ],
-          },
-          {
-            Title: "Example Task 2",
-            Tags: [{ title: "example2" }],
-            Priority: "High",
-            description: "This is an example task.",
-            deadline: "August 15, 2023",
-            Users: [{ UserName: "exampleUser" }],
-            Attachments: [{link: "example-link"}, {link: "example-link2"}],
-            Subtasks: [
-            ],
-          }
-        ],
-      };
     
     const getAssignedTasks = async () =>
     {
-
-        //axios.get()
+            const token = sessionStorage.getItem('token');
+            const user_id = sessionStorage.getItem('user_id');
+    
+            try {
+                const response = await axios.get(`/user/${user_id}/tasks`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+                setTasks(response.data.assigned_tasks);
+                console.log(response.data.assigned_tasks);
+            }
+            catch(error)
+            {
+                console.log("Error");
+            }
     }
 
     return(
-        <TaskCard tasks={exampleData}/>
+        <div></div>
     )
 }
 export default AssignedTasks;
