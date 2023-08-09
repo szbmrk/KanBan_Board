@@ -22,26 +22,34 @@ class LlamaController extends Controller
         
             $subtaskCleaned = str_replace(["\n", "\r"], "", $subtaskOutput);
         
-            // Felosztás a számokkal kezdődő részekre
             $subtaskFields = preg_split('/[0-9]+\.\s/', $subtaskCleaned, -1, PREG_SPLIT_NO_EMPTY);
         
             $formattedSubtasks = [];
             $isFirstTask = true;
+            $currentTime = time();
         
             foreach ($subtaskFields as $subtaskField) {
-                // Első mondat kiemelése, amely a subtask címét tartalmazza
-                $firstSentence = strtok($subtaskField, '.');
-        
+                $colonPosition = strpos($subtaskField, ':');
+                if ($colonPosition !== false) {
+                    $title = trim(substr($subtaskField, 0, $colonPosition));
+                    $description = trim(substr($subtaskField, $colonPosition + 1));
+                } else {
+                    $title = trim($subtaskField);
+                    $description = '';
+                }
+            
                 if ($isFirstTask) {
                     $isFirstTask = false;
                     continue;
                 }
-        
+            
                 $formattedSubtasks[] = [
-                    'title' => trim($firstSentence),
-                    'description' => trim(substr($subtaskField, strlen($firstSentence))),
-                    'due_date' => date('Y-m-d', strtotime('+1 week')), // Éppeni dátum + 1 hét
+                    'title' => $title,
+                    'description' => $description,
+                    'due_date' => date('Y-m-d', strtotime('+1 day', $currentTime)),
                 ];
+
+                $currentTime = strtotime('+1 day', $currentTime);
             }
         
             return response()->json(['tasks' => $formattedSubtasks]);
