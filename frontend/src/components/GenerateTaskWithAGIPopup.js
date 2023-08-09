@@ -47,7 +47,7 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
     //onClose();
   };
 
-  const generateTasks = async (taskPrompt) => {
+  const generateTasks = async (taskPrompt, task) => {
     try {
       const token = sessionStorage.getItem("token");
       /*       const formData = new FormData();
@@ -63,7 +63,15 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
 
       console.log(res);
       console.log(res.data);
-      setEditedTasks(res.data);
+      console.log("task");
+      console.log(task);
+      if (task) {
+        task.tasks = res.data;
+        setEditedTasks(editedTasks);
+        console.log(editedTasks);
+      } else {
+        setEditedTasks(res.data);
+      }
       console.log(editedTasks.length);
     } catch (e) {
       console.error(e);
@@ -84,7 +92,20 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
     };
   }, [onCancel]);
 
-  const generateSubtasks = () => {};
+  const generateSubtasks = (task) => {
+    /*     generateTasks(
+      "Task title: " +
+        task.title +
+        ", task desciption: " +
+        task.description +
+        ", due_date: " +
+        task.due_date
+    ); */
+    generateTasks(
+      "Develop a shopping web page in react with login, sign up, cart and list of goods pages",
+      task
+    );
+  };
 
   return (
     <div className="overlay">
@@ -124,7 +145,7 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
                     <div className="gt-action-buttons">
                       <button
                         className="generate-subtasks-button"
-                        onClick={() => generateSubtasks(editedTask.id)} // Replace with the actual ID retrieval logic
+                        onClick={() => generateSubtasks(editedTask)} // Replace with the actual ID retrieval logic
                       >
                         Generate Subtasks
                       </button>

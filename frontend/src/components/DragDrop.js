@@ -16,6 +16,8 @@ import { useNavigate, useParams } from "react-router";
 import axios from "../api/axios";
 import Error from "./Error";
 
+export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
+
 const DragDrop = () => {
   const { board_id } = useParams();
   const [permission, setPermission] = useState(false);
@@ -66,7 +68,6 @@ const DragDrop = () => {
 
   const checkIcon = <FontAwesomeIcon icon={faCheck} />;
   const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
-  const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
 
   const Column = ({ divIndex, moveColumn, children }) => {
     const [{ isDragging }, drag] = useDrag({
@@ -112,6 +113,7 @@ const DragDrop = () => {
     useState(false);
 
   const [columnNewTitle, setColumnNewTitle] = useState("");
+  const [selectedTask, setSelectedTask] = useState(null);
 
   const moveCard = (dragIndex, hoverIndex, sourceDivIndex, targetDivIndex) => {
     const sourceDiv = board.columns[sourceDivIndex];
@@ -348,8 +350,16 @@ const DragDrop = () => {
     setColumnToDeleteIndex(null);
   };
 
+  const openGenerateTaskWithAGIPopup = (task) => {
+    setShowGenerateTaskWithAGIPopup(true);
+    if (task) {
+      setSelectedTask([task]);
+    }
+  };
+
   const handleGenerateTaskCancel = () => {
     setShowGenerateTaskWithAGIPopup(false);
+    setSelectedTask(null);
   };
 
   const favouriteCard = (id, divIndex) => {
@@ -396,10 +406,6 @@ const DragDrop = () => {
     } catch (e) {
       console.error(e);
     }
-  };
-
-  const openGenerateTaskWithAGIPopup = (task) => {
-    setShowGenerateTaskWithAGIPopup(true);
   };
 
   return (
@@ -479,6 +485,7 @@ const DragDrop = () => {
                       )}
                       {column.tasks.map((task, taskIndex) => (
                         <Card
+                          task={task}
                           key={task.task_id}
                           board_id={board_id}
                           id={task.task_id}
@@ -508,6 +515,9 @@ const DragDrop = () => {
                               ? favouriteCard(taskId, index)
                               : unFavouriteCard(taskId, index)
                           }
+                          generateTasks={(task) =>
+                            openGenerateTaskWithAGIPopup(task)
+                          }
                         />
                       ))}
                       {column.is_finished === 0 ? (
@@ -531,7 +541,7 @@ const DragDrop = () => {
           )}
           {showGenerateTaskWithAGIPopup && (
             <GenerateTaskWithAGIPopup
-              tasks={null}
+              tasks={selectedTask}
               onCancel={handleGenerateTaskCancel}
             />
           )}
