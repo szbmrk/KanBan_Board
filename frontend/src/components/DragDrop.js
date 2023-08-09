@@ -348,6 +348,10 @@ const DragDrop = () => {
     setColumnToDeleteIndex(null);
   };
 
+  const handleGenerateTaskCancel = () => {
+    setShowGenerateTaskWithAGIPopup(false);
+  };
+
   const favouriteCard = (id, divIndex) => {
     try {
       const token = sessionStorage.getItem("token");
@@ -526,7 +530,10 @@ const DragDrop = () => {
             </div>
           )}
           {showGenerateTaskWithAGIPopup && (
-            <GenerateTaskWithAGIPopup tasks={null} />
+            <GenerateTaskWithAGIPopup
+              tasks={null}
+              onCancel={handleGenerateTaskCancel}
+            />
           )}
           {showDeleteConfirmation && (
             <ConfirmationPopup

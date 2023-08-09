@@ -12,9 +12,13 @@
   padding-right: 15px; /* Add some padding to avoid content covering the scrollbar */
 }
 
-.gt-input-container {
+.gt-attributes {
   display: flex;
   align-items: center;
+  margin-bottom: 10px;
+}
+
+.gt-action-buttons {
   margin-bottom: 50px;
 }
 
@@ -27,4 +31,8 @@
 .gt-input-container .react-datepicker-wrapper {
   flex: 1;
   margin-right: 10px;
+}
+
+.gt-input-container textarea {
+  min-height: 100px;
 }

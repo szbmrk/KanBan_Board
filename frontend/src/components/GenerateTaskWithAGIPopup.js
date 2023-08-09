@@ -1,13 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "../api/axios";
 import Error from "./Error";
 import "../styles/popup.css";
 import "../styles/GenerateTaskWithAGIPopup.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
-const GenerateTaskWithAGIPopup = ({ tasks, onClose }) => {
+const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
   let [editedTasks, setEditedTasks] = useState(tasks ? [...tasks] : []);
+  const taskTitleInputRef = useRef(null);
+  const popupRef = useRef(null);
+
+  const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
   const handleTitleChange = (e, index) => {
     const updatedTasks = [...editedTasks];
@@ -41,7 +47,7 @@ const GenerateTaskWithAGIPopup = ({ tasks, onClose }) => {
     //onClose();
   };
 
-  const generateTasks = async () => {
+  const generateTasks = async (taskPrompt) => {
     try {
       const token = sessionStorage.getItem("token");
       /*       const formData = new FormData();
@@ -51,6 +57,7 @@ const GenerateTaskWithAGIPopup = ({ tasks, onClose }) => {
       const res = await axios.get(`/dashboard/AGI`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          TaskPrompt: `${taskPrompt}`,
         },
       });
 
@@ -63,36 +70,65 @@ const GenerateTaskWithAGIPopup = ({ tasks, onClose }) => {
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        onCancel();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onCancel]);
+
+  const generateSubtasks = () => {};
+
   return (
     <div className="overlay">
       <div className="popup">
+        <span className="close-btn" onClick={onCancel}>
+          {closeIcon}
+        </span>
         <div className="gt-popup-content">
           <div className="gt-scrollable-list">
             {editedTasks.length > 0 ? (
               <>
                 {editedTasks.map((editedTask, index) => (
                   <div className="gt-input-container" key={index}>
-                    <p>Title:</p>
-                    <textarea
-                      type="text"
-                      value={editedTask.title}
-                      onChange={(e) => handleTitleChange(e, index)}
-                    />
-                    <p>Description:</p>
-                    <textarea
-                      value={editedTask.description}
-                      onChange={(e) => handleDescriptionChange(e, index)}
-                    />
-                    <p>Due date:</p>
-                    <DatePicker
-                      selected={
-                        editedTask.due_date
-                          ? new Date(editedTask.due_date)
-                          : null
-                      }
-                      onChange={(date) => handleDueDateChange(date, index)}
-                      dateFormat="yyyy-MM-dd"
-                    />
+                    <div className="gt-attributes">
+                      <p>Title:</p>
+                      <textarea
+                        type="text"
+                        value={editedTask.title}
+                        onChange={(e) => handleTitleChange(e, index)}
+                      />
+                      <p>Description:</p>
+                      <textarea
+                        value={editedTask.description}
+                        onChange={(e) => handleDescriptionChange(e, index)}
+                      />
+                      <p>Due date:</p>
+                      <DatePicker
+                        selected={
+                          editedTask.due_date
+                            ? new Date(editedTask.due_date)
+                            : null
+                        }
+                        onChange={(date) => handleDueDateChange(date, index)}
+                        dateFormat="yyyy-MM-dd"
+                      />
+                    </div>
+                    <div className="gt-action-buttons">
+                      <button
+                        className="generate-subtasks-button"
+                        onClick={() => generateSubtasks(editedTask.id)} // Replace with the actual ID retrieval logic
+                      >
+                        Generate Subtasks
+                      </button>
+                    </div>
                   </div>
                 ))}
               </>
@@ -100,8 +136,18 @@ const GenerateTaskWithAGIPopup = ({ tasks, onClose }) => {
               <>
                 <div className="gt-input-container">
                   <p>Give me a task to generate tickets about:</p>
-                  <input type="text" placeholder="Enter task title" />
-                  <button onClick={generateTasks}>Generate tasks</button>
+                  <input
+                    type="text"
+                    placeholder="Enter task title"
+                    ref={taskTitleInputRef}
+                  />
+                  <button
+                    onClick={() =>
+                      generateTasks(taskTitleInputRef.current.value)
+                    }
+                  >
+                    Generate tasks
+                  </button>
                 </div>
               </>
             )}

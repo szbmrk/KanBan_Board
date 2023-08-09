@@ -101,7 +101,8 @@ class DashboardController extends Controller
     public function executeAGIBoard(Request $request)
     {
         $user = auth()->user();
-        $response = ExecutePythonScript::instance()->Run();
+        $taskPrompt = $request->header('TaskPrompt');
+        $response = ExecutePythonScript::instance()->Run($taskPrompt);
 
         $cleanData = trim($response);
         $cleanData = str_replace("'", "\"", $response);
