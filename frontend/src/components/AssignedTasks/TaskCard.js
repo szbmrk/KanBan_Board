@@ -24,7 +24,7 @@ const TaskCard = ({ task }) => {
             {task.priority && <p>Priority: {task.priority.priority}</p>}
             {task.attachments && task.attachments.length > 0 && (
                 <>
-                    <p>Attachments:</p>
+                    <h3>Attachments:</h3>
                     {task.attachments.map((attachment, index) => (
                         attachment && attachment.link ? (
                             <p key={index}>{attachment.link}</p>
@@ -40,6 +40,19 @@ const TaskCard = ({ task }) => {
                             <p key={index} className="comment">
                                 <span className="user">{comment.user.username}:</span> {comment.text}
                             </p>
+                        ) : null
+                    ))}
+                </div>
+            )}
+            {task.subtasks && task.subtasks.length > 0 && (
+                <div className="subtasks">
+                    <h3>Subtasks:</h3>
+                    {task.subtasks.map((subtask, index) => (
+                        subtask && subtask.title ? (
+                            <div classname="subtaskCard" style={{ border: "1px solid black" }}>
+                                <p key={index} className="subtask">{subtask.title}</p>
+                                {subtask.subtasks && subtask.subtasks.length > 0 && (<p>subtask count: {subtask.subtasks.length}</p>)}
+                            </div>
                         ) : null
                     ))}
                 </div>

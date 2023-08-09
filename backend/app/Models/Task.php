@@ -32,7 +32,7 @@ class Task extends Model
     {
         return $this->belongsTo(Board::class);
     }
-    
+
     // Relationship with the Parent Task (self-referencing)
     public function parentTask()
     {
@@ -60,8 +60,13 @@ class Task extends Model
         return $this->belongsToMany(Tag::class, 'task_tags', 'task_id', 'tag_id');
     }
 
-    public function feedback() {
+    public function feedback()
+    {
         return $this->hasMany(Feedback::class, 'task_id');
     }
-    
+
+    public function subtasks()
+    {
+        return $this->hasMany(Task::class, 'parent_task_id', 'task_id')->with('subtasks');
+    }
 }
