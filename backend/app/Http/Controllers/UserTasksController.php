@@ -17,7 +17,7 @@ class UserTasksController extends Controller
             return response()->json(['error' => 'You do not have permission to fetch this user\'s tasks'], 403);
         }
 
-        $assignedTasks = UserTask::with(['task.priority', 'comments', 'task.tags'])
+        $assignedTasks = UserTask::with(['task.priority', 'comments.user', 'task.tags'])
                                 ->where('user_id', $user_id)
                                 ->get();
 
