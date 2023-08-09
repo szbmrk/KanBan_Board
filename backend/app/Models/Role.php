@@ -27,5 +27,10 @@ class Role extends Model
         return $this->hasMany(TeamMemberRole::class, 'role_id', 'role_id');
     }
 
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class);
+    }
+
 
 }

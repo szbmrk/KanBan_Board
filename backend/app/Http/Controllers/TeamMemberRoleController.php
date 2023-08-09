@@ -7,6 +7,7 @@ use App\Models\TeamMemberRole;
 use App\Models\Board;
 use App\Models\Role;
 use App\Models\TeamMember;
+use App\Models\User;
 
 class TeamMemberRoleController extends Controller
 {
@@ -49,8 +50,9 @@ class TeamMemberRoleController extends Controller
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-
-        $board = Board::find($boardId);
+        if ($user->hasPermission('create_team_members_role'))
+        {
+            $board = Board::find($boardId);
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
         }
@@ -94,52 +96,16 @@ class TeamMemberRoleController extends Controller
         $teamMemberRole->save();
 
         return response()->json(['message' => 'Role assigned successfully']);
+        }
+        else
+        {
+            return response()->json(['error' => 'You do not have permission to create team members role'], 403);
+        }
+
+        
     }
 
-    public function update2(Request $request, $boardId, $teamMemberRoleId)
-    {
-        $user = auth()->user();
-        if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        $board = Board::find($boardId);
-        if (!$board) {
-            return response()->json(['error' => 'Board not found'], 404);
-        }
-
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
-            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
-        }
-
-        $teamMember = TeamMember::where('user_id', $user->user_id)
-            ->where('team_id', $board->team_id)
-            ->first();
-
-        if (!$teamMember) {
-            return response()->json(['error' => 'You are not a team member of this board.'], 403);
-        }
-
-        $teamMemberRoleId = $request->input('team_member_role_id');
-        $teamMemberRole = TeamMemberRole::find($teamMemberRoleId);
-
-        if (!$teamMemberRole) {
-            return response()->json(['error' => 'Team member role not found'], 404);
-        }
-
-        $role = Role::find($teamMemberRole->role_id);
-
-        if (!$role) {
-            return response()->json(['error' => 'Role not found'], 404);
-        }
-
-        $role->name = $request->input('name');
-        $role->save();
-
-        return response()->json(['message' => 'Role updated successfully'], 200);
-    }
-
-
+    
     public function update(Request $request, $boardId, $teamMemberRoleId)
     {
         try {
