@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Board;
 use App\Helpers\LogRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use App\Helpers\ExecutePythonScript;
 use function app\Helpers\ExecutePythonScript\executePythonScript;
 
@@ -102,7 +103,15 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $taskPrompt = $request->header('TaskPrompt');
-        $response = ExecutePythonScript::instance()->Run($taskPrompt);
+        $taskCounter = $request->header('TaskCounter');
+        $todayDate = Carbon::today()->format('Y-m-d');
+
+        // Prepare the prompt to be sent to the Python script
+        $prompt = "Generate $taskCounter kanban tickets in json format with title, description, due_date (if the start date is now '$todayDate' in yyyy-mm-dd) and tags (as a list) attributes for this task: '$taskPrompt'";
+        // Construct the Python command with the required arguments and path to the script
+
+        $path = env('PYTHON_SCRIPT_PATH');
+        $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
 
         $cleanData = trim($response);
         $cleanData = str_replace("'", "\"", $response);
