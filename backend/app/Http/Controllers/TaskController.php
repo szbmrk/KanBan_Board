@@ -212,27 +212,29 @@ class TaskController extends Controller
     {
         $user = auth()->user();
         $board = Board::find($board_id);
-
+    
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
         }
-
+    
         if (!$user->isMemberOfBoard($board_id)) {
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
-
+    
         $task = Task::where('board_id', $board_id)->find($task_id);
-
+    
         if (!$task) {
             return response()->json(['error' => 'Task not found'], 404);
         }
-
+    
         $subtasks = $task->where('parent_task_id', $task_id)->get();
-
+    
         if ($subtasks->isEmpty()) {
             return response()->json(['error' => 'No subtasks found for the given task'], 404);
         }
-
+    
+        $subtasks->load('tags');
+    
         return response()->json(['message' => 'Subtasks retrieved successfully', 'subtasks' => $subtasks]);
     }
 
