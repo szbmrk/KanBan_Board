@@ -85,7 +85,13 @@ class TaskController extends Controller
     
         $task->save();
     
-        return response()->json(['message' => 'Task created successfully', 'task' => $task]);
+        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($task->task_id);
+        $favoriteTasksForTask = $task->favouriteTasks;
+
+        $taskData = $taskWithSubtasksAndTags->toArray();
+        $taskData['favourite_tasks'] = $favoriteTasksForTask;
+
+        return response()->json(['message' => 'Task created successfully', 'task' => $taskData]);
     }
     
     public function taskUpdate(Request $request, $board_id, $task_id)
@@ -121,7 +127,13 @@ class TaskController extends Controller
 
         $task->save();
 
-        return response()->json(['message' => 'Task updated successfully', 'task' => $task]);
+        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($task_id);
+        $favoriteTasksForTask = $task->favouriteTasks;
+        
+        $taskData = $taskWithSubtasksAndTags->toArray();
+        $taskData['favourite_tasks'] = $favoriteTasksForTask;
+        
+        return response()->json(['message' => 'Task updated successfully', 'task' => $taskData]);
     }
 
     public function taskDestroy(Request $request, $board_id, $task_id)
@@ -272,7 +284,11 @@ class TaskController extends Controller
 
         $subTask->save();
 
-        return response()->json(['message' => 'Subtask created successfully', 'task' => $subTask]);
+        $subTaskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($subTask->task_id);
+        $favoriteTasksForSubtask = $subTask->favouriteTasks;
+        $subTaskData = $subTaskWithSubtasksAndTags->toArray();
+        $subTaskData['favourite_tasks'] = $favoriteTasksForSubtask;
+        return response()->json(['message' => 'Subtask created successfully', 'task' => $subTaskData]);
     }
 
     public function subtaskUpdate(Request $request, $board_id, $subtask_id)
@@ -301,7 +317,14 @@ class TaskController extends Controller
 
         $subTask->save();
 
-        return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTask]);
+        $subTaskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($subtask_id);
+        $favoriteTasksForSubtask = $subTask->favouriteTasks;
+    
+
+        $subTaskData = $subTaskWithSubtasksAndTags->toArray();
+        $subTaskData['favourite_tasks'] = $favoriteTasksForSubtask;
+    
+        return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTaskData]);
     }
 
     public function subtaskDestroy(Request $request, $board_id, $subtask_id)
