@@ -7,7 +7,6 @@ use App\Models\Board;
 use Illuminate\Validation\Rule;
 use App\Helpers\LogRequest;
 use App\Models\Task;
-use Illuminate\Support\Facades\DB;
 
 
 class BoardController extends Controller
@@ -31,6 +30,7 @@ class BoardController extends Controller
         ])->find($board_id);
         $board->load('columns.tasks.favouriteTasks', 'columns.tasks.subtasks.favouriteTasks');
     
+   
         if (!$board) {
             LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found'], 404);
