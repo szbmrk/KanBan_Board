@@ -19,6 +19,8 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
     { value: "llama", label: "Llama" },
   ];
   let [chosenAI, setChosenAI] = useState(aiOptions[0]);
+  const counterOptions = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+  let [taskCounter, setTaskCounter] = useState(counterOptions[0]);
 
   const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
@@ -54,7 +56,7 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
     //onClose();
   };
 
-  const generateTasks = async (taskPrompt, task, ai) => {
+  const generateTasks = async (taskPrompt, task, ai, counter) => {
     try {
       console.log(ai);
       const token = sessionStorage.getItem("token");
@@ -62,10 +64,13 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
       formData.append("name", "New Column");
       formData.append("is_finished", 0);
       formData.append("task_limit", 5); */
+      console.log(counter);
+      console.log(taskPrompt);
       const res = await axios.get(`/dashboard/AGI`, {
         headers: {
           Authorization: `Bearer ${token}`,
           TaskPrompt: `${taskPrompt}`,
+          TaskCounter: `${counter}`,
           ChosenAI: `${ai}`,
         },
       });
@@ -167,6 +172,11 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
                   ref={taskTitleInputRef}
                 />
                 <Dropdown
+                  options={counterOptions}
+                  value={taskCounter}
+                  onChange={(selectedOption) => setTaskCounter(selectedOption)}
+                />
+                <Dropdown
                   options={aiOptions}
                   value={chosenAI}
                   onChange={(selectedOption) => setChosenAI(selectedOption)}
@@ -176,7 +186,8 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
                     generateTasks(
                       taskTitleInputRef.current.value,
                       null,
-                      chosenAI
+                      chosenAI.value,
+                      taskCounter.value
                     )
                   }
                 >
@@ -197,6 +208,8 @@ const TaskRecursive = ({ deepness, task, index, generateTasks }) => {
     { value: "llama", label: "Llama" },
   ];
   let [chosenAI, setChosenAI] = useState(aiOptions[0]);
+  const counterOptions = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+  let [taskCounter, setTaskCounter] = useState(counterOptions[0]);
 
   const handleTitleChange = (e) => {
     // Update title for the specific task
@@ -221,9 +234,10 @@ const TaskRecursive = ({ deepness, task, index, generateTasks }) => {
         task.due_date
     ); */
     generateTasks(
-      "Develop a shopping web page in react with login, sign up, cart and list of goods pages",
+      `title: ${task.title}, description: ${task.description}, due_date: ${task.due_date}`,
       task,
-      chosenAI
+      chosenAI.value,
+      taskCounter.value
     );
   };
 
@@ -254,6 +268,11 @@ const TaskRecursive = ({ deepness, task, index, generateTasks }) => {
         />
       </div>
       <div className="gt-action-buttons">
+        <Dropdown
+          options={counterOptions}
+          value={taskCounter}
+          onChange={(selectedOption) => setTaskCounter(selectedOption)}
+        />
         <Dropdown
           options={aiOptions}
           value={chosenAI}
