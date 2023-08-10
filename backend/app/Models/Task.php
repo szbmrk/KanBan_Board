@@ -22,6 +22,13 @@ class Task extends Model
         'position',
     ];
 
+    protected $appends = ['is_favourite'];
+    public function getIsFavouriteAttribute()
+    {
+        // Check if this task is a favourite for the authenticated user
+
+        return FavouriteTask::where('task_id', $this->task_id)->where('user_id', auth()->id())->exists();
+    }
     // Relationship with the Column model
     public function column()
     {

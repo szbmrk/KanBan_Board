@@ -41,25 +41,7 @@ const DragDrop = () => {
                     Authorization: `Bearer ${token}`,
                 }
             });
-            let tempColumns = tempBoard.columns.map((column) => {
-                const filteredTasks = column.tasks.filter((task) => task.parent_task_id === null);
-
-                let tasks = [];
-                if (response1.data.favourites === undefined) {
-                    tasks = filteredTasks.map((task) => {
-                        const is_favourite = false;
-                        return { ...task, is_favourite };
-                    });
-                }
-                else {
-                    tasks = filteredTasks.map((task) => {
-                        const is_favourite = response1.data.favourites.some((favourite) => favourite.task_id === task.task_id);
-                        return { ...task, is_favourite };
-                    });
-                }
-
-                return { ...column, tasks };
-            });
+            let tempColumns = tempBoard.columns
 
             // Sort the columns and tasks by position
             tempColumns.map((column) => column.tasks.sort((a, b) => a.position - b.position));
