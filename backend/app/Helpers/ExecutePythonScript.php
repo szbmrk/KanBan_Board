@@ -23,6 +23,7 @@ class ExecutePythonScript
         try {
 
             $result = shell_exec("{$command} 2>&1");
+
        
             // Return the subtask as a simple array
             return $result;

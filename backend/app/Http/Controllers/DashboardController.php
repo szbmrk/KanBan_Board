@@ -107,7 +107,7 @@ class DashboardController extends Controller
         $todayDate = Carbon::today()->format('Y-m-d');
 
         // Prepare the prompt to be sent to the Python script
-        $prompt = "Generate $taskCounter kanban tickets in JSON structure with title, description, due_date (if the start date is now '$todayDate' in yyyy-mm-dd) and tags (as a list) attributes for this task: '$taskPrompt'";
+        $prompt = "Generate $taskCounter kanban tickets in JSON structure in a list with title, description, due_date (if the start date is now '$todayDate' in yyyy-mm-dd) and tags (as a list) attributes for this task: '$taskPrompt'";
         // Construct the Python command with the required arguments and path to the script
 
         $path = env('PYTHON_SCRIPT_PATH');
