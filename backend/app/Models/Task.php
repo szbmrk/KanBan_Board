@@ -67,6 +67,6 @@ class Task extends Model
 
     public function subtasks()
     {
-        return $this->hasMany(Task::class, 'parent_task_id', 'task_id')->with('subtasks');
+        return $this->hasMany(Task::class, 'parent_task_id', 'task_id')->with(['subtasks', 'tags']);
     }
 }

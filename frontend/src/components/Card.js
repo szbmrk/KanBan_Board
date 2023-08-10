@@ -159,6 +159,20 @@ export const Card = ({
         setIsHovered(false);
     };
 
+    const addSubtask = async () => {
+        try {
+            const parent_task_id = id;
+            const token = sessionStorage.getItem("token");
+            await axios.post(`/boards/${board_id}/tasks/${parent_task_id}/subtasks`, { title: "New subtask" }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+        }
+        catch (err) {
+            console.log(err);
+        }
+    };
+
 
     return (
         <>
@@ -276,6 +290,7 @@ export const Card = ({
                     favouriteCard={favouriteCardForPopup}
                     unFavouriteCard={unFavouriteCardForPopup}
                     deleteCard={deleteCard}
+                    addSubtask={addSubtask}
                 />
             )}
         </>

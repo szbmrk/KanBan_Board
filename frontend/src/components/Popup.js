@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../styles/popup.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileAlt, faXmark, faListCheck, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faFileAlt, faXmark, faListCheck, faArrowLeft, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Card } from "./Card";
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const descriptionIcon = <FontAwesomeIcon icon={faFileAlt} />
 const subtaskIcon = <FontAwesomeIcon icon={faListCheck} />;
 const backIcon = <FontAwesomeIcon icon={faArrowLeft} />
+const plusIcon = <FontAwesomeIcon icon={faPlus} />
 
 const Popup = ({
     task,
@@ -19,6 +20,7 @@ const Popup = ({
     handleDeleteCard,
     favouriteCard,
     unFavouriteCard,
+    addSubtask,
     taskIndex
 }) => {
     const popupRef = useRef(null);
@@ -77,14 +79,14 @@ const Popup = ({
                         value={editedDescription}
                         onChange={handleDescriptionChange}
                     />
-                    {task.subtasks && task.subtasks.length > 0 && (
-                        <>
-                            <div className="subtasks-header">
-                                {subtaskIcon}
-                                <h2 className="subtasks-title">Subtasks</h2>
-                            </div>
-                            <div className="subtasks-container">
-                                {task.subtasks.map
+                    <>
+                        <div className="subtasks-header">
+                            {subtaskIcon}
+                            <h2 className="subtasks-title">Subtasks</h2>
+                        </div>
+                        <div className="subtasks-container">
+                            {task.subtasks && task.subtasks.length > 0 && (
+                                task.subtasks.map
                                     ((task, index) =>
                                         <Card
                                             key={task.task_id}
@@ -97,6 +99,7 @@ const Popup = ({
                                             handleEditTask={handleEditTask}
                                             index={taskIndex}
                                             divName={`div${index + 1}`}
+                                            addSubtask={addSubtask}
                                             deleteCard={(taskId, divName) =>
                                                 handleDeleteCard(taskId, index)
                                             }
@@ -110,10 +113,15 @@ const Popup = ({
                                                 unFavouriteCard(taskId, index)
                                             }
                                         />
-                                    )}
+                                    )
+
+                            )}
+                            <div className="addbtn-subtask" onClick={addSubtask}>
+                                {plusIcon}
+                                Add subtask
                             </div>
-                        </>
-                    )}
+                        </div>
+                    </>
                     <button
                         className="save-button"
                         onClick={() => onSave(editedText, editedDescription)}
