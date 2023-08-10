@@ -3,6 +3,7 @@ import "../styles/popup.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileAlt, faXmark, faListCheck, faArrowLeft, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Card } from "./Card";
+import axios from "../api/axios";
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const descriptionIcon = <FontAwesomeIcon icon={faFileAlt} />
@@ -21,11 +22,12 @@ const Popup = ({
     favouriteCard,
     unFavouriteCard,
     addSubtask,
+    subtasks,
     taskIndex
 }) => {
     const popupRef = useRef(null);
 
-    const [editedText, setEditedText] = useState(task.title);
+    const [editedText, setEditedText] = useState(task.title)
     const [editedDescription, setEditedDescription] = useState(task.description)
 
     const handleChange = (event) => {
@@ -85,8 +87,8 @@ const Popup = ({
                             <h2 className="subtasks-title">Subtasks</h2>
                         </div>
                         <div className="subtasks-container">
-                            {task.subtasks && task.subtasks.length > 0 && (
-                                task.subtasks.map
+                            {subtasks && subtasks.length > 0 && (
+                                subtasks.map
                                     ((task, index) =>
                                         <Card
                                             key={task.task_id}

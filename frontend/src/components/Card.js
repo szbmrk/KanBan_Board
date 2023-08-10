@@ -84,9 +84,11 @@ export const Card = ({
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [showCustomPopup, setShowCustomPopup] = useState(false);
 
+    const [subtasks, setSubtasks] = useState(task.subtasks)
+
     const opacity = dragging ? 0 : 1;
 
-    const handleClick = () => {
+    const handleClick = (e) => {
         if (!dragging && !showDeletePopup) {
             setShowCustomPopup(true);
             setShowDeletePopup(false);
@@ -119,7 +121,6 @@ export const Card = ({
     };
 
     const handleDelete = () => {
-        setShowCustomPopup(false); // Close the custom popup
         setShowDeletePopup(true); // Show the delete confirmation popup
     };
 
@@ -127,9 +128,25 @@ export const Card = ({
         setShowDeletePopup(false); // Close the delete confirmation popup
     };
 
-    const handleConfirmDelete = () => {
-        setShowDeletePopup(false); // Close the delete confirmation popup
-        deleteCard(id, divName); // Call the deleteCard method with the correct arguments
+    const handleConfirmDelete = async () => {
+        if (isSubtask === false) {
+            setShowDeletePopup(false); // Close the delete confirmation popup
+            deleteCard(id, divName); // Call the deleteCard method with the correct arguments
+        }
+        else {
+            setShowDeletePopup(false);
+            try {
+                const token = sessionStorage.getItem("token");
+                await axios.delete(`/boards/${board_id}/subtasks/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const newSubtasks = subtasks.filter((subtask) => subtask.id !== id);
+                setSubtasks(newSubtasks);
+            }
+            catch (err) {
+                console.log(err);
+            }
+        }
     };
 
     const handleFavourite = () => {
@@ -163,16 +180,17 @@ export const Card = ({
         try {
             const parent_task_id = id;
             const token = sessionStorage.getItem("token");
-            await axios.post(`/boards/${board_id}/tasks/${parent_task_id}/subtasks`, { title: "New subtask" }, {
+            const response = await axios.post(`/boards/${board_id}/tasks/${parent_task_id}/subtasks`, { title: "New subtask" }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-
+            const newSubtask = response.data.task;
+            const newSubtasks = [...subtasks, newSubtask];
+            setSubtasks(newSubtasks);
         }
         catch (err) {
             console.log(err);
         }
     };
-
 
     return (
         <>
@@ -291,6 +309,7 @@ export const Card = ({
                     unFavouriteCard={unFavouriteCardForPopup}
                     deleteCard={deleteCard}
                     addSubtask={addSubtask}
+                    subtasks={subtasks}
                 />
             )}
         </>
