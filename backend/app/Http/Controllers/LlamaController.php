@@ -58,7 +58,7 @@ class LlamaController extends Controller
                 ];
             }
         
-            $jsonSubtaskResponse = json_encode(['tasks' => $subtasks], JSON_PRETTY_PRINT);
+            $jsonSubtaskResponse = json_encode($subtasks, JSON_PRETTY_PRINT);
         
             echo $jsonSubtaskResponse;
         } catch (\Exception $e) {
