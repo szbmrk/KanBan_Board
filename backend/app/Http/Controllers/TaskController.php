@@ -85,7 +85,9 @@ class TaskController extends Controller
     
         $task->save();
     
-        return response()->json(['message' => 'Task created successfully', 'task' => $task]);
+        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($task->task_id);
+
+        return response()->json(['message' => 'Task created successfully', 'task' => $taskWithSubtasksAndTags]);
     }
     
     public function taskUpdate(Request $request, $board_id, $task_id)
@@ -121,7 +123,9 @@ class TaskController extends Controller
 
         $task->save();
 
-        return response()->json(['message' => 'Task updated successfully', 'task' => $task]);
+        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($task_id);
+        
+        return response()->json(['message' => 'Task updated successfully', 'task' => $taskWithSubtasksAndTags]);
     }
 
     public function taskDestroy(Request $request, $board_id, $task_id)
@@ -270,7 +274,9 @@ class TaskController extends Controller
 
         $subTask->save();
 
-        return response()->json(['message' => 'Subtask created successfully', 'task' => $subTask]);
+        $subTaskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($subTask->task_id);
+
+        return response()->json(['message' => 'Subtask created successfully', 'task' => $subTaskWithSubtasksAndTags]);
     }
 
     public function subtaskUpdate(Request $request, $board_id, $subtask_id)
@@ -299,7 +305,9 @@ class TaskController extends Controller
 
         $subTask->save();
 
-        return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTask]);
+        $subTaskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($subtask_id);
+    
+        return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTaskWithSubtasksAndTags]);
     }
 
     public function subtaskDestroy(Request $request, $board_id, $subtask_id)
