@@ -122,9 +122,9 @@ class ExecutePythonScript
             }
         }
 
-
-        $youAre = "a priority manager state machine. You can only answer with only priority suggestion! You can choose from the following enums: TOP PRIORITY, HIGH PRIORITY, MEDIUM PRIORITY, LOW PRIORITY.";
-        $prompt = "You are $youAre . Estimate the priority of the following kanban board tickets->  $tasks. Answer with the priortiy enum only, nothing else!";
+        
+        $youAre = "a priority manager state machine. You can only answer with only priority suggestion in JSON structure: priorities: priority...! You can choose from the following enums: TOP PRIORITY, HIGH PRIORITY, MEDIUM PRIORITY, LOW PRIORITY.";
+        $prompt = "You are $youAre . Estimate the priority of the following kanban board tickets->  $tasks. Answer with their priortiy enum only, nothing else!";
         // Construct the Python command with the required arguments and path to the script
 
 
@@ -135,7 +135,8 @@ class ExecutePythonScript
         try {
 
             $result = shell_exec("{$command} 2>&1");
-            dd($result);
+
+
 
        
             // Return the subtask as a simple array

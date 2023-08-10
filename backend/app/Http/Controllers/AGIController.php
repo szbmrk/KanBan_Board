@@ -77,7 +77,8 @@ class AGIController extends Controller
         $response = ExecutePythonScript::instance()->generatePrioritiesForColumn($column );
 
         $cleanData = trim($response);
-        
+
+
         return response()->json([
             'priorities' => $cleanData,
         ]);

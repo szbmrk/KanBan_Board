@@ -32,7 +32,7 @@ def generate_priority():
     else:
         print(f"Error: {response.status_code}, {response.text}")
 
-    return priority
+    return generated_code
 
 if __name__ == "__main__":
     priority = generate_priority()
