@@ -18,7 +18,6 @@ class BoardController extends Controller
         $board = Board::with([
             'columns',
             'columns.tasks',
-            'columns.tasks.tags',
             'columns.tasks.favouriteTasks' => function ($query) use ($user) {
                 $query->where('favourite_tasks.user_id', $user->id);
             },
@@ -28,7 +27,14 @@ class BoardController extends Controller
                 }]);
             }
         ])->find($board_id);
-        $board->load('columns.tasks.favouriteTasks', 'columns.tasks.subtasks.favouriteTasks');
+        
+        $board->load(
+            'columns.tasks.favouriteTasks', 
+            'columns.tasks.subtasks.favouriteTasks',
+            'columns.tasks.tags',
+            'columns.tasks.subtasks.tags'
+        );
+        
     
    
         if (!$board) {
