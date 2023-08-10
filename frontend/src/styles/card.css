@@ -2,7 +2,7 @@
     position: relative;
     display: flex;
     justify-content: space-between;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     align-items: center;
     background-color: var(--dark-gray);
     color: var(--light-gray);
@@ -12,6 +12,7 @@
     margin: 5px;
     width: auto;
     min-height: 60px;
+    transition: 0.4s ease-in-out;
 }
 
 .card:hover {
@@ -110,12 +111,6 @@
     text-overflow: ellipsis;
 }
 
-.task-title:hover {
-    background-color: var(--dark-gray);
-    overflow: visible;
-    white-space: nowrap;
-}
-
 .icon-container {
     width: 35%;
     display: flex;
@@ -125,16 +120,14 @@
 }
 
 .tags-container {
-    position: absolute;
-    bottom: 5px;
-    left: 10px;
+    align-self: flex-end;
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
     align-items: flex-end;
-    height: 25px;
-    width: calc(100% - 20px);
+    width: 100%;
     overflow: hidden;
     gap: 6px;
     z-index: 1;
+    padding: 0 5px;
 }

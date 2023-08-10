@@ -176,16 +176,10 @@ export const Card = ({
                     {text}
 
                 </div>
-                <div className="tags-container">
-                    {tags && tags.map((tag, tagIndex) => (
-                        <Tag key={tagIndex} name={tag.name} color={tag.color} />
-                    ))}
-                </div>
                 <div className="icon-container">
                     {isFavourite ?
                         <span className="favourite-button solid-icon"
                             onClick={handleFavourite}
-                            style={{ display: isHovered ? "none" : "block" }}
                         >
                             {solidStarIcon}
                         </span> :
@@ -193,23 +187,25 @@ export const Card = ({
                             onClick={handleFavourite}
                             onMouseEnter={handleMouseEnterOnStarIcon}
                             onMouseLeave={handleMouseLeaveOnStarIcon}
-                            style={{ display: isHovered ? "none" : "block" }}
                         >
                             {bouncingStarIcon}
                         </span>
                     }
                     <span className="edit"
                         onClick={handleClick}
-                        style={{ display: isHovered ? "none" : "block" }}
                     >
                         {pencilIcon}
                     </span>
                     <span className="delete-button"
                         onClick={handleDelete}
-                        style={{ display: isHovered ? "none" : "block" }}
                     >
                         {trashIcon}
                     </span>
+                </div>
+                <div className="tags-container">
+                    {tags && tags.map((tag, tagIndex) => (
+                        <Tag key={tagIndex} name={tag.name} color={tag.color} extraClassName="tag-on-board" enableClickBehavior={true} />
+                    ))}
                 </div>
             </div>
             {showDeletePopup && (
