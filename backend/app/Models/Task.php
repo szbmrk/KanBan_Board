@@ -73,5 +73,4 @@ class Task extends Model
     {
         return $this->belongsToMany(User::class, 'favourite_tasks', 'task_id', 'user_id');
     }
-    
 }
