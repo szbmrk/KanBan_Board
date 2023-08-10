@@ -81,4 +81,25 @@ class TeamManagementController extends Controller
             return response()->json(['error' => 'Team member not found in the team.'], 404);
         }
     }
+
+    public function teamsByUser($user_id)
+    {
+        $currentUser = auth()->user();
+
+        if (!$currentUser) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
+    
+        $user = User::findOrFail($user_id);
+    
+        // Check if the current user is the same as the requested user
+        if ($currentUser->id !== $user->id) {
+            return response()->json(['error' => 'Unauthorized.'], 403);
+        }
+    
+        // Fetch teams associated with the user
+        $teams = $user->teams()->with(['teamMembers.user'])->get();
+    
+        return response()->json(['teams' => $teams]);
+    }
 }
