@@ -3,7 +3,6 @@ import "../styles/popup.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileAlt, faXmark, faListCheck, faArrowLeft, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Card } from "./Card";
-import axios from "../api/axios";
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const descriptionIcon = <FontAwesomeIcon icon={faFileAlt} />

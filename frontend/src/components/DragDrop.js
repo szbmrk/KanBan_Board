@@ -32,6 +32,7 @@ const DragDrop = () => {
                     Authorization: `Bearer ${token}`,
                 }
             });
+
             setPermission(true);
             let tempBoard = response.data.board;
             const user_id = sessionStorage.getItem('user_id');
