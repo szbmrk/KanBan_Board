@@ -63,5 +63,14 @@ class Task extends Model
     public function feedback() {
         return $this->hasMany(Feedback::class, 'task_id');
     }
-    
+
+    public function subtasks()
+    {
+        return $this->hasMany(Task::class, 'parent_task_id', 'task_id')->with('subtasks', 'tags');
+    }
+
+    public function favouriteTasks()
+    {
+        return $this->belongsToMany(User::class, 'favourite_tasks', 'task_id', 'user_id');
+    }
 }
