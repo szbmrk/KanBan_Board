@@ -178,7 +178,7 @@ export const Card = ({
                 </div>
                 <div className="tags-container">
                     {tags && tags.map((tag, tagIndex) => (
-                        <Tag key={tagIndex} name={tag.name} color={tag.color} />
+                        <Tag key={tagIndex} name={tag.name} color={tag.color} extraClassName="tag-on-board" />
                     ))}
                 </div>
                 <div className="icon-container">
