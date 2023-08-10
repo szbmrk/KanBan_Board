@@ -140,8 +140,7 @@ export const Card = ({
                 await axios.delete(`/boards/${board_id}/subtasks/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                const newSubtasks = subtasks.filter((subtask) => subtask.id !== id);
-                setSubtasks(newSubtasks);
+                console.log(task)
             }
             catch (err) {
                 console.log(err);
