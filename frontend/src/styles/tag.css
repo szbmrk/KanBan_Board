@@ -1,29 +1,22 @@
 .tag {
     border-radius: 5px;
     color: var(--dark-gray);
+    transition: 0.4s ease-in-out;
 }
 
 .tag-on-board {
     height: 5px;
-    padding: calc((10px - 5px) / 2) 0;
     cursor: pointer;
-    min-width: 36px;
+    min-width: 50px;
 }
 
 .tag-on-card{
-    height: 20px !important;
-    width: 60px;
-    min-width: 50px;
+    height: 25px !important;
+    width: fit-content;
     text-align: center;
+    padding: 0.2rem 0.5rem;
 }
 
 .tag-on-card p {
     font-size: 0.8em;
-}
-
-.tag:hover {
-    height: 25px;
-    text-align: center;
-    z-index: 2;
-    transition: height 0.2s ease;
 }

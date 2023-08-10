@@ -33,7 +33,7 @@ const TaskCard = ({ task }) => {
                     <div className="tags">
                         {task.tags.map((tag, index) => (
                             tag && tag.name && tag.color ? (
-                                <Tag key={index} name={tag.name} color={tag.color} extraClassName="tag-on-card" />
+                                <Tag key={index} name={tag.name} color={tag.color} extraClassName="tag-on-card" enableClickBehavior={false} />
                             ) : null
                         ))}
                     </div>
