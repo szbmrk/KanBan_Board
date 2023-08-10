@@ -1,6 +1,6 @@
-import React from 'react';
-import { useState } from 'react';
-import '../styles/tag.css';
+import React from "react";
+import { useState } from "react";
+import "../styles/tag.css";
 
 const Tag = ({ name, color, extraClassName, enableClickBehavior }) => {
     const [isClicked, setIsClicked] = useState(false);
@@ -19,7 +19,11 @@ const Tag = ({ name, color, extraClassName, enableClickBehavior }) => {
     };
 
     return (
-        <div className={"tag " + extraClassName} style={tagStyle} onClick={handleClickOnTag}>
+        <div
+            className={"tag " + extraClassName}
+            style={tagStyle}
+            onClick={handleClickOnTag}
+        >
             <p>{name}</p>
         </div>
     );

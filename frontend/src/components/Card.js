@@ -9,6 +9,7 @@ import {
     faPlus,
     faPencil,
     faTrash,
+    faEllipsis,
     faStar as faSolidStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as faRegularStar } from "@fortawesome/free-regular-svg-icons";
@@ -22,8 +23,11 @@ export const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 export const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
 export const regularStarIcon = <FontAwesomeIcon icon={faRegularStar} />;
-export const regularStarIconBouncing = <FontAwesomeIcon icon={faRegularStar} bounce />;
+export const regularStarIconBouncing = (
+    <FontAwesomeIcon icon={faRegularStar} bounce />
+);
 export const solidStarIcon = <FontAwesomeIcon icon={faSolidStar} />;
+export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
 
 export const Card = ({
     id,
@@ -39,7 +43,7 @@ export const Card = ({
     favouriteCard,
     board_id,
     column_id,
-    tags
+    tags,
 }) => {
     const [{ isDragging: dragging }, drag] = useDrag({
         type: ItemTypes.CARD,
@@ -78,8 +82,6 @@ export const Card = ({
         },
     });
 
-
-
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [showCustomPopup, setShowCustomPopup] = useState(false);
 
@@ -101,17 +103,17 @@ export const Card = ({
 
         try {
             const token = sessionStorage.getItem("token");
-            await axios.put(`/boards/${board_id}/tasks/${id}`, { title: newText, description: newDescription },
+            await axios.put(
+                `/boards/${board_id}/tasks/${id}`,
+                { title: newText, description: newDescription },
                 {
-                    headers: { Authorization: `Bearer ${token}` }
-
-                });
-            handleEditTask(id, column_id, newText, newDescription)
-        }
-        catch (err) {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            handleEditTask(id, column_id, newText, newDescription);
+        } catch (err) {
             console.log(err);
         }
-
 
         // Close the popup
         setShowCustomPopup(false);
@@ -158,6 +160,27 @@ export const Card = ({
         setIsHovered(false);
     };
 
+    const [showIconContainer, setShowIconContainer] = useState(false);
+    const [iconContainerPosition, setIconContainerPosition] = useState({
+        x: 0,
+        y: 0,
+    });
+
+    const handleDotsClick = (event) => {
+        // Calculate the position of the icon-container relative to the clicked dots span
+        const rect = event.target.getBoundingClientRect();
+        const offsetX = event.clientX - rect.left;
+        const offsetY = event.clientY - rect.top;
+
+        // Set the icon-container's position and show it
+        setIconContainerPosition({ x: offsetX, y: offsetY });
+        setShowIconContainer(!showIconContainer);
+    };
+
+    const searchAllTags = (tags) => {
+        let allTags = document.getElementsByClassName("tag-on-board");
+        console.log(allTags);
+    };
 
     return (
         <>
@@ -169,45 +192,67 @@ export const Card = ({
                     cursor: "grab",
                 }}
             >
-                <div className="task-title"
+                <div
+                    className="task-title"
                     onMouseEnter={handleMouseEnterOnTaskTitle}
                     onMouseLeave={handleMouseLeaveOnTaskTitle}
                 >
                     {text}
-
                 </div>
-                <div className="icon-container">
-                    {isFavourite ?
-                        <span className="favourite-button solid-icon"
+                <div className="options">
+                    <span className="dots" onClick={handleDotsClick}>
+                        {dotsIcon}
+                    </span>
+                </div>
+                <div className="tags-container">
+                    {tags &&
+                        tags.map((tag, tagIndex) => (
+                            <Tag
+                                key={tagIndex}
+                                name={tag.name}
+                                color={tag.color}
+                                extraClassName="tag-on-board"
+                                enableClickBehavior={true}
+                            />
+                        ))}
+                </div>
+            </div>
+            {showIconContainer && (
+                <div
+                    className="icon-container"
+                    style={{
+                        position: "absolute",
+                        left: iconContainerPosition.x + 20 + "px",
+                        top: iconContainerPosition.y + 20 + "px",
+                        zIndex: 1000, // Make sure the popup is above other content
+                    }}
+                    onMouseLeave={() => setShowIconContainer(false)}
+                >
+                    {isFavourite ? (
+                        <span
+                            className="favourite-button solid-icon"
                             onClick={handleFavourite}
                         >
                             {solidStarIcon}
-                        </span> :
-                        <span className="favourite-button regular-icon"
+                        </span>
+                    ) : (
+                        <span
+                            className="favourite-button regular-icon"
                             onClick={handleFavourite}
                             onMouseEnter={handleMouseEnterOnStarIcon}
                             onMouseLeave={handleMouseLeaveOnStarIcon}
                         >
                             {bouncingStarIcon}
                         </span>
-                    }
-                    <span className="edit"
-                        onClick={handleClick}
-                    >
+                    )}
+                    <span className="edit" onClick={handleClick}>
                         {pencilIcon}
                     </span>
-                    <span className="delete-button"
-                        onClick={handleDelete}
-                    >
+                    <span className="delete-button" onClick={handleDelete}>
                         {trashIcon}
                     </span>
                 </div>
-                <div className="tags-container">
-                    {tags && tags.map((tag, tagIndex) => (
-                        <Tag key={tagIndex} name={tag.name} color={tag.color} extraClassName="tag-on-board" enableClickBehavior={true} />
-                    ))}
-                </div>
-            </div>
+            )}
             {showDeletePopup && (
                 <ConfirmationPopup
                     text={text}
