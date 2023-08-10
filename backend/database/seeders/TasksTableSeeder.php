@@ -17,9 +17,9 @@ class TasksTableSeeder extends Seeder
 
         $tasks = [
             [
-                'title' => 'Task 1',
-                'description' => 'Board 1 of Task 1',
-                'due_date' => '2023-07-31',
+                'title' => 'Make the frontend of the login page',
+                'description' => 'Make the frontend in html and css to a simple login page with email and password fields',
+                'due_date' => '2023-08-17',
                 'board_id' => 1, 
                 'column_id' => 1, 
                 'project_id' => 1, 
