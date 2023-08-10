@@ -67,8 +67,13 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
       console.log(task);
       if (task) {
         task.tasks = res.data;
-        setEditedTasks(editedTasks);
-        console.log(editedTasks);
+        const updatedTask = task
+          ? { ...task, tasks: res.data }
+          : { tasks: res.data };
+        const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
+        //task.tasks = res.data;
+
+        setEditedTasks(updatedTasks);
       } else {
         setEditedTasks(res.data);
       }
@@ -76,6 +81,19 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
     } catch (e) {
       console.error(e);
     }
+  };
+
+  const updateTaskInEditedTasks = (tasksList, updatedTask) => {
+    return tasksList.map((task) =>
+      task === updatedTask
+        ? updatedTask
+        : {
+            ...task,
+            tasks: task.tasks
+              ? updateTaskInEditedTasks(task.tasks, updatedTask)
+              : task.tasks,
+          }
+    );
   };
 
   useEffect(() => {
@@ -118,39 +136,12 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
             {editedTasks.length > 0 ? (
               <>
                 {editedTasks.map((editedTask, index) => (
-                  <div className="gt-input-container" key={index}>
-                    <div className="gt-attributes">
-                      <p>Title:</p>
-                      <textarea
-                        type="text"
-                        value={editedTask.title}
-                        onChange={(e) => handleTitleChange(e, index)}
-                      />
-                      <p>Description:</p>
-                      <textarea
-                        value={editedTask.description}
-                        onChange={(e) => handleDescriptionChange(e, index)}
-                      />
-                      <p>Due date:</p>
-                      <DatePicker
-                        selected={
-                          editedTask.due_date
-                            ? new Date(editedTask.due_date)
-                            : null
-                        }
-                        onChange={(date) => handleDueDateChange(date, index)}
-                        dateFormat="yyyy-MM-dd"
-                      />
-                    </div>
-                    <div className="gt-action-buttons">
-                      <button
-                        className="generate-subtasks-button"
-                        onClick={() => generateSubtasks(editedTask)} // Replace with the actual ID retrieval logic
-                      >
-                        Generate Subtasks
-                      </button>
-                    </div>
-                  </div>
+                  <TaskRecursive
+                    deepness={0}
+                    key={index}
+                    task={editedTask}
+                    generateTasks={generateTasks}
+                  />
                 ))}
               </>
             ) : (
@@ -177,6 +168,84 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
             <button onClick={saveChanges}>Save to database</button>
           </div>
         </div>
+      </div>
+    </div>
+  );
+};
+
+const TaskRecursive = ({ deepness, task, index, generateTasks }) => {
+  const handleTitleChange = (e) => {
+    // Update title for the specific task
+  };
+
+  const handleDescriptionChange = (e) => {
+    // Update description for the specific task
+  };
+
+  const handleDueDateChange = (date) => {
+    // Update due date for the specific task
+  };
+
+  const generateSubtasks = (task) => {
+    /*     generateTasks(
+      "Task title: " +
+        task.title +
+        ", task desciption: " +
+        task.description +
+        ", due_date: " +
+        task.due_date
+    ); */
+    generateTasks(
+      "Develop a shopping web page in react with login, sign up, cart and list of goods pages",
+      task
+    );
+  };
+
+  return (
+    <div
+      className={
+        deepness > 0 ? "gt-input-container gt-space" : "gt-input-container"
+      }
+      key={index}
+    >
+      <div className="gt-attributes">
+        <p>Title:</p>
+        <textarea
+          type="text"
+          value={task.title}
+          onChange={(e) => handleTitleChange(e)}
+        />
+        <p>Description:</p>
+        <textarea
+          value={task.description}
+          onChange={(e) => handleDescriptionChange(e)}
+        />
+        <p>Due date:</p>
+        <DatePicker
+          selected={task.due_date ? new Date(task.due_date) : null}
+          onChange={(date) => handleDueDateChange(date)}
+          dateFormat="yyyy-MM-dd"
+        />
+      </div>
+      <div className="gt-action-buttons">
+        {task.tasks && task.tasks.length > 0 && (
+          <div className="subtasks">
+            {task.tasks.map((subtask, subtaskIndex) => (
+              <TaskRecursive
+                deepness={deepness + 1}
+                key={subtaskIndex}
+                task={subtask}
+                generateTasks={generateTasks}
+              />
+            ))}
+          </div>
+        )}
+        <button
+          className="generate-subtasks-button"
+          onClick={() => generateSubtasks(task)}
+        >
+          Generate Subtasks
+        </button>
       </div>
     </div>
   );

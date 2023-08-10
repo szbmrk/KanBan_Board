@@ -7,8 +7,9 @@
 
 .gt-scrollable-list {
   max-height: 70vh;
+  max-width: 80vh;
   flex: 1;
-  overflow-y: auto;
+  overflow: auto;
   padding-right: 15px; /* Add some padding to avoid content covering the scrollbar */
 }
 
@@ -20,6 +21,10 @@
 
 .gt-action-buttons {
   margin-bottom: 50px;
+}
+
+.gt-space {
+  margin-left: 50px;
 }
 
 .gt-input-container p {
@@ -35,4 +40,5 @@
 
 .gt-input-container textarea {
   min-height: 100px;
+  min-width: 200px;
 }
