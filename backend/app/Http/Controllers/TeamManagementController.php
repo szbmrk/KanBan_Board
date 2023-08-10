@@ -102,4 +102,19 @@ class TeamManagementController extends Controller
     
         return response()->json(['teams' => $teams]);
     }
+
+    public function showNotTeamMembers($teamId)
+    {
+        $user = auth()->user();
+
+        //give back those users who are not in the team
+        if ($user->teams()->where('teams.team_id', $teamId)->exists()) {
+            $team = Team::with(['teamMembers.user'])->findOrFail($teamId);
+            $users = User::whereNotIn('user_id', $team->teamMembers->pluck('user_id'))->get();
+            return response()->json(['users' => $users]);
+        } else {
+            return response()->json(['error' => 'Unauthenticated or team not found.'], 401);
+        }
+
+    }
 }

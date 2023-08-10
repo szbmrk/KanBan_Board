@@ -54,6 +54,7 @@ Route::get('/team/{team_id}/management', [TeamManagementController::class, 'show
 Route::post('/team/{team_id}/management', [TeamManagementController::class, 'storeTeamMember'])->middleware('api');
 Route::delete('/team/{team_id}/management/{user_id}', [TeamManagementController::class, 'destroyTeamMember'])->middleware('api');
 Route::get('/user/{id}/teams', [TeamManagementController::class, 'teamsByUser'])->middleware('api');
+Route::get('/team/{team_id}/management/no_members', [TeamManagementController::class, 'showNotTeamMembers'])->middleware('api');
 
 Route::get('/boards/{board_id}', [BoardController::class, 'show'])->middleware('api');
 
