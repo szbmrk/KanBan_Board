@@ -14,6 +14,10 @@
     min-height: 60px;
 }
 
+.subtask-card {
+    background-color: #292929;
+}
+
 .card:hover {
     cursor: pointer;
 }

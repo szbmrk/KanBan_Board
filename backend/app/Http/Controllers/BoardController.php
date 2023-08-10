@@ -12,7 +12,7 @@ class BoardController extends Controller
     public function show($board_id)
     {
         $user = auth()->user();
-        $board = Board::with('columns.tasks.tags')->find($board_id);
+        $board = Board::with(['columns.tasks.tags', 'columns.tasks.subtasks'])->find($board_id);
 
         if (!$board) {
             LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
@@ -22,8 +22,7 @@ class BoardController extends Controller
         if (!$user->isMemberOfBoard($board_id)) {
             LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission. -> Get Board", null, null, null);
             return response()->json(['error' => 'You are not a member of this board'], 403);
-        }
-        else{
+        } else {
 
             return response()->json(['board' => $board]);
         }

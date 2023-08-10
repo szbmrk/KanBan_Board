@@ -40,14 +40,22 @@ const DragDrop = () => {
                     Authorization: `Bearer ${token}`,
                 }
             });
-
             let tempColumns = tempBoard.columns.map((column) => {
                 const filteredTasks = column.tasks.filter((task) => task.parent_task_id === null);
 
-                const tasks = filteredTasks.map((task) => {
-                    const is_favourite = response1.data.favourites.some((favourite) => favourite.task_id === task.task_id);
-                    return { ...task, is_favourite };
-                });
+                let tasks = [];
+                if (response1.data.favourites === undefined) {
+                    tasks = filteredTasks.map((task) => {
+                        const is_favourite = false;
+                        return { ...task, is_favourite };
+                    });
+                }
+                else {
+                    tasks = filteredTasks.map((task) => {
+                        const is_favourite = response1.data.favourites.some((favourite) => favourite.task_id === task.task_id);
+                        return { ...task, is_favourite };
+                    });
+                }
 
                 return { ...column, tasks };
             });
@@ -551,12 +559,11 @@ const DragDrop = () => {
                                             {column.tasks.map((task, taskIndex) => (
                                                 <Card
                                                     key={task.task_id}
+                                                    task={task}
                                                     board_id={board_id}
                                                     column_id={column.column_id}
                                                     handleEditTask={handleEditTask}
                                                     id={task.task_id}
-                                                    text={task.title}
-                                                    description={task.description}
                                                     isFavourite={task.is_favourite === true}
                                                     index={taskIndex}
                                                     divName={`div${index + 1}`}
@@ -582,7 +589,11 @@ const DragDrop = () => {
                                                     favouriteCard={(taskId, divName) =>
                                                         task.is_favourite === false ? favouriteCard(taskId, index) : unFavouriteCard(taskId, index)
                                                     }
-                                                    tags={task.tags}
+                                                    favouriteCardForPopup={(taskId, divName) =>
+                                                        favouriteCard(taskId, index)}
+                                                    unFavouriteCardForPopup={(taskId, divName) =>
+                                                        unFavouriteCard(taskId, index)}
+                                                    isSubtask={false}
                                                 />
                                             ))}
                                         </div>

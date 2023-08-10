@@ -27,9 +27,6 @@ export const solidStarIcon = <FontAwesomeIcon icon={faSolidStar} />;
 
 export const Card = ({
     id,
-    text,
-    description,
-    isFavourite,
     index,
     divName,
     handleEditTask,
@@ -37,9 +34,13 @@ export const Card = ({
     moveCardBackend,
     deleteCard,
     favouriteCard,
+    favouriteCardForPopup,
+    unFavouriteCardForPopup,
     board_id,
     column_id,
-    tags
+    task,
+    isFavourite,
+    isSubtask,
 }) => {
     const [{ isDragging: dragging }, drag] = useDrag({
         type: ItemTypes.CARD,
@@ -161,70 +162,120 @@ export const Card = ({
 
     return (
         <>
-            <div
-                ref={(node) => drag(drop(node))}
-                className="card"
-                style={{
-                    opacity,
-                    cursor: "grab",
-                }}
-            >
-                <div className="task-title"
-                    onMouseEnter={handleMouseEnterOnTaskTitle}
-                    onMouseLeave={handleMouseLeaveOnTaskTitle}
-                >
-                    {text}
+            {isSubtask === false ? (
 
-                </div>
-                <div className="tags-container">
-                    {tags && tags.map((tag, tagIndex) => (
-                        <Tag key={tagIndex} name={tag.name} color={tag.color} extraClassName="tag-on-board" />
-                    ))}
-                </div>
-                <div className="icon-container">
-                    {isFavourite ?
-                        <span className="favourite-button solid-icon"
-                            onClick={handleFavourite}
+                <div
+                    ref={(node) => drag(drop(node))}
+                    className="card"
+                    style={{
+                        opacity,
+                        cursor: "grab",
+                    }}
+                >
+                    <div className="task-title"
+                        onMouseEnter={handleMouseEnterOnTaskTitle}
+                        onMouseLeave={handleMouseLeaveOnTaskTitle}
+                    >
+                        {task.title}
+
+                    </div>
+                    <div className="tags-container">
+                        {task.tags && task.tags.map((tag, tagIndex) => (
+                            <Tag key={tagIndex} name={tag.name} color={tag.color} extraClassName="tag-on-board" />
+                        ))}
+                    </div>
+                    <div className="icon-container">
+                        {isFavourite ?
+                            <span className="favourite-button solid-icon"
+                                onClick={handleFavourite}
+                                style={{ display: isHovered ? "none" : "block" }}
+                            >
+                                {solidStarIcon}
+                            </span> :
+                            <span className="favourite-button regular-icon"
+                                onClick={handleFavourite}
+                                onMouseEnter={handleMouseEnterOnStarIcon}
+                                onMouseLeave={handleMouseLeaveOnStarIcon}
+                                style={{ display: isHovered ? "none" : "block" }}
+                            >
+                                {bouncingStarIcon}
+                            </span>
+                        }
+                        <span className="edit"
+                            onClick={handleClick}
                             style={{ display: isHovered ? "none" : "block" }}
                         >
-                            {solidStarIcon}
-                        </span> :
-                        <span className="favourite-button regular-icon"
-                            onClick={handleFavourite}
-                            onMouseEnter={handleMouseEnterOnStarIcon}
-                            onMouseLeave={handleMouseLeaveOnStarIcon}
-                            style={{ display: isHovered ? "none" : "block" }}
-                        >
-                            {bouncingStarIcon}
+                            {pencilIcon}
                         </span>
-                    }
-                    <span className="edit"
-                        onClick={handleClick}
-                        style={{ display: isHovered ? "none" : "block" }}
-                    >
-                        {pencilIcon}
-                    </span>
-                    <span className="delete-button"
-                        onClick={handleDelete}
-                        style={{ display: isHovered ? "none" : "block" }}
-                    >
-                        {trashIcon}
-                    </span>
+                        <span className="delete-button"
+                            onClick={handleDelete}
+                            style={{ display: isHovered ? "none" : "block" }}
+                        >
+                            {trashIcon}
+                        </span>
+                    </div>
                 </div>
-            </div>
+            ) : (
+                <div className="card subtask-card">
+                    <div
+                    >
+                        {task.title}
+                    </div>
+                    <div className="tags-container">
+                        {task.tags && task.tags.map((tag, tagIndex) => (
+                            <Tag key={tagIndex} name={tag.name} color={tag.color} extraClassName="tag-on-board" />
+                        ))}
+                    </div>
+                    <div className="icon-container">
+                        {isFavourite ?
+                            <span className="favourite-button solid-icon"
+                                onClick={handleFavourite}
+                                style={{ display: isHovered ? "none" : "block" }}
+                            >
+                                {solidStarIcon}
+                            </span> :
+                            <span className="favourite-button regular-icon"
+                                onClick={handleFavourite}
+                                onMouseEnter={handleMouseEnterOnStarIcon}
+                                onMouseLeave={handleMouseLeaveOnStarIcon}
+                                style={{ display: isHovered ? "none" : "block" }}
+                            >
+                                {bouncingStarIcon}
+                            </span>
+                        }
+                        <span className="edit"
+                            onClick={handleClick}
+                            style={{ display: isHovered ? "none" : "block" }}
+                        >
+                            {pencilIcon}
+                        </span>
+                        <span className="delete-button"
+                            onClick={handleDelete}
+                            style={{ display: isHovered ? "none" : "block" }}
+                        >
+                            {trashIcon}
+                        </span>
+                    </div>
+                </div>)}
             {showDeletePopup && (
                 <ConfirmationPopup
-                    text={text}
+                    text={task.title}
                     onCancel={handleCancelDelete}
                     onConfirm={handleConfirmDelete}
                 />
             )}
             {showCustomPopup && (
                 <Popup
-                    text={text}
-                    description={description}
+                    task={task}
                     onClose={handleClosePopup}
                     onSave={handleSavePopup}
+                    board_id={board_id}
+                    column_id={column_id}
+                    taskIndex={index}
+                    handleEditTask={handleEditTask}
+                    favouriteCard={favouriteCardForPopup}
+                    unFavouriteCard={unFavouriteCardForPopup}
+                    deleteCard={deleteCard}
                 />
             )}
         </>
