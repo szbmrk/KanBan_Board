@@ -7,8 +7,8 @@ const Tag = ({ name, color, extraClassName, enableClickBehavior }) => {
 
     const tagStyle = {
         backgroundColor: color,
-        fontSize: isClicked ? "0.8rem" : "0rem",
-        height: isClicked ? "25px" : "5px",
+        fontSize: isClicked ? "0.8em" : "0em",
+        height: isClicked ? "25px" : "",
         padding: isClicked ? "0.2rem 0.5rem" : "0",
     };
 

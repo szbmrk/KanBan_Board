@@ -4,7 +4,7 @@
   flex-direction: column; /* Stack cards vertically */
   margin: 20px 10px;
   padding: 10px;
-  width: 300px;
+  width: 350px;
   background-color: var(--bg-dark);
   border-radius: 5px;
   max-height: 700px;
@@ -86,7 +86,7 @@
 
 @media (max-width: 830px) {
   body {
-    font-size: 0.9rem;
+    font-size: 0.9em;
   }
 
   .div-container {
@@ -96,7 +96,7 @@
 
 @media (max-width: 480px) {
   body {
-    font-size: 0.75rem;
+    font-size: 0.75em;
   }
 
   .div-container {
