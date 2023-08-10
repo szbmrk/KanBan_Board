@@ -7,11 +7,18 @@ import "../styles/popup.css";
 import "../styles/GenerateTaskWithAGIPopup.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import Dropdown from "react-dropdown";
+import "react-dropdown/style.css";
 
 const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
   let [editedTasks, setEditedTasks] = useState(tasks ? [...tasks] : []);
   const taskTitleInputRef = useRef(null);
   const popupRef = useRef(null);
+  const aiOptions = [
+    { value: "chatgpt", label: "ChatGPT" },
+    { value: "llama", label: "Llama" },
+  ];
+  let [chosenAI, setChosenAI] = useState(aiOptions[0]);
 
   const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
@@ -47,8 +54,9 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
     //onClose();
   };
 
-  const generateTasks = async (taskPrompt, task) => {
+  const generateTasks = async (taskPrompt, task, ai) => {
     try {
+      console.log(ai);
       const token = sessionStorage.getItem("token");
       /*       const formData = new FormData();
       formData.append("name", "New Column");
@@ -58,6 +66,7 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
         headers: {
           Authorization: `Bearer ${token}`,
           TaskPrompt: `${taskPrompt}`,
+          ChosenAI: `${ai}`,
         },
       });
 
@@ -132,9 +141,9 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
           {closeIcon}
         </span>
         <div className="gt-popup-content">
-          <div className="gt-scrollable-list">
-            {editedTasks.length > 0 ? (
-              <>
+          {editedTasks.length > 0 ? (
+            <>
+              <div className="gt-scrollable-list">
                 {editedTasks.map((editedTask, index) => (
                   <TaskRecursive
                     deepness={0}
@@ -143,30 +152,39 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
                     generateTasks={generateTasks}
                   />
                 ))}
-              </>
-            ) : (
-              <>
-                <div className="gt-input-container">
-                  <p>Give me a task to generate tickets about:</p>
-                  <input
-                    type="text"
-                    placeholder="Enter task title"
-                    ref={taskTitleInputRef}
-                  />
-                  <button
-                    onClick={() =>
-                      generateTasks(taskTitleInputRef.current.value)
-                    }
-                  >
-                    Generate tasks
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-          <div className="gt-button-container">
-            <button onClick={saveChanges}>Save to database</button>
-          </div>
+              </div>
+              <div className="gt-button-container">
+                <button onClick={saveChanges}>Save to database</button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="gt-input-container">
+                <p>Give me a task to generate tickets about:</p>
+                <input
+                  type="text"
+                  placeholder="Enter task title"
+                  ref={taskTitleInputRef}
+                />
+                <Dropdown
+                  options={aiOptions}
+                  value={chosenAI}
+                  onChange={(selectedOption) => setChosenAI(selectedOption)}
+                />
+                <button
+                  onClick={() =>
+                    generateTasks(
+                      taskTitleInputRef.current.value,
+                      null,
+                      chosenAI
+                    )
+                  }
+                >
+                  Generate tasks
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -174,6 +192,12 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
 };
 
 const TaskRecursive = ({ deepness, task, index, generateTasks }) => {
+  const aiOptions = [
+    { value: "chatgpt", label: "ChatGPT" },
+    { value: "llama", label: "Llama" },
+  ];
+  let [chosenAI, setChosenAI] = useState(aiOptions[0]);
+
   const handleTitleChange = (e) => {
     // Update title for the specific task
   };
@@ -187,6 +211,7 @@ const TaskRecursive = ({ deepness, task, index, generateTasks }) => {
   };
 
   const generateSubtasks = (task) => {
+    console.log(chosenAI);
     /*     generateTasks(
       "Task title: " +
         task.title +
@@ -197,7 +222,8 @@ const TaskRecursive = ({ deepness, task, index, generateTasks }) => {
     ); */
     generateTasks(
       "Develop a shopping web page in react with login, sign up, cart and list of goods pages",
-      task
+      task,
+      chosenAI
     );
   };
 
@@ -228,18 +254,11 @@ const TaskRecursive = ({ deepness, task, index, generateTasks }) => {
         />
       </div>
       <div className="gt-action-buttons">
-        {task.tasks && task.tasks.length > 0 && (
-          <div className="subtasks">
-            {task.tasks.map((subtask, subtaskIndex) => (
-              <TaskRecursive
-                deepness={deepness + 1}
-                key={subtaskIndex}
-                task={subtask}
-                generateTasks={generateTasks}
-              />
-            ))}
-          </div>
-        )}
+        <Dropdown
+          options={aiOptions}
+          value={chosenAI}
+          onChange={(selectedOption) => setChosenAI(selectedOption)}
+        />
         <button
           className="generate-subtasks-button"
           onClick={() => generateSubtasks(task)}
@@ -247,6 +266,18 @@ const TaskRecursive = ({ deepness, task, index, generateTasks }) => {
           Generate Subtasks
         </button>
       </div>
+      {task.tasks && task.tasks.length > 0 && (
+        <div className="subtasks">
+          {task.tasks.map((subtask, subtaskIndex) => (
+            <TaskRecursive
+              deepness={deepness + 1}
+              key={subtaskIndex}
+              task={subtask}
+              generateTasks={generateTasks}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
