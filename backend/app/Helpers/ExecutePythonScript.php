@@ -114,16 +114,16 @@ class ExecutePythonScript
         $tasks = '';
 
         foreach ($column as $task) {
-            $priorityName = Priority::find($task->priority_id)->priority;
-            if($priorityName == null) {
+            if($task->priority_id == null) {
                 $priorityName = "null";
             } else {
-                $tasks .= "title: {$task->title}, description: {$task->description}, priority: {$priorityName}. ";
+                $priorityName = Priority::find($task->priority_id)->priority; 
             }
+            $tasks .= "title: {$task->title}, description: {$task->description}, priority: {$priorityName}. ";
         }
 
         
-        $youAre = "a priority manager state machine. You can only answer with only priority suggestion in JSON structure: priorities: priority...! You can choose from the following enums: TOP PRIORITY, HIGH PRIORITY, MEDIUM PRIORITY, LOW PRIORITY.";
+        $youAre = "a priority manager state machine. You can only answer with ONLY priority suggestion! Separatethem with a comma! You can choose from the following enums: TOP PRIORITY, HIGH PRIORITY, MEDIUM PRIORITY, LOW PRIORITY.";
         $prompt = "You are $youAre . Estimate the priority of the following kanban board tickets->  $tasks. Answer with their priortiy enum only, nothing else!";
         // Construct the Python command with the required arguments and path to the script
 

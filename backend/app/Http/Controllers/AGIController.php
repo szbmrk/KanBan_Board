@@ -79,8 +79,16 @@ class AGIController extends Controller
         $cleanData = trim($response);
 
 
+        $prioritiesArray = [];
+    
+        // Split the comma-separated priorities and create an array of priority objects
+        $priorities = explode(', ', $cleanData);
+        foreach ($priorities as $priority) {
+            $prioritiesArray[] = ['priority' => $priority];
+        }
+    
         return response()->json([
-            'priorities' => $cleanData,
+            'priorities' => $prioritiesArray,
         ]);
     }
 }
