@@ -10,6 +10,12 @@
     min-width: 50px;
 }
 
+.clicked {
+    height: 25px !important;
+    padding: 0.2rem 0.5rem !important;
+    font-size: 0.8em !important;
+}
+
 .tag-on-card {
     font-size: 1em !important;
     height: 25px !important;

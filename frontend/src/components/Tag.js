@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import "../styles/tag.css";
 
-const Tag = ({ name, color, extraClassName, enableClickBehavior }) => {
+const Tag = ({ name, color, extraClassName, enableClickBehavior, onClick }) => {
     const [isClicked, setIsClicked] = useState(false);
 
     const tagStyle = {
@@ -22,7 +22,7 @@ const Tag = ({ name, color, extraClassName, enableClickBehavior }) => {
         <div
             className={"tag " + extraClassName}
             style={tagStyle}
-            onClick={handleClickOnTag}
+            onClick={onClick}
         >
             <p>{name}</p>
         </div>
