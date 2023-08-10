@@ -1,5 +1,5 @@
 import React from 'react'
-import '../../styles/teammanager.css'; // Import the CSS file for styling
+import '../../styles/popup.css'; // Import the CSS file for styling
 import axios from '../../api/axios';
 import { useEffect, useState } from 'react';
 
@@ -40,7 +40,7 @@ const TeamManager = ({ teamData, onClose }) => {
                 Authorization: `Bearer ${token}`,
               }
             });
-          console.log(response);
+          onClose();
         }
         catch (error) {
           console.log(error.response);
@@ -48,9 +48,13 @@ const TeamManager = ({ teamData, onClose }) => {
       }
 
     return (
+        <>
+        {teamData.length !==0 ?
+        ( 
+        <div className="overlay">
       <div className='popup'> 
         <div className="popup-content">
-          <button className="close-button" onClick={onClose}>
+          <button className="close-btn" onClick={onClose}>
             Close
           </button>
           <table>
@@ -78,10 +82,47 @@ const TeamManager = ({ teamData, onClose }) => {
                 </tr>
             </tbody>
           </table>
-          <p>This is the content of the pop-up.</p>
-          <button className='delete-button' onClick={DeleteTeam}>Delete Team</button>
+          <button className='delete-button-popup' onClick={DeleteTeam}>Delete Team</button>
         </div>
       </div>
+      </div>
+    ): 
+    <div className="overlay">
+    <div className='popup'> 
+      <div className="popup-content">
+        <button className="close-btn" onClick={onClose}>
+          Close
+        </button>
+        <table>
+          <tbody>
+              <tr>
+                  <td>
+                      Team name:
+                  </td>
+                  <td>
+                      <input type="text" />
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                      Add members:
+                  </td>
+                  <td>
+                      <select >
+                          <option disabled>Choose members</option>
+                          {users.map((user) => (
+                              <option value={user.user_id}>{user.username}</option>
+                          ))}
+                      </select>
+                  </td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    </div>
+}
+</>
     );
   };
 

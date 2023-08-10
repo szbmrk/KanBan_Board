@@ -1,0 +1,80 @@
+/* Styling for the card container */
+.card {
+    width: flex;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+  }
+  
+  /* Styling for the card header */
+  .card-header {
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .card-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+  
+  /* Styling for the card content */
+  .card-content {
+    color: black;
+    padding: 20px;
+    
+  }
+  
+  /* Styling for the team members table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  table th,
+  table td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  /* Styling for the "Remove user from team" button */
+  button {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #e64545;
+  }
+  
+  /* Styling for the "Manage team" button */
+  button#manageButton {
+    background-color: #6a97ea;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  button#manageButton:hover {
+    background-color: #547dc7;
+  }
+  
+  /* Styling for the team manager section */
+  .team-manager {
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+    margin-top: 20px;
+  }

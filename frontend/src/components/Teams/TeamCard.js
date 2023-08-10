@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from '../../api/axios';
 import TeamManager from './TeamManager';
+import '../../styles/teamcard.css';
 
 const TeamCard = ({ data }) => {
 
@@ -10,6 +11,21 @@ const TeamCard = ({ data }) => {
   async function ManageTeam() {
       setTeamData(data);
       setManage(!manageIsClicked);
+  }
+  async function deleteUserFromTeam(e)
+  {
+    const token = sessionStorage.getItem('token');
+    try {
+      const response = await axios.delete(`/team/${data.team_id}/management/${e.target.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+    }
+    catch (error) {
+      console.log(error.response);
+    }
   }
 
   return (
@@ -23,12 +39,27 @@ const TeamCard = ({ data }) => {
         <p>Team ID: {data.team_id}</p>
         <p>Parent Team ID: {data.parent_team_id !== null ? data.parent_team_id : 'None'}</p>
         <h3>Team Members:</h3>
-        <ul>
+        
+        <table>
+          <tbody>
           {data.team_members.map((member, index) => (
-            <li key={index}>User {member.user_id}</li>
-          ))}
-        </ul>
-        {data.created_by === data.pivot.user_id ? <button onClick={ManageTeam}>Manage team</button> : <></>}
+
+                <tr>
+                  <td>
+                    <li key={index}>User {member.user_id}</li>
+                  </td>
+                  <td>
+                    {data.created_by!==member.user_id && 
+                    <button id={member.user_id} onClick={deleteUserFromTeam}>
+                        Remove user from team
+                    </button>}
+                  </td>
+                </tr>
+              ))}
+              </tbody>
+              </table>
+        
+        {data.created_by === data.pivot.user_id ? <button id='manageButton' onClick={ManageTeam}>Manage team</button> : <></>}
       </div>
       {manageIsClicked && 
         <TeamManager teamData={teamData} onClose={ManageTeam} />

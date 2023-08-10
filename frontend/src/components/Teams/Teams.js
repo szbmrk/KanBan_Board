@@ -43,7 +43,7 @@ const Teams = () => {
             ))}
           <button onClick={addTeam}>Add team</button>
           {manageIsClicked && 
-            <TeamManager teamData={null} onClose={addTeam} />
+            <TeamManager teamData={[]} onClose={addTeam} />
       }
     </div>
   )}
