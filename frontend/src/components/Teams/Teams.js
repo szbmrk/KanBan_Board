@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../api/axios";
+import TeamCard from "./TeamCard";
+import TeamManager from "./TeamManager";
 
 const Teams = () => {
   const [teams, setTeams] = useState([]);
+    const [manageIsClicked, setManage] = useState(false);
   useEffect(() => {
     getTeams();
 
   }, []);
+
+  function addTeam()
+  {
+      setManage(!manageIsClicked);
+  }
 
   const getTeams = async () => {
 
@@ -19,7 +27,7 @@ const Teams = () => {
                     Authorization: `Bearer ${token}`,
                 }
             });
-            const tempData = response;
+            const tempData = response.data.teams;
             console.log(tempData);
             setTeams(tempData);
         }
@@ -30,7 +38,13 @@ const Teams = () => {
   }
   return (
     <div>
-       
+        {teams.map((team, index) => (
+                <TeamCard key={index} data={team} />
+            ))}
+          <button onClick={addTeam}>Add team</button>
+          {manageIsClicked && 
+            <TeamManager teamData={null} onClose={addTeam} />
+      }
     </div>
   )}
 
