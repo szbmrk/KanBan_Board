@@ -97,8 +97,7 @@
 }
 
 .edit-action-button {
-  padding: 3px;
-  margin-inline: 3px;
+  padding: 5px;
   cursor: pointer;
 }
 
@@ -108,6 +107,16 @@
 
 #cancel-button:hover {
   color: var(--important);
+}
+
+.ai-button {
+  color: var(--light-gray);
+  padding: 5px;
+  cursor: pointer;
+}
+
+.ai-button:hover {
+  color: var(--magic);
 }
 
 @media (max-width: 830px) {
