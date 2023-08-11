@@ -183,69 +183,65 @@ export const Task = ({
                             className='option'
                             onMouseEnter={() => setIsHoveredEdit(true)}
                             onMouseLeave={() => setIsHoveredEdit(false)}
+                            onClick={() => setTaskAsInspectedTask(task)}
                         >
                             <span
                                 className='edit-button'
-                                onClick={() => setTaskAsInspectedTask(task)}
                                 style={{
                                     animation: isHoveredEdit ? 'rotate 0.5s' : 'none',
                                 }}
                             >
                                 {pencilIcon}
                             </span>
-                            <p onClick={() => setTaskAsInspectedTask(task)}>Edit</p>
+                            <p>Edit</p>
                         </div>
                         <div
                             className='option'
                             onMouseEnter={() => setIsHoveredAI(true)}
                             onMouseLeave={() => setIsHoveredAI(false)}
+                            onClick={() => handleAI()}
                         >
                             <span
                                 className='ai-button'
-                                onClick={() => handleAI()}
                                 style={{
                                     color: isHoveredAI ? 'var(--magic)' : '',
                                 }}
                             >
                                 {aiIcon}
                             </span>
-                            <p onClick={() => handleAI()}>Generate Tasks</p>
+                            <p>Generate Tasks</p>
                         </div>
                         {task.is_favourite ? (
                             <div
                                 className='option'
                                 onMouseEnter={() => setIsHoveredFavorite(true)}
                                 onMouseLeave={() => setIsHoveredFavorite(false)}
+                                onClick={() => unFavouriteTask(id, task.column_id)}
                             >
                                 <span
                                     className='favourite-button solid-icon'
-                                    onClick={() => unFavouriteTask(id, task.column_id)}
                                     style={{ color: isHoveredFavorite ? 'var(--light-gray)' : '' }}
                                 >
                                     {solidStarIcon}
                                 </span>
-                                <p onClick={() => unFavouriteTask(id, task.column_id)}>Remove from Favourites</p>
+                                <p>Remove from Favourites</p>
                             </div>
                         ) : (
                             <div
                                 className='option'
                                 onMouseEnter={() => setIsHoveredFavorite(true)}
                                 onMouseLeave={() => setIsHoveredFavorite(false)}
+                                onClick={() => favouriteTask(id, task.column_id)}
                             >
                                 <span
                                     className='favourite-button regular-icon'
-                                    onClick={() => favouriteTask(id, task.column_id)}
                                     onMouseEnter={handleMouseEnterOnStarIcon}
                                     onMouseLeave={handleMouseLeaveOnStarIcon}
                                     style={{ color: isHoveredFavorite ? 'var(--starred)' : '' }}
                                 >
                                     {bouncingStarIcon}
                                 </span>
-                                <p
-                                    onClick={() => favouriteTask(id, task.column_id)}
-                                    onMouseEnter={handleMouseEnterOnStarIcon}
-                                    onMouseLeave={handleMouseLeaveOnStarIcon}
-                                >
+                                <p onMouseEnter={handleMouseEnterOnStarIcon} onMouseLeave={handleMouseLeaveOnStarIcon}>
                                     Add to Favourites
                                 </p>
                             </div>
@@ -254,15 +250,15 @@ export const Task = ({
                             className='option'
                             onMouseEnter={() => setIsHoveredDelete(true)}
                             onMouseLeave={() => setIsHoveredDelete(false)}
+                            onClick={() => deleteTask(id, task.column_id)}
                         >
                             <span
                                 className='delete-button'
-                                onClick={() => deleteTask(id, task.column_id)}
                                 style={{ color: isHoveredDelete ? 'var(--important)' : '' }}
                             >
                                 {trashIcon}
                             </span>
-                            <p onClick={() => deleteTask(id, task.column_id)}>Delete</p>
+                            <p>Delete</p>
                         </div>
                     </div>
                 </div>
