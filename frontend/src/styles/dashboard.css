@@ -4,7 +4,7 @@
     border-radius: 8px;
     padding: 20px;
     margin: 20px;
-    background-color: rgba(var(--dark-grayRGB), 0.5);
+    background-color: var(--bg-dark);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -52,7 +52,7 @@
     color: var(--light-gray);
 }
 
-.edit-column-button {
+.edit-board-button {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -76,7 +76,7 @@
     }
 }
 
-.edit-column-button:hover {
+.edit-board-button:hover {
     animation: rotate 0.5s;
 }
 
@@ -102,61 +102,15 @@
 }
 
 /* Styling for the delete board button */
-.delete-board {
-    color: #fff;
-    background-color: #f44336;
-    border: none;
-    border-radius: 4px;
-    padding: 6px 12px;
-    /* Reduced padding */
-    font-size: 12px;
-    /* Reduced font size */
+.delete-board-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 5px 10px;
     cursor: pointer;
-    transition: background-color 0.3s;
-}
+    color: var(--light-gray);
+  }
 
-.delete-board:hover {
-    background-color: #d32f2f;
-}
-
-/* Styling for the delete board button */
-.edit-board {
-    color: #fff;
-    background-color: #06917a;
-    border: none;
-    border-radius: 4px;
-    padding: 6px 12px;
-    /* Reduced padding */
-    font-size: 12px;
-    /* Reduced font size */
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.edit-board:hover {
-    background-color: #06917a;
-}
-
-.save-button,
-.cancel-button {
-    padding: 8px 15px;
-    /* Adjust the padding to make the buttons smaller */
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.save-button:hover,
-.cancel-button:hover {
-    background-color: #0056b3;
-}
-
-.cancel-button {
-    background-color: #ccc;
-}
-
-.cancel-button:hover {
-    background-color: #a6a6a6;
+.delete-board-button:hover {
+    color: var(--important);
 }
