@@ -1,24 +1,20 @@
-import React, { useState, useRef, useEffect } from "react";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { Task, plusIcon } from "./Task";
-import ConfirmationPopup from "./ConfirmationPopup";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    faCheck,
-    faXmark,
-    faWandMagicSparkles,
-} from "@fortawesome/free-solid-svg-icons";
-import "../../styles/board.css";
-import "../../styles/popup.css";
-import { useParams } from "react-router";
-import axios from "../../api/axios";
-import Error from "../Error";
-import Loader from "../Loader";
-import { Column } from "./Columns";
-import Popup from "./Popup";
-import cloneDeep from "lodash/cloneDeep";
-import GenerateTaskWithAGIPopup from "../GenerateTaskWithAGIPopup";
+import React, { useState, useRef, useEffect } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { Task, plusIcon } from './Task';
+import ConfirmationPopup from './ConfirmationPopup';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faXmark, faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
+import '../../styles/board.css';
+import '../../styles/popup.css';
+import { useParams } from 'react-router';
+import axios from '../../api/axios';
+import Error from '../Error';
+import Loader from '../Loader';
+import { Column } from './Columns';
+import Popup from './Popup';
+import cloneDeep from 'lodash/cloneDeep';
+import GenerateTaskWithAGIPopup from '../GenerateTaskWithAGIPopup';
 
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
 
@@ -30,13 +26,11 @@ const Board = () => {
     const [columnPositions, setColumnPositions] = useState([]);
     const [editingColumnIndex, setEditingColumnIndex] = useState(null);
     const [columnToDeleteIndex, setColumnToDeleteIndex] = useState(null);
-    const [showDeleteConfirmation, setShowDeleteColumnConfirmation] =
-        useState(false);
+    const [showDeleteConfirmation, setShowDeleteColumnConfirmation] = useState(false);
     const originalTitle = useRef(null);
     const editBoxRef = useRef(null);
-    const [columnNewTitle, setColumnNewTitle] = useState("");
-    const [showGenerateTaskWithAGIPopup, setShowGenerateTaskWithAGIPopup] =
-        useState(false);
+    const [columnNewTitle, setColumnNewTitle] = useState('');
+    const [showGenerateTaskWithAGIPopup, setShowGenerateTaskWithAGIPopup] = useState(false);
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
@@ -53,15 +47,15 @@ const Board = () => {
             }
         };
 
-        document.addEventListener("click", handleClickOutside);
+        document.addEventListener('click', handleClickOutside);
 
         return () => {
-            document.removeEventListener("click", handleClickOutside);
+            document.removeEventListener('click', handleClickOutside);
         };
     }, [editingColumnIndex]);
 
     const fetchBoardData = async () => {
-        const token = sessionStorage.getItem("token");
+        const token = sessionStorage.getItem('token');
 
         try {
             const response = await axios.get(`/boards/${board_id}`, {
@@ -75,22 +69,18 @@ const Board = () => {
             let tempColumns = tempBoard.columns;
 
             // Sort the columns and tasks by position
-            tempColumns.map((column) =>
-                column.tasks.sort((a, b) => a.position - b.position)
-            );
+            tempColumns.map((column) => column.tasks.sort((a, b) => a.position - b.position));
             tempBoard.columns = tempColumns.sort((a, b) => a.position - b.position);
 
-            let tempColumnPositions = tempBoard.columns.map(
-                (column) => column.column_id
-            );
+            let tempColumnPositions = tempBoard.columns.map((column) => column.column_id);
             setColumnPositions(tempColumnPositions);
 
-            console.log("Columns: ", tempBoard.columns);
+            console.log('Columns: ', tempBoard.columns);
 
             setBoard(tempBoard);
         } catch (e) {
             console.error(e);
-            if (e.response.status === 403) setError("No permission");
+            if (e.response.status === 403) setError('No permission');
             else setError(e);
             setPermission(false);
         }
@@ -98,11 +88,11 @@ const Board = () => {
 
     const handleAddColumn = async () => {
         try {
-            const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem('token');
             const formData = new FormData();
-            formData.append("name", "New Column");
-            formData.append("is_finished", 0);
-            formData.append("task_limit", 5);
+            formData.append('name', 'New Column');
+            formData.append('is_finished', 0);
+            formData.append('task_limit', 5);
             const res = await axios.post(`/boards/${board_id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -129,12 +119,8 @@ const Board = () => {
             setEditingColumnIndex(null);
 
             let tempPositions = columnPositions;
-            tempPositions.splice(
-                hoverIndex,
-                0,
-                tempPositions.splice(dragIndex, 1)[0]
-            );
-            const token = sessionStorage.getItem("token");
+            tempPositions.splice(hoverIndex, 0, tempPositions.splice(dragIndex, 1)[0]);
+            const token = sessionStorage.getItem('token');
             axios.post(
                 `/boards/${board_id}/columns/positions`,
                 { columns: tempPositions },
@@ -170,18 +156,15 @@ const Board = () => {
     };
 
     const handleColumnDeleteConfirm = () => {
-        console.log("confirm");
+        console.log('confirm');
 
         try {
-            const token = sessionStorage.getItem("token");
-            axios.delete(
-                `/boards/${board_id}/columns/${board.columns[columnToDeleteIndex].column_id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const token = sessionStorage.getItem('token');
+            axios.delete(`/boards/${board_id}/columns/${board.columns[columnToDeleteIndex].column_id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
             const newBoardData = [...board.columns];
             newBoardData.splice(columnToDeleteIndex, 1);
@@ -196,7 +179,7 @@ const Board = () => {
     };
 
     const handleColumnDeleteCancel = () => {
-        console.log("cancel");
+        console.log('cancel');
         setShowDeleteColumnConfirmation(false);
         setColumnToDeleteIndex(null);
     };
@@ -231,10 +214,10 @@ const Board = () => {
             setBoard({ ...board, columns: newColumnData });
         } else {
             // Update the title if the changes were saved
-            if (columnNewTitle === "") {
+            if (columnNewTitle === '') {
                 // Reset the title if the changes were cancelled
                 try {
-                    const token = sessionStorage.getItem("token");
+                    const token = sessionStorage.getItem('token');
                     const column_id = board.columns[columnIndex].column_id;
                     await axios.put(
                         `/boards/column/${column_id}`,
@@ -254,7 +237,7 @@ const Board = () => {
                 }
             } else {
                 try {
-                    const token = sessionStorage.getItem("token");
+                    const token = sessionStorage.getItem('token');
                     const column_id = board.columns[columnIndex].column_id;
                     await axios.put(
                         `/boards/column/${column_id}`,
@@ -285,7 +268,7 @@ const Board = () => {
             };
 
             const board_id = board.columns[divIndex].board_id;
-            const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem('token');
             const res = await axios.post(`/boards/${board_id}/task`, newTask, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -303,12 +286,7 @@ const Board = () => {
         }
     };
 
-    const moveCardFrontend = (
-        dragIndex,
-        hoverIndex,
-        sourceDivIndex,
-        targetDivIndex
-    ) => {
+    const moveCardFrontend = (dragIndex, hoverIndex, sourceDivIndex, targetDivIndex) => {
         const sourceDiv = board.columns[sourceDivIndex];
         const targetDiv = board.columns[targetDivIndex];
         const draggedCard = sourceDiv.tasks[dragIndex];
@@ -325,30 +303,21 @@ const Board = () => {
         setBoard({ ...board, columns: newBoardData });
     };
 
-    const moveCardBackend = async (
-        dragIndex,
-        hoverIndex,
-        sourceDivIndex,
-        targetDivIndex
-    ) => {
+    const moveCardBackend = async (dragIndex, hoverIndex, sourceDivIndex, targetDivIndex) => {
         const sourceDiv = board.columns[sourceDivIndex];
         const task_to_modify_id = sourceDiv.tasks[hoverIndex].task_id;
         const to_column_id = sourceDiv.column_id;
         if (hoverIndex === 0) {
-            sourceDiv.tasks[hoverIndex].position =
-                sourceDiv.tasks[hoverIndex + 1].position / 2;
+            sourceDiv.tasks[hoverIndex].position = sourceDiv.tasks[hoverIndex + 1].position / 2;
         } else if (hoverIndex === sourceDiv.tasks.length - 1) {
-            sourceDiv.tasks[hoverIndex].position =
-                sourceDiv.tasks[hoverIndex - 1].position + 1;
+            sourceDiv.tasks[hoverIndex].position = sourceDiv.tasks[hoverIndex - 1].position + 1;
         } else {
             sourceDiv.tasks[hoverIndex].position =
-                (sourceDiv.tasks[hoverIndex - 1].position +
-                    sourceDiv.tasks[hoverIndex + 1].position) /
-                2;
+                (sourceDiv.tasks[hoverIndex - 1].position + sourceDiv.tasks[hoverIndex + 1].position) / 2;
         }
 
         const position = sourceDiv.tasks[hoverIndex].position;
-        const token = sessionStorage.getItem("token");
+        const token = sessionStorage.getItem('token');
 
         try {
             await axios.post(
@@ -390,7 +359,7 @@ const Board = () => {
 
     const handleEditTask = async (task_id, column_id, title, description) => {
         try {
-            const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem('token');
             await axios.put(
                 `/boards/${board_id}/tasks/${task_id}`,
                 { title: title, description: description },
@@ -399,12 +368,8 @@ const Board = () => {
                 }
             );
             const newTaskData = [...board.columns];
-            const columnIndex = newTaskData.findIndex(
-                (column) => column.column_id === column_id
-            );
-            const taskIndex = newTaskData[columnIndex].tasks.findIndex(
-                (task) => task.task_id === task_id
-            );
+            const columnIndex = newTaskData.findIndex((column) => column.column_id === column_id);
+            const taskIndex = newTaskData[columnIndex].tasks.findIndex((task) => task.task_id === task_id);
             newTaskData[columnIndex].tasks[taskIndex].title = title;
             newTaskData[columnIndex].tasks[taskIndex].description = description;
             setBoard({ ...board, columns: newTaskData });
@@ -415,23 +380,17 @@ const Board = () => {
 
     const handleDeleteTask = async (taskId, column_id) => {
         try {
-            const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem('token');
 
             await axios.delete(`/boards/${board_id}/tasks/${taskId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            const targetDiv = board.columns.find(
-                (column) => column.column_id === column_id
-            );
-            const updatedtasks = targetDiv.tasks.filter(
-                (task) => task.task_id !== taskId
-            );
+            const targetDiv = board.columns.find((column) => column.column_id === column_id);
+            const updatedtasks = targetDiv.tasks.filter((task) => task.task_id !== taskId);
             const newColumnData = [...board.columns];
-            const columnIndex = newColumnData.findIndex(
-                (column) => column.column_id === column_id
-            );
+            const columnIndex = newColumnData.findIndex((column) => column.column_id === column_id);
             newColumnData[columnIndex] = { ...targetDiv, tasks: updatedtasks };
             setBoard({ ...board, columns: newColumnData });
         } catch (e) {
@@ -441,7 +400,7 @@ const Board = () => {
 
     const handleFavouriteTask = (id, column_id) => {
         try {
-            const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem('token');
             axios.post(
                 `/boards/${board_id}/tasks/${id}/favourite`,
                 {},
@@ -470,7 +429,7 @@ const Board = () => {
 
     const handleUnFavouriteTask = (id, column_id) => {
         try {
-            const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem('token');
             axios.delete(`/boards/${board_id}/tasks/${id}/favourite`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -495,23 +454,18 @@ const Board = () => {
 
     const handleAddSubtask = async (parent_task_id, column_id) => {
         try {
-            const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem('token');
             const response = await axios.post(
                 `/boards/${board_id}/tasks/${parent_task_id}/subtasks`,
-                { title: "New subtask" },
+                { title: 'New subtask' },
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
             const newSubtask = response.data.task;
             const newBoardData = [...board.columns];
-            const columnIndex = newBoardData.findIndex(
-                (column) => column.column_id === column_id
-            );
-            const task = findTaskById(
-                newBoardData[columnIndex].tasks,
-                parent_task_id
-            );
+            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
+            const task = findTaskById(newBoardData[columnIndex].tasks, parent_task_id);
             task.subtasks.push(newSubtask);
             setBoard({ ...board, columns: newBoardData });
         } catch (err) {
@@ -521,20 +475,15 @@ const Board = () => {
 
     const handleDeleteSubtask = async (subtask_id, parent_task_id, column_id) => {
         try {
-            const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem('token');
             await axios.delete(`/boards/${board_id}/subtasks/${subtask_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
             const newBoardData = [...board.columns];
-            const columnIndex = newBoardData.findIndex(
-                (column) => column.column_id === column_id
-            );
-            const task = findTaskById(
-                newBoardData[columnIndex].tasks,
-                parent_task_id
-            );
+            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
+            const task = findTaskById(newBoardData[columnIndex].tasks, parent_task_id);
             task.subtasks.splice(
                 task.subtasks.findIndex((subtask) => subtask.task_id === subtask_id),
                 1
@@ -545,15 +494,9 @@ const Board = () => {
         }
     };
 
-    const handleEditSubtask = async (
-        subtask_id,
-        parent_task_id,
-        column_id,
-        title,
-        description
-    ) => {
+    const handleEditSubtask = async (subtask_id, parent_task_id, column_id, title, description) => {
         try {
-            const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem('token');
             await axios.put(
                 `/boards/${board_id}/subtasks/${subtask_id}`,
                 { title: title, description: description },
@@ -562,13 +505,8 @@ const Board = () => {
                 }
             );
             const newBoardData = [...board.columns];
-            const columnIndex = newBoardData.findIndex(
-                (column) => column.column_id === column_id
-            );
-            const task = findTaskById(
-                newBoardData[columnIndex].tasks,
-                parent_task_id
-            );
+            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
+            const task = findTaskById(newBoardData[columnIndex].tasks, parent_task_id);
             task.subtasks.map((subtask) => {
                 if (subtask.task_id === subtask_id) {
                     subtask.title = title;
@@ -585,7 +523,7 @@ const Board = () => {
 
     const handleFavouriteSubtask = (subtask_id, parent_task_id, column_id) => {
         try {
-            const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem('token');
             axios.post(
                 `/boards/${board_id}/tasks/${subtask_id}/favourite`,
                 {},
@@ -596,13 +534,8 @@ const Board = () => {
                 }
             );
             const newBoardData = [...board.columns];
-            const columnIndex = newBoardData.findIndex(
-                (column) => column.column_id === column_id
-            );
-            const task = findTaskById(
-                newBoardData[columnIndex].tasks,
-                parent_task_id
-            );
+            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
+            const task = findTaskById(newBoardData[columnIndex].tasks, parent_task_id);
             task.subtasks.map((subtask) => {
                 if (subtask.task_id === subtask_id) {
                     subtask.is_favourite = true;
@@ -616,20 +549,15 @@ const Board = () => {
 
     const handleUnFavouriteSubtask = (subtask_id, parent_task_id, column_id) => {
         try {
-            const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem('token');
             axios.delete(`/boards/${board_id}/tasks/${subtask_id}/favourite`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
             const newBoardData = [...board.columns];
-            const columnIndex = newBoardData.findIndex(
-                (column) => column.column_id === column_id
-            );
-            const task = findTaskById(
-                newBoardData[columnIndex].tasks,
-                parent_task_id
-            );
+            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
+            const task = findTaskById(newBoardData[columnIndex].tasks, parent_task_id);
             task.subtasks.map((subtask) => {
                 if (subtask.task_id === subtask_id) {
                     subtask.is_favourite = false;
@@ -656,32 +584,18 @@ const Board = () => {
 
     const handleOpenPreviousTask = (previousTask_id, column_id) => {
         setShowPopup(false);
-        const tasks = board.columns.find(
-            (column) => column.column_id === column_id
-        ).tasks;
+        const tasks = board.columns.find((column) => column.column_id === column_id).tasks;
         const previousTask = findTaskById(tasks, previousTask_id);
         setInspectedTask(previousTask);
         setShowPopup(true);
     };
 
-    const handleSavePopup = async (
-        task_id,
-        parent_task_id,
-        column_id,
-        newTitle,
-        newDescription
-    ) => {
+    const handleSavePopup = async (task_id, parent_task_id, column_id, newTitle, newDescription) => {
         if (parent_task_id === null) {
             await handleEditTask(task_id, column_id, newTitle, newDescription);
             setShowPopup(false);
         } else {
-            await handleEditSubtask(
-                task_id,
-                parent_task_id,
-                column_id,
-                newTitle,
-                newDescription
-            );
+            await handleEditSubtask(task_id, parent_task_id, column_id, newTitle, newDescription);
         }
     };
 
@@ -719,20 +633,20 @@ const Board = () => {
                 error ? (
                     <Error error={error}></Error>
                 ) : (
-                    <div className="content">
+                    <div className='content'>
                         <Loader />
                     </div>
                 )
             ) : (
                 <DndProvider backend={HTML5Backend}>
                     {board.columns === undefined ? (
-                        <div className="content">
+                        <div className='content'>
                             <Loader />
                         </div>
                     ) : (
-                        <div className="content">
+                        <div className='content'>
                             <h1>{board.name}</h1>
-                            <div className="div-container">
+                            <div className='div-container'>
                                 {board.columns.map((column, index) => (
                                     <Column
                                         key={index}
@@ -740,36 +654,34 @@ const Board = () => {
                                         moveColumnFrontend={moveColumnFrontend}
                                         moveColumnBackend={moveColumnBackend}
                                     >
-                                        <div className="card-container">
+                                        <div className='card-container'>
                                             {editingColumnIndex === index ? (
-                                                <div className="name-edit">
+                                                <div className='name-edit'>
                                                     <input
-                                                        type="text"
+                                                        type='text'
                                                         value={columnNewTitle}
-                                                        onChange={(event) =>
-                                                            handleColumnTitleChange(event, index)
-                                                        }
+                                                        onChange={(event) => handleColumnTitleChange(event, index)}
                                                         autoFocus
                                                         ref={editBoxRef} // Set the ref to the title edit input box
                                                         onClick={(e) => e.stopPropagation()}
                                                         onKeyDown={(e) => {
-                                                            if (e.key === "Enter") {
+                                                            if (e.key === 'Enter') {
                                                                 handleColumnTitleBlur(index);
-                                                            } else if (e.key === "Escape") {
+                                                            } else if (e.key === 'Escape') {
                                                                 handleColumnTitleBlur(index, true); // Pass `true` to indicate that changes are cancelled
                                                             }
                                                         }}
                                                     />
                                                     <span
-                                                        className="edit-action-button"
-                                                        id="check-button"
+                                                        className='edit-action-button'
+                                                        id='check-button'
                                                         onClick={() => handleColumnTitleBlur(index)}
                                                     >
                                                         {checkIcon}
                                                     </span>
                                                     <span
-                                                        className="edit-action-button"
-                                                        id="cancel-button"
+                                                        className='edit-action-button'
+                                                        id='cancel-button'
                                                         onClick={() => handleColumnTitleBlur(index, true)}
                                                     >
                                                         {xMarkIcon}
@@ -778,30 +690,28 @@ const Board = () => {
                                             ) : (
                                                 <>
                                                     <div
-                                                        className="column-title-container"
-                                                        onDoubleClick={() =>
-                                                            handleColumnTitleDoubleClick(index)
-                                                        }
+                                                        className='column-title-container'
+                                                        onDoubleClick={() => handleColumnTitleDoubleClick(index)}
                                                     >
-                                                        <h2 className="card-title">{column.name}</h2>
+                                                        <h2 className='card-title'>{column.name}</h2>
                                                     </div>
                                                     {index === 0 && (
                                                         <span
-                                                            className="edit-action-button"
+                                                            className='ai-button'
                                                             onClick={() => openGenerateTaskWithAGIPopup(null)}
                                                         >
                                                             {aiIcon}
                                                         </span>
                                                     )}
                                                     <span
-                                                        className="delete-column-button"
+                                                        className='delete-column-button'
                                                         onClick={(e) => handleDeleteButtonClick(e, index)}
                                                     >
                                                         {xMarkIcon}
                                                     </span>
                                                 </>
                                             )}
-                                            <div className="task-container">
+                                            <div className='task-container'>
                                                 {column.tasks.map((task, taskIndex) => (
                                                     <Task
                                                         key={task.task_id}
@@ -839,17 +749,12 @@ const Board = () => {
                                                                 parseInt(targetDiv.substr(3)) - 1
                                                             )
                                                         }
-                                                        generateTasks={(task) =>
-                                                            openGenerateTaskWithAGIPopup(task)
-                                                        }
+                                                        generateTasks={(task) => openGenerateTaskWithAGIPopup(task)}
                                                     />
                                                 ))}
                                             </div>
                                             {column.is_finished === 0 ? (
-                                                <div
-                                                    className="card addbtn"
-                                                    onClick={() => handleAddTask(index)}
-                                                >
+                                                <div className='card addbtn' onClick={() => handleAddTask(index)}>
                                                     {plusIcon} Add new task
                                                 </div>
                                             ) : (
@@ -858,20 +763,14 @@ const Board = () => {
                                         </div>
                                     </Column>
                                 ))}
-                                <div
-                                    className="card-container addbtn-column"
-                                    onClick={handleAddColumn}
-                                >
+                                <div className='card-container addbtn-column' onClick={handleAddColumn}>
                                     {plusIcon} Add new column
                                 </div>
                             </div>
                         </div>
                     )}
                     {showGenerateTaskWithAGIPopup && (
-                        <GenerateTaskWithAGIPopup
-                            tasks={inspectedTask}
-                            onCancel={handleGenerateTaskCancel}
-                        />
+                        <GenerateTaskWithAGIPopup tasks={inspectedTask} onCancel={handleGenerateTaskCancel} />
                     )}
                     {showDeleteConfirmation && (
                         <ConfirmationPopup
