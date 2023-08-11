@@ -3,11 +3,13 @@ import Sidebar from './components/Navigation/SideBar';
 import Login from './components/user/Login';
 import Signup from './components/user/Signup';
 import Dashboard from './components/Dashboard/Dashboard';
-import DragDrop from './components/DragDrop';
 import AuthProvider from "./auth/AuthProvider";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import "./styles/general.css";
 import Navbar from './components/Navigation/NavBar';
+import AssignedTasks from './components/AssignedTasks/AssignedTasks';
+import Teams from './components/Teams/Teams';
+import Board from './components/Board/Board';
 
 
 const App = () => {
@@ -22,13 +24,25 @@ const App = () => {
                         <ProtectedRoute>
                             <Navbar />
                             <Sidebar />
-                            <DragDrop />
+                            <Board />
                         </ProtectedRoute>} />
                     <Route exact path="/dashboard" element={
                         <ProtectedRoute>
                             <Navbar />
                             <Sidebar />
                             <Dashboard />
+                        </ProtectedRoute>} />
+                    <Route exact path="/assigned_tasks" element={
+                        <ProtectedRoute>
+                            <Navbar />
+                            <Sidebar />
+                            <AssignedTasks />
+                        </ProtectedRoute>} />
+                    <Route exact path="/teams" element={
+                        <ProtectedRoute>
+                            <Navbar />
+                            <Sidebar />
+                            <Teams />
                         </ProtectedRoute>} />
                 </Routes>
             </AuthProvider>

@@ -72,6 +72,7 @@
 .button-container {
     display: flex;
     justify-content: space-around;
+    gap: 20px;
 }
 
 .button-container button {
@@ -81,6 +82,7 @@
     cursor: pointer;
     font-family: var(--basic-font);
     font-size: 0.95em;
+    min-width: 50%;
 }
 
 .button-container button:nth-child(1) {
@@ -101,48 +103,6 @@
 .button-container button:nth-child(2):hover {
     background-color: var(--important-light);
     color: var(--light-gray);
-}
-
-.save-button {
-    padding: 8px 15px;
-    /* Adjust the padding to make the buttons smaller */
-    background-color: #4CAF50;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.save-button:hover {
-    background-color: #57c55b;
-}
-
-.delete-button-popup {
-    padding: 8px 15px;
-    /* Adjust the padding to make the buttons smaller */
-    background-color: #d10000;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.delete-button-popup:hover {
-    background-color: #9c0000;
-}
-
-.cancel-button-popup {
-    padding: 8px 15px;
-    /* Adjust the padding to make the buttons smaller */
-    background-color: #747373;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.cancel-button-popup:hover {
-    background-color: #353535;
 }
 
 .board-input {
@@ -174,10 +134,48 @@
 .description-textarea {
     width: 100%;
     height: 150px;
+    border: 1px solid var(--light-gray);
+    border-radius: 5px;
+    padding: 10px;
+    resize: none;
+}
+
+.subtasks-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-right: auto;
+}
+
+.subtasks-title {
+    margin-left: 10px;
+}
+
+.subtasks-container {
+    width: 60%;
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 10px;
     resize: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.addbtn-subtask {
+    color: var(--light-gray);
+    width: 120px;
+    margin: 15px 0 0 5px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.addbtn-subtask:hover {
+    color: #e2e2e2;
 }
 
 .horizontal-line {
@@ -188,42 +186,36 @@
     width: 80%;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    align-content: center;
     flex-wrap: wrap;
 }
 
 
-.popup_mini {
+.popup-mini {
     background-color: var(--dark-gray);
     color: var(--light-gray);
-    border-radius: 8px;
     padding: 30px 30px 30px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 250px;
-    height: 150px;
+    width: 340px;
+    height: 180px;
 }
 
-.popup-content_mini {
+.popup-content-form-mini {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.board-input_mini {
-    width: 175px;
-    /* Adjust the width as needed */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 15px;
-}
-
-.button-container_mini {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
+.popup-input-mini {
+    width: 70%;
+    color: var(--light-gray);
+    font-family: var(--basic-font);
+    font-size: 1.5em;
+    margin: 10px 20px 30px;
+    background: transparent;
+    border: none;
+    outline: none;
+    text-align: center;
 }

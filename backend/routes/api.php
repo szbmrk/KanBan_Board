@@ -17,8 +17,10 @@ use App\Http\Controllers\FavouriteTaskController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\MentionController;
+use App\Models\Feedback;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PriorityController;
-/*
+use App\Http\Controllers\UserTasksController;/*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
@@ -51,6 +53,7 @@ Route::delete('/dashboard/teams/{id}', [TeamController::class, 'destroy'])->midd
 Route::get('/team/{team_id}/management', [TeamManagementController::class, 'show'])->middleware('api');
 Route::post('/team/{team_id}/management', [TeamManagementController::class, 'storeTeamMember'])->middleware('api');
 Route::delete('/team/{team_id}/management/{user_id}', [TeamManagementController::class, 'destroyTeamMember'])->middleware('api');
+Route::get('/user/{id}/teams', [TeamManagementController::class, 'teamsByUser'])->middleware('api');
 
 Route::get('/boards/{board_id}', [BoardController::class, 'show'])->middleware('api');
 
@@ -88,10 +91,10 @@ Route::get('/favourite/{user_id}', [FavouriteTaskController::class, 'index'])->m
 Route::post('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'store'])->middleware('api');
 Route::delete('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'destroy'])->middleware('api');
 
-Route::get('/roles', [RoleController::class, 'index'])->middleware('api');
-Route::post('/roles', [RoleController::class, 'store'])->middleware('api');
-Route::put('/roles/{role_id}', [RoleController::class, 'update'])->middleware('api');
-Route::delete('/roles/{role_id}', [RoleController::class, 'destroy'])->middleware('api');
+Route::get('/boards/{boardId}/roles', [RoleController::class, 'index'])->middleware('api');
+Route::post('/boards/{boardId}/roles', [RoleController::class, 'store'])->middleware('api');
+Route::put('/boards/{boardId}/roles/{roleId}',[RoleController::class, 'update'])->middleware('api');
+Route::delete('/boards/{boardId}/roles/{roleId}', [RoleController::class, 'destroy'])->middleware('api');
 
 Route::get('/boards/{boardId}/tasks/{taskId}/mentions', [MentionController::class, 'index'])->middleware('api');
 Route::post('/boards/{boardId}/tasks/{taskId}/mentions', [MentionController::class, 'store'])->middleware('api');
@@ -102,9 +105,15 @@ Route::post('/boards/{boardId}/tasks/{taskId}/feedbacks', [FeedbackController::c
 Route::put('/boards/{boardId}/tasks/{taskId}/feedbacks/{feedbackId}', [FeedbackController::class, 'update'])->middleware('api');
 Route::delete('/boards/{boardId}/tasks/{taskId}/feedbacks/{feedbackId}', [FeedbackController::class, 'destroy'])->middleware('api');
 
+Route::get('/users/{userId}/notifications', [NotificationController::class, 'index'])->middleware('api');
+Route::get('/users/{userId}/notifications/{notificationId}', [NotificationController::class, 'show'])->middleware('api');
+Route::post('/notifications/{userId}', [NotificationController::class, 'store'])->middleware('api');
+Route::put('/notifications/{notificationId}', [NotificationController::class, 'update'])->middleware('api');
+Route::delete('/notifications/{notificationId}', [NotificationController::class, 'destroy'])->middleware('api');
+
+Route::get('/user/{user_id}/tasks', [UserTasksController::class, 'index'])->middleware('api');
+
 Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');
-
-
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_code', [AGIController::class, 'generateCode'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_priority', [AGIController::class, 'generatePriority'])->middleware('api');
 Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::class, 'generatePrioritiesForColumn'])->middleware('api');

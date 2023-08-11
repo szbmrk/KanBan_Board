@@ -1,7 +1,8 @@
 .card {
+    position: relative;
     display: flex;
     justify-content: space-between;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     align-items: center;
     background-color: var(--dark-gray);
     color: var(--light-gray);
@@ -10,6 +11,12 @@
     padding: 10px;
     margin: 5px;
     width: auto;
+    min-height: 60px;
+    transition: 0.4s ease-in-out;
+}
+
+.subtask-card {
+    background-color: #292929;
 }
 
 .card:hover {
@@ -21,34 +28,23 @@
 }
 
 .addbtn {
-    color: var(--light-gray);
-    width: 40%;
-    min-width: 60%;
-    margin: 15px 0 0 5px;
+    background-color: transparent;
+    color: var(--dark-gray);
+    border: 2px dashed var(--dark-gray);
     border-radius: 5px;
-    padding: 10px;
     cursor: pointer;
-    text-align: left;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 0px;
 }
 
 .addbtn:hover {
-    color: var(--dark-gray);
+    color: var(--light-gray);
+    background-color: var(--dark-gray);
 }
 
-.addbtn-column {
-    color: #1d1d1d;
-    width: 170px;
-    height: 50px;
-    margin: 15px 0 0 5px;
-    border-radius: 5px;
-    padding: 10px;
-    cursor: pointer;
-    text-align: left;
-}
-
-.addbtn-column:hover {
-    color: var(--dark-gray);
-}
 
 .edit {
     padding: 5px;
@@ -100,23 +96,40 @@
 }
 
 .task-title {
-    width: 65%;
+    font-size: 0.9em;
+    text-align: center;
+    width: 100%;
     text-align: left;
-    padding: 0 10px 0 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    padding: 5px 10px 5px 5px;
 }
 
-.task-title:hover {
-    background-color: var(--dark-gray);
-    overflow: visible;
-    white-space: nowrap;
+.options {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10%;
+    padding: 5px;
+    cursor: pointer;
 }
 
 .icon-container {
-    width: 35%;
+    background-color: var(--bg-dark);
+    border-radius: 5px;
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
+}
+
+.tags-container {
+    width: 100%;
+    align-self: flex-end;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-end;
+    overflow: hidden;
+    gap: 6px;
+    z-index: 1;
+    padding: 0 5px;
 }

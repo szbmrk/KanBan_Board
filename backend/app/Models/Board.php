@@ -41,4 +41,9 @@ class Board extends Model
     {
         return $this->hasMany(Task::class);
     }
+
+    public function roles()
+    {
+        return $this->hasMany(Role::class, 'board_id', 'board_id');
+    }
 }
