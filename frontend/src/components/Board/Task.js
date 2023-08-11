@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import Popup from './Popup';
-import ConfirmationPopup from './ConfirmationPopup';
-import '../styles/card.css';
+import '../../styles/card.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import axios from '../api/axios';
-import { faPlus, faPencil, faTrash, faEllipsis, faStar as faSolidStar } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faPencil, faTrash, faStar as faSolidStar, faEllipsis } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faRegularStar } from '@fortawesome/free-regular-svg-icons';
-import Tag from './Tag';
+import Tag from '../Tag';
 
 const ItemTypes = {
     CARD: 'card',
@@ -21,22 +18,21 @@ export const regularStarIconBouncing = <FontAwesomeIcon icon={faRegularStar} bou
 export const solidStarIcon = <FontAwesomeIcon icon={faSolidStar} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
 
-export const Card = ({
+export const Task = ({
     id,
-    text,
-    description,
-    isFavourite,
     index,
+    task,
     divName,
-    handleEditTask,
+    favouriteTask,
+    unFavouriteTask,
+    deleteTask,
     moveCardFrontend,
     moveCardBackend,
-    deleteCard,
-    favouriteCard,
-    board_id,
-    column_id,
-    tags,
+    setTaskAsInspectedTask,
 }) => {
+    const [bouncingStarIcon, setBouncingStarIcon] = useState(regularStarIcon);
+    const [isHovered, setIsHovered] = useState(false);
+
     const [{ isDragging: dragging }, drag] = useDrag({
         type: ItemTypes.CARD,
         item: { id, index, divName },
@@ -74,62 +70,7 @@ export const Card = ({
         },
     });
 
-    const [showDeletePopup, setShowDeletePopup] = useState(false);
-    const [showCustomPopup, setShowCustomPopup] = useState(false);
-
     const opacity = dragging ? 0 : 1;
-
-    const handleClick = () => {
-        if (!dragging && !showDeletePopup) {
-            setShowCustomPopup(true);
-            setShowDeletePopup(false);
-        }
-    };
-
-    const handleClosePopup = () => {
-        setShowCustomPopup(false);
-    };
-
-    const handleSavePopup = async (newText, newDescription) => {
-        // Update the text with the edited value
-
-        try {
-            const token = sessionStorage.getItem('token');
-            await axios.put(
-                `/boards/${board_id}/tasks/${id}`,
-                { title: newText, description: newDescription },
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
-            );
-            handleEditTask(id, column_id, newText, newDescription);
-        } catch (err) {
-            console.log(err);
-        }
-
-        // Close the popup
-        setShowCustomPopup(false);
-    };
-
-    const handleDelete = () => {
-        setShowCustomPopup(false); // Close the custom popup
-        setShowDeletePopup(true); // Show the delete confirmation popup
-    };
-
-    const handleCancelDelete = () => {
-        setShowDeletePopup(false); // Close the delete confirmation popup
-    };
-
-    const handleConfirmDelete = () => {
-        setShowDeletePopup(false); // Close the delete confirmation popup
-        deleteCard(id, divName); // Call the deleteCard method with the correct arguments
-    };
-
-    const handleFavourite = () => {
-        favouriteCard(id, divName);
-    };
-
-    const [bouncingStarIcon, setBouncingStarIcon] = useState(regularStarIcon);
 
     const handleMouseEnterOnStarIcon = () => {
         setBouncingStarIcon(regularStarIconBouncing);
@@ -138,8 +79,6 @@ export const Card = ({
     const handleMouseLeaveOnStarIcon = () => {
         setBouncingStarIcon(regularStarIcon);
     };
-
-    const [isHovered, setIsHovered] = useState(false);
 
     const handleMouseEnterOnTaskTitle = () => {
         const taskTitle = document.getElementsByClassName('task-title')[index];
@@ -209,7 +148,7 @@ export const Card = ({
                     onMouseEnter={handleMouseEnterOnTaskTitle}
                     onMouseLeave={handleMouseLeaveOnTaskTitle}
                 >
-                    {text}
+                    {task.title}
                 </div>
                 <div
                     className='options'
@@ -228,15 +167,15 @@ export const Card = ({
                     </span>
                 </div>
                 <div className='tags-container'>
-                    {tags &&
-                        tags.map((tag, tagIndex) => (
+                    {task.tags &&
+                        task.tags.map((tag, tagIndex) => (
                             <Tag
                                 key={tagIndex}
                                 name={tag.name}
                                 color={tag.color}
-                                extraClassName={`tag-on-board ${activeTags.includes(tags) ? 'clicked' : ''}`}
+                                extraClassName={`tag-on-board ${activeTags.includes(task.tags) ? 'clicked' : ''}`}
                                 enableClickBehavior={true}
-                                onClick={() => handleTagClick(tags)}
+                                onClick={() => handleTagClick(task.tags)}
                             />
                         ))}
                 </div>
@@ -284,13 +223,49 @@ export const Card = ({
                             <p onClick={handleDelete}>Delete</p>
                         </div>
                     </div>
+                    <div
+                        className='icon-container'
+                        style={{
+                            position: 'absolute',
+                            left: iconContainerPosition.x + 20 + 'px',
+                            top: iconContainerPosition.y + 20 + 'px',
+                            zIndex: 1000, // Make sure the popup is above other content
+                        }}
+                        onMouseLeave={() => setShowIconContainer(false)}
+                    >
+                        {task.is_favourite ? (
+                            <span
+                                className='favourite-button solid-icon'
+                                onClick={() => unFavouriteTask(id, task.column_id)}
+                            >
+                                {solidStarIcon}
+                            </span>
+                        ) : (
+                            <span
+                                className='favourite-button regular-icon'
+                                onClick={() => favouriteTask(id, task.column_id)}
+                                onMouseEnter={handleMouseEnterOnStarIcon}
+                                onMouseLeave={handleMouseLeaveOnStarIcon}
+                            >
+                                {bouncingStarIcon}
+                            </span>
+                        )}
+                        <span
+                            className='edit'
+                            onClick={() => setTaskAsInspectedTask(task)}
+                            style={{ display: isHovered ? 'none' : 'block' }}
+                        >
+                            {pencilIcon}
+                        </span>
+                        <span
+                            className='delete-button'
+                            onClick={() => deleteTask(id, task.column_id)}
+                            style={{ display: isHovered ? 'none' : 'block' }}
+                        >
+                            {trashIcon}
+                        </span>
+                    </div>
                 </div>
-            )}
-            {showDeletePopup && (
-                <ConfirmationPopup text={text} onCancel={handleCancelDelete} onConfirm={handleConfirmDelete} />
-            )}
-            {showCustomPopup && (
-                <Popup text={text} description={description} onClose={handleClosePopup} onSave={handleSavePopup} />
             )}
         </>
     );
