@@ -14,7 +14,7 @@ class TeamMembersRoleTableSeeder extends Seeder
      */
     public function run()
     {
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 20; $i++) {
             DB::table('team_members_role')->insert([
                 'team_member_id' => rand(1, 10),
                 'role_id' => rand(1, 3), 
