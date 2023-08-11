@@ -24,18 +24,21 @@
 }
 
 .addbtn {
-    color: var(--light-gray);
-    width: 40%;
-    min-width: 60%;
-    margin: 15px 0 0 5px;
+    background-color: transparent;
+    color: var(--dark-gray);
+    border: 2px dashed var(--dark-gray);
     border-radius: 5px;
-    padding: 10px;
     cursor: pointer;
-    text-align: left;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 0px;
 }
 
 .addbtn:hover {
-    color: var(--dark-gray);
+    color: var(--light-gray);
+    background-color: var(--dark-gray);
 }
 
 .addbtn-column {

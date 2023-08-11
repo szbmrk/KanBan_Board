@@ -1,16 +1,16 @@
-import React, { useState, useRef, useEffect } from "react";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { Card, plusIcon } from "./Card";
-import { useDrop, useDrag } from "react-dnd";
-import ConfirmationPopup from "./ConfirmationPopup";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
-import "../styles/dragdrop.css";
-import { useParams } from "react-router";
+import React, { useState, useRef, useEffect } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { Card, plusIcon } from './Card';
+import { useDrop, useDrag } from 'react-dnd';
+import ConfirmationPopup from './ConfirmationPopup';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
+import '../styles/dragdrop.css';
+import { useParams } from 'react-router';
 import axios from '../api/axios';
-import Error from "./Error";
-import Loader from "./Loader";
+import Error from './Error';
+import Loader from './Loader';
 
 const DragDrop = () => {
     const { board_id } = useParams();
@@ -20,7 +20,7 @@ const DragDrop = () => {
     const [columnPositions, setColumnPositions] = useState([]);
 
     useEffect(() => {
-        fetchBoardData()
+        fetchBoardData();
     }, []);
 
     const fetchBoardData = async () => {
@@ -30,7 +30,7 @@ const DragDrop = () => {
             const response = await axios.get(`/boards/${board_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                }
+                },
             });
             setPermission(true);
             let tempBoard = response.data.board;
@@ -38,14 +38,16 @@ const DragDrop = () => {
             const response1 = await axios.get(`/favourite/${user_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                }
+                },
             });
 
             let tempColumns = tempBoard.columns.map((column) => {
                 const filteredTasks = column.tasks.filter((task) => task.parent_task_id === null);
 
                 const tasks = filteredTasks.map((task) => {
-                    const is_favourite = response1.data.favourites.some((favourite) => favourite.task_id === task.task_id);
+                    const is_favourite = response1.data.favourites.some(
+                        (favourite) => favourite.task_id === task.task_id
+                    );
                     return { ...task, is_favourite };
                 });
 
@@ -62,17 +64,13 @@ const DragDrop = () => {
             console.log(tempBoard.columns);
 
             setBoard(tempBoard);
-        }
-        catch (e) {
-            console.error(e)
-            if (e.response.status === 403)
-                setError("No permission");
-            else
-                setError("Board not found");
+        } catch (e) {
+            console.error(e);
+            if (e.response.status === 403) setError('No permission');
+            else setError('Board not found');
             setPermission(false);
         }
-    }
-
+    };
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
@@ -81,7 +79,7 @@ const DragDrop = () => {
         const [originalPos, setOriginalPos] = useState(null);
 
         const [{ isDragging }, drag] = useDrag({
-            type: "DIV",
+            type: 'DIV',
             item() {
                 setOriginalPos(divIndex);
                 return { index: divIndex };
@@ -98,7 +96,7 @@ const DragDrop = () => {
         });
 
         const [, drop] = useDrop({
-            accept: "DIV",
+            accept: 'DIV',
             hover(item, monitor) {
                 const sourceDivIndex = item.index;
                 const targetDivIndex = divIndex;
@@ -115,7 +113,7 @@ const DragDrop = () => {
         });
 
         const opacity = isDragging ? 0.75 : 1;
-        const display = "flex";
+        const display = 'flex';
 
         return (
             <div ref={(node) => drag(drop(node))} style={{ opacity, display }}>
@@ -125,13 +123,12 @@ const DragDrop = () => {
     };
 
     const [editingColumnIndex, setEditingColumnIndex] = useState(null);
-    const [showDeleteConfirmation, setShowDeleteColumnConfirmation] =
-        useState(false);
+    const [showDeleteConfirmation, setShowDeleteColumnConfirmation] = useState(false);
     const [columnToDeleteIndex, setColumnToDeleteIndex] = useState(null);
     const originalTitle = useRef(null);
     const editBoxRef = useRef(null);
 
-    const [columnNewTitle, setColumnNewTitle] = useState("");
+    const [columnNewTitle, setColumnNewTitle] = useState('');
 
     const moveCardFrontend = (dragIndex, hoverIndex, sourceDivIndex, targetDivIndex) => {
         const sourceDiv = board.columns[sourceDivIndex];
@@ -152,33 +149,33 @@ const DragDrop = () => {
 
     const moveCardBackend = async (dragIndex, hoverIndex, sourceDivIndex, targetDivIndex) => {
         const sourceDiv = board.columns[sourceDivIndex];
-        const task_to_modify_id = sourceDiv.tasks[hoverIndex].task_id
-        const to_column_id = sourceDiv.column_id
+        const task_to_modify_id = sourceDiv.tasks[hoverIndex].task_id;
+        const to_column_id = sourceDiv.column_id;
         if (hoverIndex === 0) {
             sourceDiv.tasks[hoverIndex].position = sourceDiv.tasks[hoverIndex + 1].position / 2;
-        }
-        else if (hoverIndex === sourceDiv.tasks.length - 1) {
+        } else if (hoverIndex === sourceDiv.tasks.length - 1) {
             sourceDiv.tasks[hoverIndex].position = sourceDiv.tasks[hoverIndex - 1].position + 1;
-        }
-        else {
-            sourceDiv.tasks[hoverIndex].position = (sourceDiv.tasks[hoverIndex - 1].position + sourceDiv.tasks[hoverIndex + 1].position) / 2;
+        } else {
+            sourceDiv.tasks[hoverIndex].position =
+                (sourceDiv.tasks[hoverIndex - 1].position + sourceDiv.tasks[hoverIndex + 1].position) / 2;
         }
 
         const position = sourceDiv.tasks[hoverIndex].position;
         const token = sessionStorage.getItem('token');
 
         try {
-            await axios.post(`/columns/${board_id}/tasks/positions`, {
-                tasks: [
-                    { task_id: task_to_modify_id, position: position, column_id: to_column_id }
-                ]
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
+            await axios.post(
+                `/columns/${board_id}/tasks/positions`,
+                {
+                    tasks: [{ task_id: task_to_modify_id, position: position, column_id: to_column_id }],
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 }
-            });
-        }
-        catch (e) {
+            );
+        } catch (e) {
             const sourceDiv = board.columns[sourceDivIndex];
             const targetDiv = board.columns[targetDivIndex];
             const draggedCard = sourceDiv.tasks[hoverIndex];
@@ -211,7 +208,7 @@ const DragDrop = () => {
             const res = await axios.post(`/boards/${board_id}/task`, newTask, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                }
+                },
             });
 
             const createdTask = res.data.task;
@@ -219,10 +216,9 @@ const DragDrop = () => {
             const newBoardData = [...board.columns];
             newBoardData[divIndex].tasks.push(createdTask);
             setBoard({ ...board, columns: newBoardData });
-        }
-        catch (e) {
-            console.log(e.response.status)
-            alert(e.response.data.error)
+        } catch (e) {
+            console.log(e.response.status);
+            alert(e.response.data.error);
         }
     };
 
@@ -233,7 +229,7 @@ const DragDrop = () => {
             await axios.delete(`/boards/${board_id}/tasks/${taskId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                }
+                },
             });
             const targetDiv = board.columns[divIndex];
             const updatedtasks = targetDiv.tasks.filter((task) => task.task_id !== taskId);
@@ -242,25 +238,22 @@ const DragDrop = () => {
             newBoardData[divIndex] = { ...targetDiv, tasks: updatedtasks };
 
             setBoard({ ...board, columns: newBoardData });
+        } catch (e) {
+            console.error(e);
         }
-        catch (e) {
-            console.error(e)
-        }
-
     };
 
     const handleAddColumn = async () => {
-
         try {
             const token = sessionStorage.getItem('token');
             const formData = new FormData();
-            formData.append('name', "New Column");
+            formData.append('name', 'New Column');
             formData.append('is_finished', 0);
             formData.append('task_limit', 5);
             const res = await axios.post(`/boards/${board_id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                }
+                },
             });
 
             const newColumn = res.data.column;
@@ -273,9 +266,8 @@ const DragDrop = () => {
             tempPositions.push(newColumn.column_id);
             setColumnPositions(tempPositions);
             setBoard({ ...board, columns: newBoardData });
-        }
-        catch (e) {
-            console.error(e)
+        } catch (e) {
+            console.error(e);
         }
     };
 
@@ -286,19 +278,21 @@ const DragDrop = () => {
             let tempPositions = columnPositions;
             tempPositions.splice(hoverIndex, 0, tempPositions.splice(dragIndex, 1)[0]);
             const token = sessionStorage.getItem('token');
-            axios.post(`/boards/${board_id}/columns/positions`, { columns: tempPositions }, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
+            axios.post(
+                `/boards/${board_id}/columns/positions`,
+                { columns: tempPositions },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 }
-            });
-        }
-        catch (e) {
-            console.error(e)
+            );
+        } catch (e) {
+            console.error(e);
         }
     };
 
     const moveColumnFrontend = (dragIndex, hoverIndex) => {
-
         try {
             setEditingColumnIndex(null);
             const draggedDiv = board.columns[dragIndex];
@@ -307,9 +301,8 @@ const DragDrop = () => {
             newBoardData.splice(hoverIndex, 0, draggedDiv);
 
             setBoard({ ...board, columns: newBoardData });
-        }
-        catch (e) {
-            console.error(e)
+        } catch (e) {
+            console.error(e);
         }
     };
 
@@ -335,45 +328,48 @@ const DragDrop = () => {
             const newColumnData = [...board.columns];
             newColumnData[columnIndex].name = originalTitle.current;
             setBoard({ ...board, columns: newColumnData });
-        }
-        else {
+        } else {
             // Update the title if the changes were saved
-            if (columnNewTitle === "") {
+            if (columnNewTitle === '') {
                 // Reset the title if the changes were cancelled
                 try {
                     const token = sessionStorage.getItem('token');
                     const column_id = board.columns[columnIndex].column_id;
-                    await axios.put(`/boards/column/${column_id}`, { name: columnNewTitle }, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
+                    await axios.put(
+                        `/boards/column/${column_id}`,
+                        { name: columnNewTitle },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
                         }
-                    });
+                    );
 
                     const newColumnData = [...board.columns];
                     newColumnData[columnIndex].name = originalTitle.current;
                     setBoard({ ...board, columns: newColumnData });
+                } catch (e) {
+                    console.error(e);
                 }
-                catch (e) {
-                    console.error(e)
-                }
-
-            }
-            else {
+            } else {
                 try {
                     const token = sessionStorage.getItem('token');
                     const column_id = board.columns[columnIndex].column_id;
-                    await axios.put(`/boards/column/${column_id}`, { name: columnNewTitle }, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
+                    await axios.put(
+                        `/boards/column/${column_id}`,
+                        { name: columnNewTitle },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
                         }
-                    });
+                    );
 
                     const newColumnData = [...board.columns];
                     newColumnData[columnIndex].name = columnNewTitle;
                     setBoard({ ...board, columns: newColumnData });
-                }
-                catch (e) {
-                    console.error(e)
+                } catch (e) {
+                    console.error(e);
                 }
             }
         }
@@ -388,7 +384,6 @@ const DragDrop = () => {
         setBoard({ ...board, columns: newTaskData });
     };
 
-
     React.useEffect(() => {
         const handleClickOutside = (event) => {
             // Check if the click was outside the title edit input box
@@ -397,16 +392,16 @@ const DragDrop = () => {
             }
         };
 
-        document.addEventListener("click", handleClickOutside);
+        document.addEventListener('click', handleClickOutside);
 
         return () => {
-            document.removeEventListener("click", handleClickOutside);
+            document.removeEventListener('click', handleClickOutside);
         };
     }, [editingColumnIndex]);
 
     const handleColumnTitleDoubleClick = (columnIndex) => {
         originalTitle.current = board.columns[columnIndex].name;
-        setColumnNewTitle(originalTitle.current)
+        setColumnNewTitle(originalTitle.current);
         setEditingColumnIndex(columnIndex);
     };
 
@@ -417,23 +412,22 @@ const DragDrop = () => {
     };
 
     const handleColumnDeleteConfirm = () => {
-        console.log("confirm");
+        console.log('confirm');
 
         try {
             const token = sessionStorage.getItem('token');
             const res = axios.delete(`/boards/${board_id}/columns/${board.columns[columnToDeleteIndex].column_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                }
+                },
             });
 
             const newBoardData = [...board.columns];
             newBoardData.splice(columnToDeleteIndex, 1);
             setColumnPositions(newBoardData.map((column) => column.column_id));
             setBoard({ ...board, columns: newBoardData });
-        }
-        catch (e) {
-            console.error(e)
+        } catch (e) {
+            console.error(e);
         }
 
         setShowDeleteColumnConfirmation(false);
@@ -441,7 +435,7 @@ const DragDrop = () => {
     };
 
     const handleColumnDeleteCancel = () => {
-        console.log("cancel");
+        console.log('cancel');
         setShowDeleteColumnConfirmation(false);
         setColumnToDeleteIndex(null);
     };
@@ -449,20 +443,26 @@ const DragDrop = () => {
     const favouriteCard = (id, divIndex) => {
         try {
             const token = sessionStorage.getItem('token');
-            const res = axios.post(`/boards/${board_id}/tasks/${id}/favourite`, {}, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
+            const res = axios.post(
+                `/boards/${board_id}/tasks/${id}/favourite`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 }
-            });
+            );
 
             const newBoardData = [...board.columns];
-            newBoardData[divIndex].tasks.map((task) => { if (task.task_id === id) { task.is_favourite = true } });
+            newBoardData[divIndex].tasks.map((task) => {
+                if (task.task_id === id) {
+                    task.is_favourite = true;
+                }
+            });
             setBoard({ ...board, columns: newBoardData });
+        } catch (e) {
+            console.error(e);
         }
-        catch (e) {
-            console.error(e)
-        }
-
     };
 
     const unFavouriteCard = (id, divIndex) => {
@@ -471,144 +471,165 @@ const DragDrop = () => {
             const res = axios.delete(`/boards/${board_id}/tasks/${id}/favourite`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                }
+                },
             });
 
             const newBoardData = [...board.columns];
-            newBoardData[divIndex].tasks.map((task) => { if (task.task_id === id) { task.is_favourite = false } });
+            newBoardData[divIndex].tasks.map((task) => {
+                if (task.task_id === id) {
+                    task.is_favourite = false;
+                }
+            });
             setBoard({ ...board, columns: newBoardData });
-        }
-        catch (e) {
-            console.error(e)
+        } catch (e) {
+            console.error(e);
         }
     };
 
     return (
         <>
-            {permission === false ? <Error error={error}></Error> : <DndProvider backend={HTML5Backend}>
-                {board.columns === undefined ? (
-                    <Loader />
-                ) : (
-                    <div className="content">
-                        <h1>{board.name}</h1>
-                        <div className="div-container">
-                            {board.columns.map((column, index) => (
-                                <Column key={index} divIndex={index} moveColumnFrontend={moveColumnFrontend} moveColumnBackend={moveColumnBackend}>
-                                    <div className="card-container">
-                                        {editingColumnIndex === index ? (
-                                            <div className="name-edit">
-                                                <input
-                                                    type="text"
-                                                    value={columnNewTitle}
-                                                    onChange={(event) =>
-                                                        handleColumnTitleChange(event, index)
-                                                    }
-                                                    autoFocus
-                                                    ref={editBoxRef} // Set the ref to the title edit input box
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === "Enter") {
-                                                            handleColumnTitleBlur(index);
-                                                        } else if (e.key === "Escape") {
-                                                            handleColumnTitleBlur(index, true); // Pass `true` to indicate that changes are cancelled
-                                                        }
-                                                    }}
-                                                />
-                                                <span
-                                                    className="edit-action-button"
-                                                    id="check-button"
-                                                    onClick={() => handleColumnTitleBlur(index)}
-                                                >
-                                                    {checkIcon}
-                                                </span>
-                                                <span
-                                                    className="edit-action-button"
-                                                    id="cancel-button"
-                                                    onClick={() => handleColumnTitleBlur(index, true)}
-                                                >
-                                                    {xMarkIcon}
-                                                </span>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <div
-                                                    className="column-title-container"
-                                                    onDoubleClick={() =>
-                                                        handleColumnTitleDoubleClick(index)
-                                                    }
-                                                >
-                                                    <h2 className="card-title">{column.name}</h2>
+            {permission === false ? (
+                <Error error={error}></Error>
+            ) : (
+                <DndProvider backend={HTML5Backend}>
+                    {board.columns === undefined ? (
+                        <Loader />
+                    ) : (
+                        <div className='content'>
+                            <h1>{board.name}</h1>
+                            <div className='div-container'>
+                                {board.columns.map((column, index) => (
+                                    <Column
+                                        key={index}
+                                        divIndex={index}
+                                        moveColumnFrontend={moveColumnFrontend}
+                                        moveColumnBackend={moveColumnBackend}
+                                    >
+                                        <div className='card-container'>
+                                            {editingColumnIndex === index ? (
+                                                <div className='name-edit'>
+                                                    <input
+                                                        type='text'
+                                                        value={columnNewTitle}
+                                                        onChange={(event) => handleColumnTitleChange(event, index)}
+                                                        autoFocus
+                                                        ref={editBoxRef} // Set the ref to the title edit input box
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter') {
+                                                                handleColumnTitleBlur(index);
+                                                            } else if (e.key === 'Escape') {
+                                                                handleColumnTitleBlur(index, true); // Pass `true` to indicate that changes are cancelled
+                                                            }
+                                                        }}
+                                                    />
+                                                    <span
+                                                        className='edit-action-button'
+                                                        id='check-button'
+                                                        onClick={() => handleColumnTitleBlur(index)}
+                                                    >
+                                                        {checkIcon}
+                                                    </span>
+                                                    <span
+                                                        className='edit-action-button'
+                                                        id='cancel-button'
+                                                        onClick={() => handleColumnTitleBlur(index, true)}
+                                                    >
+                                                        {xMarkIcon}
+                                                    </span>
                                                 </div>
-                                                <span
-                                                    className="delete-column-button"
-                                                    onClick={(e) => handleDeleteButtonClick(e, index)}
-                                                >
-                                                    {xMarkIcon}
-                                                </span>
-                                            </>
-                                        )}
-                                        <div className="task-container">
-                                            {column.tasks.map((task, taskIndex) => (
-                                                <Card
-                                                    key={task.task_id}
-                                                    board_id={board_id}
-                                                    column_id={column.column_id}
-                                                    handleEditTask={handleEditTask}
-                                                    id={task.task_id}
-                                                    text={task.title}
-                                                    description={task.description}
-                                                    isFavourite={task.is_favourite === true}
-                                                    index={taskIndex}
-                                                    divName={`div${index + 1}`}
-                                                    moveCardFrontend={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
-                                                        moveCardFrontend(
+                                            ) : (
+                                                <>
+                                                    <div
+                                                        className='column-title-container'
+                                                        onDoubleClick={() => handleColumnTitleDoubleClick(index)}
+                                                    >
+                                                        <h2 className='card-title'>{column.name}</h2>
+                                                    </div>
+                                                    <span
+                                                        className='delete-column-button'
+                                                        onClick={(e) => handleDeleteButtonClick(e, index)}
+                                                    >
+                                                        {xMarkIcon}
+                                                    </span>
+                                                </>
+                                            )}
+                                            <div className='task-container'>
+                                                {column.tasks.map((task, taskIndex) => (
+                                                    <Card
+                                                        key={task.task_id}
+                                                        board_id={board_id}
+                                                        column_id={column.column_id}
+                                                        handleEditTask={handleEditTask}
+                                                        id={task.task_id}
+                                                        text={task.title}
+                                                        description={task.description}
+                                                        isFavourite={task.is_favourite === true}
+                                                        index={taskIndex}
+                                                        divName={`div${index + 1}`}
+                                                        moveCardFrontend={(
                                                             dragIndex,
                                                             hoverIndex,
-                                                            parseInt(sourceDiv.substr(3)) - 1,
-                                                            parseInt(targetDiv.substr(3)) - 1
-                                                        )
-                                                    }
-                                                    moveCardBackend={(dragIndex, hoverIndex, sourceDiv, targetDiv) =>
-                                                        moveCardBackend(
+                                                            sourceDiv,
+                                                            targetDiv
+                                                        ) =>
+                                                            moveCardFrontend(
+                                                                dragIndex,
+                                                                hoverIndex,
+                                                                parseInt(sourceDiv.substr(3)) - 1,
+                                                                parseInt(targetDiv.substr(3)) - 1
+                                                            )
+                                                        }
+                                                        moveCardBackend={(
                                                             dragIndex,
                                                             hoverIndex,
-                                                            parseInt(sourceDiv.substr(3)) - 1,
-                                                            parseInt(targetDiv.substr(3)) - 1
-                                                        )
-                                                    }
-                                                    deleteCard={(taskId, divName) =>
-                                                        handleDeleteCard(taskId, index)
-                                                    }
-                                                    favouriteCard={(taskId, divName) =>
-                                                        task.is_favourite === false ? favouriteCard(taskId, index) : unFavouriteCard(taskId, index)
-                                                    }
-                                                    tags={task.tags}
-                                                />
-                                            ))}
+                                                            sourceDiv,
+                                                            targetDiv
+                                                        ) =>
+                                                            moveCardBackend(
+                                                                dragIndex,
+                                                                hoverIndex,
+                                                                parseInt(sourceDiv.substr(3)) - 1,
+                                                                parseInt(targetDiv.substr(3)) - 1
+                                                            )
+                                                        }
+                                                        deleteCard={(taskId, divName) =>
+                                                            handleDeleteCard(taskId, index)
+                                                        }
+                                                        favouriteCard={(taskId, divName) =>
+                                                            task.is_favourite === false
+                                                                ? favouriteCard(taskId, index)
+                                                                : unFavouriteCard(taskId, index)
+                                                        }
+                                                        tags={task.tags}
+                                                    />
+                                                ))}
+                                            </div>
+                                            {column.is_finished === 0 ? (
+                                                <div className='card addbtn' onClick={() => handleAddCard(index)}>
+                                                    {plusIcon} Add new task
+                                                </div>
+                                            ) : (
+                                                <></>
+                                            )}
                                         </div>
-                                        {column.is_finished === 0 ? <div
-                                            className="addbtn"
-                                            onClick={() => handleAddCard(index)}
-                                        >
-                                            {plusIcon} Add new task
-                                        </div> : <></>}
-                                    </div>
-                                </Column>
-                            ))}
-                            <div className="addbtn-column" onClick={handleAddColumn}>
-                                {plusIcon} Add new column
+                                    </Column>
+                                ))}
+                                <div className='addbtn-column' onClick={handleAddColumn}>
+                                    {plusIcon} Add new column
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
-                {showDeleteConfirmation && (
-                    <ConfirmationPopup
-                        text={board.columns[columnToDeleteIndex]?.title}
-                        onCancel={handleColumnDeleteCancel}
-                        onConfirm={handleColumnDeleteConfirm}
-                    />
-                )}
-            </DndProvider>}
+                    )}
+                    {showDeleteConfirmation && (
+                        <ConfirmationPopup
+                            text={board.columns[columnToDeleteIndex]?.title}
+                            onCancel={handleColumnDeleteCancel}
+                            onConfirm={handleColumnDeleteConfirm}
+                        />
+                    )}
+                </DndProvider>
+            )}
         </>
     );
 };
