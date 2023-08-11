@@ -113,12 +113,30 @@
 }
 
 .icon-container {
-    background-color: var(--bg-dark);
+    background-color: transparent;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.icon-container p {
+    color: var(--light-gray);
+    animation: none;
+    cursor: pointer;
+}
+
+.option {
+    background-color: var(--bg-dark);
+    border: 1px solid var(--dark-gray);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
     align-items: center;
+    gap: 5px;
+    padding: 5px;
 }
 
 .tags-container {

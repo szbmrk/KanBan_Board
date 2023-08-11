@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { useDrag, useDrop } from "react-dnd";
-import "../../styles/card.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPencil, faTrash, faStar as faSolidStar, faEllipsis } from "@fortawesome/free-solid-svg-icons";
-import { faStar as faRegularStar } from "@fortawesome/free-regular-svg-icons";
-import Tag from "../Tag";
+import React, { useState } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
+import '../../styles/card.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faPencil, faTrash, faStar as faSolidStar, faEllipsis } from '@fortawesome/free-solid-svg-icons';
+import { faStar as faRegularStar } from '@fortawesome/free-regular-svg-icons';
+import Tag from '../Tag';
 
 const ItemTypes = {
     CARD: 'card',
@@ -91,20 +91,23 @@ export const Task = ({
         setIsHovered(false);
     };
 
+    const [iconContainerPosition, setIconContainerPosition] = useState({ x: 0, y: 0 });
     const [showIconContainer, setShowIconContainer] = useState(false);
-    const [iconContainerPosition, setIconContainerPosition] = useState({
-        x: 0,
-        y: 0,
-    });
+    const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+
+    const handleMouseMove = (event) => {
+        const { clientX, clientY } = event;
+        setCursorPosition({ x: clientX, y: clientY });
+        console.log('Cursor Position:', cursorPosition);
+    };
 
     const handleDotsClick = (event) => {
-        // Calculate the position of the icon-container relative to the clicked dots span
-        const rect = event.target.getBoundingClientRect();
-        const offsetX = event.clientX - rect.left;
-        const offsetY = event.clientY - rect.top;
+        const buttonRect = event.target.getBoundingClientRect();
+        const newX = buttonRect.right + 10 - window.scrollX;
+        const newY = buttonRect.top - window.scrollY;
 
         // Set the icon-container's position and show it
-        setIconContainerPosition({ x: offsetX, y: offsetY });
+        setIconContainerPosition({ x: newX, y: newY });
         setShowIconContainer(!showIconContainer);
     };
 
@@ -147,7 +150,11 @@ export const Task = ({
                 >
                     {task.title}
                 </div>
-                <div className='options' style={{ visibility: hoveredCardId === id ? 'visible' : 'hidden' }}>
+                <div
+                    className='options'
+                    style={{ visibility: hoveredCardId === id ? 'visible' : 'hidden' }}
+                    onMouseMove={handleMouseMove}
+                >
                     <span
                         className='dots'
                         onClick={handleDotsClick}
@@ -174,42 +181,90 @@ export const Task = ({
                 </div>
             </div>
             {showIconContainer && (
-                <div
-                    className='icon-container'
-                    style={{
-                        position: 'absolute',
-                        left: iconContainerPosition.x + 20 + 'px',
-                        top: iconContainerPosition.y + 20 + 'px',
-                        zIndex: 1000, // Make sure the popup is above other content
-                    }}
-                    onMouseLeave={() => setShowIconContainer(false)}
-                >
-                    {task.is_favourite ? (
-                        <span className='favourite-button solid-icon' onClick={() => unFavouriteTask(id, task.column_id)}>
-                            {solidStarIcon}
-                        </span>
-                    ) : (
+                <div className='overlay' onClick={() => setShowIconContainer(false)}>
+                    <div
+                        className='icon-container'
+                        style={{
+                            position: 'fixed',
+                            left: iconContainerPosition.x + 'px',
+                            top: iconContainerPosition.y + 'px',
+                        }}
+                    >
+                        {task.is_favourite ? (
+                            <div className='option'>
+                                <span className='favourite-button solid-icon' onClick={() => unFavouriteTask(id, task.column_id)}>
+                                    {solidStarIcon}
+                                </span>
+                                <p onClick={() => unFavouriteTask(id, task.column_id)}>Remove from Favourites</p>
+                            </div>
+                        ) : (
+                            <div className='option'>
+                                <span
+                                    className='favourite-button regular-icon'
+                                    onClick={() => favouriteTask(id, task.column_id)}
+                                    onMouseEnter={handleMouseEnterOnStarIcon}
+                                    onMouseLeave={handleMouseLeaveOnStarIcon}
+                                >
+                                    {bouncingStarIcon}
+                                </span>
+                                <p onClick={() => favouriteTask(id, task.column_id)}>Add to Favourites</p>
+                            </div>
+                        )}
+                        <div className='option'>
+                            <span className='edit' onClick={() => setTaskAsInspectedTask(task)}>
+                                {pencilIcon}
+                            </span>
+                            <p onClick={() => setTaskAsInspectedTask(task)}>Edit</p>
+                        </div>
+                        <div className='option'>
+                            <span className='delete-button' onClick={() => deleteTask(id, task.column_id)}>
+                                {trashIcon}
+                            </span>
+                            <p onClick={() => deleteTask(id, task.column_id)}>Delete</p>
+                        </div>
+                    </div>
+                    <div
+                        className='icon-container'
+                        style={{
+                            position: 'absolute',
+                            left: iconContainerPosition.x + 20 + 'px',
+                            top: iconContainerPosition.y + 20 + 'px',
+                            zIndex: 1000, // Make sure the popup is above other content
+                        }}
+                        onMouseLeave={() => setShowIconContainer(false)}
+                    >
+                        {task.is_favourite ? (
+                            <span
+                                className='favourite-button solid-icon'
+                                onClick={() => unFavouriteTask(id, task.column_id)}
+                            >
+                                {solidStarIcon}
+                            </span>
+                        ) : (
+                            <span
+                                className='favourite-button regular-icon'
+                                onClick={() => favouriteTask(id, task.column_id)}
+                                onMouseEnter={handleMouseEnterOnStarIcon}
+                                onMouseLeave={handleMouseLeaveOnStarIcon}
+                            >
+                                {bouncingStarIcon}
+                            </span>
+                        )}
                         <span
-                            className='favourite-button regular-icon'
-                            onClick={() => favouriteTask(id, task.column_id)}
-                            onMouseEnter={handleMouseEnterOnStarIcon}
-                            onMouseLeave={handleMouseLeaveOnStarIcon}
+                            className='edit'
+                            onClick={() => setTaskAsInspectedTask(task)}
+                            style={{ display: isHovered ? 'none' : 'block' }}
                         >
-                            {bouncingStarIcon}
-                        </span>)
-                    }
-                    <span className="edit"
-                        onClick={() => setTaskAsInspectedTask(task)}
-                        style={{ display: isHovered ? "none" : "block" }}
-                    >
-                        {pencilIcon}
-                    </span>
-                    <span className="delete-button"
-                        onClick={() => deleteTask(id, task.column_id)}
-                        style={{ display: isHovered ? "none" : "block" }}
-                    >
-                        {trashIcon}
-                    </span>
+                            {pencilIcon}
+                        </span>
+                        <span
+                            className='delete-button'
+                            onClick={() => deleteTask(id, task.column_id)}
+                            style={{ display: isHovered ? 'none' : 'block' }}
+                        >
+                            {trashIcon}
+                        </span>
+                    </div>
                 </div>
             )}
         </>
