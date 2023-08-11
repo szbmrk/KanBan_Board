@@ -43,6 +43,8 @@ class TeamMemberRoleController extends Controller
 
         return response()->json(['roles' => $teamMemberRoles]);
     }
+  
+    
 
     public function store(Request $request, $boardId)
     {
@@ -50,53 +52,56 @@ class TeamMemberRoleController extends Controller
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        if ($user->hasPermission('create_team_members_role'))
-        {
-            $board = Board::find($boardId);
-        if (!$board) {
-            return response()->json(['error' => 'Board not found'], 404);
-        }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
-            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
-        }
-
-        $teamMember = TeamMember::where('user_id', $user->user_id)
+        $board = Board::find($boardId);
+            if (!$board) {
+                return response()->json(['error' => 'Board not found'], 404);
+            }
+            $teamMember = TeamMember::where('user_id', $user->user_id)
             ->where('team_id', $board->team_id)
             ->first();
 
-        if (!$teamMember) {
-            return response()->json(['error' => 'You are not a team member of this board.'], 403);
-        }
-        $teamMemberId = $request->input('team_member_id');
+        if ($user->hasPermission('team_members_role') && $teamMember || $user->hasPermission('team_members_role_system_admin'))
+        {
+            
 
-        $teamMemberExists = TeamMember::where('team_members_id', $teamMemberId)->exists();
-        if (!$teamMemberExists) {
-            return response()->json(['error' => 'Team member not found'], 404);
-        }
+            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+            }
 
-        $roleId = $request->input('role_id');
+                if (!$teamMember) {
+                    return response()->json(['error' => 'You are not a team member of this board.'], 403);
+                }
+                
+                $teamMemberId = $request->input('team_member_id');
 
-        $roleExists = Role::where('role_id', $roleId)->exists();
-        if (!$roleExists) {
-            return response()->json(['error' => 'Role not found'], 404);
-        }
-        
+                $teamMemberExists = TeamMember::where('team_members_id', $teamMemberId)->exists();
+                if (!$teamMemberExists) {
+                    return response()->json(['error' => 'Team member not found'], 404);
+                }
 
-        $existingTeamMemberRole = TeamMemberRole::where('team_member_id', $teamMember->team_members_id)
-            ->where('role_id', $roleId)
-            ->exists();
-        if ($existingTeamMemberRole) {
-            return response()->json(['error' => 'Role already assigned to the user'], 400);
-        }
+                $roleId = $request->input('role_id');
 
-        $teamMemberRole = new TeamMemberRole();
-        $teamMemberRole->team_member_id = $teamMember->team_members_id;
-        $teamMemberRole->role_id = $roleId;
-        $teamMemberRole->save();
+                $roleExists = Role::where('role_id', $roleId)->exists();
+                if (!$roleExists) {
+                    return response()->json(['error' => 'Role not found'], 404);
+                }
+                
 
-        return response()->json(['message' => 'Role assigned successfully']);
-        }
+                $existingTeamMemberRole = TeamMemberRole::where('team_member_id', $teamMember->team_members_id)
+                    ->where('role_id', $roleId)
+                    ->exists();
+                if ($existingTeamMemberRole) {
+                    return response()->json(['error' => 'Role already assigned to the user'], 400);
+                }
+
+                $teamMemberRole = new TeamMemberRole();
+                $teamMemberRole->team_member_id = $teamMember->team_members_id;
+                $teamMemberRole->role_id = $roleId;
+                $teamMemberRole->save();
+
+                return response()->json(['message' => 'Role assigned successfully']);
+            }
         else
         {
             return response()->json(['error' => 'You do not have permission to create team members role'], 403);
@@ -106,7 +111,10 @@ class TeamMemberRoleController extends Controller
     }
 
     
-    public function update(Request $request, $boardId, $teamMemberRoleId)
+
+    
+
+    public function update2(Request $request, $boardId, $teamMemberRoleId)
     {
         try {
             $user = auth()->user();
@@ -151,6 +159,9 @@ class TeamMemberRoleController extends Controller
             return response()->json(['error' => 'An error occurred'], 500);
         }
     }
+
+    
+
 
     public function destroy($boardId, $teamMemberRoleId)
     {

@@ -60,6 +60,10 @@ class DatabaseSeeder extends Seeder
             FavouriteTasksTableSeeder::class,
             AttachmentsTableSeeder::class,
             LogsTableSeeder::class,
+            PermissionsTableSeeder::class,
+            TeamMembersRoleTableSeeder::class,
+            PermissionRoleTableSeeder::class,
+
             
            
             
