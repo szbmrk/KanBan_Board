@@ -15,6 +15,10 @@
     transition: 0.4s ease-in-out;
 }
 
+.subtask-card {
+    background-color: #292929;
+}
+
 .card:hover {
     cursor: pointer;
 }
