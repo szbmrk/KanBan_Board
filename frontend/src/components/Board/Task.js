@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import "../../styles/card.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPencil, faTrash, faStar as faSolidStar } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faPencil, faTrash, faStar as faSolidStar, faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import { faStar as faRegularStar } from "@fortawesome/free-regular-svg-icons";
 import Tag from "../Tag";
 
@@ -160,15 +160,15 @@ export const Task = ({
                     </span>
                 </div>
                 <div className='tags-container'>
-                    {tags &&
-                        tags.map((tag, tagIndex) => (
+                    {task.tags &&
+                        task.tags.map((tag, tagIndex) => (
                             <Tag
                                 key={tagIndex}
                                 name={tag.name}
                                 color={tag.color}
-                                extraClassName={`tag-on-board ${activeTags.includes(tags) ? 'clicked' : ''}`}
+                                extraClassName={`tag-on-board ${activeTags.includes(task.tags) ? 'clicked' : ''}`}
                                 enableClickBehavior={true}
-                                onClick={() => handleTagClick(tags)}
+                                onClick={() => handleTagClick(task.tags)}
                             />
                         ))}
                 </div>

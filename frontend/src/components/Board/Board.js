@@ -6,6 +6,7 @@ import ConfirmationPopup from "./ConfirmationPopup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import "../../styles/board.css"
+import "../../styles/popup.css"
 import { useParams } from "react-router";
 import axios from '../../api/axios';
 import Error from "../Error";
