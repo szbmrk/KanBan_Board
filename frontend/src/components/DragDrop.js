@@ -615,7 +615,7 @@ const DragDrop = () => {
                                         </div>
                                     </Column>
                                 ))}
-                                <div className='addbtn-column' onClick={handleAddColumn}>
+                                <div className='card-container addbtn-column' onClick={handleAddColumn}>
                                     {plusIcon} Add new column
                                 </div>
                             </div>
