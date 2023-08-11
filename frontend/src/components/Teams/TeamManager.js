@@ -1,14 +1,21 @@
 import React from 'react'
-import '../../styles/popup.css'; // Import the CSS file for styling
+import '../../styles/teams.css'; // Import the CSS file for styling
 import axios from '../../api/axios';
 import { useEffect, useState } from 'react';
 
 const TeamManager = ({ teamData, onClose }) => {
 
     const [users, setUsers]=useState([]);
+    const [teamName, setTeamName]=useState('');
+    const [addedUsers, setAddedUsers]=useState([]);
+    const[teamID, setTeamID]=useState();
 
     useEffect(() => {
-        getUsers();
+        if(teamData.length!==0)
+        {
+          setTeamName(teamData.name);
+          getUsers();
+        }
       }, []);
 
     async function getUsers()
@@ -21,31 +28,80 @@ const TeamManager = ({ teamData, onClose }) => {
                   Authorization: `Bearer ${token}`,
                 }
               });
-            console.log(response.data.users);
             setUsers(response.data.users);
             }
             catch(error)
             {
                 console.log(error.response);
             }
+        
+    }
+    async function SubmitTeamName(e)
+    {
+      e.preventDefault();
+      const token = sessionStorage.getItem('token');
+      try {
+          const response = await axios.put(`/dashboard/teams/${teamData.team_id}`, {name: teamName},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+        });
+          console.log(response);
+      }
+      catch (error) {
+        console.log(error.response);
+      }
+      onClose();
     }
 
-    async function DeleteTeam() {
-        const token = sessionStorage.getItem('token');
-        const user_id = sessionStorage.getItem('user_id');
-        try {
-          const response = await axios.delete(`/dashboard/teams/${teamData.team_id}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              }
-            });
-          onClose();
+    async function AddUsers()
+    {
+      const token = sessionStorage.getItem('token');
+
+      try{
+        const response = await axios.post(`/team/${teamID}/management`, {user_ids: addedUsers},
+        {
+        headers: {
+          Authorization: `Bearer ${token}`,
         }
-        catch (error) {
-          console.log(error.response);
-        }
+        });
+      console.log(response); 
       }
+      catch(error)
+      {
+        console.log(error.response);
+      }
+      window.location.reload();
+    }
+
+    async function AddTeam(e)
+    {
+      e.preventDefault();
+      const token = sessionStorage.getItem('token');
+      const user_id = sessionStorage.getItem('user_id');
+      try {
+          const response = await axios.post(`/dashboard/teams/`, {name: teamName},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+        });
+          console.log(response);
+          setAddedUsers(user_id);
+          setTeamID(response.data.team_id);
+          AddUsers();
+      }
+      catch (error) {
+        console.log(error.response);
+      }
+      onClose();
+    }
+
+    const handleInputChange = (e) =>
+    {
+      setTeamName(e.target.value);
+    }
 
     return (
         <>
@@ -57,6 +113,7 @@ const TeamManager = ({ teamData, onClose }) => {
           <button className="close-btn" onClick={onClose}>
             Close
           </button>
+          <form onSubmit={SubmitTeamName}>
           <table>
             <tbody>
                 <tr>
@@ -64,25 +121,13 @@ const TeamManager = ({ teamData, onClose }) => {
                         Team name:
                     </td>
                     <td>
-                        <input type="text" value={teamData.name}/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Add members:
-                    </td>
-                    <td>
-                        <select >
-                            <option disabled>Choose members</option>
-                            {users.map((user) => (
-                                <option value={user.user_id}>{user.username}</option>
-                            ))}
-                        </select>
+                        <input type="text" value={teamName} onChange={handleInputChange}/>
                     </td>
                 </tr>
             </tbody>
           </table>
-          <button className='delete-button-popup' onClick={DeleteTeam}>Delete Team</button>
+          <button className='delete-button-popup' type='submit'>Apply</button>
+          </form>
         </div>
       </div>
       </div>
@@ -93,6 +138,7 @@ const TeamManager = ({ teamData, onClose }) => {
         <button className="close-btn" onClick={onClose}>
           Close
         </button>
+        <form onSubmit={AddTeam}>
         <table>
           <tbody>
               <tr>
@@ -100,24 +146,13 @@ const TeamManager = ({ teamData, onClose }) => {
                       Team name:
                   </td>
                   <td>
-                      <input type="text" />
-                  </td>
-              </tr>
-              <tr>
-                  <td>
-                      Add members:
-                  </td>
-                  <td>
-                      <select >
-                          <option disabled>Choose members</option>
-                          {users.map((user) => (
-                              <option value={user.user_id}>{user.username}</option>
-                          ))}
-                      </select>
+                      <input type="text" value={teamName} onChange={handleInputChange} />
                   </td>
               </tr>
           </tbody>
         </table>
+        <button className='delete-button-popup' type='submit'>Apply</button>
+        </form>
       </div>
     </div>
     </div>

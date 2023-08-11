@@ -1,22 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from '../../api/axios';
 import TeamManager from './TeamManager';
 import '../../styles/teamcard.css';
+import DeleteConfirm from './DeleteConfirm';
+import AddUser from './AddUser';
 
 const TeamCard = ({ data }) => {
 
   const [manageIsClicked, setManage] = useState(false);
+  const[deleteIsClicked, setDelete]=useState(false);
+  const[addIsClicked, setAdd]=useState(false);
   const [teamData, setTeamData]=useState([]);
 
-  async function ManageTeam() {
+  function ManageTeam() {
       setTeamData(data);
       setManage(!manageIsClicked);
   }
+
+  function handleDeleteButton()
+  {
+      setDelete(!deleteIsClicked);
+  }
+
+  function handleAddButton()
+  {
+    setAdd(!addIsClicked);
+  }
+
   async function deleteUserFromTeam(e)
   {
     const token = sessionStorage.getItem('token');
     try {
-      const response = await axios.delete(`/team/${data.team_id}/management/${e.target.id}`,
+      await axios.delete(`/team/${data.team_id}/management/${e.target.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -59,10 +74,18 @@ const TeamCard = ({ data }) => {
               </tbody>
               </table>
         
-        {data.created_by === data.pivot.user_id ? <button id='manageButton' onClick={ManageTeam}>Manage team</button> : <></>}
+        {data.created_by === data.pivot.user_id ? <div><button id='manageButton' onClick={ManageTeam}>Change team name</button><button onClick={handleDeleteButton}>Delete Team</button><button onClick={handleAddButton}>Add Users</button></div>: <></>}
       </div>
       {manageIsClicked && 
         <TeamManager teamData={teamData} onClose={ManageTeam} />
+      }
+      {
+        deleteIsClicked &&
+        <DeleteConfirm teamID={data.team_id} OnClose={handleDeleteButton}/>
+      }
+      {
+        addIsClicked &&
+        <AddUser teamID={data.team_id} OnClose={handleAddButton}/>
       }
     </div>
   );
