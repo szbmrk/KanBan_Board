@@ -192,7 +192,10 @@ export const Task = ({
                     >
                         {task.is_favourite ? (
                             <div className='option'>
-                                <span className='favourite-button solid-icon' onClick={() => unFavouriteTask(id, task.column_id)}>
+                                <span
+                                    className='favourite-button solid-icon'
+                                    onClick={() => unFavouriteTask(id, task.column_id)}
+                                >
                                     {solidStarIcon}
                                 </span>
                                 <p onClick={() => unFavouriteTask(id, task.column_id)}>Remove from Favourites</p>
@@ -222,48 +225,6 @@ export const Task = ({
                             </span>
                             <p onClick={() => deleteTask(id, task.column_id)}>Delete</p>
                         </div>
-                    </div>
-                    <div
-                        className='icon-container'
-                        style={{
-                            position: 'absolute',
-                            left: iconContainerPosition.x + 20 + 'px',
-                            top: iconContainerPosition.y + 20 + 'px',
-                            zIndex: 1000, // Make sure the popup is above other content
-                        }}
-                        onMouseLeave={() => setShowIconContainer(false)}
-                    >
-                        {task.is_favourite ? (
-                            <span
-                                className='favourite-button solid-icon'
-                                onClick={() => unFavouriteTask(id, task.column_id)}
-                            >
-                                {solidStarIcon}
-                            </span>
-                        ) : (
-                            <span
-                                className='favourite-button regular-icon'
-                                onClick={() => favouriteTask(id, task.column_id)}
-                                onMouseEnter={handleMouseEnterOnStarIcon}
-                                onMouseLeave={handleMouseLeaveOnStarIcon}
-                            >
-                                {bouncingStarIcon}
-                            </span>
-                        )}
-                        <span
-                            className='edit'
-                            onClick={() => setTaskAsInspectedTask(task)}
-                            style={{ display: isHovered ? 'none' : 'block' }}
-                        >
-                            {pencilIcon}
-                        </span>
-                        <span
-                            className='delete-button'
-                            onClick={() => deleteTask(id, task.column_id)}
-                            style={{ display: isHovered ? 'none' : 'block' }}
-                        >
-                            {trashIcon}
-                        </span>
                     </div>
                 </div>
             )}
