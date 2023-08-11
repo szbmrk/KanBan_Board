@@ -1,29 +1,21 @@
-import React, { useState } from "react";
-import { useDrag, useDrop } from "react-dnd";
-import "../../styles/card.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    faPlus,
-    faPencil,
-    faTrash,
-    faStar as faSolidStar,
-    faEllipsis,
-} from "@fortawesome/free-solid-svg-icons";
-import { faStar as faRegularStar } from "@fortawesome/free-regular-svg-icons";
-import Tag from "../Tag";
-import { aiIcon } from "./Board";
+import React, { useState } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
+import '../../styles/card.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faPencil, faTrash, faStar as faSolidStar, faEllipsis } from '@fortawesome/free-solid-svg-icons';
+import { faStar as faRegularStar } from '@fortawesome/free-regular-svg-icons';
+import Tag from '../Tag';
+import { aiIcon } from './Board';
 
 const ItemTypes = {
-    CARD: "card",
+    CARD: 'card',
 };
 
 export const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 export const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
 export const regularStarIcon = <FontAwesomeIcon icon={faRegularStar} />;
-export const regularStarIconBouncing = (
-    <FontAwesomeIcon icon={faRegularStar} bounce />
-);
+export const regularStarIconBouncing = <FontAwesomeIcon icon={faRegularStar} bounce />;
 export const solidStarIcon = <FontAwesomeIcon icon={faSolidStar} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
 
@@ -41,7 +33,13 @@ export const Task = ({
     generateTasks,
 }) => {
     const [bouncingStarIcon, setBouncingStarIcon] = useState(regularStarIcon);
-    const [isHovered, setIsHovered] = useState(false);
+    const [isHoveredEdit, setIsHoveredEdit] = useState(false);
+    const [isHoveredAI, setIsHoveredAI] = useState(false);
+    const [isHoveredFavorite, setIsHoveredFavorite] = useState(false);
+    const [isHoveredDelete, setIsHoveredDelete] = useState(false);
+    const [iconContainerPosition, setIconContainerPosition] = useState({ x: 0, y: 0 });
+    const [showIconContainer, setShowIconContainer] = useState(false);
+    const [cardZIndex, setCardZIndex] = useState(1);
 
     const [{ isDragging: dragging }, drag] = useDrag({
         type: ItemTypes.CARD,
@@ -90,38 +88,15 @@ export const Task = ({
         setBouncingStarIcon(regularStarIcon);
     };
 
-    const handleMouseEnterOnTaskTitle = () => {
-        const taskTitle = document.getElementsByClassName("task-title")[index];
-        if (taskTitle.textContent.length > 20) {
-            setIsHovered(true);
-        }
-    };
-
-    const handleMouseLeaveOnTaskTitle = () => {
-        setIsHovered(false);
-    };
-
-    const [iconContainerPosition, setIconContainerPosition] = useState({
-        x: 0,
-        y: 0,
-    });
-    const [showIconContainer, setShowIconContainer] = useState(false);
-    const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-
-    const handleMouseMove = (event) => {
-        const { clientX, clientY } = event;
-        setCursorPosition({ x: clientX, y: clientY });
-        console.log("Cursor Position:", cursorPosition);
-    };
-
     const handleDotsClick = (event) => {
         const buttonRect = event.target.getBoundingClientRect();
-        const newX = buttonRect.right + 10 - window.scrollX;
-        const newY = buttonRect.top - window.scrollY;
+        const newX = buttonRect.right + 20;
+        const newY = buttonRect.top;
 
         // Set the icon-container's position and show it
         setIconContainerPosition({ x: newX, y: newY });
         setShowIconContainer(!showIconContainer);
+        setCardZIndex(100);
     };
 
     const [activeTags, setActiveTags] = useState([]);
@@ -152,49 +127,36 @@ export const Task = ({
         <>
             <div
                 ref={(node) => drag(drop(node))}
-                className="card"
+                className='card'
                 style={{
                     opacity,
-                    cursor: "grab",
+                    cursor: 'grab',
+                    zIndex: cardZIndex,
                 }}
                 onMouseEnter={() => handleMouseEnterOnCard(id)}
                 onMouseLeave={handleMouseLeaveOnCard}
             >
-                <div
-                    className="task-title"
-                    onMouseEnter={handleMouseEnterOnTaskTitle}
-                    onMouseLeave={handleMouseLeaveOnTaskTitle}
-                >
-                    {task.title}
-                </div>
-                <div
-                    className="options"
-                    style={{ visibility: hoveredCardId === id ? "visible" : "hidden" }}
-                    onMouseMove={handleMouseMove}
-                >
-                    <span className="ai-button" onClick={handleAI}>
-                        {aiIcon}
-                    </span>
+                <div className='task-title'>{task.title}</div>
+                <div className='options' style={{ visibility: hoveredCardId === id ? 'visible' : 'hidden' }}>
                     <span
-                        className="dots"
+                        className='dots'
                         onClick={handleDotsClick}
                         style={{
-                            visibility: hoveredCardId === id ? "visible" : "hidden",
-                            transition: "visibility 0.1s ease",
+                            visibility: hoveredCardId === id ? 'visible' : 'hidden',
+                            transition: 'visibility 0.1s ease',
                         }}
                     >
                         {dotsIcon}
                     </span>
                 </div>
-                <div className="tags-container">
+                <div className='tags-container'>
                     {task.tags &&
                         task.tags.map((tag, tagIndex) => (
                             <Tag
                                 key={tagIndex}
                                 name={tag.name}
                                 color={tag.color}
-                                extraClassName={`tag-on-board ${activeTags.includes(task.tags) ? "clicked" : ""
-                                    }`}
+                                extraClassName={`tag-on-board ${activeTags.includes(task.tags) ? 'clicked' : ''}`}
                                 enableClickBehavior={true}
                                 onClick={() => handleTagClick(task.tags)}
                             />
@@ -202,55 +164,101 @@ export const Task = ({
                 </div>
             </div>
             {showIconContainer && (
-                <div className="overlay" onClick={() => setShowIconContainer(false)}>
+                <div
+                    className='overlay'
+                    onClick={() => {
+                        setShowIconContainer(false);
+                        setCardZIndex(1);
+                    }}
+                >
                     <div
-                        className="icon-container"
+                        className='icon-container'
                         style={{
-                            position: "fixed",
-                            left: iconContainerPosition.x + "px",
-                            top: iconContainerPosition.y + "px",
+                            position: 'fixed',
+                            left: iconContainerPosition.x + 'px',
+                            top: iconContainerPosition.y + 'px',
                         }}
                     >
-                        {task.is_favourite ? (
-                            <div className="option">
-                                <span
-                                    className="favourite-button solid-icon"
-                                    onClick={() => unFavouriteTask(id, task.column_id)}
-                                >
-                                    {solidStarIcon}
-                                </span>
-                                <p onClick={() => unFavouriteTask(id, task.column_id)}>
-                                    Remove from Favourites
-                                </p>
-                            </div>
-                        ) : (
-                            <div className="option">
-                                <span
-                                    className="favourite-button regular-icon"
-                                    onClick={() => favouriteTask(id, task.column_id)}
-                                    onMouseEnter={handleMouseEnterOnStarIcon}
-                                    onMouseLeave={handleMouseLeaveOnStarIcon}
-                                >
-                                    {bouncingStarIcon}
-                                </span>
-                                <p onClick={() => favouriteTask(id, task.column_id)}>
-                                    Add to Favourites
-                                </p>
-                            </div>
-                        )}
-                        <div className="option">
+                        <div
+                            className='option'
+                            onMouseEnter={() => setIsHoveredEdit(true)}
+                            onMouseLeave={() => setIsHoveredEdit(false)}
+                        >
                             <span
-                                className="edit"
+                                className='edit-button'
                                 onClick={() => setTaskAsInspectedTask(task)}
+                                style={{
+                                    animation: isHoveredEdit ? 'rotate 0.5s' : 'none',
+                                }}
                             >
                                 {pencilIcon}
                             </span>
                             <p onClick={() => setTaskAsInspectedTask(task)}>Edit</p>
                         </div>
-                        <div className="option">
+                        <div
+                            className='option'
+                            onMouseEnter={() => setIsHoveredAI(true)}
+                            onMouseLeave={() => setIsHoveredAI(false)}
+                        >
                             <span
-                                className="delete-button"
+                                className='ai-button'
+                                onClick={() => handleAI()}
+                                style={{
+                                    color: isHoveredAI ? 'var(--magic)' : '',
+                                }}
+                            >
+                                {aiIcon}
+                            </span>
+                            <p onClick={() => handleAI()}>Generate Tasks</p>
+                        </div>
+                        {task.is_favourite ? (
+                            <div
+                                className='option'
+                                onMouseEnter={() => setIsHoveredFavorite(true)}
+                                onMouseLeave={() => setIsHoveredFavorite(false)}
+                            >
+                                <span
+                                    className='favourite-button solid-icon'
+                                    onClick={() => unFavouriteTask(id, task.column_id)}
+                                    style={{ color: isHoveredFavorite ? 'var(--light-gray)' : '' }}
+                                >
+                                    {solidStarIcon}
+                                </span>
+                                <p onClick={() => unFavouriteTask(id, task.column_id)}>Remove from Favourites</p>
+                            </div>
+                        ) : (
+                            <div
+                                className='option'
+                                onMouseEnter={() => setIsHoveredFavorite(true)}
+                                onMouseLeave={() => setIsHoveredFavorite(false)}
+                            >
+                                <span
+                                    className='favourite-button regular-icon'
+                                    onClick={() => favouriteTask(id, task.column_id)}
+                                    onMouseEnter={handleMouseEnterOnStarIcon}
+                                    onMouseLeave={handleMouseLeaveOnStarIcon}
+                                    style={{ color: isHoveredFavorite ? 'var(--starred)' : '' }}
+                                >
+                                    {bouncingStarIcon}
+                                </span>
+                                <p
+                                    onClick={() => favouriteTask(id, task.column_id)}
+                                    onMouseEnter={handleMouseEnterOnStarIcon}
+                                    onMouseLeave={handleMouseLeaveOnStarIcon}
+                                >
+                                    Add to Favourites
+                                </p>
+                            </div>
+                        )}
+                        <div
+                            className='option'
+                            onMouseEnter={() => setIsHoveredDelete(true)}
+                            onMouseLeave={() => setIsHoveredDelete(false)}
+                        >
+                            <span
+                                className='delete-button'
                                 onClick={() => deleteTask(id, task.column_id)}
+                                style={{ color: isHoveredDelete ? 'var(--important)' : '' }}
                             >
                                 {trashIcon}
                             </span>
