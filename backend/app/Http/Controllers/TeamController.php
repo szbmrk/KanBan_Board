@@ -18,18 +18,25 @@ class TeamController extends Controller
     public function store(Request $request)
     {
         $user = auth()->user();
-
+    
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
-
+    
         $team = new Team();
         $team->name = $request->input('name');
         $team->created_by = $user->user_id;
         $team->save();
-
+    
         LogRequest::instance()->logAction('CREATED TEAM', $user->user_id, "Team Created successfully! -> $team->name", $team->team_id, null, null);
-        return response()->json(['message' => 'Team Created successfully!']);
+    
+        $response = [
+            'message' => 'Team Created successfully!',
+            'team_id' => $team->team_id,
+            'created_by' => $team->created_by,
+        ];
+    
+        return response()->json($response);
     }
 
     public function update(Request $request, $id)
