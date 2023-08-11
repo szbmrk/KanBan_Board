@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Team;
 use App\Helpers\LogRequest;
+use App\Models\TeamMember;
 
 class TeamController extends Controller
 {
@@ -15,6 +16,7 @@ class TeamController extends Controller
 
         return response()->json(['teams' => $teams]);
     }
+
     public function store(Request $request)
     {
         $user = auth()->user();
@@ -28,15 +30,14 @@ class TeamController extends Controller
         $team->created_by = $user->user_id;
         $team->save();
     
+        $teamMember = new TeamMember();
+        $teamMember->team_id = $team->team_id;
+        $teamMember->user_id = $user->user_id;
+        $teamMember->save();
+    
         LogRequest::instance()->logAction('CREATED TEAM', $user->user_id, "Team Created successfully! -> $team->name", $team->team_id, null, null);
-    
-        $response = [
-            'message' => 'Team Created successfully!',
-            'team_id' => $team->team_id,
-            'created_by' => $team->created_by,
-        ];
-    
-        return response()->json($response);
+        
+        return response()->json(['message' => 'Team Created successfully!']);
     }
 
     public function update(Request $request, $id)

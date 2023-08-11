@@ -24,41 +24,42 @@ class TeamManagementController extends Controller
        
     }
 
-    public function storeTeamMember(Request $request, $teamId)
+    public function storeTeamMember(Request $request, $team_id)
     {
         $user = auth()->user();
         
-        if($user->teams()->where('teams.team_id', $teamId)->exists()){
-            $this->validate($request, [
-                'user_name' => 'required|string',
-            ]);
-    
-            // Find the user based on the provided username
-            $userAdd = User::where('username', $request->input('user_name'))->first();
-            if($userAdd == null){
-                return response()->json(['error' => 'User not found.'], 404);
-            }
-
-    
-            // Check if the user is already a member of the team
-            $existingTeamMember = TeamMember::where('team_id', $teamId)
-                ->where('user_id', $userAdd->user_id)
-                ->first();
-    
-            if ($existingTeamMember) {
-                return response()->json(['error' => 'User is already a member of the team.'], 400);
-            }
-    
-            // Create the team member record
-            $teamMember = TeamMember::create([
-                'team_id' => $teamId,
-                'user_id' => $userAdd->user_id,
-            ]);
-    
-            return response()->json(['message' => 'Team member added successfully.']);
-        }
-        else{
+        // Check if the user belongs to the team
+        if (!$user->teams()->where('teams.team_id', $team_id)->exists()) {
             return response()->json(['error' => 'Unauthenticated or team not found.'], 401);
+        }
+        
+        $userIds = $request->input('user_ids', []);
+        
+        // Fetch the team and its current members
+        $team = Team::with(['teamMembers.user'])->findOrFail($team_id);
+        $currentMemberIds = $team->teamMembers->pluck('user_id')->toArray();
+        
+        $addedMembers = [];
+    
+        foreach ($userIds as $userId) {
+            // Check if the user is already a member of the team
+            if (in_array($userId, $currentMemberIds)) {
+                continue; // Skip adding if already a member
+            }
+            
+            // Add the user as a team member
+            $teamMember = new TeamMember();
+            $teamMember->team_id = $team_id;
+            $teamMember->user_id = $userId;
+            $teamMember->save();
+            
+            $addedMembers[] = $userId;
+        }
+    
+        if (!empty($addedMembers)) {
+            return response()->json(['message' => 'Members added successfully.', 'added_members' => $addedMembers]);
+        } else {
+            return response()->json(['message' => 'No new members added.']);
         }
     }
 
