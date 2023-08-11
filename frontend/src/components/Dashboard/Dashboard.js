@@ -9,7 +9,7 @@ import { faPlus, faPencil, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
-const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
+const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
 export default function Dashboard() {
     const [userID, setUserID] = useState(null);
@@ -233,7 +233,7 @@ export default function Dashboard() {
                                                             deleteBoardFromTeam(team.team_id, board.board_id)
                                                         }
                                                     >
-                                                        {xMarkIcon}
+                                                        {closeIcon}
                                                     </span>
                                                     <span
                                                         className='edit-board-button'
@@ -311,16 +311,20 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
     };
 
     return (
-        <form className='popup-content-mini' onSubmit={handleSave}>
+        <form className='popup-content-form-mini' onSubmit={handleSave}>
+            <span className='close-btn' onClick={onClose}>
+                {closeIcon}
+            </span>
+            <h4>Edit board name: </h4>
             <input
                 type='text'
                 value={boardName}
                 onChange={(e) => setBoardName(e.target.value)}
                 placeholder='Board name'
-                className='board-input-mini'
+                className='popup-input-mini'
                 required
             />
-            <div className='button-container-mini'>
+            <div className='button-container'>
                 <button type='submit' className='save-button'>
                     Save
                 </button>
