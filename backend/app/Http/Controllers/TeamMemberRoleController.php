@@ -61,7 +61,7 @@ class TeamMemberRoleController extends Controller
             ->where('team_id', $board->team_id)
             ->first();
 
-        if ($user->hasPermission('team_members_role') && $teamMember || $user->hasPermission('team_members_role_system_admin'))
+        if ($user->hasPermission('team_members_role_board_manager') && $teamMember || $user->hasPermission('team_members_role_system_admin'))
         {
             
 
