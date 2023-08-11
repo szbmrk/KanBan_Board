@@ -23,7 +23,9 @@ class TagsTableSeeder extends Seeder
             ['name' => 'Tag 5', 'color' => '#0000FF', 'board_id' => '2'], 
             ['name' => 'Tag 6', 'color' => '#FF0000', 'board_id' => '3'], 
             ['name' => 'Tag 7', 'color' => '#0000FF', 'board_id' => '3'], 
-
+            ['name' => 'Frontend', 'color' => '#FF0000', 'board_id' => '1'],
+            ['name' => 'Backend', 'color' => '#00FF00', 'board_id' => '2'],
+            ['name' => 'Test', 'color' => '#0000FF', 'board_id' => '3'], 
         ];
 
         DB::table('tags')->insert($tags);
