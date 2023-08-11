@@ -52,6 +52,7 @@ export default function Dashboard() {
                     Authorization: `Bearer ${token}`,
                 },
             });
+            console.log(response.data);
             setTeams(response.data.teams);
         } catch (e) {
             console.error(e);

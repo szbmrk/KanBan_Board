@@ -19,11 +19,11 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $teams = $user->teams()->with('boards')->get();
-        $response = ExecutePythonScript::instance()->Run();
+        //$response = ExecutePythonScript::instance()->Run();
 
         return response()->json([
             'teams' => $teams,
-            'response' => $response,
+            //'response' => $response,
         ]);
     }
 
@@ -117,7 +117,7 @@ class DashboardController extends Controller
         $cleanData = str_replace("'", "\"", $response);
 
         $formattedResponse = json_decode($cleanData, true);
-        
+
         return $formattedResponse;
     }
 
