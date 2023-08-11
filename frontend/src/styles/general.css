@@ -44,6 +44,7 @@ body {
 }
 .content {
     text-align: center;
+    padding: 20px;
     margin: 0 auto;
     height: calc(100vh - 50px);
     overflow: auto;
