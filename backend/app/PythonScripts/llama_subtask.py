@@ -7,7 +7,7 @@ import sys
 def generate_subtasks(prompt):
     try:
         output = replicate.run(
-            "a16z-infra/llama-2-7b-chat:058333670f2a6e88cf1b29b8183405b17bb997767282f790b82137df8c090c1f",
+            "a16z-infra/llama-2-13b-chat:2a7f981751ec7fdf87b5b91ad4db53683a98082e9ff7bfd12c8cd5ea85980a52",
             input={"prompt": prompt}
         )
 
