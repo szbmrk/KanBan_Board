@@ -8,6 +8,10 @@ use App\Models\User;
 use App\Models\Board;
 use App\Helpers\LogRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use App\Helpers\ExecutePythonScript;
+use function app\Helpers\ExecutePythonScript\executePythonScript;
+
 
 class DashboardController extends Controller
 {
@@ -15,8 +19,12 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $teams = $user->teams()->with('boards')->get();
+        $response = ExecutePythonScript::instance()->Run();
 
-        return response()->json(['teams' => $teams]);
+        return response()->json([
+            'teams' => $teams,
+            'response' => $response,
+        ]);
     }
 
     public function store(Request $request)
@@ -89,6 +97,28 @@ class DashboardController extends Controller
             LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not belong to this team. -> Delete Board", null, null, null);
             return response()->json(['error' => 'Unauthenticated'], 401);
         }
+    }
+
+    public function executeAGIBoard(Request $request)
+    {
+        $user = auth()->user();
+        $taskPrompt = $request->header('TaskPrompt');
+        $taskCounter = $request->header('TaskCounter');
+        $todayDate = Carbon::today()->format('Y-m-d');
+
+        // Prepare the prompt to be sent to the Python script
+        $prompt = "Generate $taskCounter kanban tickets in JSON structure in a list with title, description, due_date (if the start date is now '$todayDate' in yyyy-MM-dd HH:mm:ss) and tags (as a list) attributes for this task: '$taskPrompt'";
+        // Construct the Python command with the required arguments and path to the script
+
+        $path = env('PYTHON_SCRIPT_PATH');
+        $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
+
+        $cleanData = trim($response);
+        $cleanData = str_replace("'", "\"", $response);
+
+        $formattedResponse = json_decode($cleanData, true);
+        
+        return $formattedResponse;
     }
 
 }
