@@ -2,10 +2,10 @@ import React from "react";
 import '../../styles/taskcard.css';
 import Tag from "../Tag";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-    faTags, 
-    faLink, 
-    faStopwatch, 
+import {
+    faTags,
+    faLink,
+    faStopwatch,
     faFileLines,
     faFireFlameCurved,
     faComments,

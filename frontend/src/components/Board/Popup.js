@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import "../styles/popup.css";
+import "../../styles/popup.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileAlt, faXmark, faListCheck, faArrowLeft, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { Card } from "./Card";
+import { Card } from "./Task";
+import Subtask from "./Subtask";
+import Tag from "../Tag";
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const descriptionIcon = <FontAwesomeIcon icon={faFileAlt} />
@@ -12,17 +14,14 @@ const plusIcon = <FontAwesomeIcon icon={faPlus} />
 
 const Popup = ({
     task,
-    board_id,
-    column_id,
     onClose,
     onSave,
-    handleEditTask,
-    handleDeleteCard,
-    favouriteCard,
-    unFavouriteCard,
     addSubtask,
-    subtasks,
-    taskIndex
+    deleteSubtask,
+    favouriteSubtask,
+    unFavouriteSubtask,
+    setTaskAsInspectedTask,
+    onPreviousTask,
 }) => {
     const popupRef = useRef(null);
 
@@ -36,6 +35,11 @@ const Popup = ({
     const handleDescriptionChange = (event) => {
         setEditedDescription(event.target.value);
     };
+
+    useEffect(() => {
+        setEditedText(task.title)
+        setEditedDescription(task.description)
+    }, [task])
 
     useEffect(() => {
         const handleOutsideClick = (event) => {
@@ -63,9 +67,12 @@ const Popup = ({
                             value={editedText}
                             onChange={handleChange}
                         />
-                        <span className="close-btn" onClick={onClose}>
-                            {task.parent_task_id === null ? closeIcon : backIcon}
+                        {task.parent_task_id === null ? <span className="close-btn" onClick={onClose}>
+                            {closeIcon}
+                        </span> : <span className="close-btn" onClick={() => onPreviousTask(task.parent_task_id, task.column_id)}>
+                            {backIcon}
                         </span>
+                        }
                     </div>
                 </div>
                 <hr className="horizontal-line" />
@@ -86,38 +93,22 @@ const Popup = ({
                             <h2 className="subtasks-title">Subtasks</h2>
                         </div>
                         <div className="subtasks-container">
-                            {subtasks && subtasks.length > 0 && (
-                                subtasks.map
-                                    ((task, index) =>
-                                        <Card
-                                            key={task.task_id}
-                                            id={task.task_id}
-                                            isFavourite={task.is_favourite === true}
-                                            task={task}
-                                            isSubtask={true}
-                                            board_id={board_id}
-                                            column_id={column_id}
-                                            handleEditTask={handleEditTask}
-                                            index={taskIndex}
-                                            divName={`div${index + 1}`}
-                                            addSubtask={addSubtask}
-                                            deleteCard={(taskId, divName) =>
-                                                handleDeleteCard(taskId, index)
-                                            }
-                                            favouriteCard={(taskId, divName) =>
-                                                task.is_favourite === false ? favouriteCard(taskId, index) : unFavouriteCard(taskId, index)
-                                            }
-                                            favouriteCardForPopup={(taskId, divName) =>
-                                                favouriteCard(taskId, index)
-                                            }
-                                            unFavouriteCardForPopup={(taskId, divName) =>
-                                                unFavouriteCard(taskId, index)
-                                            }
+                            {task.subtasks && task.subtasks.length > 0 && (
+                                task.subtasks.map
+                                    ((subTask, index) =>
+                                        <Subtask
+                                            key={subTask.task_id}
+                                            subTask={subTask}
+                                            index={index}
+                                            favouriteSubtask={() => favouriteSubtask(subTask.task_id, subTask.parent_task_id, subTask.column_id)}
+                                            unFavouriteSubtask={() => unFavouriteSubtask(subTask.task_id, subTask.parent_task_id, subTask.column_id)}
+                                            deleteSubtask={() => deleteSubtask(subTask.task_id, subTask.parent_task_id, subTask.column_id)}
+                                            setTaskAsInspectedTask={() => setTaskAsInspectedTask(subTask)}
                                         />
                                     )
 
                             )}
-                            <div className="addbtn-subtask" onClick={addSubtask}>
+                            <div className="addbtn-subtask" onClick={() => addSubtask(task.task_id, task.column_id)}>
                                 {plusIcon}
                                 Add subtask
                             </div>
@@ -125,7 +116,7 @@ const Popup = ({
                     </>
                     <button
                         className="save-button"
-                        onClick={() => onSave(editedText, editedDescription)}
+                        onClick={() => onSave(task.task_id, task.parent_task_id, task.column_id, editedText, editedDescription)}
                     >
                         Save
                     </button>
