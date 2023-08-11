@@ -96,7 +96,7 @@ export const Task = ({
         // Set the icon-container's position and show it
         setIconContainerPosition({ x: newX, y: newY });
         setShowIconContainer(!showIconContainer);
-        setCardZIndex(100);
+        cardZIndex === 1 ? setCardZIndex(100) : setCardZIndex(1);
     };
 
     const [activeTags, setActiveTags] = useState([]);
