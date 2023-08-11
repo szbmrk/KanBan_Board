@@ -72,6 +72,7 @@
 .button-container {
     display: flex;
     justify-content: space-around;
+    gap: 20px;
 }
 
 .button-container button {
@@ -194,26 +195,25 @@
 }
 
 
-.popup_mini {
+.popup-mini {
     background-color: var(--dark-gray);
     color: var(--light-gray);
-    border-radius: 8px;
     padding: 30px 30px 30px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 250px;
-    height: 150px;
+    width: 340px;
+    height: 180px;
 }
 
-.popup-content_mini {
+.popup-content-mini {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.board-input_mini {
+.board-input-mini {
     width: 175px;
     /* Adjust the width as needed */
     padding: 10px;
@@ -222,7 +222,7 @@
     margin-bottom: 15px;
 }
 
-.button-container_mini {
+.button-container-mini {
     display: flex;
     justify-content: center;
     gap: 10px;
