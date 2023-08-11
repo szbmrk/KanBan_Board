@@ -179,6 +179,16 @@ export const Card = ({
         }
     };
 
+    const [hoveredCardId, setHoveredCardId] = useState(null);
+
+    const handleMouseEnterOnCard = (boardId) => {
+        setHoveredCardId(boardId);
+    };
+
+    const handleMouseLeaveOnCard = () => {
+        setHoveredCardId(null);
+    };
+
     return (
         <>
             <div
@@ -188,6 +198,8 @@ export const Card = ({
                     opacity,
                     cursor: 'grab',
                 }}
+                onMouseEnter={() => handleMouseEnterOnCard(id)}
+                onMouseLeave={handleMouseLeaveOnCard}
             >
                 <div
                     className='task-title'
@@ -196,8 +208,15 @@ export const Card = ({
                 >
                     {text}
                 </div>
-                <div className='options'>
-                    <span className='dots' onClick={handleDotsClick}>
+                <div className='options' style={{ visibility: hoveredCardId === id ? 'visible' : 'hidden' }}>
+                    <span
+                        className='dots'
+                        onClick={handleDotsClick}
+                        style={{
+                            visibility: hoveredCardId === id ? 'visible' : 'hidden',
+                            transition: 'visibility 0.1s ease',
+                        }}
+                    >
                         {dotsIcon}
                     </span>
                 </div>

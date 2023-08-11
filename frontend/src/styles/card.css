@@ -94,14 +94,12 @@
 .task-title {
     font-size: 0.9em;
     text-align: center;
-    margin: auto;
     width: 90%;
     text-align: left;
     padding: 5px 10px 5px 5px;
 }
 
 .options {
-    position: relative;
     width: 10%;
     padding: 5px;
     cursor: pointer;

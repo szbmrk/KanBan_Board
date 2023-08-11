@@ -226,8 +226,11 @@ export default function Dashboard() {
                                                     <span
                                                         className='delete-board-button'
                                                         style={{
-                                                            display:
-                                                                hoveredBoardId === board.board_id ? 'block' : 'none',
+                                                            visibility:
+                                                                hoveredBoardId === board.board_id
+                                                                    ? 'visible'
+                                                                    : 'hidden',
+                                                            transition: 'visibility 0.1s ease',
                                                         }}
                                                         onClick={() =>
                                                             deleteBoardFromTeam(team.team_id, board.board_id)
