@@ -199,13 +199,6 @@ export default function Dashboard() {
         setHoveredBoardId(null);
     };
 
-    const popupStyle = {
-        position: 'fixed',
-        top: initialCursorPosition.y + 50,
-        left: initialCursorPosition.x,
-        transform: 'translate(-50%, -50%)',
-    };
-
     return (
         <div className='content'>
             {teams.length === 0 ? (
@@ -266,14 +259,15 @@ export default function Dashboard() {
                             </div>
                             {showAddBoardPopup && (
                                 <>
-                                    <div className='overlay-mini' />
-                                    <div className='popup-mini' style={popupStyle}>
-                                        <AddBoardPopup
-                                            teamId={selectedTeamId}
-                                            boardId={selectedBoardId} // Use 'boardId' instead of 'selectedBoardId'
-                                            onClose={closeAddBoardPopup}
-                                            onSave={handleSaveBoard}
-                                        />
+                                    <div className='overlay'>
+                                        <div className='popup popup-mini'>
+                                            <AddBoardPopup
+                                                teamId={selectedTeamId}
+                                                boardId={selectedBoardId} // Use 'boardId' instead of 'selectedBoardId'
+                                                onClose={closeAddBoardPopup}
+                                                onSave={handleSaveBoard}
+                                            />
+                                        </div>
                                     </div>
                                 </>
                             )}
@@ -317,16 +311,16 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
     };
 
     return (
-        <form className='popup-content_mini' onSubmit={handleSave}>
+        <form className='popup-content-mini' onSubmit={handleSave}>
             <input
                 type='text'
                 value={boardName}
                 onChange={(e) => setBoardName(e.target.value)}
                 placeholder='Board name'
-                className='board-input_mini'
+                className='board-input-mini'
                 required
             />
-            <div className='button-container_mini'>
+            <div className='button-container-mini'>
                 <button type='submit' className='save-button'>
                     Save
                 </button>

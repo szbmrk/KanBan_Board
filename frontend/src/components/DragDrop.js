@@ -61,7 +61,7 @@ const DragDrop = () => {
             let tempColumnPositions = tempBoard.columns.map((column) => column.column_id);
             setColumnPositions(tempColumnPositions);
 
-            console.log(tempBoard.columns);
+            console.log('Columns: ', tempBoard.columns);
 
             setBoard(tempBoard);
         } catch (e) {
@@ -217,7 +217,7 @@ const DragDrop = () => {
             newBoardData[divIndex].tasks.push(createdTask);
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
-            console.log(e.response.status);
+            console.log('Exception response status: ', e.response.status);
             alert(e.response.data.error);
         }
     };
@@ -489,11 +489,19 @@ const DragDrop = () => {
     return (
         <>
             {permission === false ? (
-                <Error error={error}></Error>
+                error ? (
+                    <Error error={error}></Error>
+                ) : (
+                    <div className='content'>
+                        <Loader />
+                    </div>
+                )
             ) : (
                 <DndProvider backend={HTML5Backend}>
                     {board.columns === undefined ? (
-                        <Loader />
+                        <div className='content'>
+                            <Loader />
+                        </div>
                     ) : (
                         <div className='content'>
                             <h1>{board.name}</h1>
