@@ -55,6 +55,10 @@ body {
     border-bottom: 1px solid var(--light-gray);
 }
   
+::selection {
+    background: var(--dark-gray);
+    color: var(--light-gray);
+}
 
 
 /* <Scrollbar> */
