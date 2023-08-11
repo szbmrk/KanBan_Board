@@ -152,20 +152,23 @@ export const Card = ({
         setIsHovered(false);
     };
 
+    const [iconContainerPosition, setIconContainerPosition] = useState({ x: 0, y: 0 });
     const [showIconContainer, setShowIconContainer] = useState(false);
-    const [iconContainerPosition, setIconContainerPosition] = useState({
-        x: 0,
-        y: 0,
-    });
+    const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+
+    const handleMouseMove = (event) => {
+        const { clientX, clientY } = event;
+        setCursorPosition({ x: clientX, y: clientY });
+        console.log('Cursor Position:', cursorPosition);
+    };
 
     const handleDotsClick = (event) => {
-        // Calculate the position of the icon-container relative to the clicked dots span
-        const rect = event.target.getBoundingClientRect();
-        const offsetX = event.clientX - rect.left;
-        const offsetY = event.clientY - rect.top;
+        const buttonRect = event.target.getBoundingClientRect();
+        const newX = buttonRect.right + 10 - window.scrollX;
+        const newY = buttonRect.top - window.scrollY;
 
         // Set the icon-container's position and show it
-        setIconContainerPosition({ x: offsetX, y: offsetY });
+        setIconContainerPosition({ x: newX, y: newY });
         setShowIconContainer(!showIconContainer);
     };
 
@@ -208,7 +211,11 @@ export const Card = ({
                 >
                     {text}
                 </div>
-                <div className='options' style={{ visibility: hoveredCardId === id ? 'visible' : 'hidden' }}>
+                <div
+                    className='options'
+                    style={{ visibility: hoveredCardId === id ? 'visible' : 'hidden' }}
+                    onMouseMove={handleMouseMove}
+                >
                     <span
                         className='dots'
                         onClick={handleDotsClick}
@@ -235,36 +242,48 @@ export const Card = ({
                 </div>
             </div>
             {showIconContainer && (
-                <div
-                    className='icon-container'
-                    style={{
-                        position: 'absolute',
-                        left: iconContainerPosition.x + 20 + 'px',
-                        top: iconContainerPosition.y + 20 + 'px',
-                        zIndex: 1000, // Make sure the popup is above other content
-                    }}
-                    onMouseLeave={() => setShowIconContainer(false)}
-                >
-                    {isFavourite ? (
-                        <span className='favourite-button solid-icon' onClick={handleFavourite}>
-                            {solidStarIcon}
-                        </span>
-                    ) : (
-                        <span
-                            className='favourite-button regular-icon'
-                            onClick={handleFavourite}
-                            onMouseEnter={handleMouseEnterOnStarIcon}
-                            onMouseLeave={handleMouseLeaveOnStarIcon}
-                        >
-                            {bouncingStarIcon}
-                        </span>
-                    )}
-                    <span className='edit' onClick={handleClick}>
-                        {pencilIcon}
-                    </span>
-                    <span className='delete-button' onClick={handleDelete}>
-                        {trashIcon}
-                    </span>
+                <div className='overlay' onClick={() => setShowIconContainer(false)}>
+                    <div
+                        className='icon-container'
+                        style={{
+                            position: 'fixed',
+                            left: iconContainerPosition.x + 'px',
+                            top: iconContainerPosition.y + 'px',
+                        }}
+                    >
+                        {isFavourite ? (
+                            <div className='option'>
+                                <span className='favourite-button solid-icon' onClick={handleFavourite}>
+                                    {solidStarIcon}
+                                </span>
+                                <p onClick={handleFavourite}>Remove from Favourites</p>
+                            </div>
+                        ) : (
+                            <div className='option'>
+                                <span
+                                    className='favourite-button regular-icon'
+                                    onClick={handleFavourite}
+                                    onMouseEnter={handleMouseEnterOnStarIcon}
+                                    onMouseLeave={handleMouseLeaveOnStarIcon}
+                                >
+                                    {bouncingStarIcon}
+                                </span>
+                                <p onClick={handleFavourite}>Add to Favourites</p>
+                            </div>
+                        )}
+                        <div className='option'>
+                            <span className='edit' onClick={handleClick}>
+                                {pencilIcon}
+                            </span>
+                            <p onClick={handleClick}>Edit</p>
+                        </div>
+                        <div className='option'>
+                            <span className='delete-button' onClick={handleDelete}>
+                                {trashIcon}
+                            </span>
+                            <p onClick={handleDelete}>Delete</p>
+                        </div>
+                    </div>
                 </div>
             )}
             {showDeletePopup && (
