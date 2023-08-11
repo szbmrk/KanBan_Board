@@ -190,37 +190,37 @@ export const Task = ({
                             top: iconContainerPosition.y + 'px',
                         }}
                     >
-                        {isFavourite ? (
+                        {task.is_favourite ? (
                             <div className='option'>
-                                <span className='favourite-button solid-icon' onClick={handleFavourite}>
+                                <span className='favourite-button solid-icon' onClick={() => unFavouriteTask(id, task.column_id)}>
                                     {solidStarIcon}
                                 </span>
-                                <p onClick={handleFavourite}>Remove from Favourites</p>
+                                <p onClick={() => unFavouriteTask(id, task.column_id)}>Remove from Favourites</p>
                             </div>
                         ) : (
                             <div className='option'>
                                 <span
                                     className='favourite-button regular-icon'
-                                    onClick={handleFavourite}
+                                    onClick={() => favouriteTask(id, task.column_id)}
                                     onMouseEnter={handleMouseEnterOnStarIcon}
                                     onMouseLeave={handleMouseLeaveOnStarIcon}
                                 >
                                     {bouncingStarIcon}
                                 </span>
-                                <p onClick={handleFavourite}>Add to Favourites</p>
+                                <p onClick={() => favouriteTask(id, task.column_id)}>Add to Favourites</p>
                             </div>
                         )}
                         <div className='option'>
-                            <span className='edit' onClick={handleClick}>
+                            <span className='edit' onClick={() => setTaskAsInspectedTask(task)}>
                                 {pencilIcon}
                             </span>
-                            <p onClick={handleClick}>Edit</p>
+                            <p onClick={() => setTaskAsInspectedTask(task)}>Edit</p>
                         </div>
                         <div className='option'>
-                            <span className='delete-button' onClick={handleDelete}>
+                            <span className='delete-button' onClick={() => deleteTask(id, task.column_id)}>
                                 {trashIcon}
                             </span>
-                            <p onClick={handleDelete}>Delete</p>
+                            <p onClick={() => deleteTask(id, task.column_id)}>Delete</p>
                         </div>
                     </div>
                     <div
