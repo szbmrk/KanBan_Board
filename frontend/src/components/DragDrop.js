@@ -15,6 +15,7 @@ import "../styles/dragdrop.css";
 import { useNavigate, useParams } from "react-router";
 import axios from "../api/axios";
 import Error from "./Error";
+import cloneDeep from "lodash/cloneDeep";
 
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
 
@@ -353,7 +354,7 @@ const DragDrop = () => {
   const openGenerateTaskWithAGIPopup = (task) => {
     setShowGenerateTaskWithAGIPopup(true);
     if (task) {
-      setSelectedTask([task]);
+      setSelectedTask(cloneDeep([task]));
     }
   };
 

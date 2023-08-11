@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "../api/axios";
-import Error from "./Error";
 import "../styles/popup.css";
 import "../styles/GenerateTaskWithAGIPopup.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,74 +34,61 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
 
   const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
-  const handleTitleChange = (e, index) => {
-    const updatedTasks = [...editedTasks];
-    updatedTasks[index] = {
-      ...updatedTasks[index],
-      title: e.target.value,
-    };
+  const handleTitleChange = (task, title) => {
+    const updatedTask = (task.title = title);
+
+    const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
+
     setEditedTasks(updatedTasks);
   };
 
-  const handleDescriptionChange = (e, index) => {
-    const updatedTasks = [...editedTasks];
-    updatedTasks[index] = {
-      ...updatedTasks[index],
-      description: e.target.value,
-    };
+  const handleDescriptionChange = (task, description) => {
+    const updatedTask = (task.description = description);
+
+    const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
+
     setEditedTasks(updatedTasks);
   };
 
-  const handleDueDateChange = (date, index) => {
-    const updatedTasks = [...editedTasks];
-    updatedTasks[index] = {
-      ...updatedTasks[index],
-      due_date: date,
-    };
+  const handleDueDateChange = (task, date) => {
+    const updatedTask = (task.due_date = date);
+
+    const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
+
     setEditedTasks(updatedTasks);
   };
 
-  const saveChanges = () => {
-    // Call an API or perform any other action to save changes
-    //onClose();
-  };
+  const saveToDatabase = () => {};
 
   const generateTasks = async (taskPrompt, task, ai, counter) => {
     try {
-      console.log(ai);
       const token = sessionStorage.getItem("token");
-      /*       const formData = new FormData();
-      formData.append("name", "New Column");
-      formData.append("is_finished", 0);
-      formData.append("task_limit", 5); */
-      console.log(counter);
+
       console.log(taskPrompt);
+      console.log(counter);
       const res = await axios.get(`/dashboard/AGI`, {
         headers: {
           Authorization: `Bearer ${token}`,
           TaskPrompt: `${taskPrompt}`,
           TaskCounter: `${counter}`,
-          ChosenAI: `${ai}`,
+          //ChosenAI: `${ai}`,
         },
       });
 
       console.log(res);
       console.log(res.data);
-      console.log("task");
-      console.log(task);
+
       if (task) {
         task.tasks = res.data;
         const updatedTask = task
           ? { ...task, tasks: res.data }
           : { tasks: res.data };
         const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
-        //task.tasks = res.data;
 
         setEditedTasks(updatedTasks);
       } else {
         setEditedTasks(res.data);
       }
-      console.log(editedTasks.length);
     } catch (e) {
       console.error(e);
     }
@@ -166,11 +152,14 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
                     key={index}
                     task={editedTask}
                     generateTasks={generateTasks}
+                    handleTitleChange={handleTitleChange}
+                    handleDescriptionChange={handleDescriptionChange}
+                    handleDueDateChange={handleDueDateChange}
                   />
                 ))}
               </div>
               <div className="gt-button-container">
-                <button onClick={saveChanges}>Save to database</button>
+                <button onClick={saveToDatabase}>Save to database</button>
               </div>
             </>
           ) : (
@@ -213,25 +202,43 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
   );
 };
 
-const TaskRecursive = ({ deepness, task, index, generateTasks }) => {
+const TaskRecursive = ({
+  deepness,
+  task,
+  index,
+  generateTasks,
+  handleTitleChange,
+  handleDescriptionChange,
+  handleDueDateChange,
+}) => {
   const aiOptions = [
     { value: "chatgpt", label: "ChatGPT" },
     { value: "llama", label: "Llama" },
   ];
   let [chosenAI, setChosenAI] = useState(aiOptions[0]);
-  const counterOptions = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+  const counterOptions = [
+    { value: "1", label: "1" },
+    { value: "2", label: "2" },
+    { value: "3", label: "3" },
+    { value: "4", label: "4" },
+    { value: "5", label: "5" },
+    { value: "6", label: "6" },
+    { value: "7", label: "7" },
+    { value: "8", label: "8" },
+    { value: "9", label: "9" },
+    { value: "10", label: "10" },
+  ];
   let [taskCounter, setTaskCounter] = useState(counterOptions[0]);
 
-  const handleTitleChange = (e) => {
-    // Update title for the specific task
-  };
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
 
-  const handleDescriptionChange = (e) => {
-    // Update description for the specific task
-  };
-
-  const handleDueDateChange = (date) => {
-    // Update due date for the specific task
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   };
 
   const generateSubtasks = (task) => {
@@ -245,7 +252,9 @@ const TaskRecursive = ({ deepness, task, index, generateTasks }) => {
         task.due_date
     ); */
     generateTasks(
-      `title: ${task.title}, description: ${task.description}, due_date: ${task.due_date}`,
+      `title: '${task.title}', description: '${task.description}', due_date: '${
+        task.due_date ? task.due_date : "-"
+      }'`,
       task,
       chosenAI.value,
       taskCounter.value
@@ -264,18 +273,20 @@ const TaskRecursive = ({ deepness, task, index, generateTasks }) => {
         <textarea
           type="text"
           value={task.title}
-          onChange={(e) => handleTitleChange(e)}
+          onChange={(e) => handleTitleChange(task, e.value)}
         />
         <p>Description:</p>
         <textarea
           value={task.description}
-          onChange={(e) => handleDescriptionChange(e)}
+          onChange={(e) => handleDescriptionChange(task, e.value)}
         />
         <p>Due date:</p>
         <DatePicker
           selected={task.due_date ? new Date(task.due_date) : null}
-          onChange={(date) => handleDueDateChange(date)}
-          dateFormat="yyyy-MM-dd"
+          onChange={(date) => handleDueDateChange(task, formatDate(date))}
+          showTimeSelect
+          dateFormat="yyyy-MM-dd HH:mm:ss"
+          timeFormat="HH:mm:ss"
         />
       </div>
       <div className="gt-action-buttons">
