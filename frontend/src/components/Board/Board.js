@@ -697,7 +697,7 @@ const Board = () => {
                                                     </div>
                                                     {index === 0 && (
                                                         <span
-                                                            className='ai-button'
+                                                            className='ai-button generate-task-button'
                                                             onClick={() => openGenerateTaskWithAGIPopup(null)}
                                                         >
                                                             {aiIcon}

@@ -119,6 +119,14 @@
   color: var(--magic);
 }
 
+.generate-task-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 5px 10px;
+}
+
+
 @media (max-width: 830px) {
   body {
     font-size: 0.9em;
