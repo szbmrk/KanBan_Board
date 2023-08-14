@@ -43,19 +43,6 @@
     border-bottom: 1px solid #ccc;
   }
   
-  /* Styling for the "Remove user from team" button */
-  button {
-    background-color: #ff6b6b;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #e64545;
-  }
   
   /* Styling for the "Manage team" button */
   button#manageButton {
