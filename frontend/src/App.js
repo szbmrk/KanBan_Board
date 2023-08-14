@@ -10,6 +10,7 @@ import Navbar from './components/Navigation/NavBar';
 import AssignedTasks from './components/AssignedTasks/AssignedTasks';
 import Teams from './components/Teams/Teams';
 import Board from './components/Board/Board';
+import Permissiontable from './components/Permissions/Permissiontable';
 
 
 const App = () => {
@@ -43,6 +44,12 @@ const App = () => {
                             <Navbar />
                             <Sidebar />
                             <Teams />
+                        </ProtectedRoute>} />
+                    <Route exact path="/profile" element={
+                        <ProtectedRoute>
+                            <Navbar />
+                            <Sidebar />
+                            <Permissiontable />
                         </ProtectedRoute>} />
                 </Routes>
             </AuthProvider>

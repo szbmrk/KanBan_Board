@@ -29,7 +29,7 @@ const AddUser = ({ teamID, OnClose }) => {
       {
         console.log(error.response);
       }
-      //window.location.reload();
+      window.location.reload();
       }
 
       async function getUsers()

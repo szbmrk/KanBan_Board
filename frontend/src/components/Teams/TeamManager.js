@@ -17,25 +17,7 @@ const TeamManager = ({ teamData, onClose }) => {
           getUsers();
         }
       }, []);
-
-    async function getUsers()
-    {
-        const token = sessionStorage.getItem('token');
-        try {
-            const response = await axios.get(`team/${teamData.team_id}/management/no_members`,
-            {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                }
-              });
-            setUsers(response.data.users);
-            }
-            catch(error)
-            {
-                console.log(error.response);
-            }
-        
-    }
+      
     async function SubmitTeamName(e)
     {
       e.preventDefault();

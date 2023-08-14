@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
+import axios from '../../api/axios';
 import '../../styles/popup.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -68,9 +68,7 @@ const Popup = ({
     useEffect(() => {
         setEditedText(task.title);
         setEditedDescription(task.description);
-        setComments(handleGetComments());
-        let comments = handleGetComments();
-        console.log(comments);
+        handleGetComments();
     }, [task]);
 
     useEffect(() => {
@@ -105,6 +103,8 @@ const Popup = ({
             const response = await axios.get(`/tasks/${task.task_id}/comments`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            console.log(response.data.comments);
+            setComments(response.data.comments);
         } catch (err) {
             console.log(err);
         }
@@ -215,22 +215,13 @@ const Popup = ({
                             <h3>Comments:</h3>
                         </div>
                         <div className='comments-container'>
-                            {/*comments.map((comment, index) => (
-                                <>
-                                    <div className='previous-comments'>
-                                        {<Comment
-                                        key={comment.comment_id}
-                                        taskId={task.task_id}
-                                        comment={comment.text}
-                                        getComments={() => getComments(task.task_id)}
-                                        addComment={() => addComment(task.task_id, comment)}
-                                        deleteComment={() => deleteComment(comment.comment_id)}
-                                        updateComment={() => updateComment(comment.comment_id)}
-                                    ></Comment>}
-                                        {comment.text}
-                                    </div>
-                                </>
-                                        ))*/}
+                            {comments.map((comment) =>
+                            (
+                                
+                                <div>{comment.text}</div>
+                            )
+                            
+                            )}
                             <div className='add-comment'>
                                 <div className='add-comment-content'>
                                     <textarea className='add-comment-textarea' placeholder='Write your comment here' />
