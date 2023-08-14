@@ -88,22 +88,12 @@ class User extends Authenticatable implements JWTSubject
 
     public function favouriteTasks()
     {
-    return $this->hasMany(FavouriteTask::class, 'user_id'); 
-    }
-
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id');
+        return $this->hasMany(FavouriteTask::class, 'user_id'); 
     }
 
     public function teamMembers()
     {
         return $this->hasMany(TeamMember::class, 'user_id');
-    }
-
-    public function teamMembersRoles()
-    {
-        return $this->hasMany(TeamMemberRole::class, 'team_member_id');
     }
 
     public function hasPermission($permission)
@@ -115,6 +105,4 @@ class User extends Authenticatable implements JWTSubject
         }
         return false;
     }
-    
-
 }

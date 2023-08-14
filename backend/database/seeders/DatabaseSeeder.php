@@ -34,12 +34,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-
-        // Create 10 users (every time they are different!)
-        #UserFactory::new()->count(10)->create();
-
-        // Calling the other seeders
-        //Every time they are the same!
         $this->call([ 
             UserTableSeeder::class,
             TeamsTableSeeder::class,
@@ -61,12 +55,7 @@ class DatabaseSeeder extends Seeder
             AttachmentsTableSeeder::class,
             LogsTableSeeder::class,
             PermissionsTableSeeder::class,
-            TeamMembersRoleTableSeeder::class,
-            PermissionRoleTableSeeder::class,
-
-            
-           
-            
+            PermissionRoleTableSeeder::class, 
         ]);
     }
 }
