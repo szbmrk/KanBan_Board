@@ -1,0 +1,50 @@
+[class*="col-"] {
+    float: left;
+}
+
+.sidebar {
+    transition: 0.5s;
+    position: sticky;
+    left: 0;
+    top: 50px;
+}
+
+.sidebar-menu {
+    height: 100vh;
+    max-width: 220px;
+    background-color: rgba(var(--dark-grayRGB), 0.7);
+}
+
+.sidebar-menu a {
+    width: 100%;
+    padding: 20px;
+    display: block;
+}
+
+.sidebar-menu svg {
+    color: var(--light-gray);
+}
+
+.sidebar-menu span {
+    color: var(--light-gray);
+    padding: 10px;
+}
+
+.sidebar-menu ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-menu li {
+    color: var(--light-gray);
+  }
+  
+  .sidebar-menu li:hover {
+    background-color: var(--dark-gray);
+  }
+
+  .sidebar-hidden {
+    transform: translateX(-220px);
+    transition: transform 0.5s ease-in-out;
+  }

@@ -76,4 +76,25 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Mention::class);
     }
 
+    public function feedback() 
+    {
+        return $this->hasMany(Feedback::class, 'task_id');
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'user_id');
+    }
+
+    public function favouriteTasks()
+    {
+    return $this->hasMany(FavouriteTask::class, 'user_id'); 
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id');
+    }
+
+
 }

@@ -28,6 +28,6 @@ class Column extends Model
     // Relationship with the Task model
     public function tasks()
     {
-        return $this->hasMany(Task::class, 'column_id', 'column_id');
+        return $this->hasMany(Task::class, 'column_id', 'column_id')->where('parent_task_id', null);
     }
 }

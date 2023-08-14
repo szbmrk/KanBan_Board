@@ -1,71 +1,153 @@
-.card-container {
-  display: flex; 
-  flex-direction: column;
-  margin: 20px 10px;
-  padding: 10px;
-  background-color: rgba(var(--dark-grayRGB), 0.5);
-  border-radius: 5px;
+.card {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: center;
+    background-color: var(--dark-gray);
+    color: var(--light-gray);
+    border: 1px solid var(--dark-gray);
+    border-radius: 5px;
+    padding: 10px;
+    margin: 5px;
+    width: auto;
+    min-height: 60px;
+    transition: 0.4s ease-in-out;
 }
 
-.card {
-  background-color: var(--dark-gray);
-  color: var(--light-gray);
-  border: 1px solid var(--dark-gray);
-  border-radius: 5px;
-  padding: 10px;
-  margin: 5px;
-  min-width: 150px;
-  cursor: pointer;
-  position: relative;
-  display: flex; /* Add this to make the contents of the card flexbox items */
-  align-items: center; /* Vertically align the contents in the center */
+.subtask-card {
+    background-color: #292929;
 }
 
 .card:hover {
-  cursor: pointer;
+    cursor: pointer;
 }
+
 .card:active {
-  cursor: grabbing;
+    cursor: grabbing;
 }
 
 .addbtn {
-  font-size: larger;
-  width: 40%;
-  border-radius: 5px;
-  padding: 10px;
-  cursor: pointer;
+    background-color: transparent;
+    color: var(--dark-gray);
+    border: 2px dashed var(--dark-gray);
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 0px;
 }
 
 .addbtn:hover {
-  color: var(--light-gray);
+    color: var(--light-gray);
+    background-color: var(--dark-gray);
 }
 
-.dots {
-  padding: 5px; /* Add padding for clickable space */
-  cursor: pointer;
-  font-size: 16px;
-  color: var(--light-gray);
-  margin-right: 5px;
+
+.edit {
+    padding: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--light-gray);
 }
 
-.dots:hover {
-  cursor: pointer;
+@keyframes rotate {
+    0% {
+        transform: rotate(10deg);
+    }
+
+    50% {
+        transform: rotate(-20deg);
+    }
+
+    100% {
+        transform: rotate(10deg);
+    }
+}
+
+.edit:hover {
+    animation: rotate 0.5s;
+    cursor: pointer;
 }
 
 .delete-button {
-  /* Existing delete-button styles */
-  position: absolute;
-  top: 50%;
-  right: 10px; /* Adjust the value as needed for desired spacing */
-  transform: translateY(-50%);
-  padding: 5px; /* Add padding for clickable space */
-  background-color: transparent; /* Set background to transparent */
-  border: none; /* Remove border */
-  cursor: pointer;
-  font-size: 16px;
-  color: var(--light-gray);
+    padding: 5px;
+    cursor: pointer;
+    color: var(--light-gray);
 }
 
-.delete-button:focus {
-  outline: none; /* Remove focus outline */
+.delete-button:hover {
+    color: var(--important);
+}
+
+.favourite-button {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.solid-icon {
+    color: var(--starred);
+}
+
+.regular-icon:hover {
+    color: var(--starred);
+}
+
+.task-title {
+    font-size: 0.9em;
+    text-align: center;
+    width: 100%;
+    text-align: left;
+    padding: 5px 10px 5px 5px;
+}
+
+.options {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10%;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.icon-container {
+    background-color: transparent;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.icon-container p {
+    color: var(--light-gray);
+    animation: none;
+    cursor: pointer;
+}
+
+.option {
+    background-color: var(--bg-dark);
+    border: 1px solid var(--dark-gray);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+}
+
+.tags-container {
+    width: 100%;
+    align-self: flex-end;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-end;
+    overflow: hidden;
+    gap: 6px;
+    z-index: 1;
+    padding: 0 5px;
 }
