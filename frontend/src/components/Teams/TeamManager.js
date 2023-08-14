@@ -1,5 +1,4 @@
 import React from 'react'
-import '../../styles/teams.css'; // Import the CSS file for styling
 import axios from '../../api/axios';
 import { useEffect, useState } from 'react';
 
@@ -14,7 +13,7 @@ const TeamManager = ({ teamData, onClose }) => {
         if(teamData.length!==0)
         {
           setTeamName(teamData.name);
-          getUsers();
+          //getUsers();
         }
       }, []);
       

@@ -1,5 +1,4 @@
 import React from 'react'
-import '../../styles/teams.css'; // Import the CSS file for styling
 import axios from '../../api/axios';
 import { useEffect, useState } from 'react';
 

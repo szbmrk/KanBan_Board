@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "../../api/axios";
 import TeamCard from "./TeamCard";
 import TeamManager from "./TeamManager";
-import '../../styles/popup.css';
 
 const Teams = () => {
   const [teams, setTeams] = useState([]);
@@ -38,6 +37,7 @@ const Teams = () => {
 
   }
   return (
+    <div className="content">
     <div className="scrollable-container">
         {teams.map((team, index) => (
                 <TeamCard key={index} data={team} />
@@ -46,6 +46,7 @@ const Teams = () => {
           {manageIsClicked && 
             <TeamManager teamData={[]} onClose={addTeam} />
       }
+    </div>
     </div>
   )}
 

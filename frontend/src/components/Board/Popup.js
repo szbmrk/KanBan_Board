@@ -42,11 +42,7 @@ const Popup = ({
     favouriteSubtask,
     unFavouriteSubtask,
     setTaskAsInspectedTask,
-    onPreviousTask,
-    getComments,
-    addComment,
-    deleteComment,
-    updateComment,
+    onPreviousTask
 }) => {
     const popupRef = useRef(null);
 
@@ -56,6 +52,7 @@ const Popup = ({
     const [addToCardIconZIndex, setAddToCardIconZIndex] = useState(1);
     const [addToCardContainerPosition, setAddToCardContainerPosition] = useState({ x: 0, y: 0 });
     const [comments, setComments] = useState([]);
+    const [addComment, setAddComment]=useState('');
 
     const handleChange = (event) => {
         setEditedText(event.target.value);
@@ -109,6 +106,27 @@ const Popup = ({
             console.log(err);
         }
     };
+    const handleAddComment = (e) =>
+    {
+        setAddComment(e.target.value);
+    }
+
+    const postComment = async () =>
+    {
+        try
+        {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.post(`/tasks/${task.task_id}/comments`, {text: addComment}, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            console.log(response.data.comments);
+            window.location.reload();
+        }
+        catch(error)
+        {
+            console.log(error.response);
+        }
+    }
 
     return (
         <div className='overlay'>
@@ -218,14 +236,14 @@ const Popup = ({
                             {comments.map((comment) =>
                             (
                                 
-                                <div>{comment.text}</div>
+                                <div> {comment.user_id}: {comment.text}</div>
                             )
                             
                             )}
                             <div className='add-comment'>
                                 <div className='add-comment-content'>
-                                    <textarea className='add-comment-textarea' placeholder='Write your comment here' />
-                                    <button className='add-comment-button'>{sendMessageIcon}</button>
+                                    <textarea className='add-comment-textarea' value={addComment} onChange={handleAddComment} placeholder='Write your comment here' />
+                                    <button className='add-comment-button' onClick={postComment}>{sendMessageIcon}</button>
                                 </div>
                             </div>
                         </div>
