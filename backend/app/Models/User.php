@@ -105,13 +105,15 @@ class User extends Authenticatable implements JWTSubject
 
     public function hasRequiredRole($requiredRoles)
     {
-        foreach ($this->roles as $role) {
+        $roles = $this->teamMembers->flatMap->roles;
+        foreach ($roles as $role) {
             if (in_array($role->name, $requiredRoles)) {
                 return true;
             }
         }
         return false;
     }
+    
     
     public function hasPermission($permission)
     {

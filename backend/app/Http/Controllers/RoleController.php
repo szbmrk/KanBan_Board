@@ -52,12 +52,12 @@ class RoleController extends Controller
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-    
+        
         $board = Board::find($boardId);
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
         }
-    
+
         if ($user->hasRequiredRole(['System Admin'])) {
         } else {
             if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {

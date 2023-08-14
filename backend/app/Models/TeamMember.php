@@ -23,13 +23,15 @@ class TeamMember extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-    
+
+    public function teamMemberRoles()
+    {
+        return $this->hasMany(TeamMemberRole::class, 'team_member_id', 'team_members_id');
+    }
 
     public function roles()
     {
-        return $this->hasManyThrough(Role::class, TeamMemberRole::class, 'team_member_id', 'role_id');
+        return $this->belongsToMany(Role::class, 'team_members_role', 'team_member_id', 'role_id');
     }
-
-    // Other model code...
 }
 
