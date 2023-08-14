@@ -57,17 +57,20 @@ class RoleController extends Controller
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
         }
-        
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
-            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
-        }
-
-        if (!$user->hasRequiredRole(['System Admin', 'Board Manager'])) {
-            return response()->json(['error' => 'You don\'t have the required role to create a new role on this board.'], 403);
-        }
     
-        if (!$user->hasPermission('team_members_create_role_on_board')) {
-            return response()->json(['error' => 'You don\'t have permission to create a new role on this board.'], 403);
+        if ($user->hasRequiredRole(['System Admin'])) {
+        } else {
+            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+            }
+    
+            if (!$user->hasRequiredRole(['Board Manager'])) {
+                return response()->json(['error' => 'You don\'t have the required role to create a new role on this board.'], 403);
+            }
+            
+            if (!$user->hasPermission('team_members_create_role_on_board')) {
+                return response()->json(['error' => 'You don\'t have permission to create a new role on this board.'], 403);
+            }
         }
     
         $validator = Validator::make($request->all(), [
@@ -97,7 +100,6 @@ class RoleController extends Controller
         return response()->json(['message' => 'Role created successfully'], 201);
     }
     
-
     public function update(Request $request, $boardId, $roleId)
     {
         $user = auth()->user();
