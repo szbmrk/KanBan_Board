@@ -52,9 +52,8 @@ class RoleController extends Controller
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-
+    
         $board = Board::find($boardId);
-
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
         }
@@ -63,17 +62,25 @@ class RoleController extends Controller
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
+        if (!$user->hasRequiredRole(['System Admin', 'Board Manager'])) {
+            return response()->json(['error' => 'You don\'t have the required role to create a new role on this board.'], 403);
+        }
+    
+        if (!$user->hasPermission('team_members_create_role_on_board')) {
+            return response()->json(['error' => 'You don\'t have permission to create a new role on this board.'], 403);
+        }
+    
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:1',
         ], [
             'name.required' => 'The name field is required.',
             'name.min' => 'The name must be at least 1 character.',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
-
+    
         $existingRole = Role::where('board_id', $boardId)
                             ->where('name', $request->input('name'))
                             ->first();
@@ -81,14 +88,15 @@ class RoleController extends Controller
         if ($existingRole) {
             return response()->json(['error' => 'Role already exists for this board.'], 400);
         }
-
+    
         $role = new Role();
         $role->name = $request->input('name');
         $role->board_id = $boardId;
         $role->save();
-
+    
         return response()->json(['message' => 'Role created successfully'], 201);
     }
+    
 
     public function update(Request $request, $boardId, $roleId)
     {

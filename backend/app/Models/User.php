@@ -93,13 +93,30 @@ class User extends Authenticatable implements JWTSubject
 
     public function teamMembers()
     {
-        return $this->hasMany(TeamMember::class, 'user_id');
+        return $this->hasMany(TeamMember::class, 'user_id', 'user_id');
     }
 
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'team_members_role', 'team_member_id', 'role_id')
+            ->using(TeamMemberRole::class)
+            ->withPivot('team_member_id', 'role_id'); 
+    }
+
+    public function hasRequiredRole($requiredRoles)
+    {
+        foreach ($this->roles as $role) {
+            if (in_array($role->name, $requiredRoles)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public function hasPermission($permission)
     {
-        foreach ($this->teamMembersRoles as $teamMemberRole) {
-            if ($teamMemberRole->role->permissions->contains('name', $permission)) {
+        foreach ($this->roles as $role) {
+            if ($role->permissions->contains('name', $permission)) {
                 return true;
             }
         }

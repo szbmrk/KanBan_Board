@@ -24,7 +24,12 @@ class PermissionsTableSeeder extends Seeder
                 'name' => 'team_members_role_board_manager',
                 'created_at' => now(),
                 'updated_at' => now()
-            ]
+            ],
+            [
+                'name' => 'team_members_create_role_on_board',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
             ];
 
             DB::table('permissions')->insert($permissions);
