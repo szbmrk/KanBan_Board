@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
 import '../../styles/popup.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -14,7 +15,9 @@ import {
     faComments,
     faListCheck,
 } from '@fortawesome/free-solid-svg-icons';
+import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { Card } from './Task';
+import Comment from './Comment';
 import Subtask from './Subtask';
 import Tag from '../Tag';
 
@@ -28,6 +31,7 @@ const stopwatchIcon = <FontAwesomeIcon icon={faStopwatch} />;
 const fileIcon = <FontAwesomeIcon icon={faFileLines} />;
 const priorityIcon = <FontAwesomeIcon icon={faFireFlameCurved} />;
 const commentsIcon = <FontAwesomeIcon icon={faComments} />;
+const sendMessageIcon = <FontAwesomeIcon icon={faPaperPlane} />;
 
 const Popup = ({
     task,
@@ -39,6 +43,10 @@ const Popup = ({
     unFavouriteSubtask,
     setTaskAsInspectedTask,
     onPreviousTask,
+    getComments,
+    addComment,
+    deleteComment,
+    updateComment,
 }) => {
     const popupRef = useRef(null);
 
@@ -47,6 +55,7 @@ const Popup = ({
     const [showAddToCard, setShowAddToCard] = useState(false);
     const [addToCardIconZIndex, setAddToCardIconZIndex] = useState(1);
     const [addToCardContainerPosition, setAddToCardContainerPosition] = useState({ x: 0, y: 0 });
+    const [comments, setComments] = useState([]);
 
     const handleChange = (event) => {
         setEditedText(event.target.value);
@@ -59,6 +68,9 @@ const Popup = ({
     useEffect(() => {
         setEditedText(task.title);
         setEditedDescription(task.description);
+        setComments(handleGetComments());
+        let comments = handleGetComments();
+        console.log(comments);
     }, [task]);
 
     useEffect(() => {
@@ -87,6 +99,17 @@ const Popup = ({
         setAddToCardIconZIndex(addToCardIconZIndex === 1 ? 100 : 1);
     };
 
+    const handleGetComments = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`/tasks/${task.task_id}/comments`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     return (
         <div className='overlay'>
             <div className='popup' ref={popupRef}>
@@ -111,8 +134,8 @@ const Popup = ({
                     )}
                 </div>
                 {/* Lower Part */}
-                <div className='popup-content'>
-                    <div className='lower-part'>
+                <div className='lower-part'>
+                    <div className='popup-content'>
                         {task.tags && task.tags.length > 0 && (
                             <>
                                 <div className='subtitle'>
@@ -144,14 +167,18 @@ const Popup = ({
                             value={editedDescription}
                             onChange={handleDescriptionChange}
                         />
+                        {task.subtasks && task.subtasks.length > 0 && (
+                            <>
+                                <div className='subtitle'>
+                                    <span className='icon'>{subtaskIcon}</span>
+                                    <h3>Subtasks:</h3>
+                                </div>
+                            </>
+                        )}
                         {task.subtasks &&
                             task.subtasks.length > 0 &&
                             task.subtasks.map((subTask, index) => (
                                 <>
-                                    <div className='subtitle' on>
-                                        <span className='icon'>{subtaskIcon}</span>
-                                        <h3>Subtasks:</h3>
-                                    </div>
                                     <div className='subtasks-container'>
                                         <Subtask
                                             key={subTask.task_id}
@@ -183,6 +210,34 @@ const Popup = ({
                                     </div>
                                 </>
                             ))}
+                        <div className='subtitle'>
+                            <span className='icon'>{commentsIcon}</span>
+                            <h3>Comments:</h3>
+                        </div>
+                        <div className='comments-container'>
+                            {/*comments.map((comment, index) => (
+                                <>
+                                    <div className='previous-comments'>
+                                        {<Comment
+                                        key={comment.comment_id}
+                                        taskId={task.task_id}
+                                        comment={comment.text}
+                                        getComments={() => getComments(task.task_id)}
+                                        addComment={() => addComment(task.task_id, comment)}
+                                        deleteComment={() => deleteComment(comment.comment_id)}
+                                        updateComment={() => updateComment(comment.comment_id)}
+                                    ></Comment>}
+                                        {comment.text}
+                                    </div>
+                                </>
+                                        ))*/}
+                            <div className='add-comment'>
+                                <div className='add-comment-content'>
+                                    <textarea className='add-comment-textarea' placeholder='Write your comment here' />
+                                    <button className='add-comment-button'>{sendMessageIcon}</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <button
