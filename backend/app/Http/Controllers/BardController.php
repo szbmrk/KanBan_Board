@@ -60,7 +60,7 @@ class BardController extends Controller
         }
     }
 
-    public function parseSubtaskResponse($response)
+    public static function parseSubtaskResponse($response)
     {
         preg_match_all('/\{\s*"title":\s*"(.*?)",\s*"description":\s*"(.*?)",\s*"due_date":\s*"(.*?)",\s*"tags":\s*\[(.*?)\]\s*\}/', $response, $matches, PREG_SET_ORDER);
     
