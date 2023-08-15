@@ -20,7 +20,8 @@ use App\Http\Controllers\MentionController;
 use App\Models\Feedback;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PriorityController;
-use App\Http\Controllers\UserTasksController;/*
+use App\Http\Controllers\UserTasksController;
+use App\Http\Controllers\BardController;/*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
@@ -117,3 +118,6 @@ Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_code', [AGIController::class, 'generateCode'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_priority', [AGIController::class, 'generatePriority'])->middleware('api');
 Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::class, 'generatePrioritiesForColumn'])->middleware('api');
+
+
+Route::post('/get-bard-answer', [BardController::class, 'getBardAnswer']);

@@ -1,18 +1,27 @@
 import requests
-import os
 from bardapi.constants import SESSION_HEADERS
 from bardapi import Bard
+import sys
+import json
 
-token = "Zgjvyx14OftHpvaodJGX5b4taiA7A4kHj1PrOGIs2NH-G4g1q5LFyndcaT-5s00_LjIqMg."
-token2 = "sidts-CjIBSAxbGafa6PuIKqxv1gWYFuSUIRd3mWl9WWZAiuM8uBXaVaegBCBq6GU7JRJo8U2U3RAA"
-token3 = "APoG2W-Ljyds4NxDUW4bIHbj-LKo6K3oYSBHheK42QuC6z-Qmv8fgGHLfc_TMXvOP0I3_lXtwTPd"
+def get_bard_answer(prompt, token, token2):
+    try:
+        session = requests.Session()
+        session.headers = SESSION_HEADERS
+        session.cookies.set("__Secure-1PSID", token)
+        session.cookies.set("__Secure-1PSIDTS", token2)
 
-session = requests.Session()
-session.headers = SESSION_HEADERS
-session.cookies.set("__Secure-1PSID", token)
-session.cookies.set("__Secure-1PSIDTS", token2)
-session.cookies.set("__Secure-1PSIDCC", token3)
+        bard = Bard(token=token, session=session)
+        answer = bard.get_answer(prompt)['content']
+        return answer
+    except Exception as e:
+        print(json.dumps({'error': str(e)}))  # Print error as JSON object
+        return None
 
-bard = Bard(token=token, session=session)
-answer = bard.get_answer("Who is the leader of the USA?")['content']
-print(answer)
+if __name__ == "__main__":
+    prompt = sys.argv[1]
+    token = sys.argv[2]
+    token2 = sys.argv[3]
+    answer = get_bard_answer(prompt, token, token2)
+    if answer:
+        print(json.dumps({'original': answer}))  # Print original content as JSON object
