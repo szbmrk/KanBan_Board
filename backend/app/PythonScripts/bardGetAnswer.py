@@ -2,7 +2,6 @@ import requests
 from bardapi.constants import SESSION_HEADERS
 from bardapi import Bard
 import sys
-import json
 
 def get_bard_answer(prompt, token, token2):
     try:
@@ -15,7 +14,7 @@ def get_bard_answer(prompt, token, token2):
         answer = bard.get_answer(prompt)['content']
         return answer
     except Exception as e:
-        print(json.dumps({'error': str(e)}))  # Print error as JSON object
+        print("Error:", e)
         return None
 
 if __name__ == "__main__":
@@ -23,5 +22,4 @@ if __name__ == "__main__":
     token = sys.argv[2]
     token2 = sys.argv[3]
     answer = get_bard_answer(prompt, token, token2)
-    if answer:
-        print(json.dumps({'original': answer}))  # Print original content as JSON object
+    print(answer)

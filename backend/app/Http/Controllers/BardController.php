@@ -23,10 +23,9 @@ class BardController extends Controller
     
         try {
             $answer = shell_exec($command);
-
+    
             $parsedData = $this->parseSubtaskResponse($answer);
-            $FormattedResponse = json_decode($parsedData, true);
-            return $answer;
+            return response()->json($parsedData);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
         }
@@ -34,70 +33,28 @@ class BardController extends Controller
 
     public function parseSubtaskResponse($response)
     {
-        $response = str_replace(["\n", "\\"], "", $response);
+        preg_match_all('/\{\s*"title":\s*"(.*?)",\s*"description":\s*"(.*?)",\s*"due_date":\s*"(.*?)",\s*"tags":\s*\[(.*?)\]\s*\}/', $response, $matches, PREG_SET_ORDER);
     
         $parsedData = [];
     
-        // Check if the response is of the first type
-        if (strpos($response, "Task Title:") !== false) {
-            $delimiter = "Title:";
-            $taskBlocks = explode($delimiter, $response);
+        foreach ($matches as $match) {
+            $title = trim($match[1]);
+            $description = trim($match[2]);
+            $dueDate = trim($match[3]);
+            $tags = array_map('trim', explode(",", str_replace('"', '', $match[4])));
     
-            array_shift($taskBlocks);
+            $tags = array_filter($tags, function ($tag) {
+                return strpos($tag, "Task") === false;
+            });
     
-            foreach ($taskBlocks as $taskBlock) {
-                $trimmedTaskBlock = trim($taskBlock);
-    
-                preg_match('/(.*?)Description:/', $trimmedTaskBlock, $titleMatches);
-    
-                if (!empty($titleMatches)) {
-                    $title = trim($titleMatches[1]);
-    
-                    preg_match('/Description:(.*?)Due Date:/', $trimmedTaskBlock, $descriptionMatches);
-                    $description = trim($descriptionMatches[1]);
-    
-                    preg_match('/Due Date:(.*?)Tags:/', $trimmedTaskBlock, $dueDateMatches);
-                    $dueDate = trim($dueDateMatches[1]);
-    
-                    preg_match('/Tags:(.*?)(?:Note|$)/', $trimmedTaskBlock, $tagsMatches);
-                    $tags = array_map('trim', explode(",", str_replace('"', '', $tagsMatches[1])));
-    
-                    $tags = array_filter($tags, function ($tag) {
-                        return strpos($tag, "Task") === false;
-                    });
-    
-                    $parsedData[] = [
-                        "title" => $title,
-                        "description" => $description,
-                        "due_date" => $dueDate,
-                        "tags" => $tags
-                    ];
-                }
-            }
-        }
-        // Check if the response is of the second type
-        elseif (strpos($response, "\"title\":") !== false) {
-            preg_match_all('/\{\s*"title":\s*"(.*?)",\s*"description":\s*"(.*?)",\s*"due_date":\s*"(.*?)",\s*"tags":\s*\[(.*?)\]\s*\}/', $response, $matches, PREG_SET_ORDER);
-    
-            foreach ($matches as $match) {
-                $title = trim($match[1]);
-                $description = trim($match[2]);
-                $dueDate = trim($match[3]);
-                $tags = array_map('trim', explode(",", str_replace('"', '', $match[4])));
-    
-                $tags = array_filter($tags, function ($tag) {
-                    return strpos($tag, "Task") === false;
-                });
-    
-                $parsedData[] = [
-                    "title" => $title,
-                    "description" => $description,
-                    "due_date" => $dueDate,
-                    "tags" => $tags
-                ];
-            }
+            $parsedData[] = [
+                "title" => $title,
+                "description" => $description,
+                "due_date" => $dueDate,
+                "tags" => $tags
+            ];
         }
     
-        return response()->json($parsedData);
+        return $parsedData;
     }
 }
