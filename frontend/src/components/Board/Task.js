@@ -27,6 +27,7 @@ export const Task = ({
     favouriteTask,
     unFavouriteTask,
     deleteTask,
+    openGenerateTaskWithAGIPopup,
     moveCardFrontend,
     moveCardBackend,
     setTaskAsInspectedTask,
@@ -210,6 +211,22 @@ export const Task = ({
                                 {aiIcon}
                             </span>
                             <p>Generate Tasks</p>
+                        </div>
+                        <div
+                            className='option'
+                            onMouseEnter={() => setIsHoveredAI(true)}
+                            onMouseLeave={() => setIsHoveredAI(false)}
+                            onClick={() => openGenerateTaskWithAGIPopup(null)}
+                        >
+                            <span
+                                className='ai-button'
+                                style={{
+                                    color: isHoveredAI ? 'var(--magic)' : '',
+                                }}
+                            >
+                                {aiIcon}
+                            </span>
+                            <p>Generate Subtasks</p>
                         </div>
                         {task.is_favourite ? (
                             <div

@@ -695,14 +695,14 @@ const Board = () => {
                                                     >
                                                         <h2 className='card-title'>{column.name}</h2>
                                                     </div>
-                                                    {index === 0 && (
+                                                    {/*index === 0 && (
                                                         <span
                                                             className='ai-button generate-task-button'
                                                             onClick={() => openGenerateTaskWithAGIPopup(null)}
                                                         >
                                                             {aiIcon}
                                                         </span>
-                                                    )}
+                                                    )*/}
                                                     <span
                                                         className='delete-column-button'
                                                         onClick={(e) => handleDeleteButtonClick(e, index)}
@@ -723,6 +723,7 @@ const Board = () => {
                                                         unFavouriteTask={handleUnFavouriteTask}
                                                         deleteTask={handleDeleteTask}
                                                         setTaskAsInspectedTask={setTaskAsInspectedTask}
+                                                        openGenerateTaskWithAGIPopup={openGenerateTaskWithAGIPopup}
                                                         moveCardFrontend={(
                                                             dragIndex,
                                                             hoverIndex,
