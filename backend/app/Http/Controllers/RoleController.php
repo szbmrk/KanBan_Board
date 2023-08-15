@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Board;
 use App\Models\Team;
 use Illuminate\Support\Facades\Validator;
+
 class RoleController extends Controller
 {
 
@@ -68,7 +69,7 @@ class RoleController extends Controller
                 return response()->json(['error' => 'You don\'t have the required role to create a new role on this board.'], 403);
             }
             
-            if (!$user->hasPermission('team_members_create_role_on_board')) {
+            if (!$user->hasPermission('role_management')) {
                 return response()->json(['error' => 'You don\'t have permission to create a new role on this board.'], 403);
             }
         }
@@ -109,12 +110,23 @@ class RoleController extends Controller
 
         $board = Board::find($boardId);
 
-        if (!$board) {
-            return response()->json(['error' => 'Board not found'], 404);
+        if ($user->hasRequiredRole(['System Admin'])) {
+        } else {
+            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+            }
+    
+            if (!$user->hasRequiredRole(['Board Manager']) || !$user->hasRequiredRole(['Team Manager'])) {
+                return response()->json(['error' => 'You don\'t have the required role to update a role on this board.'], 403);
+            }
+            
+            if (!$user->hasPermission('role_management')) {
+                return response()->json(['error' => 'You don\'t have permission to update a role on this board.'], 403);
+            }
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
-            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        if (!$board) {
+            return response()->json(['error' => 'Board not found'], 404);
         }
 
         $role = Role::where('board_id', $boardId)
@@ -165,13 +177,27 @@ class RoleController extends Controller
 
         $board = Board::find($boardId);
 
+        if ($user->hasRequiredRole(['System Admin'])) {
+        } else {
+            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+            }
+    
+            if (!$user->hasRequiredRole(['Board Manager']))
+            {
+                return response()->json(['error' => 'You don\'t have the required role to destroy a role on this board.'], 403);
+            }
+           
+            
+            if (!$user->hasPermission('role_management')) {
+                return response()->json(['error' => 'You don\'t have permission to destroy a role on this board.'], 403);
+            }
+        }
+
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
-            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
-        }
 
         $role = Role::where('board_id', $boardId)
                     ->where('role_id', $roleId)
