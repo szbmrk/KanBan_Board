@@ -17,7 +17,7 @@ return new class extends Migration
                 'UPDATED BOARD', 'DELETED BOARD', 'CREATED BOARD','BOARD NOT FOUND', 'BOARD ERROR',
                 'SYSTEM ERROR',
                 'USER ERROR', 'UPDATED USER', 'DELETED USER', 'CREATED USER',
-                'AUTHENTICATION ERROR', 'NO PERMISSION', 'NO REQUIRED ROLE',
+                'AUTHENTICATION ERROR', 'NO PERMISSION',
                 'UPDATED TASK', 'DELETED TASK', 'CREATED TASK', 'FINISHED TASK', 'COMMENTED ON TASK'
             ])->nullable(false);
             $table->text('details')->nullable();

@@ -27,15 +27,11 @@ class TeamManagementController extends Controller
     {
         $user = auth()->user();
         
-        if (!$user->hasRequiredRole(['System Admin'])) {
+        if (!$user->hasPermission('system_admin')) {
             if (!$user->teams()->where('teams.team_id', $teamId)->exists()) {
                 return response()->json(['error' => 'Unauthenticated or team not found.'], 401);
             }
-    
-            if (!$user->hasRequiredRole(['Team Manager'])) {
-                return response()->json(['error' => 'You don\'t have the required role to add members to this team.'], 403);
-            }
-    
+
             if (!$user->hasPermission('team_member_management')) {
                 return response()->json(['error' => 'You don\'t have permission to add members to this team.'], 403);
             }
@@ -46,7 +42,7 @@ class TeamManagementController extends Controller
         ]);
     
         $userAdd = User::where('username', $request->input('user_name'))->first();
-        if($userAdd == null){
+        if($userAdd == null) {
             return response()->json(['error' => 'User not found.'], 404);
         }
     
@@ -64,25 +60,21 @@ class TeamManagementController extends Controller
         ]);
     
         return response()->json(['message' => 'Team member added successfully.']);
-    }
+    }    
     
     public function destroyTeamMember($teamId, $userId)
     {
         $user = auth()->user();
-        
+    
         if ($user->user_id == $userId) {
             return response()->json(['error' => 'You cannot remove yourself from the team.'], 403);
         }
         
-        if (!$user->hasRequiredRole(['System Admin'])) {
+        if (!$user->hasPermission('system_admin')) {
             if (!$user->teams()->where('teams.team_id', $teamId)->exists()) {
                 return response()->json(['error' => 'Unauthenticated or team not found.'], 401);
             }
     
-            if (!$user->hasRequiredRole(['Team Manager'])) {
-                return response()->json(['error' => 'You don\'t have the required role to remove members from this team.'], 403);
-            }
-
             if (!$user->hasPermission('team_member_management')) {
                 return response()->json(['error' => 'You don\'t have permission to remove members from this team.'], 403);
             }

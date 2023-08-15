@@ -102,17 +102,6 @@ class User extends Authenticatable implements JWTSubject
             ->using(TeamMemberRole::class)
             ->withPivot('team_member_id', 'role_id'); 
     }
-
-    public function hasRequiredRole($requiredRoles)
-    {
-        $roles = $this->teamMembers->flatMap->roles;
-        foreach ($roles as $role) {
-            if (in_array($role->name, $requiredRoles)) {
-                return true;
-            }
-        }
-        return false;
-    }
     
     public function hasPermission($permission)
     {
