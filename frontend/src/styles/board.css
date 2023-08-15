@@ -39,6 +39,7 @@
   gap: 10px;
   font-size: 1.3em;
   transition: 0.4s ease-in-out;
+  box-shadow: none;
 }
 
 .addbtn-column:hover {
