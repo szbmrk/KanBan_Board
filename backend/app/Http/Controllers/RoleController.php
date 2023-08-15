@@ -68,7 +68,7 @@ class RoleController extends Controller
                 return response()->json(['error' => 'You don\'t have the required role to create a new role on this board.'], 403);
             }
             
-            if (!$user->hasPermission('team_members_create_role_on_board')) {
+            if (!$user->hasPermission('role_management')) {
                 return response()->json(['error' => 'You don\'t have permission to create a new role on this board.'], 403);
             }
         }
@@ -185,6 +185,4 @@ class RoleController extends Controller
 
         return response()->json(['message' => 'Role deleted successfully'], 200);
     }
-
-
 }

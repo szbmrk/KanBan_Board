@@ -32,6 +32,12 @@ class PermissionRoleTableSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now()
             ],
+            [
+                'permission_id' => 4,
+                'role_id' => 2,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
             
         ];
         DB::table('permission_role')->insert($permission_role);
