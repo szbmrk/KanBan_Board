@@ -244,11 +244,13 @@ const Popup = ({
                             <h3>Comments:</h3>
                         </div>
                         <div className='comments-container'>
-                            {comments.map((comment, index) => (
-                                <div key={index}>
-                                    {comment.user.username}: {comment.text}
-                                </div>
-                            ))}
+                            <div className='previous-comments'>
+                                {comments.map((comment, index) => (
+                                    <div className='comment' key={index}>
+                                        {comment.user.username}: {comment.text}
+                                    </div>
+                                ))}
+                            </div>
                             <div className='add-comment'>
                                 <div className='add-comment-content'>
                                     <textarea
