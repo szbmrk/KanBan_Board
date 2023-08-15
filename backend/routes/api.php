@@ -120,4 +120,4 @@ Route::get('/boards/{boardId}/tasks/{taskId}/generate_priority', [AGIController:
 Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::class, 'generatePrioritiesForColumn'])->middleware('api');
 
 
-Route::post('/get-bard-answer', [BardController::class, 'getBardAnswer']);
+Route::get('/get-bard-answer', [BardController::class, 'getBardAnswer']);
