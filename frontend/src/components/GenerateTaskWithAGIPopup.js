@@ -60,18 +60,18 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
 
   const saveToDatabase = () => {};
 
-  const generateTasks = async (taskPrompt, task, ai, counter) => {
+  const generateTask = async (taskPrompt, task, ai, counter) => {
     try {
       const token = sessionStorage.getItem("token");
 
       console.log(taskPrompt);
       console.log(counter);
-      const res = await axios.get(`/dashboard/AGI`, {
+      const res = await axios.get(`/AGI/GenerateTask`, {
         headers: {
           Authorization: `Bearer ${token}`,
           TaskPrompt: `${taskPrompt}`,
           TaskCounter: `${counter}`,
-          //ChosenAI: `${ai}`,
+          ChosenAI: `${ai}`,
         },
       });
 
@@ -121,19 +121,38 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
     };
   }, [onCancel]);
 
-  const generateSubtasks = (task) => {
-    /*     generateTasks(
-      "Task title: " +
-        task.title +
-        ", task desciption: " +
-        task.description +
-        ", due_date: " +
-        task.due_date
-    ); */
-    generateTasks(
-      "Develop a shopping web page in react with login, sign up, cart and list of goods pages",
-      task
-    );
+  const generateSubtask = async (taskPrompt, task, ai, counter) => {
+    try {
+      const token = sessionStorage.getItem("token");
+
+      console.log(taskPrompt);
+      console.log(counter);
+      const res = await axios.get(`/AGI/GenerateSubtask`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          TaskPrompt: `${taskPrompt}`,
+          TaskCounter: `${counter}`,
+          ChosenAI: `${ai}`,
+        },
+      });
+
+      console.log(res);
+      console.log(res.data);
+
+      if (task) {
+        task.tasks = res.data;
+        const updatedTask = task
+          ? { ...task, tasks: res.data }
+          : { tasks: res.data };
+        const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
+
+        setEditedTasks(updatedTasks);
+      } else {
+        setEditedTasks(res.data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -151,7 +170,7 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
                     deepness={0}
                     key={index}
                     task={editedTask}
-                    generateTasks={generateTasks}
+                    generateSubtask={generateSubtask}
                     handleTitleChange={handleTitleChange}
                     handleDescriptionChange={handleDescriptionChange}
                     handleDueDateChange={handleDueDateChange}
@@ -183,7 +202,7 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
                 />
                 <button
                   onClick={() =>
-                    generateTasks(
+                    generateTask(
                       taskTitleInputRef.current.value,
                       null,
                       chosenAI.value,
@@ -206,7 +225,7 @@ const TaskRecursive = ({
   deepness,
   task,
   index,
-  generateTasks,
+  generateSubtask,
   handleTitleChange,
   handleDescriptionChange,
   handleDueDateChange,
@@ -241,20 +260,10 @@ const TaskRecursive = ({
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   };
 
-  const generateSubtasks = (task) => {
+  const generateSubtaskPrepare = (task) => {
     console.log(chosenAI);
-    /*     generateTasks(
-      "Task title: " +
-        task.title +
-        ", task desciption: " +
-        task.description +
-        ", due_date: " +
-        task.due_date
-    ); */
-    generateTasks(
-      `title: '${task.title}', description: '${task.description}', due_date: '${
-        task.due_date ? task.due_date : "-"
-      }'`,
+    generateSubtask(
+      `${task.description}, due_date: '${task.due_date ? task.due_date : "-"}'`,
       task,
       chosenAI.value,
       taskCounter.value
@@ -302,7 +311,7 @@ const TaskRecursive = ({
         />
         <button
           className="generate-subtasks-button"
-          onClick={() => generateSubtasks(task)}
+          onClick={() => generateSubtaskPrepare(task)}
         >
           Generate Subtasks
         </button>
@@ -314,7 +323,7 @@ const TaskRecursive = ({
               deepness={deepness + 1}
               key={subtaskIndex}
               task={subtask}
-              generateTasks={generateTasks}
+              generateSubtask={generateSubtask}
             />
           ))}
         </div>
