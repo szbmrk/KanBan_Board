@@ -11,6 +11,7 @@ import AssignedTasks from './components/AssignedTasks/AssignedTasks';
 import Teams from './components/Teams/Teams';
 import Board from './components/Board/Board';
 import Permissiontable from './components/Permissions/Permissiontable';
+import EditProfile from './components/Profile/EditProfile';
 
 
 const App = () => {
@@ -45,11 +46,17 @@ const App = () => {
                             <Sidebar />
                             <Teams />
                         </ProtectedRoute>} />
-                    <Route exact path="/profile" element={
+                    <Route exact path="/permissiontable" element={
                         <ProtectedRoute>
                             <Navbar />
                             <Sidebar />
                             <Permissiontable />
+                        </ProtectedRoute>} />
+                        <Route exact path="/profile" element={
+                        <ProtectedRoute>
+                            <Navbar />
+                            <Sidebar />
+                            <EditProfile />
                         </ProtectedRoute>} />
                 </Routes>
             </AuthProvider>

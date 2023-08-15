@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -64,9 +66,56 @@ class UserController extends Controller
 
         return response()->json(['token' => $token, 'user' => $user]);
     }
+    public function show()
+    {
+        $user = auth()->user();
 
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
 
+        return response()->json([$user]);
+    }
 
+    public function update(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $oldPassword = $request->input('old_password');
+        $newPassword = $request->input('new_password');
+
+        // Ellenőrzés, hogy a régi jelszó helyes-e
+        if (!Hash::check($oldPassword, $user->password)) {
+            return response()->json(['error' => 'Incorrect old password'], 400);
+        }
+
+        if ($request->has('username') && User::where('username', $request->input('username'))->where('user_id', '!=', $user->user_id)->exists()) {
+            return response()->json(['error' => 'Username already exists'], 400);
+        }
+
+        // Ellenőrzés, hogy az új email cím már létezik-e
+        if ($request->has('email') && User::where('email', $request->input('email'))->where('user_id', '!=', $user->user_id)->exists()) {
+            return response()->json(['error' => 'Email already exists'], 400);
+        }
+
+        $updateData = [
+            'username' => $request->input('username', $user->username),
+            'email' => $request->input('email', $user->email),
+            // Egyéb mezők frissítése...
+        ];
+
+        if (!empty($newPassword)) {
+            $updateData['password'] = Hash::make($newPassword);
+        }
+
+        $user->update($updateData);
+
+        return response()->json(['message' => 'User data updated successfully'], 200);
+    }
 
 
 }

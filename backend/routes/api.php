@@ -38,6 +38,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/user/signup', [UserController::class, 'signup']);
 Route::post('/user/login', [UserController::class, 'login']);
 Route::get('/user/check-login', [UserController::class, 'checkLogin']);
+Route::get('/profile', [UserController::class, 'show']);
+Route::put('/profile', [UserController::class, 'update']);
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('api');
 Route::post('/dashboard/board', [DashboardController::class, 'store'])->middleware('api');

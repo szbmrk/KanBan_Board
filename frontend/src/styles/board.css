@@ -125,7 +125,9 @@
   left: 0;
   padding: 5px 10px;
 }
-
+.option-p{
+  color: aliceblue;
+}
 
 @media (max-width: 830px) {
   body {

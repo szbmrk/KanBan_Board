@@ -96,12 +96,20 @@ const Popup = ({
 
     const handleGetComments = async () => {
         try {
+            const user_id = sessionStorage.getItem('user_id');
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`/tasks/${task.task_id}/comments`, {
+            const response = await axios.get(`/user/${user_id}/tasks`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            console.log(response.data.comments);
-            setComments(response.data.comments);
+            const tempData = response.data.assigned_tasks;
+            for(let i=0; i<tempData.length; i++)
+            {
+                if(tempData[i].task.task_id===task.task_id)
+                    {
+                        setComments(tempData[i].task.comments);
+                        break;
+                    }
+                }
         } catch (err) {
             console.log(err);
         }
@@ -233,10 +241,10 @@ const Popup = ({
                             <h3>Comments:</h3>
                         </div>
                         <div className='comments-container'>
-                            {comments.map((comment) =>
+                            {comments.map((comment, index) =>
                             (
                                 
-                                <div> {comment.user_id}: {comment.text}</div>
+                                <div> {comment.user.username}: {comment.text}</div>
                             )
                             
                             )}

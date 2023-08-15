@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import '../../styles/taskcard.css';
 import Tag from "../Tag";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -21,6 +21,10 @@ const commentsIcon = <FontAwesomeIcon icon={faComments} />;
 const subtaskIcon = <FontAwesomeIcon icon={faListCheck} />;
 
 const TaskCard = ({ task }) => {
+    useEffect( () =>
+        {
+            console.log(task);
+        })
     return (
         <div className="task-card">
             <h2 className="card-title">{task.title}</h2>

@@ -4,7 +4,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Task, plusIcon } from './Task';
 import ConfirmationPopup from './ConfirmationPopup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faXmark, faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faXmark, faWandMagicSparkles, faEllipsis } from '@fortawesome/free-solid-svg-icons';
 import '../../styles/board.css';
 import '../../styles/popup.css';
 import { useParams } from 'react-router';
@@ -17,6 +17,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import GenerateTaskWithAGIPopup from '../GenerateTaskWithAGIPopup';
 
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
+export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
 
 const Board = () => {
     const { board_id } = useParams();
@@ -31,6 +32,10 @@ const Board = () => {
     const editBoxRef = useRef(null);
     const [columnNewTitle, setColumnNewTitle] = useState('');
     const [showGenerateTaskWithAGIPopup, setShowGenerateTaskWithAGIPopup] = useState(false);
+    const [cardZIndex, setCardZIndex] = useState(1);
+    const [iconContainerPosition, setIconContainerPosition] = useState({ x: 0, y: 0 });
+    const [showIconContainer, setShowIconContainer] = useState(false);
+    const [isHoveredAI, setIsHoveredAI] = useState(false);
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
@@ -627,6 +632,17 @@ const Board = () => {
         setInspectedTask(null);
     };
 
+    const handleDotsClick = (event) => {
+        const buttonRect = event.target.getBoundingClientRect();
+        const newX = buttonRect.right + 20;
+        const newY = buttonRect.top;
+
+        // Set the icon-container's position and show it
+        setIconContainerPosition({ x: newX, y: newY });
+        setShowIconContainer(!showIconContainer);
+        cardZIndex === 1 ? setCardZIndex(100) : setCardZIndex(1);
+    };
+
     return (
         <>
             {permission === false ? (
@@ -703,13 +719,50 @@ const Board = () => {
                                                             {aiIcon}
                                                         </span>
                                                     )*/}
-                                                    <span
-                                                        className='delete-column-button'
-                                                        onClick={(e) => handleDeleteButtonClick(e, index)}
-                                                    >
-                                                        {xMarkIcon}
-                                                    </span>
+                                                    <div className='options' style={{ visibility: 'visible' }}>
+                                                        <span
+                                                            className='dots'
+                                                            onClick={handleDotsClick}
+                                                            style={{
+                                                                visibility: 'visible',
+                                                                transition: 'visibility 0.1s ease',
+                                                            }}
+                                                        >
+                                                            {dotsIcon}
+                                                        </span>
+                                                    </div>
                                                 </>
+                                            )}
+                                            {showIconContainer && (
+                                                    <div className='overlay' onClick={() => { setShowIconContainer(false); setCardZIndex(1); }}>
+                                                        <div
+                                                            className='option'
+                                                            onMouseEnter={() => setIsHoveredAI(true)}
+                                                            onMouseLeave={() => setIsHoveredAI(false)}
+                                                            onClick={() => openGenerateTaskWithAGIPopup(null)}
+                                                        >
+                                                            <span
+                                                                className='ai-button'
+                                                                style={{
+                                                                    color: isHoveredAI ? 'var(--magic)' : '',
+                                                                }}
+                                                            >
+                                                                {aiIcon}
+                                                            </span>
+                                                            <p className='option-p'>Generate Subtasks</p>
+                                                        </div>
+                                                                <div
+                                                                    className='option'
+                                                                    onClick={(e) => handleDeleteButtonClick(e, index)}
+                                                                >
+                                                                    <span
+                                                                        className='delete-column-button'
+                                                                    >
+                                                                        {xMarkIcon}
+                                                                    </span>
+                                                                    <p className='option-p'>Delete Column</p>
+                                                                </div>
+                                                    </div>
                                             )}
                                             <div className='task-container'>
                                                 {column.tasks.map((task, taskIndex) => (
