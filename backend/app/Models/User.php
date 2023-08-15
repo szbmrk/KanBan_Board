@@ -114,14 +114,15 @@ class User extends Authenticatable implements JWTSubject
         return false;
     }
     
-    
     public function hasPermission($permission)
     {
-        foreach ($this->roles as $role) {
+        $allRoles = $this->teamMembers->flatMap->roles;
+    
+        foreach ($allRoles as $role) {
             if ($role->permissions->contains('name', $permission)) {
                 return true;
             }
         }
         return false;
-    }
+    }    
 }
