@@ -8,6 +8,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Role;
 use App\Models\Permission;
+use App\Models\TeamMember;
 
 class UserController extends Controller
 {
@@ -42,12 +43,16 @@ class UserController extends Controller
         try {
             $user->save();
     
+            // Felhasználó hozzáadása a team_members táblához
+            $teamMember = new TeamMember();
+            $teamMember->user_id = $user->user_id;
+            $teamMember->save();
+    
             $userRole = Role::where('name', 'User')->first();
             if ($userRole) {
-                $user->roles()->attach($userRole->role_id); // Módosítás itt
+                $user->roles()->attach($userRole->role_id);
     
-                // Ha nem szeretnéd, hogy minden új felhasználóra a "user_permission" engedély is hozzárendelődjön,
-                // akkor hagyd ki az alábbi részt, vagy alkalmazz valamilyen logikát az engedély hozzáadására.
+                // Engedély hozzárendelési logika (opcionális)
                 $userPermission = Permission::where('name', 'user_permission')->first();
                 if ($userPermission && !$userRole->permissions->contains($userPermission->id)) {
                     $userRole->permissions()->attach($userPermission->id);

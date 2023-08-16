@@ -8,6 +8,7 @@ use App\Helpers\LogRequest;
 use App\Models\Role;
 use App\Models\TeamMember;
 use App\Models\Permission;
+use Illuminate\Support\Facades\DB;
 
 class TeamController extends Controller
 {
@@ -40,7 +41,10 @@ class TeamController extends Controller
             'user_id' => $user->user_id,
         ]);
         
-        $teamMember->roles()->attach($teamManagerRole->role_id);
+        DB::table('team_members_role')->insert([
+            'team_member_id' => $user->user_id, 
+            'role_id' => $teamManagerRole->role_id
+        ]);
     
         if (!$teamManagerRole->permissions->contains($teamManagementPermission)) {
             $teamManagerRole->permissions()->attach($teamManagementPermission->id);

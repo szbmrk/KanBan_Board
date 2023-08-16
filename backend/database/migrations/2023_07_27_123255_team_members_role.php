@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamp('updated_at')->useCurrent();
 
             // Add the onDelete('cascade') option to both foreign key definitions
-            $table->foreign('team_member_id')->references('team_members_id')->on('team_members')->onDelete('cascade');
+            $table->foreign('team_member_id')->references('user_id')->on('team_members')->onDelete('cascade');
             $table->foreign('role_id')->references('role_id')->on('roles')->onDelete('cascade');
         });
     }
