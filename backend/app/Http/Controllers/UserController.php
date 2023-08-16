@@ -30,32 +30,34 @@ class UserController extends Controller
     public function signup(Request $request)
     {
         $emailExists = \App\Models\User::where('email', $request->email)->count();
-
+    
         if ($emailExists > 0) {
             return response()->json(['error' => 'Email already exists'], 400);
         }
-
+    
         $user = new \App\Models\User;
         $user->username = $request->username;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
         try {
             $user->save();
-
+    
             $userRole = Role::where('name', 'User')->first();
             if ($userRole) {
-                $user->roles()->attach($userRole->id);
-
+                $user->roles()->attach($userRole->role_id); // Módosítás itt
+    
+                // Ha nem szeretnéd, hogy minden új felhasználóra a "user_permission" engedély is hozzárendelődjön,
+                // akkor hagyd ki az alábbi részt, vagy alkalmazz valamilyen logikát az engedély hozzáadására.
                 $userPermission = Permission::where('name', 'user_permission')->first();
                 if ($userPermission && !$userRole->permissions->contains($userPermission->id)) {
                     $userRole->permissions()->attach($userPermission->id);
                 }
             }
-
+    
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['error' => 'Signup failed'], 500);
         }
-
+    
         return response()->json(['message' => 'Signup successful']);
     }
 
