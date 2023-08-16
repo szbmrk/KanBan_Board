@@ -109,8 +109,26 @@
     padding: 5px 10px;
     cursor: pointer;
     color: var(--light-gray);
-  }
+}
 
 .delete-board-button:hover {
     color: var(--important);
+}
+
+.board-save-button {
+    width: 25%;
+    height: 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: var(--basic-font);
+    font-size: 0.95em;
+    background-color: var(--light-gray);
+    color: var(--dark-gray);
+    transition: 0.1s ease;
+}
+
+.board-save-button:hover {
+    background-color: var(--confirm);
+    color: var(--light-gray);
 }
