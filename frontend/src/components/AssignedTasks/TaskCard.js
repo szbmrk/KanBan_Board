@@ -12,6 +12,9 @@ import {
     faListCheck
 } from "@fortawesome/free-solid-svg-icons";
 
+import { dateFormatOptions } from "../../utils/DateFormat";
+import { Link } from "react-router-dom";
+
 const tagsIcon = <FontAwesomeIcon icon={faTags} />;
 const linkIcon = <FontAwesomeIcon icon={faLink} />;
 const stopwatchIcon = <FontAwesomeIcon icon={faStopwatch} />;
@@ -21,13 +24,12 @@ const commentsIcon = <FontAwesomeIcon icon={faComments} />;
 const subtaskIcon = <FontAwesomeIcon icon={faListCheck} />;
 
 const TaskCard = ({ task }) => {
-    useEffect( () =>
-        {
-            console.log(task);
-        })
+    useEffect(() => {
+        console.log(task);
+    })
     return (
         <div className="task-card">
-            <h2 className="card-title">{task.title}</h2>
+            <Link to={`/board/${task.board_id}/${task.column_id}/${task.task_id}`}><h2 className="card-title">{task.title}</h2></Link>
             {task.tags && task.tags.length > 0 && (
                 <>
                     <div className="subtitle">
@@ -82,17 +84,28 @@ const TaskCard = ({ task }) => {
             )}
             {task.comments && task.comments.length > 0 && (
                 <>
-                    <div className="subtitle">
-                        <span className="icon">{commentsIcon}</span>
+                    <div className='subtitle'>
+                        <span className='icon'>{commentsIcon}</span>
                         <h3>Comments:</h3>
                     </div>
-                    {task.comments.map((comment, index) => (
-                        comment && comment.user && comment.user.username && comment.text ? (
-                            <p key={index} className="comment">
-                                <span className="user">{comment.user.username}:</span> {comment.text}
-                            </p>
-                        ) : null
-                    ))}
+                    <div className='comments-container'>
+                        <div class='previous-comments' style={{ width: "90%" }}>
+                            {task.comments.map((comment, index) => (
+                                <div
+                                    className={`comment ${sessionStorage.getItem("username") === comment.user.username ? 'own-comment' : 'other-comment'}`}
+                                    key={index}
+                                >
+                                    <div class="comment-header">
+                                        <span className="username">{comment.user.username}</span>
+                                        <span className="date">{new Date(comment.created_at).toLocaleString("en-US", dateFormatOptions)}</span>
+                                    </div>
+                                    <div className="comment-text">
+                                        {comment.text}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </>
             )}
             {task.subtasks && task.subtasks.length > 0 && (

@@ -15,12 +15,13 @@ import { Column } from './Columns';
 import Popup from './Popup';
 import cloneDeep from 'lodash/cloneDeep';
 import GenerateTaskWithAGIPopup from '../GenerateTaskWithAGIPopup';
+import { useNavigate } from 'react-router-dom';
 
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
 
 const Board = () => {
-    const { board_id } = useParams();
+    const { board_id, column_to_show_id, task_to_show_id } = useParams();
     const [permission, setPermission] = useState(false);
     const [error, setError] = useState(false);
     const [board, setBoard] = useState([]);
@@ -38,6 +39,7 @@ const Board = () => {
     const [isHoveredAI, setIsHoveredAI] = useState(false);
     const [isHoveredX, setIsHoveredX] = useState(false);
     const [columnIndex, setColumnIndex] = useState(null);
+    const navigate = useNavigate();
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
@@ -86,6 +88,15 @@ const Board = () => {
             console.log('Columns: ', tempBoard.columns);
 
             setBoard(tempBoard);
+
+            if (task_to_show_id) {
+                const columnIndex = tempBoard.columns.findIndex((column) => column.column_id === parseInt(column_to_show_id));
+                const task = findTaskById(tempBoard.columns[columnIndex].tasks, parseInt(task_to_show_id));
+                if (task) {
+                    setTaskAsInspectedTask(task);
+                }
+                navigate(`/board/${board_id}`)
+            }
         } catch (e) {
             console.error(e);
             if (e.response.status === 403) setError('No permission');

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import axios from '../../api/axios';
 import '../../styles/popup.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -16,10 +15,9 @@ import {
     faListCheck,
 } from '@fortawesome/free-solid-svg-icons';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import { Card } from './Task';
-import Comment from './Comment';
 import Subtask from './Subtask';
 import Tag from '../Tag';
+import { dateFormatOptions } from '../../utils/DateFormat';
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const subtaskIcon = <FontAwesomeIcon icon={faListCheck} />;
@@ -32,6 +30,7 @@ const fileIcon = <FontAwesomeIcon icon={faFileLines} />;
 const priorityIcon = <FontAwesomeIcon icon={faFireFlameCurved} />;
 const commentsIcon = <FontAwesomeIcon icon={faComments} />;
 const sendMessageIcon = <FontAwesomeIcon icon={faPaperPlane} />;
+
 
 const Popup = ({
     task,
@@ -100,15 +99,6 @@ const Popup = ({
     const postComment = async () => {
         handlePostComment(task.task_id, task.column_id, addComment);
         setAddComment('');
-    };
-
-    const dateFormatOptions = {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true
     };
 
     return (

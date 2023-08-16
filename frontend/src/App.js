@@ -29,6 +29,12 @@ const App = () => {
                             <Sidebar />
                             <Board />
                         </ProtectedRoute>} />
+                    <Route exact path="/board/:board_id/:column_to_show_id/:task_to_show_id" element={
+                        <ProtectedRoute>
+                            <Navbar />
+                            <Sidebar />
+                            <Board />
+                        </ProtectedRoute>} />
                     <Route exact path="/dashboard" element={
                         <ProtectedRoute>
                             <Navbar />
