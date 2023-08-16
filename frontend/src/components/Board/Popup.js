@@ -42,7 +42,7 @@ const Popup = ({
     favouriteSubtask,
     unFavouriteSubtask,
     setTaskAsInspectedTask,
-    onPreviousTask
+    onPreviousTask,
 }) => {
     const popupRef = useRef(null);
 
@@ -52,7 +52,7 @@ const Popup = ({
     const [addToCardIconZIndex, setAddToCardIconZIndex] = useState(1);
     const [addToCardContainerPosition, setAddToCardContainerPosition] = useState({ x: 0, y: 0 });
     const [comments, setComments] = useState([]);
-    const [addComment, setAddComment]=useState('');
+    const [addComment, setAddComment] = useState('');
 
     const handleChange = (event) => {
         setEditedText(event.target.value);
@@ -102,39 +102,42 @@ const Popup = ({
                 headers: { Authorization: `Bearer ${token}` },
             });
             const tempData = response.data.assigned_tasks;
-            for(let i=0; i<tempData.length; i++)
-            {
-                if(tempData[i].task.task_id===task.task_id)
-                    {
-                        setComments(tempData[i].task.comments);
-                        break;
-                    }
+            for (let i = 0; i < tempData.length; i++) {
+                if (tempData[i].task.task_id === task.task_id) {
+                    setComments(tempData[i].task.comments);
+                    break;
                 }
+            }
         } catch (err) {
             console.log(err);
         }
     };
-    const handleAddComment = (e) =>
-    {
+    const handleAddComment = (e) => {
         setAddComment(e.target.value);
-    }
+    };
 
-    const postComment = async () =>
-    {
-        try
-        {
+    const postComment = async () => {
+        try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.post(`/tasks/${task.task_id}/comments`, {text: addComment}, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            console.log(response.data.comments);
-            window.location.reload();
-        }
-        catch(error)
-        {
+            const response = await axios.post(
+                `/tasks/${task.task_id}/comments`,
+                { text: addComment },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            // Assuming response.data.comments contains the updated comments array
+            const updatedComments = response.data.comments;
+
+            // Update the comments state with the updatedComments array
+            setComments(updatedComments);
+
+            // Clear the input field
+            setAddComment('');
+        } catch (error) {
             console.log(error.response);
         }
-    }
+    };
 
     return (
         <div className='overlay'>
@@ -241,17 +244,24 @@ const Popup = ({
                             <h3>Comments:</h3>
                         </div>
                         <div className='comments-container'>
-                            {comments.map((comment, index) =>
-                            (
-                                
-                                <div> {comment.user.username}: {comment.text}</div>
-                            )
-                            
-                            )}
+                            <div className='previous-comments'>
+                                {comments.map((comment, index) => (
+                                    <div className='comment' key={index}>
+                                        {comment.user.username}: {comment.text}
+                                    </div>
+                                ))}
+                            </div>
                             <div className='add-comment'>
                                 <div className='add-comment-content'>
-                                    <textarea className='add-comment-textarea' value={addComment} onChange={handleAddComment} placeholder='Write your comment here' />
-                                    <button className='add-comment-button' onClick={postComment}>{sendMessageIcon}</button>
+                                    <textarea
+                                        className='add-comment-textarea'
+                                        value={addComment}
+                                        onChange={handleAddComment}
+                                        placeholder='Write your comment here'
+                                    />
+                                    <button className='add-comment-button' onClick={postComment}>
+                                        {sendMessageIcon}
+                                    </button>
                                 </div>
                             </div>
                         </div>

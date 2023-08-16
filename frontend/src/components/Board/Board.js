@@ -36,6 +36,8 @@ const Board = () => {
     const [iconContainerPosition, setIconContainerPosition] = useState({ x: 0, y: 0 });
     const [showIconContainer, setShowIconContainer] = useState(false);
     const [isHoveredAI, setIsHoveredAI] = useState(false);
+    const [isHoveredX, setIsHoveredX] = useState(false);
+    const [columnIndex, setColumnIndex] = useState(null);
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
@@ -158,6 +160,7 @@ const Board = () => {
         event.stopPropagation();
         setShowDeleteColumnConfirmation(true);
         setColumnToDeleteIndex(columnIndex);
+        setShowIconContainer(false);
     };
 
     const handleColumnDeleteConfirm = () => {
@@ -632,12 +635,12 @@ const Board = () => {
         setInspectedTask(null);
     };
 
-    const handleDotsClick = (event) => {
+    const handleDotsClick = (event, columnIndex) => {
         const buttonRect = event.target.getBoundingClientRect();
         const newX = buttonRect.right + 20;
         const newY = buttonRect.top;
 
-        // Set the icon-container's position and show it
+        setColumnIndex(columnIndex);
         setIconContainerPosition({ x: newX, y: newY });
         setShowIconContainer(!showIconContainer);
         cardZIndex === 1 ? setCardZIndex(100) : setCardZIndex(1);
@@ -722,7 +725,7 @@ const Board = () => {
                                                     <div className='options' style={{ visibility: 'visible' }}>
                                                         <span
                                                             className='dots'
-                                                            onClick={handleDotsClick}
+                                                            onClick={(e) => handleDotsClick(e, index)}
                                                             style={{
                                                                 visibility: 'visible',
                                                                 transition: 'visibility 0.1s ease',
@@ -732,37 +735,6 @@ const Board = () => {
                                                         </span>
                                                     </div>
                                                 </>
-                                            )}
-                                            {showIconContainer && (
-                                                    <div className='overlay' onClick={() => { setShowIconContainer(false); setCardZIndex(1); }}>
-                                                        <div
-                                                            className='option'
-                                                            onMouseEnter={() => setIsHoveredAI(true)}
-                                                            onMouseLeave={() => setIsHoveredAI(false)}
-                                                            onClick={() => openGenerateTaskWithAGIPopup(null)}
-                                                        >
-                                                            <span
-                                                                className='ai-button'
-                                                                style={{
-                                                                    color: isHoveredAI ? 'var(--magic)' : '',
-                                                                }}
-                                                            >
-                                                                {aiIcon}
-                                                            </span>
-                                                            <p className='option-p'>Generate Subtasks</p>
-                                                        </div>
-                                                                <div
-                                                                    className='option'
-                                                                    onClick={(e) => handleDeleteButtonClick(e, index)}
-                                                                >
-                                                                    <span
-                                                                        className='delete-column-button'
-                                                                    >
-                                                                        {xMarkIcon}
-                                                                    </span>
-                                                                    <p className='option-p'>Delete Column</p>
-                                                                </div>
-                                                    </div>
                                             )}
                                             <div className='task-container'>
                                                 {column.tasks.map((task, taskIndex) => (
@@ -819,6 +791,57 @@ const Board = () => {
                                 ))}
                                 <div className='card-container addbtn-column' onClick={handleAddColumn}>
                                     {plusIcon} Add new column
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {showIconContainer && (
+                        <div
+                            className='overlay'
+                            onClick={() => {
+                                setShowIconContainer(false);
+                                setCardZIndex(1);
+                            }}
+                        >
+                            <div
+                                className='icon-container'
+                                style={{
+                                    position: 'fixed',
+                                    left: iconContainerPosition.x + 'px',
+                                    top: iconContainerPosition.y + 'px',
+                                }}
+                            >
+                                <div
+                                    className='option'
+                                    onMouseEnter={() => setIsHoveredAI(true)}
+                                    onMouseLeave={() => setIsHoveredAI(false)}
+                                    onClick={() => openGenerateTaskWithAGIPopup(null)}
+                                >
+                                    <span
+                                        className='ai-button'
+                                        style={{
+                                            color: isHoveredAI ? 'var(--magic)' : '',
+                                        }}
+                                    >
+                                        {aiIcon}
+                                    </span>
+                                    <p>Generate Subtasks</p>
+                                </div>
+                                <div
+                                    className='option'
+                                    onMouseEnter={() => setIsHoveredX(true)}
+                                    onMouseLeave={() => setIsHoveredX(false)}
+                                    onClick={(e) => handleDeleteButtonClick(e, columnIndex)}
+                                >
+                                    <span
+                                        className='delete-column-button'
+                                        style={{
+                                            color: isHoveredX ? 'var(--important)' : '',
+                                        }}
+                                    >
+                                        {xMarkIcon}
+                                    </span>
+                                    <p>Delete Column</p>
                                 </div>
                             </div>
                         </div>

@@ -84,10 +84,7 @@
 }
 
 .delete-column-button {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 5px 10px;
+  padding: 5px;
   cursor: pointer;
   color: var(--light-gray);
 }

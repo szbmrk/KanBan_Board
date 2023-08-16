@@ -330,18 +330,31 @@ margin-top: 0;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: 20px;
 }
 
 .previous-comments {
-    width: 50%;
+    width: 60%;
     height: 100%;
+    margin: 0 20px 0 30px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    align-items: flex-start;
     overflow-y: auto;
     border: 1px solid var(--light-gray);
     border-radius: 5px;
 }
+
+.comment {
+    margin: 10px;
+    padding: 5px;
+    background-color: var(--light-gray);
+    border-radius: 15px;
+    color: var(--dark-gray);
+}
+
 .add-comment {
     width: 50%;
 }
