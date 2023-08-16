@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react'
 import axios from '../../api/axios';
 import '../../styles/editprofile.css';
 import DeleteConfirm from './DeleteProfileConfirm';
+import Loader from '../Loader';
 
 export default function EditProfile() {
+    const token = sessionStorage.getItem('token');
+
 
     useEffect(() => {
         document.title = 'Profile'
@@ -22,7 +25,6 @@ export default function EditProfile() {
 
     const getProfileData = async () => {
         try {
-            const token = sessionStorage.getItem('token');
             const response = await axios.get(`/profile`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -31,6 +33,7 @@ export default function EditProfile() {
             console.log(err);
         }
     }
+    
 
     const handlePaste = (e) => {
         e.preventDefault();
@@ -54,7 +57,6 @@ export default function EditProfile() {
         e.preventDefault();
         if (formData.newPassword === '' && formData.confirmPassword === '')
             try {
-                const token = sessionStorage.getItem('token');
                 const response = await axios.put(`/profile`, { username: formData.username, email: formData.email, old_password: formData.oldPassword }, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -69,7 +71,6 @@ export default function EditProfile() {
             }
             else {
                 try {
-                    const token = sessionStorage.getItem('token');
                     const response = await axios.put(`/profile`, { username: formData.username, email: formData.email, old_password: formData.oldPassword, new_password: formData.newPassword }, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
@@ -87,100 +88,107 @@ export default function EditProfile() {
 
 
     return (
-        <div>
-            <h1>Edit your profile</h1>
-            <form onSubmit={handleSubmit}>
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>
-                                Username
-                            </td>
-                            <td>
-                                <input
-                                    type="text"
-                                    id="username"
-                                    name="username"
-                                    value={formData.username}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="Enter your username"
-                                />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                E-mail
-                            </td>
-                            <td>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="Enter your E-mail" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Old password:
-                            </td>
-                            <td>
-                                <input
-                                    type="password"
-                                    id="oldPassword"
-                                    name="oldPassword"
-                                    value={formData.oldPassword}
-                                    onChange={handleChange}
-                                    placeholder="Enter your old password"
-                                    required
-                                />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                New password:
-                            </td>
-                            <td>
-                                <input
-                                    type="password"
-                                    id="newPassword"
-                                    name="newPassword"
-                                    value={formData.newPassword}
-                                    onChange={handleChange}
-                                    placeholder="Enter your new password"
-                                />
-                            </td>
-                        </tr>
-                        <tr key="">
-                            <td>
-                                Confirm new password
-                            </td>
-                            <td>
-                                <input
-                                    type="password"
-                                    name="confirmPassword"
-                                    value={formData.confirmPassword}
-                                    onChange={handleChange}
-                                    placeholder="Confirm your new password"
-                                    onPaste={handlePaste}
-                                />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                {error !== '' &&
-                    (
-                        <h1>{error}</h1>
-                    )
-                }
-                <button type='submit'>Submit</button>
-            </form>
-            <button onClick={handleDeleteButton}>Delete</button>
+        <div className='content'>
+            {formData.username === '' ? (
+                    <Loader />
+            ) :(
+                <div>
 
-            {deleteIsClicked && <DeleteConfirm OnClose={handleDeleteButton} />}
+                    <h1>Edit your profile</h1>
+                    <form onSubmit={handleSubmit}>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Username
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="text"
+                                            id="username"
+                                            name="username"
+                                            value={formData.username}
+                                            onChange={handleChange}
+                                            required
+                                            placeholder="Enter your username"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        E-mail
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                            placeholder="Enter your E-mail" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Old password:
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="password"
+                                            id="oldPassword"
+                                            name="oldPassword"
+                                            value={formData.oldPassword}
+                                            onChange={handleChange}
+                                            placeholder="Enter your old password"
+                                            required
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        New password:
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="password"
+                                            id="newPassword"
+                                            name="newPassword"
+                                            value={formData.newPassword}
+                                            onChange={handleChange}
+                                            placeholder="Enter your new password"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr key="">
+                                    <td>
+                                        Confirm new password
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="password"
+                                            name="confirmPassword"
+                                            value={formData.confirmPassword}
+                                            onChange={handleChange}
+                                            placeholder="Confirm your new password"
+                                            onPaste={handlePaste}
+                                        />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        {error !== '' &&
+                            (
+                                <h1>{error}</h1>
+                            )
+                        }
+                        <button type='submit'>Submit</button>
+                    </form>
+                    <button onClick={handleDeleteButton}>Delete</button>
+        
+                    {deleteIsClicked && <DeleteConfirm OnClose={handleDeleteButton} />}
+                </div>
+            )}
         </div>
     )
 }

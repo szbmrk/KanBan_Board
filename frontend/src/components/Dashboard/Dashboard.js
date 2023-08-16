@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import '../../styles/dashboard.css';
-import '../../styles/popup.css';
 import axios from '../../api/axios';
 import { Link } from 'react-router-dom';
 import Loader from '../Loader';
