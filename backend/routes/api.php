@@ -129,3 +129,6 @@ Route::put('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraftCo
 Route::delete('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraftController::class, 'destroyPrompts'])->middleware('api');
 
 Route::get('/AGI/GenerateTask/CraftedPrompt', [AGIController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
+
+Route::post('/boards/{boardId}/columns/{columnId}/tasks/create-with-subtasks', [TaskController::class, 'createTasksWithSubtasks'])->middleware('api');
+
