@@ -16,7 +16,10 @@ return new class extends Migration
             $table->unsignedBigInteger('board_id')->nullable(false);
             $table->text('crafted_prompt_text')->nullable();
             $table->enum('craft_with', [
-                'chatgpt', 'llama', 'bard'
+                'CHATGPT', 'LLAMA', 'BARD'
+            ])->nullable(false);
+            $table->enum('action', [
+                'GENERATETASK', 'GENERATESUBTASK', 'GENERATEATTACHMENTLINK'
             ])->nullable(false);
             $table->unsignedBigInteger('created_by')->nullable(false);
             $table->timestamps();
