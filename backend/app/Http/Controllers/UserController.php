@@ -117,5 +117,22 @@ class UserController extends Controller
         return response()->json(['message' => 'User data updated successfully'], 200);
     }
 
+    public function destroy(Request $request)
+    {
+        $user = auth()->user();
 
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        
+        $password = $request->input('password');
+
+        if (!Hash::check($password, $user->password)) {
+            return response()->json(['error' => 'Incorrect password'], 400);
+        }
+        
+        $user->delete();
+
+        return response()->json(['message' => 'User deleted successfully'], 200);
+    }
 }

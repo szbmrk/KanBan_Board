@@ -1,7 +1,5 @@
 import React from 'react'
 import axios from '../../api/axios';
-import { useEffect, useState } from 'react';
-
 
 const DeleteConfirm = ({ teamID, OnClose }) => {
 

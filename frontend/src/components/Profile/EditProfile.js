@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from '../../api/axios';
 import '../../styles/editprofile.css';
+import DeleteConfirm from './DeleteProfileConfirm';
 
 export default function EditProfile() {
 
@@ -16,6 +17,7 @@ export default function EditProfile() {
         oldPassword: ''
     });
     const [error, setError]=useState('');
+    const [deleteIsClicked, setDelete]=useState(false);
 
     const getProfileData = async () => {
         try {
@@ -78,6 +80,11 @@ export default function EditProfile() {
                 setError(err.response.data.error);
             }
         }
+    }
+
+    function handleDeleteButton()
+    {
+        setDelete(!deleteIsClicked);
     }
 
 
@@ -173,6 +180,9 @@ export default function EditProfile() {
                 }
                 <button type='submit'>Submit</button>
             </form>
+            <button onClick={handleDeleteButton}>Delete</button>
+            
+            {deleteIsClicked && <DeleteConfirm OnClose={handleDeleteButton}/>}
         </div>
     )
 }

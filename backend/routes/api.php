@@ -38,8 +38,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/user/signup', [UserController::class, 'signup']);
 Route::post('/user/login', [UserController::class, 'login']);
 Route::get('/user/check-login', [UserController::class, 'checkLogin']);
-Route::get('/profile', [UserController::class, 'show']);
-Route::put('/profile', [UserController::class, 'update']);
+Route::get('/profile', [UserController::class, 'show'])->middleware('api');
+Route::put('/profile', [UserController::class, 'update'])->middleware('api');
+Route::delete('/profile', [UserController::class, 'destroy'])->middleware('api');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('api');
 Route::post('/dashboard/board', [DashboardController::class, 'store'])->middleware('api');
