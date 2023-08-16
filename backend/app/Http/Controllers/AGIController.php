@@ -59,4 +59,26 @@ class AGIController extends Controller
 
         return $response;
     }
+
+    public function GenerateTaskCraftedPrompt(Request $request)
+    {
+        $user = auth()->user();
+    
+        $chosenAI = Str::lower($request->header('ChosenAI'));
+        $response;
+    
+        switch ($chosenAI) {
+            case "llama":
+                $response = LlamaController::generateTaskLlama($request);
+                break;
+            case "chatgpt draft":
+                $response = ChatGPTController::GenerateTaskDraftChatGPT($request);
+                break;
+            default:
+                $response = ChatGPTController::GenerateCraftedTaskChatGPT($request);
+                break;
+        }
+    
+        return $response;
+    }
 }

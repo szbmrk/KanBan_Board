@@ -127,3 +127,5 @@ Route::get('/boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::clas
 Route::post('/boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::class, 'storePrompts'])->middleware('api');
 Route::put('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraftController::class, 'updatePrompts'])->middleware('api');
 Route::delete('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraftController::class, 'destroyPrompts'])->middleware('api');
+
+Route::get('/AGI/GenerateTask/CraftedPrompt', [AGIController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');

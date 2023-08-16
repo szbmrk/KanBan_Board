@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CraftedPrompt;
-use Illuminate\Http\Request;
 use App\Models\Board;
+use Illuminate\Http\Request;
+use App\Models\CraftedPrompt;
+use App\Http\Controllers\AGIController;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\ChatGPTController;
 use Illuminate\Validation\ValidationException;
 
 class PromptCraftController extends Controller
@@ -172,6 +174,8 @@ class PromptCraftController extends Controller
 
         return response()->json(['message' => 'Prompt deleted successfully.'], 200);
     }
+
+   
 
 }
 
