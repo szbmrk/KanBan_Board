@@ -27,6 +27,7 @@ class TagController extends Controller
 
         $tags = Tag::where('board_id', $boardId)->get();
 
+
         return response()->json(['tags' => $tags], 200);
     }
     

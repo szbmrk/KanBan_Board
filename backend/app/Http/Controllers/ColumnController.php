@@ -87,7 +87,7 @@ class ColumnController extends Controller
             }
             $column->save();
 
-            //LogRequest::instance()->logAction('UPDATED COLUMN', $user->user_id, "Column Updated successfully!", $teamId, $column->board_id, null);
+            LogRequest::instance()->logAction('UPDATED COLUMN', $user->user_id, "Column Updated successfully!", $teamId, $column->board_id, null);
             return response()->json(['column' => $column]);
         }
     }
@@ -122,7 +122,7 @@ class ColumnController extends Controller
                 return response()->json(['error' => 'Column not found or not belong to this board'], 404);
             }
         }
-
+        LogRequest::instance()->logAction('UPDATED COLUMN', $user->user_id, "Columns position updated successfully.", $teamId, $column->board_id, null);
         return response()->json(['message' => 'Columns position updated successfully.']);
     }
 
@@ -170,7 +170,8 @@ class ColumnController extends Controller
 
         $column->delete();
 
-        return response()->json(['message' => 'Column deleted successfully']);
+        LogRequest::instance()->logAction('DELETED COLUMN', $user->user_id, "Column deleted successfully! Column: $column->name", $teamId, $column->board_id, null);
+        return response()->json(['message' => 'Column deleted successfully!']);
     }
 
 }

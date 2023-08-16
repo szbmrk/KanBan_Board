@@ -23,12 +23,12 @@ class TeamManagementController extends Controller
         }
     }
 
-    public function storeTeamMember(Request $request, $teamId)
+    public function storeTeamMember(Request $request, $team_id)
     {
         $user = auth()->user();
-        
+
         if (!$user->hasPermission('system_admin')) {
-            if (!$user->teams()->where('teams.team_id', $teamId)->exists()) {
+            if (!$user->teams()->where('teams.team_id', $team_id)->exists()) {
                 return response()->json(['error' => 'Unauthenticated or team not found.'], 401);
             }
 
@@ -36,37 +36,37 @@ class TeamManagementController extends Controller
                 return response()->json(['error' => 'You don\'t have permission to add members to this team.'], 403);
             }
         }
-    
-        $team = Team::find($teamId);
-
-        if (!$team) {
-            return response()->json(['error' => 'Team not found'], 404);
+        
+        if (!$user->teams()->where('teams.team_id', $team_id)->exists()) {
+            return response()->json(['error' => 'Unauthenticated or team not found.'], 401);
         }
-
-        $this->validate($request, [
-            'user_name' => 'required|string',
-        ]);
+        
+        $userIds = $request->input('user_ids', []);
+        
+        $team = Team::with(['teamMembers.user'])->findOrFail($team_id);
+        $currentMemberIds = $team->teamMembers->pluck('user_id')->toArray();
+        
+        $addedMembers = [];
     
-        $userAdd = User::where('username', $request->input('user_name'))->first();
-        if($userAdd == null) {
-            return response()->json(['error' => 'User not found.'], 404);
+        foreach ($userIds as $userId) {
+            if (in_array($userId, $currentMemberIds)) {
+                continue;
+            }
+            
+            $teamMember = new TeamMember();
+            $teamMember->team_id = $team_id;
+            $teamMember->user_id = $userId;
+            $teamMember->save();
+            
+            $addedMembers[] = $userId;
         }
     
-        $existingTeamMember = TeamMember::where('team_id', $teamId)
-            ->where('user_id', $userAdd->user_id)
-            ->first();
-    
-        if ($existingTeamMember) {
-            return response()->json(['error' => 'User is already a member of the team.'], 400);
+        if (!empty($addedMembers)) {
+            return response()->json(['message' => 'Members added successfully.', 'added_members' => $addedMembers]);
+        } else {
+            return response()->json(['message' => 'No new members added.']);
         }
-    
-        $teamMember = TeamMember::create([
-            'team_id' => $teamId,
-            'user_id' => $userAdd->user_id,
-        ]);
-    
-        return response()->json(['message' => 'Team member added successfully.']);
-    }    
+    }
     
     public function destroyTeamMember($teamId, $userId)
     {
@@ -97,4 +97,40 @@ class TeamManagementController extends Controller
             return response()->json(['error' => 'Team member not found in the team.'], 404);
         }
     }    
+
+    public function teamsByUser($user_id)
+    {
+        $currentUser = auth()->user();
+
+        if (!$currentUser) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
+    
+        $user = User::findOrFail($user_id);
+    
+        // Check if the current user is the same as the requested user
+        if ($currentUser->id !== $user->id) {
+            return response()->json(['error' => 'Unauthorized.'], 403);
+        }
+    
+        // Fetch teams associated with the user
+        $teams = $user->teams()->with(['teamMembers.user'])->get();
+    
+        return response()->json(['teams' => $teams]);
+    }
+
+    public function showNotTeamMembers($teamId)
+    {
+        $user = auth()->user();
+
+        //give back those users who are not in the team
+        if ($user->teams()->where('teams.team_id', $teamId)->exists()) {
+            $team = Team::with(['teamMembers.user'])->findOrFail($teamId);
+            $users = User::whereNotIn('user_id', $team->teamMembers->pluck('user_id'))->get();
+            return response()->json(['users' => $users]);
+        } else {
+            return response()->json(['error' => 'Unauthenticated or team not found.'], 401);
+        }
+
+    }
 }

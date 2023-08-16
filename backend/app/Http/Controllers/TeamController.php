@@ -64,7 +64,7 @@ class TeamController extends Controller
         $user = auth()->user();
 
         $team = Team::find($id);
-
+      
         if (!$team) {
             LogRequest::instance()->logAction('TEAM NOT FOUND', $user->user_id, "Team not found on Update. -> team_id: $id", null, null, null);
             return response()->json(['error' => 'Team not found'], 404);

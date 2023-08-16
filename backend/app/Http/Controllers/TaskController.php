@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Log;
+use App\Models\Task;
+use App\Models\Team;
 use App\Models\Board;
 use App\Models\Column;
-use App\Models\Task;
-use App\Models\Attachment;
 use App\Models\Comment;
 use App\Models\Mention;
-use App\Models\FavouriteTask;
-use App\Models\Log;
 use App\Models\TaskTag;
-use App\Models\UserTask;
 use App\Models\Feedback;
+use App\Models\UserTask;
+use App\Models\Attachment;
+use Illuminate\Http\Request;
+use App\Models\FavouriteTask;
 use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
@@ -21,35 +22,33 @@ class TaskController extends Controller
     public function taskStore(Request $request, $board_id)
     {
         $user = auth()->user();
-
-        $user_id = $user->user_id;
-
+        
         $board = Board::find($board_id);
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
         }
-
+    
         if (!$user->isMemberOfBoard($board_id)) {
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
-
+        $teamId = $board->team->team_id;
         $column_id = $request->input('column_id');
         if ($column_id == null) {
             return response()->json(['error' => 'Column id is required'], 403);
         }
-
+    
         $column = Column::where('board_id', $board_id)
             ->where('column_id', $column_id)
             ->first();
-
+    
         if (!$column) {
             return response()->json(['error' => 'Column not found for the given board'], 404);
         }
-
+    
         if (isset($column->task_limit) && $column->tasks()->count() >= $column->task_limit) {
             return response()->json(['error' => 'Task limit for the column has been reached'], 403);
         }
-
+    
         $this->validate($request, [
             'title' => 'required|string|max:100',
             'description' => 'nullable|string',
@@ -63,17 +62,17 @@ class TaskController extends Controller
             ],
             'priority_id' => 'nullable|integer|exists:priorities,priority_id',
         ]);
-
+    
         $lastTask = Task::where('column_id', $request->input('column_id'))
             ->orderBy('position', 'desc')
             ->first();
-
+    
         if ($lastTask == null) {
             $position = 1.00;
         } else {
             $position = $lastTask['position'] + 1.00;
         }
-
+    
         $task = new Task([
             'title' => $request->input('title'),
             'description' => $request->input('description'),
@@ -84,19 +83,15 @@ class TaskController extends Controller
             'priority_id' => $request->input('priority_id'),
             'position' => $position,
         ]);
-
+    
         $task->save();
+    
+        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($task->task_id);
 
-        $task_id = $task->task_id;
-
-        UserTask::create([
-            'user_id' => $user_id,
-            'task_id' => $task_id
-        ]);
-
-        return response()->json(['message' => 'Task created successfully', 'task' => $task]);
+        //LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Task created successfully!", $teamId, $board_id, $task->task_id);
+        return response()->json(['message' => 'Task created successfully', 'task' => $taskWithSubtasksAndTags]);
     }
-
+    
     public function taskUpdate(Request $request, $board_id, $task_id)
     {
         $user = auth()->user();
@@ -130,47 +125,47 @@ class TaskController extends Controller
 
         $task->save();
 
-        return response()->json(['message' => 'Task updated successfully', 'task' => $task]);
+        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($task_id);
+        
+        return response()->json(['message' => 'Task updated successfully', 'task' => $taskWithSubtasksAndTags]);
     }
 
     public function taskDestroy(Request $request, $board_id, $task_id)
     {
         $user = auth()->user();
         $board = Board::find($board_id);
-
+    
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
         }
-
+    
         if (!$user->isMemberOfBoard($board_id)) {
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
-
+    
         $task = Task::where('board_id', $board_id)->find($task_id);
-
+    
         if (!$task) {
             return response()->json(['error' => 'Task not found'], 404);
         }
-
+    
         $task->attachments()->delete();
-
+    
         foreach ($task->comments as $comment) {
             $comment->mentions()->delete();
             $comment->delete();
         }
-
+    
         FavouriteTask::where('task_id', $task_id)->delete();
-
+    
         Log::where('task_id', $task_id)->delete();
-
+    
         TaskTag::where('task_id', $task_id)->delete();
-
-        UserTask::where('task_id', $task_id)->delete();
-
+    
         Feedback::where('task_id', $task_id)->delete();
-
+    
         $task->delete();
-
+    
         return response()->json(['message' => 'Task deleted successfully']);
     }
 
@@ -183,7 +178,9 @@ class TaskController extends Controller
             return response()->json(['error' => 'Column not found'], 404);
         }
 
-        if (!$user->isMemberOfBoard($column->board_id)) {
+        $board = $column->board;
+
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
 
@@ -195,11 +192,11 @@ class TaskController extends Controller
 
         foreach ($tasks as $task) {
             $taskToUpdate = Task::find($task['task_id']);
-            if ($taskToUpdate && $taskToUpdate->column_id == $column_id) {
+            if ($taskToUpdate) {
                 $taskToUpdate->position = $task['position'];
-                if (isset($task['column_id'])) {
+                if (isset($task['column_id']) && $task['column_id'] != $taskToUpdate->column_id) {
                     $newColumn = Column::find($task['column_id']);
-                    if ($newColumn && $user->isMemberOfBoard($newColumn->board_id)) {
+                    if ($newColumn && $newColumn->board_id === $board->board_id) {
                         if (isset($newColumn->task_limit) && $newColumn->tasks()->count() >= $newColumn->task_limit) {
                             return response()->json(['error' => 'Task limit for the new column has been reached'], 403);
                         }
@@ -210,7 +207,7 @@ class TaskController extends Controller
                 }
                 $taskToUpdate->save();
             } else {
-                return response()->json(['error' => 'Task not found or does not belong to this column'], 404);
+                return response()->json(['error' => 'Task not found'], 404);
             }
         }
 
@@ -279,7 +276,9 @@ class TaskController extends Controller
 
         $subTask->save();
 
-        return response()->json(['message' => 'Subtask created successfully', 'task' => $subTask]);
+        $subTaskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($subTask->task_id);
+
+        return response()->json(['message' => 'Subtask created successfully', 'task' => $subTaskWithSubtasksAndTags]);
     }
 
     public function subtaskUpdate(Request $request, $board_id, $subtask_id)
@@ -308,7 +307,9 @@ class TaskController extends Controller
 
         $subTask->save();
 
-        return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTask]);
+        $subTaskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($subtask_id);
+    
+        return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTaskWithSubtasksAndTags]);
     }
 
     public function subtaskDestroy(Request $request, $board_id, $subtask_id)

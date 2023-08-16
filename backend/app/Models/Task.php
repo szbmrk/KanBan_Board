@@ -22,6 +22,13 @@ class Task extends Model
         'position',
     ];
 
+    protected $appends = ['is_favourite'];
+    public function getIsFavouriteAttribute()
+    {
+        // Check if this task is a favourite for the authenticated user
+
+        return FavouriteTask::where('task_id', $this->task_id)->where('user_id', auth()->id())->exists();
+    }
     // Relationship with the Column model
     public function column()
     {
@@ -32,7 +39,7 @@ class Task extends Model
     {
         return $this->belongsTo(Board::class);
     }
-    
+
     // Relationship with the Parent Task (self-referencing)
     public function parentTask()
     {
@@ -60,8 +67,13 @@ class Task extends Model
         return $this->belongsToMany(Tag::class, 'task_tags', 'task_id', 'tag_id');
     }
 
-    public function feedback() {
+    public function feedback()
+    {
         return $this->hasMany(Feedback::class, 'task_id');
     }
-    
+
+    public function subtasks()
+    {
+        return $this->hasMany(Task::class, 'parent_task_id', 'task_id')->with(['subtasks', 'tags']);
+    }
 }

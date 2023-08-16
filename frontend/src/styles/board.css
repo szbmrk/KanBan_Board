@@ -4,26 +4,47 @@
   flex-direction: column; /* Stack cards vertically */
   margin: 20px 10px;
   padding: 10px;
-  width: 300px;
-  background-color: rgba(var(--dark-grayRGB), 0.5);
+  width: 350px;
+  background-color: var(--bg-dark);
   border-radius: 5px;
+  max-height: 700px;
+  box-shadow: 0 10px 20px 5px rgba(0, 0, 0, 0.2);
 }
 
-.content {
-  text-align: center;
-  padding: 20px;
+.task-container {
+  overflow: auto;
 }
 
 .div-container {
   display: flex; /* Display divs next to each other */
-  flex-wrap: wrap; /* Allow divs to wrap to next line */
+  flex-wrap: nowrap; /* Allow divs to wrap to next line */
   justify-content: flex-start;
+  align-items: flex-start;
 }
 
-.card-title {
+.addbtn-column {
+  background-color: transparent;
+  color: var(--dark-gray);
+  border: 2px dashed var(--dark-gray);
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  width: 350px !important;
+  min-width: 350px !important;
+  height: 155px !important;
+  min-height: 155px !important;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.3em;
+  transition: 0.4s ease-in-out;
+  box-shadow: none;
+}
+
+.addbtn-column:hover {
   color: var(--light-gray);
-  margin: 0 30px 30px;
-  border-bottom: 1px solid var(--light-gray);
+  background-color: var(--bg-dark);
 }
 
 .name-edit { 
@@ -91,7 +112,7 @@
 
 @media (max-width: 830px) {
   body {
-    font-size: 0.9rem;
+    font-size: 0.9em;
   }
 
   .div-container {
@@ -101,7 +122,7 @@
 
 @media (max-width: 480px) {
   body {
-    font-size: 0.75rem;
+    font-size: 0.75em;
   }
 
   .div-container {
