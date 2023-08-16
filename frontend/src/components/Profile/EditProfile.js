@@ -5,6 +5,7 @@ import '../../styles/editprofile.css';
 export default function EditProfile() {
 
     useEffect(() => {
+        document.title = 'Profile'
         getProfileData();
     }, []);
 
@@ -15,7 +16,7 @@ export default function EditProfile() {
         confirmPassword: '',
         oldPassword: ''
     });
-    const [error, setError]=useState('');
+    const [error, setError] = useState('');
 
     const getProfileData = async () => {
         try {
@@ -61,23 +62,21 @@ export default function EditProfile() {
                 console.log(err);
             }
         else
-        if(formData.newPassword!==formData.confirmPassword)
-        {
-            setError('New passwords do not match!');
-        }
-        else
-        {
-            try {
-                const token = sessionStorage.getItem('token');
-                const response = await axios.put(`/profile`, { username: formData.username, email: formData.email, old_password: formData.oldPassword, new_password: formData.newPassword}, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                console.log(response);
+            if (formData.newPassword !== formData.confirmPassword) {
+                setError('New passwords do not match!');
             }
-            catch (err) {
-                setError(err.response.data.error);
+            else {
+                try {
+                    const token = sessionStorage.getItem('token');
+                    const response = await axios.put(`/profile`, { username: formData.username, email: formData.email, old_password: formData.oldPassword, new_password: formData.newPassword }, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    console.log(response);
+                }
+                catch (err) {
+                    setError(err.response.data.error);
+                }
             }
-        }
     }
 
 
@@ -166,10 +165,10 @@ export default function EditProfile() {
                         </tr>
                     </tbody>
                 </table>
-                {error!=='' && 
-                (
-                    <h1>{error}</h1>
-                )
+                {error !== '' &&
+                    (
+                        <h1>{error}</h1>
+                    )
                 }
                 <button type='submit'>Submit</button>
             </form>

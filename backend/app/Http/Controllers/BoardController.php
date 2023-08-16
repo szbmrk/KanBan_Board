@@ -12,7 +12,7 @@ class BoardController extends Controller
     public function show($board_id)
     {
         $user = auth()->user();
-        $board = Board::with(['columns.tasks.tags', 'columns.tasks.subtasks'])->find($board_id);
+        $board = Board::with(['columns.tasks.tags', 'columns.tasks.subtasks', 'columns.tasks.comments', 'columns.tasks.priority'])->find($board_id);
 
         if (!$board) {
             LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
