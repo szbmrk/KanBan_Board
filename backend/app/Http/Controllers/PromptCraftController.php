@@ -74,6 +74,7 @@ class PromptCraftController extends Controller
 
         return response()->json(['message' => 'Crafted prompt created successfully.'], 201);
     }
+
     public function updatePrompts(Request $request, $boardId, $promptId)
     {
         $user = auth()->user();
@@ -143,7 +144,34 @@ class PromptCraftController extends Controller
         return response()->json(['message' => 'Prompt updated successfully.'], 200);
     }
 
+    public function destroyPrompts($boardId, $promptId)
+    {
+        $user = auth()->user();
 
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized.'], 401);
+        }
+
+        $board = Board::where('board_id', $boardId)->first();
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+
+        $prompt = CraftedPrompt::find($promptId);
+
+        if (!$prompt) {
+            return response()->json(['error' => 'Prompt not found.'], 404);
+        }
+
+        $prompt->delete();
+
+        return response()->json(['message' => 'Prompt deleted successfully.'], 200);
+    }
 
 }
 
