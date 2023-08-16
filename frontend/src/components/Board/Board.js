@@ -100,7 +100,7 @@ const Board = () => {
         } catch (e) {
             console.error(e);
             if (e.response.status === 403) setError('No permission');
-            else setError(e);
+            else setError(e.message);
             setPermission(false);
         }
     };
