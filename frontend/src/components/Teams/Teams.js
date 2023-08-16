@@ -2,10 +2,15 @@ import React, { useEffect, useState } from "react";
 import axios from "../../api/axios";
 import TeamCard from "./TeamCard";
 import TeamManager from "./TeamManager";
+import Loader from "../Loader";
 
 const Teams = () => {
+    const token = sessionStorage.getItem('token');
+    const user_id = sessionStorage.getItem('user_id');
+
     const [teams, setTeams] = useState([]);
     const [manageIsClicked, setManage] = useState(false);
+
     useEffect(() => {
         document.title = 'Teams'
         getTeams();
@@ -15,10 +20,115 @@ const Teams = () => {
         setManage(!manageIsClicked);
     }
 
-    const getTeams = async () => {
+    async function DeleteTeam(teamId) {
+        try {
+            await axios.delete(`/dashboard/teams/${teamId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+            console.log(teamId);
+            const newTeamData = teams.filter((team) => team.team_id !== teamId);
+            setTeams(newTeamData);
+        }
+        catch (error) {
+            console.log(error.response);
+        }
+    }
 
+    async function AddUsers(user_ids, team_id) {
+        try {
+            const response = await axios.post(
+                `/team/${team_id}/management`,
+                { user_ids: user_ids },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            console.log(response);
+            const newTeamData = teams.map((team) => {
+                if (team.team_id === team_id) {
+                    team.team_members = [...team.team_members, ...response.data.added_members];
+                }
+                return team;
+            });
+            setTeams(newTeamData);
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
+    async function AddTeam(teamName) {
+        try {
+            const response = await axios.post(`/dashboard/teams/`,
+                { name: teamName },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            console.log(response.data.team);
+            const newTeamData = [...teams];
+            newTeamData.push(response.data.team);
+            console.log(newTeamData);
+            setTeams(newTeamData);
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
+    async function ChangeTeamName(team_id, name) {
+        try {
+            const response = await axios.put(
+                `/dashboard/teams/${team_id}`,
+                { name: name },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            const newTeamData = teams.map((team) => {
+                if (team.team_id === team_id) {
+                    team.name = name;
+                }
+                return team;
+            });
+            setTeams(newTeamData);
+            console.log(response);
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
+    async function deleteUserFromTeam(team_id, user_id) {
         const token = sessionStorage.getItem('token');
-        const user_id = sessionStorage.getItem('user_id');
+        try {
+            await axios.delete(`/team/${team_id}/management/${user_id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+            const newTeamData = teams.map((team) => {
+                if (team.team_id === team_id) {
+                    const newTeamMembers = team.team_members.filter((member) => member.user_id !== user_id);
+                    team.team_members = newTeamMembers;
+                }
+                return team;
+            });
+            setTeams(newTeamData);
+        }
+        catch (error) {
+            console.log(error.response);
+        }
+    }
+
+    const getTeams = async () => {
 
         try {
             const response = await axios.get(`/user/${user_id}/teams`, {
@@ -37,15 +147,19 @@ const Teams = () => {
     }
     return (
         <div className="content">
-            <div className="scrollable-container">
-                {teams.map((team, index) => (
-                    <TeamCard key={index} data={team} />
-                ))}
-                <button onClick={addTeam}>Add team</button>
-                {manageIsClicked &&
-                    <TeamManager teamData={[]} onClose={addTeam} />
-                }
-            </div>
+            {teams.length === 0 ? (
+                <Loader />
+            ) : (
+                <div className="scrollable-container">
+                    {teams.map((team, index) => (
+                        <TeamCard key={index} data={team} deleteUserFromTeam={deleteUserFromTeam} ChangeTeamName={ChangeTeamName} AddUsers={AddUsers} DeleteTeam={DeleteTeam} />
+                    ))}
+                    <button onClick={addTeam}>Add team</button>
+                    {manageIsClicked &&
+                        <TeamManager teamData={[]} onClose={addTeam} ChangeTeamName={ChangeTeamName} addTeam={AddTeam} />
+                    }
+                </div>
+            )}
         </div>
     )
 }

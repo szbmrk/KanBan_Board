@@ -2,11 +2,9 @@ import React from 'react';
 import axios from '../../api/axios';
 import { useEffect, useState } from 'react';
 
-const TeamManager = ({ teamData, onClose }) => {
-    const [users, setUsers] = useState([]);
+const TeamManager = ({ teamData, onClose, ChangeTeamName, addTeam }) => {
     const [teamName, setTeamName] = useState('');
     const [addedUsers, setAddedUsers] = useState([]);
-    const [teamID, setTeamID] = useState();
 
     useEffect(() => {
         if (teamData.length !== 0) {
@@ -16,65 +14,13 @@ const TeamManager = ({ teamData, onClose }) => {
 
     async function SubmitTeamName(e) {
         e.preventDefault();
-        const token = sessionStorage.getItem('token');
-        try {
-            const response = await axios.put(
-                `/dashboard/teams/${teamData.team_id}`,
-                { name: teamName },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            console.log(response);
-        } catch (error) {
-            console.log(error.response);
-        }
+        ChangeTeamName(teamData.team_id, teamName);
         onClose();
-    }
-
-    async function AddUsers() {
-        const token = sessionStorage.getItem('token');
-
-        try {
-            const response = await axios.post(
-                `/team/${teamID}/management`,
-                { user_ids: addedUsers },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            console.log(response);
-        } catch (error) {
-            console.log(error.response);
-        }
-        window.location.reload();
     }
 
     async function AddTeam(e) {
         e.preventDefault();
-        const token = sessionStorage.getItem('token');
-        const user_id = sessionStorage.getItem('user_id');
-        try {
-            const response = await axios.post(
-                `/dashboard/teams/`,
-                { name: teamName },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            console.log(response);
-            setAddedUsers(user_id);
-            setTeamID(response.data.team_id);
-            AddUsers();
-        } catch (error) {
-            console.log(error.response);
-        }
+        addTeam(teamName);
         onClose();
     }
 
