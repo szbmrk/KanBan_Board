@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id('crafted_prompt_id');
             $table->unsignedBigInteger('board_id')->nullable(false);
             $table->text('crafted_prompt_text')->nullable();
-            $table->enum('carft_with', [
+            $table->enum('craft_with', [
                 'chatgpt', 'llama', 'bard'
             ])->nullable(false);
             $table->unsignedBigInteger('created_by')->nullable(false);
+            $table->timestamps();
 
             // Add the onDelete('cascade') option to both foreign key definitions
             $table->foreign('board_id')->references('board_id')->on('boards')->onDelete('cascade');

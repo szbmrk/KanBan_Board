@@ -3,24 +3,25 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AGIController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\MentionController;
 use App\Http\Controllers\TaskTagController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AttachmentController;
-use App\Http\Controllers\TeamManagementController;
-use App\Http\Controllers\FavouriteTaskController;
-use App\Http\Controllers\FeedbackController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\MentionController;
+use App\Http\Controllers\PromptCraftController;
 
-use App\Http\Controllers\LlamaController;use App\Models\Feedback;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PriorityController;
+use App\Http\Controllers\FavouriteTaskController;
+use App\Http\Controllers\TeamManagementController;
+use App\Http\Controllers\LlamaController;use App\Models\Feedback;
 use App\Http\Controllers\UserTasksController;/*|--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
@@ -121,3 +122,5 @@ Route::get('/boards/{boardId}/tasks/{taskId}/generate_priority', [AGIController:
 Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::class, 'generatePrioritiesForColumn'])->middleware('api');
 Route::post('/generate-llama-subtasks', [LlamaController::class, 'generateSubtasks']);
 Route::get('/generate-llama-subtasks2', [LlamaController::class, 'testSubtaskParsing']);
+
+Route::get('/AGI/PromptCraft/GetPrompts', [PromptCraftController::class, 'GetPrompts'])->middleware('api');
