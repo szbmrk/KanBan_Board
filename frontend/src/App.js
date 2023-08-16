@@ -12,6 +12,7 @@ import Teams from './components/Teams/Teams';
 import Board from './components/Board/Board';
 import Permissiontable from './components/Permissions/Permissiontable';
 import EditProfile from './components/Profile/EditProfile';
+import Notification from './components/Notification';
 
 
 const App = () => {
@@ -52,11 +53,17 @@ const App = () => {
                             <Sidebar />
                             <Permissiontable />
                         </ProtectedRoute>} />
-                        <Route exact path="/profile" element={
+                    <Route exact path="/profile" element={
                         <ProtectedRoute>
                             <Navbar />
                             <Sidebar />
                             <EditProfile />
+                        </ProtectedRoute>} />
+                    <Route exact path="/notifications" element={
+                        <ProtectedRoute>
+                            <Navbar />
+                            <Sidebar />
+                            <Notification />
                         </ProtectedRoute>} />
                 </Routes>
             </AuthProvider>

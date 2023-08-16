@@ -56,7 +56,7 @@ class CommentController extends Controller
         ]);
 
         $comment->save();
-
-        return response()->json(['message' => 'Comment created successfully', 'comment' => $comment]);
+        $commentWithUser = Comment::with('user')->find($comment->comment_id);
+        return response()->json(['message' => 'Comment created successfully', 'comment' => $commentWithUser]);
     }
 }

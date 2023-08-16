@@ -42,7 +42,10 @@ const Board = () => {
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
 
+    const token = sessionStorage.getItem('token');
+
     useEffect(() => {
+        document.title = 'Board'
         fetchBoardData();
     }, []);
 
@@ -62,8 +65,6 @@ const Board = () => {
     }, [editingColumnIndex]);
 
     const fetchBoardData = async () => {
-        const token = sessionStorage.getItem('token');
-
         try {
             const response = await axios.get(`/boards/${board_id}`, {
                 headers: {
@@ -95,7 +96,6 @@ const Board = () => {
 
     const handleAddColumn = async () => {
         try {
-            const token = sessionStorage.getItem('token');
             const formData = new FormData();
             formData.append('name', 'New Column');
             formData.append('is_finished', 0);
@@ -127,7 +127,6 @@ const Board = () => {
 
             let tempPositions = columnPositions;
             tempPositions.splice(hoverIndex, 0, tempPositions.splice(dragIndex, 1)[0]);
-            const token = sessionStorage.getItem('token');
             axios.post(
                 `/boards/${board_id}/columns/positions`,
                 { columns: tempPositions },
@@ -167,7 +166,6 @@ const Board = () => {
         console.log('confirm');
 
         try {
-            const token = sessionStorage.getItem('token');
             axios.delete(`/boards/${board_id}/columns/${board.columns[columnToDeleteIndex].column_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -225,7 +223,6 @@ const Board = () => {
             if (columnNewTitle === '') {
                 // Reset the title if the changes were cancelled
                 try {
-                    const token = sessionStorage.getItem('token');
                     const column_id = board.columns[columnIndex].column_id;
                     await axios.put(
                         `/boards/column/${column_id}`,
@@ -245,7 +242,6 @@ const Board = () => {
                 }
             } else {
                 try {
-                    const token = sessionStorage.getItem('token');
                     const column_id = board.columns[columnIndex].column_id;
                     await axios.put(
                         `/boards/column/${column_id}`,
@@ -276,7 +272,6 @@ const Board = () => {
             };
 
             const board_id = board.columns[divIndex].board_id;
-            const token = sessionStorage.getItem('token');
             const res = await axios.post(`/boards/${board_id}/task`, newTask, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -325,7 +320,6 @@ const Board = () => {
         }
 
         const position = sourceDiv.tasks[hoverIndex].position;
-        const token = sessionStorage.getItem('token');
 
         try {
             await axios.post(
@@ -367,7 +361,6 @@ const Board = () => {
 
     const handleEditTask = async (task_id, column_id, title, description) => {
         try {
-            const token = sessionStorage.getItem('token');
             await axios.put(
                 `/boards/${board_id}/tasks/${task_id}`,
                 { title: title, description: description },
@@ -388,7 +381,6 @@ const Board = () => {
 
     const handleDeleteTask = async (taskId, column_id) => {
         try {
-            const token = sessionStorage.getItem('token');
 
             await axios.delete(`/boards/${board_id}/tasks/${taskId}`, {
                 headers: {
@@ -408,7 +400,6 @@ const Board = () => {
 
     const handleFavouriteTask = (id, column_id) => {
         try {
-            const token = sessionStorage.getItem('token');
             axios.post(
                 `/boards/${board_id}/tasks/${id}/favourite`,
                 {},
@@ -437,7 +428,6 @@ const Board = () => {
 
     const handleUnFavouriteTask = (id, column_id) => {
         try {
-            const token = sessionStorage.getItem('token');
             axios.delete(`/boards/${board_id}/tasks/${id}/favourite`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -462,7 +452,6 @@ const Board = () => {
 
     const handleAddSubtask = async (parent_task_id, column_id) => {
         try {
-            const token = sessionStorage.getItem('token');
             const response = await axios.post(
                 `/boards/${board_id}/tasks/${parent_task_id}/subtasks`,
                 { title: 'New subtask' },
@@ -483,7 +472,6 @@ const Board = () => {
 
     const handleDeleteSubtask = async (subtask_id, parent_task_id, column_id) => {
         try {
-            const token = sessionStorage.getItem('token');
             await axios.delete(`/boards/${board_id}/subtasks/${subtask_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -504,7 +492,6 @@ const Board = () => {
 
     const handleEditSubtask = async (subtask_id, parent_task_id, column_id, title, description) => {
         try {
-            const token = sessionStorage.getItem('token');
             await axios.put(
                 `/boards/${board_id}/subtasks/${subtask_id}`,
                 { title: title, description: description },
@@ -531,7 +518,6 @@ const Board = () => {
 
     const handleFavouriteSubtask = (subtask_id, parent_task_id, column_id) => {
         try {
-            const token = sessionStorage.getItem('token');
             axios.post(
                 `/boards/${board_id}/tasks/${subtask_id}/favourite`,
                 {},
@@ -557,7 +543,6 @@ const Board = () => {
 
     const handleUnFavouriteSubtask = (subtask_id, parent_task_id, column_id) => {
         try {
-            const token = sessionStorage.getItem('token');
             axios.delete(`/boards/${board_id}/tasks/${subtask_id}/favourite`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -574,6 +559,26 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
+        }
+    };
+
+    const postComment = async (task_id, column_id, comment) => {
+        try {
+            const response = await axios.post(
+                `/tasks/${task_id}/comments`,
+                { text: comment },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            const newComment = response.data.comment;
+            const newBoardData = [...board.columns];
+            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
+            const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
+            task.comments.push(newComment);
+            setBoard({ ...board, columns: newBoardData });
+        } catch (err) {
+            console.log(err);
         }
     };
 
@@ -868,6 +873,7 @@ const Board = () => {
                     deleteSubtask={handleDeleteSubtask}
                     favouriteSubtask={handleFavouriteSubtask}
                     unFavouriteSubtask={handleUnFavouriteSubtask}
+                    handlePostComment={postComment}
                     setTaskAsInspectedTask={setTaskAsInspectedTask}
                     onPreviousTask={handleOpenPreviousTask}
                 />

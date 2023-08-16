@@ -7,8 +7,8 @@ import Loader from "../Loader";
 const AssignedTasks = () => {
     const [tasks, setTasks] = useState([]);
     useEffect(() => {
+        document.title = 'Assigned Tasks'
         getAssignedTasks();
-
     }, []);
 
     const getAssignedTasks = async () => {

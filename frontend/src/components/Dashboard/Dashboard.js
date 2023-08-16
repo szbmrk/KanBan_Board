@@ -34,6 +34,7 @@ export default function Dashboard() {
     }, []);
 
     useEffect(() => {
+        document.title = 'Dashboard'
         const user_id = sessionStorage.getItem('user_id');
         if (user_id) {
             setUserID(user_id);

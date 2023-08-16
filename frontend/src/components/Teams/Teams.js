@@ -4,21 +4,20 @@ import TeamCard from "./TeamCard";
 import TeamManager from "./TeamManager";
 
 const Teams = () => {
-  const [teams, setTeams] = useState([]);
+    const [teams, setTeams] = useState([]);
     const [manageIsClicked, setManage] = useState(false);
-  useEffect(() => {
-    getTeams();
+    useEffect(() => {
+        document.title = 'Teams'
+        getTeams();
+    }, []);
 
-  }, []);
+    function addTeam() {
+        setManage(!manageIsClicked);
+    }
 
-  function addTeam()
-  {
-      setManage(!manageIsClicked);
-  }
+    const getTeams = async () => {
 
-  const getTeams = async () => {
-
-    const token = sessionStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         const user_id = sessionStorage.getItem('user_id');
 
         try {
@@ -35,19 +34,20 @@ const Teams = () => {
             console.log(error.response);
         }
 
-  }
-  return (
-    <div className="content">
-    <div className="scrollable-container">
-        {teams.map((team, index) => (
-                <TeamCard key={index} data={team} />
-            ))}
-          <button onClick={addTeam}>Add team</button>
-          {manageIsClicked && 
-            <TeamManager teamData={[]} onClose={addTeam} />
-      }
-    </div>
-    </div>
-  )}
+    }
+    return (
+        <div className="content">
+            <div className="scrollable-container">
+                {teams.map((team, index) => (
+                    <TeamCard key={index} data={team} />
+                ))}
+                <button onClick={addTeam}>Add team</button>
+                {manageIsClicked &&
+                    <TeamManager teamData={[]} onClose={addTeam} />
+                }
+            </div>
+        </div>
+    )
+}
 
-  export default Teams;
+export default Teams;

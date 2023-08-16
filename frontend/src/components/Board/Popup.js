@@ -42,6 +42,7 @@ const Popup = ({
     favouriteSubtask,
     unFavouriteSubtask,
     setTaskAsInspectedTask,
+    handlePostComment,
     onPreviousTask,
 }) => {
     const popupRef = useRef(null);
@@ -51,7 +52,6 @@ const Popup = ({
     const [showAddToCard, setShowAddToCard] = useState(false);
     const [addToCardIconZIndex, setAddToCardIconZIndex] = useState(1);
     const [addToCardContainerPosition, setAddToCardContainerPosition] = useState({ x: 0, y: 0 });
-    const [comments, setComments] = useState([]);
     const [addComment, setAddComment] = useState('');
 
     const handleChange = (event) => {
@@ -65,7 +65,6 @@ const Popup = ({
     useEffect(() => {
         setEditedText(task.title);
         setEditedDescription(task.description);
-        handleGetComments();
     }, [task]);
 
     useEffect(() => {
@@ -94,49 +93,22 @@ const Popup = ({
         setAddToCardIconZIndex(addToCardIconZIndex === 1 ? 100 : 1);
     };
 
-    const handleGetComments = async () => {
-        try {
-            const user_id = sessionStorage.getItem('user_id');
-            const token = sessionStorage.getItem('token');
-            const response = await axios.get(`/user/${user_id}/tasks`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            const tempData = response.data.assigned_tasks;
-            for (let i = 0; i < tempData.length; i++) {
-                if (tempData[i].task.task_id === task.task_id) {
-                    setComments(tempData[i].task.comments);
-                    break;
-                }
-            }
-        } catch (err) {
-            console.log(err);
-        }
-    };
     const handleAddComment = (e) => {
         setAddComment(e.target.value);
     };
 
     const postComment = async () => {
-        try {
-            const token = sessionStorage.getItem('token');
-            const response = await axios.post(
-                `/tasks/${task.task_id}/comments`,
-                { text: addComment },
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
-            );
-            // Assuming response.data.comments contains the updated comments array
-            const updatedComments = response.data.comments;
+        handlePostComment(task.task_id, task.column_id, addComment);
+        setAddComment('');
+    };
 
-            // Update the comments state with the updatedComments array
-            setComments(updatedComments);
-
-            // Clear the input field
-            setAddComment('');
-        } catch (error) {
-            console.log(error.response);
-        }
+    const dateFormatOptions = {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
     };
 
     return (
@@ -150,7 +122,7 @@ const Popup = ({
                         {task.due_date} {/* TODO: onClick szerkeszthetőség elkészítése */}
                     </div>
                     {/* TODO: különböző színű icon megjelenítése az id helyett annak függvényében, hogy milyen a prioritása a feledatnak */}
-                    <div className='priority'>{task.priority_id}</div>{' '}
+                    {task.priority && <div className='priority'>{task.priority.priority}</div>}
                     {/* TODO: onClick szerkeszthetőség elkészítése */}
                     {task.parent_task_id === null ? (
                         <span className='close-btn' onClick={onClose}>
@@ -204,67 +176,99 @@ const Popup = ({
                                 </div>
                             </>
                         )}
-                        {task.subtasks &&
-                            task.subtasks.length > 0 &&
-                            task.subtasks.map((subTask, index) => (
-                                <>
-                                    <div className='subtasks-container'>
-                                        <Subtask
-                                            key={subTask.task_id}
-                                            subTask={subTask}
-                                            index={index}
-                                            favouriteSubtask={() =>
-                                                favouriteSubtask(
-                                                    subTask.task_id,
-                                                    subTask.parent_task_id,
-                                                    subTask.column_id
-                                                )
-                                            }
-                                            unFavouriteSubtask={() =>
-                                                unFavouriteSubtask(
-                                                    subTask.task_id,
-                                                    subTask.parent_task_id,
-                                                    subTask.column_id
-                                                )
-                                            }
-                                            deleteSubtask={() =>
-                                                deleteSubtask(
-                                                    subTask.task_id,
-                                                    subTask.parent_task_id,
-                                                    subTask.column_id
-                                                )
-                                            }
-                                            setTaskAsInspectedTask={() => setTaskAsInspectedTask(subTask)}
-                                        />
-                                    </div>
-                                </>
-                            ))}
-                        <div className='subtitle'>
-                            <span className='icon'>{commentsIcon}</span>
-                            <h3>Comments:</h3>
-                        </div>
-                        <div className='comments-container'>
-                            <div className='previous-comments'>
-                                {comments.map((comment, index) => (
-                                    <div className='comment' key={index}>
-                                        {comment.user.username}: {comment.text}
-                                    </div>
+                        {task.subtasks && task.subtasks.length > 0 ?
+                            <div className='subtasks-container'>
+                                {task.subtasks.map((subTask, index) => (
+                                    <Subtask
+                                        key={subTask.task_id}
+                                        subTask={subTask}
+                                        index={index}
+                                        favouriteSubtask={() =>
+                                            favouriteSubtask(
+                                                subTask.task_id,
+                                                subTask.parent_task_id,
+                                                subTask.column_id
+                                            )
+                                        }
+                                        unFavouriteSubtask={() =>
+                                            unFavouriteSubtask(
+                                                subTask.task_id,
+                                                subTask.parent_task_id,
+                                                subTask.column_id
+                                            )
+                                        }
+                                        deleteSubtask={() =>
+                                            deleteSubtask(
+                                                subTask.task_id,
+                                                subTask.parent_task_id,
+                                                subTask.column_id
+                                            )
+                                        }
+                                        setTaskAsInspectedTask={() => setTaskAsInspectedTask(subTask)}
+                                    />
                                 ))}
                             </div>
-                            <div className='add-comment'>
-                                <div className='add-comment-content'>
-                                    <textarea
-                                        className='add-comment-textarea'
-                                        value={addComment}
-                                        onChange={handleAddComment}
-                                        placeholder='Write your comment here'
-                                    />
-                                    <button className='add-comment-button' onClick={postComment}>
-                                        {sendMessageIcon}
-                                    </button>
+                            : <></>}
+                        {task.comments && task.comments.length > 0 ? <>
+                            <div className='subtitle'>
+                                <span className='icon'>{commentsIcon}</span>
+                                <h3>Comments:</h3>
+                            </div>
+                            <div className='comments-container'>
+                                <div class='previous-comments'>
+                                    {task.comments.map((comment, index) => (
+                                        <div
+                                            className={`comment ${sessionStorage.getItem("username") === comment.user.username ? 'own-comment' : 'other-comment'}`}
+                                            key={index}
+                                        >
+                                            <div class="comment-header">
+                                                <span className="username">{comment.user.username}</span>
+                                                <span className="date">{new Date(comment.created_at).toLocaleString("en-US", dateFormatOptions)}</span>
+                                            </div>
+                                            <div className="comment-text">
+                                                {comment.text}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className='add-comment'>
+                                    <div className='add-comment-content'>
+                                        <textarea
+                                            className='add-comment-textarea'
+                                            value={addComment}
+                                            onChange={handleAddComment}
+                                            placeholder='Write your comment here'
+                                        />
+                                        <button className='add-comment-button' onClick={postComment}>
+                                            {sendMessageIcon}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </> : <>
+                            <div className='subtitle'>
+                                <span className='icon'>{commentsIcon}</span>
+                                <h3>Comments:</h3>
+                            </div>
+                            <div className='comments-container'>
+                                <div class='previous-comments'>
+                                    <h3>No comments yet!</h3>
+                                </div>
+                                <div className='add-comment'>
+                                    <div className='add-comment-content'>
+                                        <textarea
+                                            className='add-comment-textarea'
+                                            value={addComment}
+                                            onChange={handleAddComment}
+                                            placeholder='Write your comment here'
+                                        />
+                                        <button className='add-comment-button' onClick={postComment}>
+                                            {sendMessageIcon}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </>}
                     </div>
                 </div>
                 <button
