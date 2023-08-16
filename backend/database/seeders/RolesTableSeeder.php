@@ -16,8 +16,8 @@ class RolesTableSeeder extends Seeder
     {
         // Array of roles to be inserted into the 'roles' table
         $roles = [
-            ['name' => 'User', 'board_id' => null, 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'System Admin', 'board_id' => null, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'User', 'board_id' => null, 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Team Manager', 'board_id' => null, 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Board Manager', 'board_id' => 1, 'created_at' => now(), 'updated_at' => now()],
         ];

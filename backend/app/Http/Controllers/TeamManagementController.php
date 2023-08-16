@@ -37,6 +37,12 @@ class TeamManagementController extends Controller
             }
         }
     
+        $team = Team::find($teamId);
+
+        if (!$team) {
+            return response()->json(['error' => 'Team not found'], 404);
+        }
+
         $this->validate($request, [
             'user_name' => 'required|string',
         ]);
