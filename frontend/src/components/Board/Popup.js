@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import '../../styles/popup.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faFileAlt,
     faXmark,
     faArrowLeft,
     faPlus,
@@ -14,9 +13,10 @@ import {
     faComments,
     faListCheck,
 } from '@fortawesome/free-solid-svg-icons';
+import axios from "../../api/axios";
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import Subtask from './Subtask';
-import Tag from '../Tag';
+import TagDropdown from "../TagDropdown";
 import { dateFormatOptions } from '../../utils/DateFormat';
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
@@ -43,6 +43,7 @@ const Popup = ({
     setTaskAsInspectedTask,
     handlePostComment,
     onPreviousTask,
+    tags
 }) => {
     const popupRef = useRef(null);
 
@@ -52,6 +53,7 @@ const Popup = ({
     const [addToCardIconZIndex, setAddToCardIconZIndex] = useState(1);
     const [addToCardContainerPosition, setAddToCardContainerPosition] = useState({ x: 0, y: 0 });
     const [addComment, setAddComment] = useState('');
+    const [boardTags, setBoardTags] = useState([]);
 
     const handleChange = (event) => {
         setEditedText(event.target.value);
@@ -64,6 +66,7 @@ const Popup = ({
     useEffect(() => {
         setEditedText(task.title);
         setEditedDescription(task.description);
+        handleGetBoardTags();
     }, [task]);
 
     useEffect(() => {
@@ -101,6 +104,18 @@ const Popup = ({
         setAddComment('');
     };
 
+    const handleGetBoardTags = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`/boards/${task.board_id}/tags`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setBoardTags(response.data.tags);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     return (
         <div className='overlay'>
             <div className='popup' ref={popupRef}>
@@ -134,17 +149,7 @@ const Popup = ({
                                     <h3>Tags:</h3>
                                 </div>
                                 <div className='tags'>
-                                    {task.tags.map((tag, index) =>
-                                        tag && tag.name && tag.color ? (
-                                            <Tag
-                                                key={index}
-                                                name={tag.name}
-                                                color={tag.color}
-                                                extraClassName='tag-on-card'
-                                                enableClickBehavior={false}
-                                            />
-                                        ) : null
-                                    )}
+                                    <TagDropdown tags={tags} allTags={boardTags}></TagDropdown>
                                     <span className='addbtn-tag'>{plusIcon}</span>
                                 </div>
                             </>

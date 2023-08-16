@@ -887,6 +887,7 @@ const Board = () => {
                     handlePostComment={postComment}
                     setTaskAsInspectedTask={setTaskAsInspectedTask}
                     onPreviousTask={handleOpenPreviousTask}
+                    tags={inspectedTask.tags}
                 />
             )}
         </>
