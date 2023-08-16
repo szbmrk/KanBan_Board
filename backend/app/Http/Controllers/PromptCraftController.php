@@ -54,6 +54,7 @@ class PromptCraftController extends Controller
 
         try{ 
             $this->validate($request, [
+            'crafted_prompt_title' => 'required|string',
             'crafted_prompt_text' => 'required|string',
             'craft_with' => 'required|in:CHATGPT,LLAMA,BARD', 
             'action' => 'required|in:GENERATETASK, GENERATESUBTASK, GENERATEATTACHMENTLINK', 
@@ -65,6 +66,7 @@ class PromptCraftController extends Controller
         }
         
         $craftedPrompt = new CraftedPrompt();
+        $craftedPrompt->crafted_prompt_title = $request->input('crafted_prompt_title');
         $craftedPrompt->crafted_prompt_text = $request->input('crafted_prompt_text');
         $craftedPrompt->craft_with = $request->input('craft_with');
         $craftedPrompt->action = $request->input('action');

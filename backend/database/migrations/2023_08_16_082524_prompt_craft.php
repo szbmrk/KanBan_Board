@@ -12,9 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('crafted_prompts', function (Blueprint $table) {
-            $table->id('crafted_prompt_id');
+            $table->id('crafted_prompt_id')->nullable(false);
+            $table->text('crafted_prompt_title')->nullable(false);
             $table->unsignedBigInteger('board_id')->nullable(false);
-            $table->text('crafted_prompt_text');
+            $table->text('crafted_prompt_text')->nullable(false);
             $table->enum('craft_with', [
                 'CHATGPT', 'LLAMA', 'BARD'
             ])->nullable(false);
