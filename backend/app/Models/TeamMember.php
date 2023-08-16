@@ -29,8 +29,7 @@ class TeamMember extends Model
         return $this->hasMany(TeamMemberRole::class, 'team_member_id', 'team_members_id');
     }
 
-    public function roles()
-    {
+    public function roles() {
         return $this->belongsToMany(Role::class, 'team_members_role', 'team_member_id', 'role_id');
     }
 }

@@ -40,6 +40,7 @@ class UserController extends Controller
         $user->username = $request->username;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
+    
         try {
             $user->save();
     
@@ -50,7 +51,8 @@ class UserController extends Controller
     
             $userRole = Role::where('name', 'User')->first();
             if ($userRole) {
-                $user->roles()->attach($userRole->role_id);
+                // Attaching the role to the team member using Eloquent
+                $teamMember->roles()->attach($userRole->role_id);
     
                 // Engedély hozzárendelési logika (opcionális)
                 $userPermission = Permission::where('name', 'user_permission')->first();
@@ -60,12 +62,13 @@ class UserController extends Controller
             }
     
         } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['error' => 'Signup failed'], 500);
+            return response()->json(['error' => 'Signup failed', 'details' => $e->getMessage()], 500);
         }
+        
     
         return response()->json(['message' => 'Signup successful']);
     }
-
+    
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');

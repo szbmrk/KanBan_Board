@@ -27,18 +27,6 @@ class PermissionRoleTableSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'permission_id' => 3,
-                'role_id' => 3,
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'permission_id' => 4,
-                'role_id' => 3,
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
                 'permission_id' => 5,
                 'role_id' => 4,
                 'created_at' => now(),
