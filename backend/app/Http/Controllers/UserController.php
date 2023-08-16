@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Role;
+use App\Models\Permission;
+use App\Models\TeamMember;
 
 class UserController extends Controller
 {
@@ -37,36 +40,53 @@ class UserController extends Controller
         $user->username = $request->username;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
+    
         try {
             $user->save();
+    
+            // Felhasználó hozzáadása a team_members táblához
+            $teamMember = new TeamMember();
+            $teamMember->user_id = $user->user_id;
+            $teamMember->save();
+    
+            $userRole = Role::where('name', 'User')->first();
+            if ($userRole) {
+                // Attaching the role to the team member using Eloquent
+                $teamMember->roles()->attach($userRole->role_id);
+    
+                // Engedély hozzárendelési logika (opcionális)
+                $userPermission = Permission::where('name', 'user_permission')->first();
+                if ($userPermission && !$userRole->permissions->contains($userPermission->id)) {
+                    $userRole->permissions()->attach($userPermission->id);
+                }
+            }
+    
         } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['error' => 'Signup failed'], 500);
+            return response()->json(['error' => 'Signup failed', 'details' => $e->getMessage()], 500);
         }
+        
     
         return response()->json(['message' => 'Signup successful']);
     }
     
-
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
-
+    
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json(['error' => 'Incorrect email address or password'], 400);
             }
-
+    
             $user = JWTAuth::user();
-
+    
+            $roles = $user->getRoles();
+            $permissions = $user->getPermissions();
+    
         } catch (JWTException $e) {
             return response()->json(['error' => 'could_not_create_token'], 500);
         }
-
+    
         return response()->json(['token' => $token, 'user' => $user]);
     }
-
-
-
-
-
 }

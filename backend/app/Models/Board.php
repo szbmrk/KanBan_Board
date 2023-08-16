@@ -46,4 +46,9 @@ class Board extends Model
     {
         return $this->hasMany(Role::class, 'board_id', 'board_id');
     }
+
+    public function teamMembers()
+    {
+        return $this->hasManyThrough(TeamMember::class, Team::class);
+    }
 }

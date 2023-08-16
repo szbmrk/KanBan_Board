@@ -88,13 +88,42 @@ class User extends Authenticatable implements JWTSubject
 
     public function favouriteTasks()
     {
-    return $this->hasMany(FavouriteTask::class, 'user_id'); 
+        return $this->hasMany(FavouriteTask::class, 'user_id'); 
+    }
+
+    public function teamMembers()
+    {
+        return $this->hasMany(TeamMember::class, 'user_id', 'user_id');
     }
 
     public function roles()
     {
-        return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id');
+        return $this->belongsToMany(Role::class, 'team_members_role', 'team_member_id', 'role_id')
+            ->using(TeamMemberRole::class)
+            ->withPivot('team_member_id', 'role_id'); 
+    }
+    
+    public function hasPermission($permission)
+    {
+        $allRoles = $this->teamMembers->flatMap->roles;
+    
+        foreach ($allRoles as $role) {
+            if ($role->permissions->contains('name', $permission)) {
+                return true;
+            }
+        }
+        return false;
     }
 
+    public function getRoles()
+    {
+        return $this->teamMembers->flatMap->roles->pluck('name')->unique()->all();
+    }
 
+    public function getPermissions()
+    {
+        return $this->teamMembers->flatMap(function($teamMember) {
+            return $teamMember->roles->flatMap->permissions->pluck('name');
+        })->unique()->all();
+    }
 }

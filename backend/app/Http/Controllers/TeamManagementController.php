@@ -21,33 +21,38 @@ class TeamManagementController extends Controller
         } else {
             return response()->json(['error' => 'Unauthenticated or team not found.'], 401);
         }
-       
     }
 
     public function storeTeamMember(Request $request, $team_id)
     {
         $user = auth()->user();
+
+        if (!$user->hasPermission('system_admin')) {
+            if (!$user->teams()->where('teams.team_id', $team_id)->exists()) {
+                return response()->json(['error' => 'Unauthenticated or team not found.'], 401);
+            }
+
+            if (!$user->hasPermission('team_member_management')) {
+                return response()->json(['error' => 'You don\'t have permission to add members to this team.'], 403);
+            }
+        }
         
-        // Check if the user belongs to the team
         if (!$user->teams()->where('teams.team_id', $team_id)->exists()) {
             return response()->json(['error' => 'Unauthenticated or team not found.'], 401);
         }
         
         $userIds = $request->input('user_ids', []);
         
-        // Fetch the team and its current members
         $team = Team::with(['teamMembers.user'])->findOrFail($team_id);
         $currentMemberIds = $team->teamMembers->pluck('user_id')->toArray();
         
         $addedMembers = [];
     
         foreach ($userIds as $userId) {
-            // Check if the user is already a member of the team
             if (in_array($userId, $currentMemberIds)) {
-                continue; // Skip adding if already a member
+                continue;
             }
             
-            // Add the user as a team member
             $teamMember = new TeamMember();
             $teamMember->team_id = $team_id;
             $teamMember->user_id = $userId;
@@ -62,26 +67,36 @@ class TeamManagementController extends Controller
             return response()->json(['message' => 'No new members added.']);
         }
     }
-
+    
     public function destroyTeamMember($teamId, $userId)
     {
-        // Find the team member record based on the provided team ID and user ID
+        $user = auth()->user();
+    
+        if ($user->user_id == $userId) {
+            return response()->json(['error' => 'You cannot remove yourself from the team.'], 403);
+        }
+        
+        if (!$user->hasPermission('system_admin')) {
+            if (!$user->teams()->where('teams.team_id', $teamId)->exists()) {
+                return response()->json(['error' => 'Unauthenticated or team not found.'], 401);
+            }
+    
+            if (!$user->hasPermission('team_member_management')) {
+                return response()->json(['error' => 'You don\'t have permission to remove members from this team.'], 403);
+            }
+        }
+    
         $teamMember = TeamMember::where('team_id', $teamId)
             ->where('user_id', $userId)
             ->first();
-
-        // Check if the team member exists
+    
         if ($teamMember) {
-            // Delete the team member's relationship with the team, but do not delete the entire user record
             $teamMember->delete();
-
-            // You can optionally send a response indicating success
             return response()->json(['message' => 'Team member removed from the team successfully.']);
         } else {
-            // If the team member does not exist, send a response indicating the failure
             return response()->json(['error' => 'Team member not found in the team.'], 404);
         }
-    }
+    }    
 
     public function teamsByUser($user_id)
     {
