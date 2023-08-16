@@ -123,5 +123,7 @@ Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::cla
 Route::post('/generate-llama-subtasks', [LlamaController::class, 'generateSubtasks']);
 Route::get('/generate-llama-subtasks2', [LlamaController::class, 'testSubtaskParsing']);
 
-Route::get('boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::class, 'getPrompts'])->middleware('api');
-Route::post('boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::class, 'storePrompts'])->middleware('api');
+Route::get('/boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::class, 'getPrompts'])->middleware('api');
+Route::post('/boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::class, 'storePrompts'])->middleware('api');
+Route::put('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraftController::class, 'updatePrompts'])->middleware('api');
+Route::delete('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraftController::class, 'destroyPrompts'])->middleware('api');

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('crafted_prompts', function (Blueprint $table) {
             $table->id('crafted_prompt_id');
             $table->unsignedBigInteger('board_id')->nullable(false);
-            $table->text('crafted_prompt_text')->nullable();
+            $table->text('crafted_prompt_text');
             $table->enum('craft_with', [
                 'CHATGPT', 'LLAMA', 'BARD'
             ])->nullable(false);
