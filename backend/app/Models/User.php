@@ -114,16 +114,16 @@ class User extends Authenticatable implements JWTSubject
         }
         return false;
     }
-    
+
     public function getRoles()
     {
-        return $this->roles->pluck('name')->all();
+        return $this->teamMembers->flatMap->roles->pluck('name')->unique()->all();
     }
 
     public function getPermissions()
     {
-        return $this->roles->flatMap(function($role) {
-            return $role->permissions->pluck('name');
+        return $this->teamMembers->flatMap(function($teamMember) {
+            return $teamMember->roles->flatMap->permissions->pluck('name');
         })->unique()->all();
     }
 }
