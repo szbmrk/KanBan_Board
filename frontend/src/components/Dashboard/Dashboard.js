@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import '../../styles/dashboard.css';
-import '../../styles/popup.css';
 import axios from '../../api/axios';
 import { Link } from 'react-router-dom';
 import Loader from '../Loader';
@@ -17,23 +16,11 @@ export default function Dashboard() {
     const [showAddBoardPopup, setShowAddBoardPopup] = useState(false);
     const [selectedTeamId, setSelectedTeamId] = useState(null);
     const [selectedBoardId, setSelectedBoardId] = useState(null);
-    const [containerPosition, setContainerPosition] = useState({ x: 0, y: 0 });
-    const [initialCursorPosition, setInitialCursorPosition] = useState({ x: 0, y: 0 });
     const [hoveredBoardId, setHoveredBoardId] = useState(null);
+    const token = sessionStorage.getItem('token');
 
     useEffect(() => {
-        const handleMouseMove = (e) => {
-            setContainerPosition({ x: e.clientX, y: e.clientY });
-        };
-
-        document.addEventListener('mousemove', handleMouseMove);
-
-        return () => {
-            document.removeEventListener('mousemove', handleMouseMove);
-        };
-    }, []);
-
-    useEffect(() => {
+        document.title = 'Dashboard'
         const user_id = sessionStorage.getItem('user_id');
         if (user_id) {
             setUserID(user_id);
@@ -44,8 +31,6 @@ export default function Dashboard() {
     }, []);
 
     const fetchDashboardData = async () => {
-        const token = sessionStorage.getItem('token');
-
         try {
             const response = await axios.get('/dashboard', {
                 headers: {
@@ -61,8 +46,6 @@ export default function Dashboard() {
 
     // Function to add a new board to a team
     const addBoardToTeam = async (teamId, newBoardName) => {
-        const token = sessionStorage.getItem('token');
-
         try {
             const response = await axios.post(
                 '/dashboard/board',
@@ -102,8 +85,6 @@ export default function Dashboard() {
 
     // Function to delete a board from a team
     const deleteBoardFromTeam = async (teamId, boardId) => {
-        const token = sessionStorage.getItem('token');
-
         try {
             await axios.delete(`/dashboard/board/${boardId}`, {
                 headers: {
@@ -129,8 +110,6 @@ export default function Dashboard() {
     };
 
     const editBoardName = async (teamId, boardId, updatedBoardName) => {
-        const token = sessionStorage.getItem('token');
-
         try {
             await axios.put(
                 `/dashboard/board/${boardId}`,
@@ -173,7 +152,6 @@ export default function Dashboard() {
         setSelectedTeamId(teamId);
         setSelectedBoardId(boardId);
         setShowAddBoardPopup(true);
-        setInitialCursorPosition({ x: containerPosition.x, y: containerPosition.y });
     };
 
     const closeAddBoardPopup = () => {
@@ -187,7 +165,7 @@ export default function Dashboard() {
             closeAddBoardPopup();
             setShowAddBoardPopup(false);
         } else {
-            addBoardToTeam(selectedTeamId, newBoardName);
+            addBoardToTeam(teamId, newBoardName);
             setShowAddBoardPopup(false);
         }
     };
@@ -267,7 +245,7 @@ export default function Dashboard() {
                                         <div className='popup popup-mini'>
                                             <AddBoardPopup
                                                 teamId={selectedTeamId}
-                                                boardId={selectedBoardId} // Use 'boardId' instead of 'selectedBoardId'
+                                                boardId={selectedBoardId}
                                                 onClose={closeAddBoardPopup}
                                                 onSave={handleSaveBoard}
                                             />
@@ -286,11 +264,14 @@ export default function Dashboard() {
 //ez maga a popup componens az addnál és editnél
 const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
     const [boardName, setBoardName] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // If a board ID is passed, fetch the existing board name for editing
         if (boardId) {
             fetchDashboardData();
+        }
+        else {
+            setIsLoading(false);
         }
     }, [boardId]);
 
@@ -303,6 +284,7 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
                 },
             });
             setBoardName(response.data.board.name);
+            setIsLoading(false);
         } catch (error) {
             console.error(error);
         }
@@ -315,27 +297,26 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
     };
 
     return (
-        <form className='popup-content-form-mini' onSubmit={handleSave}>
-            <span className='close-btn' onClick={onClose}>
-                {closeIcon}
-            </span>
-            <h4>Edit board name: </h4>
-            <input
-                type='text'
-                value={boardName}
-                onChange={(e) => setBoardName(e.target.value)}
-                placeholder='Board name'
-                className='popup-input-mini'
-                required
-            />
-            <div className='button-container'>
-                <button type='submit' className='save-button'>
-                    Save
-                </button>
-                <button onClick={onClose} className='cancel-button'>
-                    Cancel
-                </button>
-            </div>
-        </form>
+        <div className='content'>
+            {isLoading ? <Loader /> :
+                <form className='popup-content-form-mini' onSubmit={handleSave}>
+                    <span className='close-btn' onClick={onClose}>
+                        {closeIcon}
+                    </span>
+                    {boardId ? <h4>Edit board name:</h4> : <h4>New board name:</h4>}
+                    <input
+                        type='text'
+                        value={boardName}
+                        onChange={(e) => setBoardName(e.target.value)}
+                        placeholder='Board name'
+                        className='popup-input-mini'
+                        required
+                    />
+                    <button className='board-save-button'>
+                        Save
+                    </button>
+                </form>
+            }
+        </div>
     );
 };

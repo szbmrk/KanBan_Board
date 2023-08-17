@@ -24,7 +24,7 @@ return new class extends Migration
             $table->unsignedBigInteger('team_id')->nullable();
             $table->unsignedBigInteger('board_id')->nullable();
             $table->unsignedBigInteger('task_id')->nullable();
-            
+             
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
 
