@@ -707,9 +707,9 @@ const Board = () => {
         }
     }
 
-    const handleAddAttachment = async (task_id, column_id) => {
+    const handleAddAttachment = async (task_id, column_id, link, description) => {
         try {
-            const response = await axios.post(`/tasks/${task_id}/attachments`, { link: "https://www.example.com", description: "example description" },
+            const response = await axios.post(`/tasks/${task_id}/attachments`, { link: link, description: description },
                 { headers: { Authorization: `Bearer ${token}` } });
             const newAttachment = response.data.attachment;
             const newBoardData = [...board.columns];

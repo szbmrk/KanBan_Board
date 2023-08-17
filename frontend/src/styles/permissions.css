@@ -1,4 +1,4 @@
-table{
+table {
     color: black;
     background-color: var(--bg-dark);
     margin-left: auto;
@@ -11,33 +11,36 @@ table{
     border: 1px solid #ddd;
     width: auto;
 }
-.permission{
+
+.permission {
     font-weight: bold;
 }
-th, td {
+
+th,
+td {
     padding: 10px;
     border: 1px solid #ddd;
     text-align: center;
     width: fit-content;
-  }
-  
-  th {
+}
+
+th {
     background-color: #f2f2f2;
-  }
-  
-  /* Styling for the checkbox column */
-  td input[type="checkbox"] {
+}
+
+/* Styling for the checkbox column */
+td input[type="checkbox"] {
     margin-right: 5px;
-  }
-  
-  /* Styling for permission description */
-  .description {
+}
+
+/* Styling for permission description */
+.description {
     font-size: 12px;
     color: #888;
-  }
-  
-  /* Styling for the submit button */
-  button[type="submit"] {
+}
+
+/* Styling for the submit button */
+.submit-btn[type="submit"] {
     margin-top: 10px;
     padding: 5px 10px;
     background-color: #007bff;
@@ -45,11 +48,12 @@ th, td {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-  }
-  
-  button[type="submit"]:hover {
+}
+
+.submit-btn[type="submit"]:hover {
     background-color: #0056b3;
-  }
-  p{
+}
+
+p {
     text-align: center;
-  }
+}
