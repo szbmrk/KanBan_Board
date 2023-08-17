@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Role;
+use App\Models\Permission;
+use App\Models\TeamMember;
 
 class UserController extends Controller
 {
@@ -30,25 +33,42 @@ class UserController extends Controller
     public function signup(Request $request)
     {
         $emailExists = \App\Models\User::where('email', $request->email)->count();
-    
+
         if ($emailExists > 0) {
             return response()->json(['error' => 'Email already exists'], 400);
         }
-    
+
         $user = new \App\Models\User;
         $user->username = $request->username;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
+
         try {
             $user->save();
+
+            // Felhasználó hozzáadása a team_members táblához
+            $teamMember = new TeamMember();
+            $teamMember->user_id = $user->user_id;
+            $teamMember->save();
+
+            $userRole = Role::where('name', 'User')->first();
+            if ($userRole) {
+                // Attaching the role to the team member using Eloquent
+                $teamMember->roles()->attach($userRole->role_id);
+
+                // Engedély hozzárendelési logika (opcionális)
+                $userPermission = Permission::where('name', 'user_permission')->first();
+                if ($userPermission && !$userRole->permissions->contains($userPermission->id)) {
+                    $userRole->permissions()->attach($userPermission->id);
+                }
+            }
+
         } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['error' => 'Signup failed'], 500);
+            return response()->json(['error' => 'Signup failed', 'details' => $e->getMessage()], 500);
         }
-    
+
         return response()->json(['message' => 'Signup successful']);
     }
-    
-
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
@@ -59,6 +79,9 @@ class UserController extends Controller
             }
 
             $user = JWTAuth::user();
+
+            $roles = $user->getRoles();
+            $permissions = $user->getPermissions();
 
         } catch (JWTException $e) {
             return response()->json(['error' => 'could_not_create_token'], 500);
@@ -124,13 +147,13 @@ class UserController extends Controller
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        
+
         $password = $request->input('password');
 
         if (!Hash::check($password, $user->password)) {
             return response()->json(['error' => 'Incorrect password'], 400);
         }
-        
+
         $user->delete();
 
         return response()->json(['message' => 'User deleted successfully'], 200);
