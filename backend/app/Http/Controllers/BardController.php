@@ -49,10 +49,9 @@ class BardController extends Controller
         $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
         $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
         $command = "python {$pythonScriptPath} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
-    
+        
         try {
             $answer = shell_exec($command);
-    
             $parsedData = BardController::parseSubtaskResponse($answer);
             return response()->json($parsedData);
         } catch (\Exception $e) {

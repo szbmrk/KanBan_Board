@@ -22,27 +22,23 @@ class AGIController extends Controller
     public function GenerateTask(Request $request)
     {
         $user = auth()->user();
-    
-        $chosenAI = Str::lower($request->header('ChosenAI'));
+
         $response;
     
-        switch ($chosenAI) {
-            case "llama":
+        switch($request->header('ChosenAI')) {
+            case Str::lower("llama"):
                 $response = LlamaController::generateTaskLlama($request);
                 break;
-
-            case "bard":
+            case Str::lower("bard"):
                 $response = BardController::generateTaskBard($request);
-
-            case "chatgpt draft":
+                break;
+            case Str::lower("chatgpt draft"):
                 $response = ChatGPTController::GenerateTaskDraftChatGPT($request);
-
                 break;
             default:
                 $response = ChatGPTController::GenerateTaskChatGPT($request);
                 break;
         }
-    
         return $response;
     }
     
