@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('password', 255)->nullable(false);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

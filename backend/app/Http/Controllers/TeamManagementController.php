@@ -58,7 +58,9 @@ class TeamManagementController extends Controller
             $teamMember->user_id = $userId;
             $teamMember->save();
             
-            $addedMembers[] = $userId;
+            $addedMembers[] = TeamMember::with("user")->where('team_id', $team_id)
+                ->where('user_id', $userId)
+                ->first();
         }
     
         if (!empty($addedMembers)) {

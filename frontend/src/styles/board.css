@@ -84,10 +84,7 @@
 }
 
 .delete-column-button {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 5px 10px;
+  padding: 5px;
   cursor: pointer;
   color: var(--light-gray);
 }
@@ -97,8 +94,7 @@
 }
 
 .edit-action-button {
-  padding: 3px;
-  margin-inline: 3px;
+  padding: 5px;
   cursor: pointer;
 }
 
@@ -108,6 +104,26 @@
 
 #cancel-button:hover {
   color: var(--important);
+}
+
+.ai-button {
+  color: var(--light-gray);
+  padding: 5px;
+  cursor: pointer;
+}
+
+.ai-button:hover {
+  color: var(--magic);
+}
+
+.generate-task-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 5px 10px;
+}
+.option-p{
+  color: aliceblue;
 }
 
 @media (max-width: 830px) {
