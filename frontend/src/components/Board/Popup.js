@@ -49,6 +49,7 @@ const Popup = ({
     modifyPriority,
     modifyDeadline,
     addAttachment,
+    deleteAttachment,
     tags
 }) => {
     const popupRef = useRef(null);
@@ -274,7 +275,7 @@ const Popup = ({
                                     {task.attachments.map((attachment, index) => (
                                         <div className='attachment' key={index}>
                                             <a className='attachment-link' href={attachment.link} target="_blank">{attachment.link}</a>
-                                            <span className="delete-button">{trashIcon}</span>
+                                            <span className="delete-button" onClick={() => deleteAttachment(task.task_id, task.column_id, attachment.attachment_id)}>{trashIcon}</span>
                                         </div>
                                     ))}
                                 </div>

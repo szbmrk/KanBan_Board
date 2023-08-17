@@ -723,6 +723,21 @@ const Board = () => {
         }
     }
 
+    const handleDeleteAttachment = async (task_id, column_id, attachment_id) => {
+        try {
+            await axios.delete(`/attachments/${attachment_id}`,
+                { headers: { Authorization: `Bearer ${token}` } });
+            const newBoardData = [...board.columns];
+            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
+            const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
+            task.attachments.splice(task.attachments.findIndex((attachment) => attachment.attachment_id === attachment_id), 1);
+            setBoard({ ...board, columns: newBoardData });
+        }
+        catch (e) {
+            console.error(e);
+        }
+    }
+
     return (
         <>
             {permission === false ? (
@@ -952,6 +967,7 @@ const Board = () => {
                     modifyPriority={handleModifyPriority}
                     modifyDeadline={handleModifyDeadline}
                     addAttachment={handleAddAttachment}
+                    deleteAttachment={handleDeleteAttachment}
                     tags={inspectedTask.tags}
                 />
             )}
