@@ -86,7 +86,7 @@ class TaskController extends Controller
 
         $task->save();
 
-        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($task->task_id);
+        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'priority', 'comments', 'attachments')->find($task->task_id);
 
         //LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Task created successfully!", $teamId, $board_id, $task->task_id);
         return response()->json(['message' => 'Task created successfully', 'task' => $taskWithSubtasksAndTags]);
@@ -112,20 +112,28 @@ class TaskController extends Controller
         }
 
         $this->validate($request, [
-            'title' => 'required|string|max:100',
+            'title' => 'nullable|string|max:100',
             'description' => 'nullable|string',
             'due_date' => 'nullable|date',
             'priority_id' => 'nullable|integer|exists:priorities,priority_id',
         ]);
 
-        $task->title = $request->input('title');
-        $task->description = $request->input('description');
-        $task->due_date = $request->input('due_date');
-        $task->priority_id = $request->input('priority_id');
+        if ($request->input('title')) {
+            $task->title = $request->input('title');
+        }
+        if ($request->input('description')) {
+            $task->description = $request->input('description');
+        }
+        if ($request->input('due_date')) {
+            $task->due_date = $request->input('due_date');
+        }
+        if ($request->input('priority_id')) {
+            $task->priority_id = $request->input('priority_id');
+        }
 
         $task->save();
 
-        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($task_id);
+        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'priority', 'comments', 'attachments')->find($task_id);
 
         return response()->json(['message' => 'Task updated successfully', 'task' => $taskWithSubtasksAndTags]);
     }
@@ -276,7 +284,7 @@ class TaskController extends Controller
 
         $subTask->save();
 
-        $subTaskWithSubtasksAndTagsAndComments = Task::with('subtasks', 'tags', 'comments', 'priority')->find($subTask->task_id);
+        $subTaskWithSubtasksAndTagsAndComments = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments')->find($subTask->task_id);
 
         return response()->json(['message' => 'Subtask created successfully', 'task' => $subTaskWithSubtasksAndTagsAndComments]);
     }
@@ -307,7 +315,7 @@ class TaskController extends Controller
 
         $subTask->save();
 
-        $subTaskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($subtask_id);
+        $subTaskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments')->find($subtask_id);
 
         return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTaskWithSubtasksAndTags]);
     }
@@ -351,15 +359,14 @@ class TaskController extends Controller
         if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
-        if(!$board->columns->contains('column_id', $columnId)) {
+        if (!$board->columns->contains('column_id', $columnId)) {
             return response()->json(['error' => 'Column not found.'], 404);
         }
-        
+
         $tasksData = $request->all();
         $tasks = [];
 
-        foreach ($tasksData as $taskData) 
-        {
+        foreach ($tasksData as $taskData) {
             /* if (isset($taskData['priority_id'])) {
                 $validPriorityIds = [1, 2, 3, 4];
                 if (!in_array($taskData['priority_id'], $validPriorityIds)) {
@@ -375,7 +382,7 @@ class TaskController extends Controller
             } */
 
             $mainTask = $this->createTask($taskData, $boardId, $columnId);
-            if (isset($taskData['tasks']) && is_array($taskData['tasks'])) { 
+            if (isset($taskData['tasks']) && is_array($taskData['tasks'])) {
                 $this->createSubtasks($mainTask, $taskData['tasks'], $boardId, $columnId);
             }
             $tasks[] = $mainTask;
