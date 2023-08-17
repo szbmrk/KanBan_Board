@@ -20,9 +20,10 @@ use App\Http\Controllers\PromptCraftController;
 
 use App\Http\Controllers\NotificationController;
 
-use App\Http\Controllers\PriorityController;
+
 use App\Http\Controllers\UserTasksController;
-use App\Http\Controllers\BardController;/*
+use App\Http\Controllers\BardController;
+/*
 |--------------------------------------------------------------------------
 
 use App\Http\Controllers\FavouriteTaskController;

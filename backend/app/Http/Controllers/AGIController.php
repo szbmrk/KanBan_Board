@@ -31,7 +31,7 @@ class AGIController extends Controller
                 $response = LlamaController::generateTaskLlama($request);
                 break;
 
-            case Str::lower("bard"):
+            case "bard":
                 $response = BardController::generateTaskBard($request);
 
             case "chatgpt draft":
