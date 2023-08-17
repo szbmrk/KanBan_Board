@@ -16,7 +16,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import axios from "../../api/axios";
 import Subtask from './Subtask';
-import TagDropdown from "../TagDropdown";
+import TagDropdown from "./TagDropdown";
 import Comment from './Comment';
 import DatePicker from "react-datepicker";
 import { set } from 'lodash';
