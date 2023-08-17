@@ -210,7 +210,7 @@ export const Task = ({
                             >
                                 {aiIcon}
                             </span>
-                            <p>Generate Tasks</p>
+                            <p>Generate Subtasks</p>
                         </div>
                         {task.is_favourite ? (
                             <div
