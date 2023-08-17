@@ -3,28 +3,28 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AGIController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\MentionController;
 use App\Http\Controllers\TaskTagController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AttachmentController;
-use App\Http\Controllers\TeamManagementController;
-use App\Http\Controllers\FavouriteTaskController;
-use App\Http\Controllers\FeedbackController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\MentionController;
-use App\Models\Feedback;
+use App\Http\Controllers\PromptCraftController;
+
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PriorityController;
-use App\Http\Controllers\TeamMemberRoleController;
+use App\Http\Controllers\FavouriteTaskController;
+use App\Http\Controllers\TeamManagementController;
+use App\Http\Controllers\LlamaController;use App\Models\Feedback;
+use App\Http\Controllers\UserTasksController;use App\Http\Controllers\TeamMemberRoleController;
 
 /*
-use App\Http\Controllers\UserTasksController;/*
-|--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
 |
@@ -49,7 +49,6 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('api
 Route::post('/dashboard/board', [DashboardController::class, 'store'])->middleware('api');
 Route::put('/dashboard/board/{board}', [DashboardController::class, 'update'])->middleware('api');
 Route::delete('/dashboard/board/{board}', [DashboardController::class, 'destroy'])->middleware('api');
-Route::get('/dashboard/AGI', [DashboardController::class, 'executeAGIBoard'])->middleware('api');
 
 Route::get('/dashboard/teams', [TeamController::class, 'index'])->middleware('api');
 Route::post('/dashboard/teams', [TeamController::class, 'store'])->middleware('api');
@@ -125,6 +124,20 @@ Route::post('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::cl
 Route::delete('/boards/{boardId}/team-member-roles/{teamMemberRoleId}',[TeamMemberRoleController::class, 'destroy'])->middleware('api');
 
 Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');
+Route::get('/AGI/GenerateTask', [AGIController::class, 'GenerateTask'])->middleware('api');
+Route::get('/AGI/GenerateSubtask', [AGIController::class, 'GenerateSubtask'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_code', [AGIController::class, 'generateCode'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_priority', [AGIController::class, 'generatePriority'])->middleware('api');
 Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::class, 'generatePrioritiesForColumn'])->middleware('api');
+Route::post('/generate-llama-subtasks', [LlamaController::class, 'generateSubtasks']);
+Route::get('/generate-llama-subtasks2', [LlamaController::class, 'testSubtaskParsing']);
+
+Route::get('/boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::class, 'getPrompts'])->middleware('api');
+Route::post('/boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::class, 'storePrompts'])->middleware('api');
+Route::put('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraftController::class, 'updatePrompts'])->middleware('api');
+Route::delete('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraftController::class, 'destroyPrompts'])->middleware('api');
+
+Route::get('/AGI/GenerateTask/CraftedPrompt', [AGIController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
+
+Route::post('/boards/{boardId}/columns/{columnId}/tasks/create-with-subtasks', [TaskController::class, 'createTasksWithSubtasks'])->middleware('api');
+
