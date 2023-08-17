@@ -16,6 +16,9 @@ use App\Models\Attachment;
 use Illuminate\Http\Request;
 use App\Models\FavouriteTask;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
+use App\Models\Priority;
+use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 {
@@ -351,34 +354,59 @@ class TaskController extends Controller
         if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
-        if(!$board->columns->contains('column_id', $columnId)) {
+
+        if (!$board->columns->contains('column_id', $columnId)) {
             return response()->json(['error' => 'Column not found.'], 404);
         }
-        
+
         $tasksData = $request->all();
-        $tasks = [];
+        $validatedTasksData = [];
+
+        $existingPositions = Task::where('board_id', $boardId)
+            ->where('column_id', $columnId)
+            ->pluck('position')
+            ->toArray();
+
+        $invalidPriorityIds = array_filter($tasksData, function ($taskData) {
+            return !isset($taskData['priority_id']) || !in_array($taskData['priority_id'], [1, 2, 3, 4]);
+        });
+
+        if (!empty($invalidPriorityIds)) {
+            return response()->json(['error' => 'Invalid priority_id.'], 400);
+        }
+
+        $validationErrors = [];
 
         foreach ($tasksData as $taskData) 
         {
-            /* if (isset($taskData['priority_id'])) {
-                $validPriorityIds = [1, 2, 3, 4];
-                if (!in_array($taskData['priority_id'], $validPriorityIds)) {
-                    return response()->json(['error' => 'Invalid priority_id.'], 400);
-                }
+            $position = $taskData['position'] ?? null;
+            if ($position !== null && in_array($position, $existingPositions)) {
+                return response()->json(['error' => "Position $position already exists in the column."], 400);
             }
-    
-            if (isset($taskData['due_date'])) {
-                $currentDate = date('Y-m-d');
-                if ($taskData['due_date'] <= $currentDate) {
-                    return response()->json(['error' => 'Due date must be in the future.'], 400);
-                }
-            } */
 
-            $mainTask = $this->createTask($taskData, $boardId, $columnId);
-            if (isset($taskData['tasks']) && is_array($taskData['tasks'])) { 
-                $this->createSubtasks($mainTask, $taskData['tasks'], $boardId, $columnId);
+            $validatedTasksData[] = $taskData;
+        }
+
+        $tasks = [];
+
+        DB::beginTransaction();
+
+        try {
+            foreach ($validatedTasksData as $taskData) 
+            {
+                $mainTask = $this->createTask($taskData, $boardId, $columnId);
+                if (isset($taskData['tasks']) && is_array($taskData['tasks'])) { 
+                    $this->createSubtasks($mainTask, $taskData['tasks'], $boardId, $columnId);
+                }
+                $tasks[] = $mainTask;
             }
-            $tasks[] = $mainTask;
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return response()->json(['error' => 'There was an error while creating tasks and subtasks.'], 500);
         }
 
         return response()->json(['message' => 'Tasks and subtasks created successfully'], 201);
@@ -414,4 +442,84 @@ class TaskController extends Controller
             }
         }
     }
+
+    public function addSubtasksToExistingTask(Request $request, $boardId, $columnId, $taskId)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized.'], 401);
+        }
+
+        $task = Task::find($taskId);
+        if (!$task) {
+            return response()->json(['error' => 'Task not found.'], 404);
+        }
+
+        $board = Board::where('board_id', $boardId)->first();
+        if (!$board) {
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+        if(!$board->columns->contains('column_id', $columnId)) {
+            return response()->json(['error' => 'Column not found.'], 404);
+        }
+
+        $subtasksData = $request->all();
+
+        $validator = Validator::make($subtasksData, [
+            '*.due_date' => 'nullable|date|after:today',
+            '*.tasks.*.due_date' => 'nullable|date|after:today',
+        ]);
+
+        if ($validator->fails()) {
+            $errorMessages = [];
+            foreach ($validator->errors()->all() as $errorMessage) {
+                $errorMessages[] = $errorMessage;
+            }
+            $formattedError = implode(" ", $errorMessages);
+            return response()->json(['error' => $formattedError], 400);
+        }
+
+        $lastTaskInColumn = Task::where('board_id', $boardId)
+            ->where('column_id', $columnId)
+            ->orderByDesc('position')
+            ->first();
+
+            $validationErrors = [];
+
+            foreach ($subtasksData as $subtaskData) {
+            
+                if (isset($subtaskData['priority_id'])) {
+                    $validPriorityIds = [1, 2, 3, 4];
+                    if (!in_array($subtaskData['priority_id'], $validPriorityIds)) {
+                        $validationErrors[] = 'Invalid priority_id.';
+                    }
+                }
+            
+                if ($lastTaskInColumn && isset($subtaskData['position']) && $subtaskData['position'] <= $lastTaskInColumn->position) {
+                    $validationErrors[] = 'Invalid position.';
+                }
+            }
+            
+            if (!empty($validationErrors)) {
+                return response()->json(['error' => implode(' ', $validationErrors)], 400);
+            }
+            
+            foreach ($subtasksData as $subtaskData) {
+                $subtask = $this->createTask($subtaskData, $task->board_id, $task->column_id);
+                $subtask->parentTask()->associate($task);
+                $subtask->save();
+            
+                if (isset($subtaskData['tasks']) && is_array($subtaskData['tasks'])) {
+                    $this->createSubtasks($subtask, $subtaskData['tasks'], $task->board_id, $task->column_id);
+                }
+            }
+            
+        return response()->json(['message' => 'Subtasks added successfully'], 201);
+    }
+
+
 }
