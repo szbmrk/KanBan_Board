@@ -130,6 +130,19 @@
     width: 20%;
 }
 
+.due-date-picker {
+    background-color: var(--dark-gray);
+    color: var(--light-gray);
+    border: none;
+    box-shadow: none;
+    outline: none;
+}
+
+.priority:hover,
+.due-date-picker:hover {
+    cursor: pointer;
+}
+
 .description-textarea {
     width: 90%;
     padding: 10px;

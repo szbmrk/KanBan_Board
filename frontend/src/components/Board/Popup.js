@@ -17,6 +17,7 @@ import Subtask from './Subtask';
 import TagDropdown from "../TagDropdown";
 import Comment from './Comment';
 import DatePicker from "react-datepicker";
+import { set } from 'lodash';
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const subtaskIcon = <FontAwesomeIcon icon={faListCheck} />;
@@ -54,6 +55,7 @@ const Popup = ({
     const [addToCardIconZIndex, setAddToCardIconZIndex] = useState(1);
     const [addToCardContainerPosition, setAddToCardContainerPosition] = useState({ x: 0, y: 0 });
     const [boardTags, setBoardTags] = useState([]);
+    const [newDeadlineDate, setNewDeadlineDate] = useState(null);
 
     const handleChange = (event) => {
         setEditedText(event.target.value);
@@ -64,6 +66,7 @@ const Popup = ({
     };
 
     useEffect(() => {
+        setNewDeadlineDate(null);
         setEditedText(task.title);
         setEditedDescription(task.description);
         handleGetBoardTags();
@@ -113,14 +116,35 @@ const Popup = ({
 
     const handleAddDeadline = () => {
         const nextWeek = new Date();
+        console.log(nextWeek);
         nextWeek.setDate(nextWeek.getDate() + 7);
-        nextWeek.setHours(0, 0, 0, 0);
+        nextWeek.setHours(nextWeek.getHours() + 2);
+        nextWeek.setMinutes(0);
+        nextWeek.setSeconds(0);
+        nextWeek.setMilliseconds(0);
         const nextWeekTimestamp = nextWeek.toISOString().slice(0, 19).replace('T', ' ');
         modifyDeadline(task.task_id, task.column_id, nextWeekTimestamp);
     };
 
     const handleAddPriority = () => {
         modifyPriority(task.task_id, task.column_id, priorities[0].priority_id);
+    };
+
+    const handleModifyDeadline = (date) => {
+        const timestamp = date.toISOString().slice(0, 19).replace('T', ' ');
+        modifyDeadline(task.task_id, task.column_id, timestamp);
+    };
+
+    const handleOnDatePickerClose = () => {
+        if (newDeadlineDate !== null) {
+            const newDeadLine = new Date(newDeadlineDate);
+            newDeadLine.setHours(0);
+            newDeadLine.setHours(newDeadLine.getHours() + 2);
+            newDeadLine.setMinutes(0);
+            newDeadLine.setSeconds(0);
+            newDeadLine.setMilliseconds(0);
+            handleModifyDeadline(newDeadLine);
+        }
     };
 
     return (
@@ -132,7 +156,12 @@ const Popup = ({
                     {task.due_date &&
                         <div className='due-date'>
                             <span className='icon'>{stopwatchIcon}</span>
-                            {task.due_date} {/* TODO: onClick szerkeszthetőség elkészítése */}
+                            <DatePicker className='due-date-picker'
+                                selected={task.due_date ? new Date(task.due_date) : null}
+                                onSelect={(date) => setNewDeadlineDate(date)}
+                                onCalendarClose={handleOnDatePickerClose}
+                                dateFormat="yyyy-MM-dd"
+                            />
                         </div>}
                     {/* TODO: különböző színű icon megjelenítése az id helyett annak függvényében, hogy milyen a prioritása a feledatnak */}
                     {task.priority && <div className='priority'>{task.priority.priority}</div>}
