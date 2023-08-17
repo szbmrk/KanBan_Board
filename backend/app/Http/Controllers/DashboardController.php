@@ -6,6 +6,9 @@ use App\Models\Log;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Board;
+use App\Models\TeamMember;
+use App\Models\Role;
+use App\Models\Permission;
 use App\Helpers\LogRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -30,49 +33,71 @@ class DashboardController extends Controller
     public function store(Request $request)
     {
         $user = auth()->user();
-
-        // Check if user belongs to the team
+    
         $team_id = $request->team_id;
         if ($user->teams()->where('teams.team_id', $team_id)->exists()) {
+            
             $board = new Board;
             $board->name = $request->name;
             $board->team_id = $team_id;
             $board->save();
-
-            // Log the successful action
+    
+            $boardManagerRole = Role::firstOrCreate(['name' => 'Board Manager', 'board_id' => $board->board_id]);
+    
+            $teamMember = TeamMember::where('user_id', $user->user_id)->where('team_id', $team_id)->first();
+            if ($teamMember) {
+                $teamMember->roles()->attach($boardManagerRole->role_id);
+            }
+    
+            $boardManagementPermission = Permission::firstOrCreate(['name' => 'board_management']);
+            if (!$boardManagerRole->permissions->contains($boardManagementPermission)) {
+                $boardManagerRole->permissions()->attach($boardManagementPermission->id);
+            }
+    
             LogRequest::instance()->logAction('CREATED BOARD', $user->user_id, "Board created successfully!", $team_id, $board->board_id, null);
-
+    
             return response()->json(['board' => $board], 201);
+    
         } else {
             LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not belong to this team. -> Create Board", null, null, null);
             return response()->json(['error' => 'User does not belong to this team.'], 403);
         }
     }
 
-
     public function update(Request $request, $board_id)
     {
         $user = auth()->user();
-
         $board = Board::find($board_id);
+
+        $allRolesForUser = $user->roles()->get();
+        dd($allRolesForUser);
+
+
         if (!$board) {
             LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found on update -> board_id: $board_id", null, null, null);
-            return response()->json(['error' => 'Board not found.'], 401);
+            return response()->json(['error' => 'Board not found.'], 404);
         }
-        // Check if user belongs to the team
+
         if ($user->teams()->where('teams.team_id', $board->team_id)->exists()) {
-            $board->name = $request->name;
-            $board->save();
+            
+            $systemAdminPermission = $user->hasPermission('system_admin');
+            $boardManagementPermission = $user->roles()
+                ->whereHas('permissions', function ($query) {
+                    $query->where('name', 'board_management');
+                })
+                ->where('board_id', $board_id)
+                ->exists();
 
-            // Log the successful action
-            LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "Board Updated successfully!", $board->team_id, $board_id, null);
-
-            return response()->json(['board' => $board]);
-        } else {
-
-            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not belong to this team. -> Update Board", null, null, null);
-            return response()->json(['error' => 'Unauthenticated'], 401);
+            if ($systemAdminPermission || $boardManagementPermission) {
+                $board->name = $request->name;
+                $board->save();
+                LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "Board Updated successfully!", $board->team_id, $board_id, null);
+                return response()->json(['board' => $board]);
+            }
         }
+
+        LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission to Update Board", null, null, null);
+        return response()->json(['error' => 'Unauthenticated'], 401);
     }
 
     public function destroy($board_id)
