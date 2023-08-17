@@ -20,17 +20,44 @@ class ChatGPTController extends Controller
 {
     public static function GenerateTaskChatGPT(Request $request)
     {
-        $user = auth()->user();
-        $taskPrompt = $request->header('TaskPrompt');
+        $taskPrompt = $request->header('TaskPrompt'); // Correct the header key spelling
         $taskCounter = $request->header('TaskCounter');
         $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
-
-        // Prepare the prompt to be sent to the Python script
-        $prompt = "Generate $taskCounter kanban tickets in JSON structure in a list with title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list) attributes for this task: '$taskPrompt'";
-        // Construct the Python command with the required arguments and path to the script
+    
+        // Construct the prompt for the current iteration
+        $prompt = "Generate $taskCounter subtask kanban tickets in JSON structure in a list with title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list) attributes for this ticket: '$taskPrompt'";
+    
+        // Call the Python script and get the formatted response
 
         return ChatGPTController::CallPythonAndFormatResponse($prompt);
     }
+
+    public static function GenerateTaskDraftChatGPT(Request $request)
+    {
+        $taskPrompt = $request->header('TaskPrompt'); // Correct the header key spelling
+        $taskCounter = $request->header('TaskCounter');
+        $responseCounter = $request->header('ResponseCounter');
+        $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
+    
+        // Initialize an array to store the responses
+        $allResponses = [];
+    
+        // Loop through the desired number of times based on ResponseCounter
+        for ($i = 1; $i <= $responseCounter; $i++) {
+            // Construct the prompt for the current iteration
+            $prompt = "Generate $taskCounter task kanban board tickets. JSON structure in a list. title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list). '$taskPrompt'. ";
+    
+            // Call the Python script and get the formatted response
+            $formattedResponse = ChatGPTController::CallPythonAndFormatResponse($prompt);
+
+
+            // Store the response for this variant
+            $allResponses[$i] = $formattedResponse;
+        }
+
+        return $allResponses;
+    }
+
 
     public static function GenerateSubtaskChatGPT(Request $request)
     {
@@ -50,9 +77,9 @@ class ChatGPTController extends Controller
         $path = env('PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
 
+
         $cleanData = trim($response);
         $cleanData = str_replace("'", "\"", $response);
-
         $formattedResponse = json_decode($cleanData, true);
 
         return $formattedResponse;
@@ -188,4 +215,17 @@ class ChatGPTController extends Controller
             'priorities' => $prioritiesArray,
         ]);
     }
+
+    public static function GenerateCraftedTaskChatGPT(Request $request)
+    {
+        $taskPrompt = $request->header('TaskPrompt'); // Correct the header key spelling
+        $taskCounter = $request->header('TaskCounter');
+        $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
+
+        $prompt = "Generate $taskCounter task kanban board tickets. JSON structure in a list. title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list). '$taskPrompt'. Act as i said.";
+
+        return ChatGPTController::CallPythonAndFormatResponse($prompt);
+
+    }
+    
 }

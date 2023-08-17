@@ -22,20 +22,25 @@ class AGIController extends Controller
     public function GenerateTask(Request $request)
     {
         $user = auth()->user();
-
+    
+        $chosenAI = Str::lower($request->header('ChosenAI'));
         $response;
-        
-        switch($request->header('ChosenAI')) {
-            case Str::lower("llama"):
+    
+        switch ($chosenAI) {
+            case "llama":
                 $response = LlamaController::generateTaskLlama($request);
+                break;
+            case "chatgpt draft":
+                $response = ChatGPTController::GenerateTaskDraftChatGPT($request);
                 break;
             default:
                 $response = ChatGPTController::GenerateTaskChatGPT($request);
                 break;
         }
-
+    
         return $response;
     }
+    
 
     public function GenerateSubtask(Request $request)
     {
@@ -52,6 +57,28 @@ class AGIController extends Controller
                 break;
         }
 
+        return $response;
+    }
+
+    public function GenerateTaskCraftedPrompt(Request $request)
+    {
+        $user = auth()->user();
+    
+        $chosenAI = Str::lower($request->header('ChosenAI'));
+        $response;
+    
+        switch ($chosenAI) {
+            case "llama":
+                $response = LlamaController::generateTaskLlama($request);
+                break;
+            case "chatgpt draft":
+                $response = ChatGPTController::GenerateTaskDraftChatGPT($request);
+                break;
+            default:
+                $response = ChatGPTController::GenerateCraftedTaskChatGPT($request);
+                break;
+        }
+    
         return $response;
     }
 }

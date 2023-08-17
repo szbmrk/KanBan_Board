@@ -335,4 +335,83 @@ class TaskController extends Controller
 
         return response()->json(['message' => 'Subtask deleted successfully']);
     }
+
+    public function createTasksWithSubtasks(Request $request, $boardId, $columnId)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized.'], 401);
+        }
+
+        $board = Board::where('board_id', $boardId)->first();
+        if (!$board) {
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+        if(!$board->columns->contains('column_id', $columnId)) {
+            return response()->json(['error' => 'Column not found.'], 404);
+        }
+        
+        $tasksData = $request->all();
+        $tasks = [];
+
+        foreach ($tasksData as $taskData) 
+        {
+            /* if (isset($taskData['priority_id'])) {
+                $validPriorityIds = [1, 2, 3, 4];
+                if (!in_array($taskData['priority_id'], $validPriorityIds)) {
+                    return response()->json(['error' => 'Invalid priority_id.'], 400);
+                }
+            }
+    
+            if (isset($taskData['due_date'])) {
+                $currentDate = date('Y-m-d');
+                if ($taskData['due_date'] <= $currentDate) {
+                    return response()->json(['error' => 'Due date must be in the future.'], 400);
+                }
+            } */
+
+            $mainTask = $this->createTask($taskData, $boardId, $columnId);
+            if (isset($taskData['tasks']) && is_array($taskData['tasks'])) { 
+                $this->createSubtasks($mainTask, $taskData['tasks'], $boardId, $columnId);
+            }
+            $tasks[] = $mainTask;
+        }
+
+        return response()->json(['message' => 'Tasks and subtasks created successfully'], 201);
+    }
+
+    private function createTask($data, $boardId, $columnId)
+    {
+        $task = new Task([
+            'title' => $data['title'],
+            'description' => $data['description'] ?? null,
+            'due_date' => $data['due_date'] ?? null,
+            'board_id' => $boardId,
+            'column_id' => $columnId,
+            'project_id' => $data['project_id'] ?? null,
+            'priority_id' => $data['priority_id'] ?? null,
+            'position' => $data['position'] ?? null,
+        ]);
+
+        $task->save();
+
+        return $task;
+    }
+
+    private function createSubtasks($parentTask, $subtasks, $boardId, $columnId)
+    {
+        foreach ($subtasks as $subtaskData) {
+            $subtask = $this->createTask($subtaskData, $boardId, $columnId);
+            $subtask->parentTask()->associate($parentTask);
+            $subtask->save();
+
+            if (isset($subtaskData['tasks']) && is_array($subtaskData['tasks'])) {
+                $this->createSubtasks($subtask, $subtaskData['tasks'], $boardId, $columnId);
+            }
+        }
+    }
 }
