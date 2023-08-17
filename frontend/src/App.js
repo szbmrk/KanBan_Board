@@ -10,6 +10,9 @@ import Navbar from './components/Navigation/NavBar';
 import AssignedTasks from './components/AssignedTasks/AssignedTasks';
 import Teams from './components/Teams/Teams';
 import Board from './components/Board/Board';
+import Permissiontable from './components/Permissions/Permissiontable';
+import EditProfile from './components/Profile/EditProfile';
+import Notification from './components/Notification';
 
 
 const App = () => {
@@ -21,6 +24,12 @@ const App = () => {
                     <Route exact path="/login" element={<Login />} />
                     <Route exact path="/signup" element={<Signup />} />
                     <Route exact path="/board/:board_id" element={
+                        <ProtectedRoute>
+                            <Navbar />
+                            <Sidebar />
+                            <Board />
+                        </ProtectedRoute>} />
+                    <Route exact path="/board/:board_id/:column_to_show_id/:task_to_show_id" element={
                         <ProtectedRoute>
                             <Navbar />
                             <Sidebar />
@@ -43,6 +52,24 @@ const App = () => {
                             <Navbar />
                             <Sidebar />
                             <Teams />
+                        </ProtectedRoute>} />
+                    <Route exact path="/permissiontable" element={
+                        <ProtectedRoute>
+                            <Navbar />
+                            <Sidebar />
+                            <Permissiontable />
+                        </ProtectedRoute>} />
+                    <Route exact path="/profile" element={
+                        <ProtectedRoute>
+                            <Navbar />
+                            <Sidebar />
+                            <EditProfile />
+                        </ProtectedRoute>} />
+                    <Route exact path="/notifications" element={
+                        <ProtectedRoute>
+                            <Navbar />
+                            <Sidebar />
+                            <Notification />
                         </ProtectedRoute>} />
                 </Routes>
             </AuthProvider>

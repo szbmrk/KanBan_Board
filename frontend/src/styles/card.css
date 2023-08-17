@@ -12,11 +12,16 @@
     margin: 5px;
     width: auto;
     min-height: 60px;
-    transition: 0.4s ease-in-out;
+    transition: 0.3s ease;
 }
 
 .subtask-card {
-    background-color: #292929;
+    background-color: var(--bg-mostly-black);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+
 }
 
 .card:hover {
@@ -46,12 +51,6 @@
 }
 
 
-.edit {
-    padding: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    color: var(--light-gray);
-}
 
 @keyframes rotate {
     0% {
@@ -67,14 +66,15 @@
     }
 }
 
-.edit:hover {
+.edit-button {
+    color: var(--light-gray);
+}
+
+.edit-button:hover {
     animation: rotate 0.5s;
-    cursor: pointer;
 }
 
 .delete-button {
-    padding: 5px;
-    cursor: pointer;
     color: var(--light-gray);
 }
 
@@ -83,8 +83,11 @@
 }
 
 .favourite-button {
-    padding: 5px;
-    cursor: pointer;
+    color: var(--light-gray);
+}
+
+.ai-button {
+    color: var(--light-gray);
 }
 
 .solid-icon {
@@ -136,7 +139,19 @@
     justify-content: flex-start;
     align-items: center;
     gap: 5px;
+    padding: 5px 10px 5px 5px;
+    height: 40px;
+    transition: 0.3s ease;
+}
+
+.option span {
     padding: 5px;
+}
+
+.option:hover {
+    background-color: var(--dark-gray);
+    transform: translateX(10px);
+    cursor: pointer;
 }
 
 .tags-container {

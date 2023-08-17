@@ -21,7 +21,9 @@ use App\Http\Controllers\MentionController;
 use App\Http\Controllers\LlamaController;use App\Models\Feedback;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PriorityController;
-use App\Http\Controllers\UserTasksController;/*|--------------------------------------------------------------------------
+use App\Http\Controllers\UserTasksController;use App\Http\Controllers\TeamMemberRoleController;
+
+/*
 | API Routes
 |--------------------------------------------------------------------------
 |
@@ -38,6 +40,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/user/signup', [UserController::class, 'signup']);
 Route::post('/user/login', [UserController::class, 'login']);
 Route::get('/user/check-login', [UserController::class, 'checkLogin']);
+Route::get('/profile', [UserController::class, 'show'])->middleware('api');
+Route::put('/profile', [UserController::class, 'update'])->middleware('api');
+Route::delete('/profile', [UserController::class, 'destroy'])->middleware('api');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('api');
 Route::post('/dashboard/board', [DashboardController::class, 'store'])->middleware('api');
@@ -112,6 +117,10 @@ Route::put('/notifications/{notificationId}', [NotificationController::class, 'u
 Route::delete('/notifications/{notificationId}', [NotificationController::class, 'destroy'])->middleware('api');
 
 Route::get('/user/{user_id}/tasks', [UserTasksController::class, 'index'])->middleware('api');
+
+Route::get('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'index'])->middleware('api');
+Route::post('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'store'])->middleware('api');
+Route::delete('/boards/{boardId}/team-member-roles/{teamMemberRoleId}',[TeamMemberRoleController::class, 'destroy'])->middleware('api');
 
 Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');
 Route::get('/AGI/GenerateTask', [AGIController::class, 'GenerateTask'])->middleware('api');
