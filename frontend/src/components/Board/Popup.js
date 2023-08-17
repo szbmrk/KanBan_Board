@@ -16,6 +16,7 @@ import axios from "../../api/axios";
 import Subtask from './Subtask';
 import TagDropdown from "../TagDropdown";
 import Comment from './Comment';
+import DatePicker from "react-datepicker";
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const subtaskIcon = <FontAwesomeIcon icon={faListCheck} />;
@@ -51,6 +52,10 @@ const Popup = ({
     const [addToCardIconZIndex, setAddToCardIconZIndex] = useState(1);
     const [addToCardContainerPosition, setAddToCardContainerPosition] = useState({ x: 0, y: 0 });
     const [boardTags, setBoardTags] = useState([]);
+    const [newDeadline, setNewDeadline] = useState(null);
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [newPriority, setNewPriority] = useState(null);
+    const [showPriorityPicker, setShowPriorityPicker] = useState(false);
 
     const handleChange = (event) => {
         setEditedText(event.target.value);
@@ -106,6 +111,14 @@ const Popup = ({
         } catch (err) {
             console.log(err);
         }
+    };
+
+    const handleOpenDatePicker = () => {
+        //addDeadline(task.task_id, task.column_id, newDeadline);
+    };
+
+    const handleOpenPriorityPicker = () => {
+        //addPriority(task.task_id, task.column_id, newPriority);
     };
 
     return (
@@ -236,11 +249,11 @@ const Popup = ({
                                     <p>Subtask</p>
                                 </div>
                                 {task.due_date === null &&
-                                    <div className='add-to-card-item' onClick={() => addDeadline(task.task_id, task.column_id)}>
+                                    <div className='add-to-card-item' onClick={handleOpenDatePicker}>
                                         <p>Deadline</p>
                                     </div>}
                                 {task.priority === null &&
-                                    <div className='add-to-card-item' onClick={() => addPriority(task.task_id, task.column_id)}>
+                                    <div className='add-to-card-item' onClick={handleOpenPriorityPicker}>
                                         <p>Priority</p>
                                     </div>}
                                 <div className='add-to-card-item'>
