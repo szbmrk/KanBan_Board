@@ -13,6 +13,7 @@ import {
     faListCheck,
     faPaperclip,
     faTrash,
+    faPeopleGroup,
 } from '@fortawesome/free-solid-svg-icons';
 import axios from "../../api/axios";
 import Subtask from './Subtask';
@@ -33,6 +34,7 @@ const fileIcon = <FontAwesomeIcon icon={faFileLines} />;
 const priorityIcon = <FontAwesomeIcon icon={faFireFlameCurved} />;
 const attachmentIcon = <FontAwesomeIcon icon={faPaperclip} />
 const trashIcon = <FontAwesomeIcon icon={faTrash} />;
+const membersIcon = <FontAwesomeIcon icon={faPeopleGroup} />
 
 const Popup = ({
     task,
@@ -50,6 +52,8 @@ const Popup = ({
     modifyDeadline,
     addAttachment,
     deleteAttachment,
+    addMember,
+    deleteMember,
     tags
 }) => {
     const popupRef = useRef(null);
@@ -68,6 +72,11 @@ const Popup = ({
     const [newAttachmentLink, setNewAttachmentLink] = useState('');
     const [newAttachmentDescription, setNewAttachmentDescription] = useState('');
     const [linkIsValid, setLinkIsValid] = useState(true);
+    const [notMembers, setNotMembers] = useState([]);
+    const [showAddMember, setShowAddMember] = useState(false);
+    const [newMember, setNewMember] = useState(null);
+
+    const token = sessionStorage.getItem('token');
 
     const validateLink = (inputLink) => {
         const urlPattern = /^(http|https):\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/;
@@ -89,6 +98,7 @@ const Popup = ({
     };
 
     useEffect(() => {
+        getNotMembers();
         setShowPriorityDropDown(false);
         setNewDeadlineDate(null);
         setNewAttachmentLink('');
@@ -102,7 +112,10 @@ const Popup = ({
         const handleOutsideClick = (event) => {
             if (popupRef.current && !popupRef.current.contains(event.target)) {
                 if (event.target.className === "overlay") onClose();
-                if (event.target.className === "overlay2") setShowAddAttachment(false);
+                if (event.target.className === "overlay2") {
+                    setShowAddAttachment(false);
+                    setShowAddMember(false);
+                }
             }
         };
 
@@ -112,6 +125,21 @@ const Popup = ({
             document.removeEventListener('mousedown', handleOutsideClick);
         };
     }, [onClose]);
+
+    const getNotMembers = async () => {
+        try {
+            const response = await axios.get(`/boards/${task.board_id}/tasks/${task.task_id}/not_assigned_users`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            console.log(response.data.users);
+            setNotMembers(response.data.users);
+            setNewMember(response.data.users[0].user_id);
+        }
+        catch (error) {
+            console.log(error.response);
+        }
+
+    }
 
     const handleAddToCard = (event) => {
         const buttonRect = event.target.getBoundingClientRect();
@@ -194,6 +222,29 @@ const Popup = ({
         }
     };
 
+    const handleAddMember = () => {
+        addMember(task.task_id, task.column_id, newMember);
+        const newNotMembers = [...notMembers];
+        newNotMembers.splice(newNotMembers.findIndex((member) => member.user_id === newMember), 1);
+        setNotMembers(newNotMembers);
+        setShowAddMember(false);
+        if (newNotMembers.length > 0) {
+            setNewMember(newNotMembers[0].user_id); // reset value for dropdown
+        }
+    }
+
+    const handleDeleteMember = (userId) => {
+        deleteMember(task.task_id, task.column_id, userId);
+        const newNotMembers = [...notMembers];
+        const newMember = task.members.find((member) => member.user_id === userId);
+        newNotMembers.push(newMember);
+        task.members.splice(task.members.findIndex((member) => member.user_id === userId), 1);
+        setNotMembers(newNotMembers);
+        if (newNotMembers.length > 0) {
+            setNewMember(newNotMembers[0].user_id); // reset value for dropdown
+        }
+    }
+
     return (
         <div className='overlay'>
             <div className='popup' ref={popupRef}>
@@ -251,50 +302,48 @@ const Popup = ({
                             value={editedDescription}
                             onChange={handleDescriptionChange}
                         />
-                        {task.subtasks && task.subtasks.length > 0 && (
+                        {task.subtasks && task.subtasks.length > 0 ?
                             <>
                                 <div className='subtitle'>
                                     <span className='icon'>{subtaskIcon}</span>
                                     <h3>Subtasks:</h3>
                                 </div>
+                                <div className='subtasks-container'>
+                                    {task.subtasks.map((subTask, index) => (
+                                        <Subtask
+                                            key={subTask.task_id}
+                                            subTask={subTask}
+                                            index={index}
+                                            favouriteSubtask={() =>
+                                                favouriteSubtask(
+                                                    subTask.task_id,
+                                                    subTask.parent_task_id,
+                                                    subTask.column_id
+                                                )
+                                            }
+                                            unFavouriteSubtask={() =>
+                                                unFavouriteSubtask(
+                                                    subTask.task_id,
+                                                    subTask.parent_task_id,
+                                                    subTask.column_id
+                                                )
+                                            }
+                                            deleteSubtask={() =>
+                                                deleteSubtask(
+                                                    subTask.task_id,
+                                                    subTask.parent_task_id,
+                                                    subTask.column_id
+                                                )
+                                            }
+                                            setTaskAsInspectedTask={() => setTaskAsInspectedTask(subTask)}
+                                        />
+                                    ))}
+                                </div>
                             </>
-                        )}
-                        {task.subtasks && task.subtasks.length > 0 ?
-                            <div className='subtasks-container'>
-                                {task.subtasks.map((subTask, index) => (
-                                    <Subtask
-                                        key={subTask.task_id}
-                                        subTask={subTask}
-                                        index={index}
-                                        favouriteSubtask={() =>
-                                            favouriteSubtask(
-                                                subTask.task_id,
-                                                subTask.parent_task_id,
-                                                subTask.column_id
-                                            )
-                                        }
-                                        unFavouriteSubtask={() =>
-                                            unFavouriteSubtask(
-                                                subTask.task_id,
-                                                subTask.parent_task_id,
-                                                subTask.column_id
-                                            )
-                                        }
-                                        deleteSubtask={() =>
-                                            deleteSubtask(
-                                                subTask.task_id,
-                                                subTask.parent_task_id,
-                                                subTask.column_id
-                                            )
-                                        }
-                                        setTaskAsInspectedTask={() => setTaskAsInspectedTask(subTask)}
-                                    />
-                                ))}
-                            </div>
                             : <></>}
                         <Comment comments={task.comments} handlePostComment={handlePostCommentFromComment}></Comment>
                         {task.attachments && task.attachments.length > 0 && (
-                            <div className='attachments-section'>
+                            <>
                                 <div className='subtitle'>
                                     <span className='icon'>{attachmentIcon}</span>
                                     <h3>Attachments:</h3>
@@ -307,7 +356,24 @@ const Popup = ({
                                         </div>
                                     ))}
                                 </div>
-                            </div>
+                            </>
+                        )}
+                        {task.members && task.members.length > 0 && (
+                            <>
+                                <div className='subtitle'>
+                                    <span className='icon'>{membersIcon}</span>
+                                    <h3>Members:</h3>
+                                </div>
+                                <div className='member-container'>
+                                    {task.members.map((member, index) => (
+                                        <div className='member' key={index}>
+                                            <p className='username'>{member.username}</p>
+                                            <p className='email'>{member.email}</p>
+                                            <span onClick={() => handleDeleteMember(member.user_id)} className='delete-icon'>{closeIcon}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
                         )}
                     </div>
                 </div>
@@ -357,9 +423,10 @@ const Popup = ({
                                 <div className='add-to-card-item' onClick={() => setShowAddAttachment(true)}>
                                     <p>Attachment</p>
                                 </div>
-                                <div className='add-to-card-item'>
-                                    <p>Person</p>
-                                </div>
+                                {notMembers && notMembers.length > 0 &&
+                                    <div className='add-to-card-item' onClick={() => setShowAddMember(true)}>
+                                        <p>Person</p>
+                                    </div>}
                             </div>
                         </div>
                     </div>
@@ -412,6 +479,27 @@ const Popup = ({
                                 Add
                             </button>
                             <button onClick={() => setShowAddAttachment(false)} type='button' className='attachment-cancel-button'>
+                                Cancel
+                            </button>
+                        </form>
+                    </div>
+                </div>}
+            {showAddMember &&
+                <div className='overlay2'>
+                    <div className='attachment-popup-mini-attachment'>
+                        <form className='attachment-popup-content-form-mini'>
+                            <h4>Person:</h4>
+                            <div>
+                                <select onChange={(e) => setNewMember(e.target.value)} selected={notMembers[0].user_id}>
+                                    {notMembers.map((member, index) => (
+                                        <option key={index} value={member.user_id}>{member.username}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <button onClick={handleAddMember} className={'attachment-add-button'}>
+                                Add
+                            </button>
+                            <button onClick={() => setShowAddMember(false)} type='button' className='attachment-cancel-button'>
                                 Cancel
                             </button>
                         </form>
