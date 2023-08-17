@@ -67,28 +67,34 @@ class DashboardController extends Controller
     public function update(Request $request, $board_id)
     {
         $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+
         $board = Board::find($board_id);
-
-        $allRolesForUser = $user->roles()->get();
-        dd($allRolesForUser);
-
-
         if (!$board) {
             LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found on update -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
         if ($user->teams()->where('teams.team_id', $board->team_id)->exists()) {
-            
-            $systemAdminPermission = $user->hasPermission('system_admin');
-            $boardManagementPermission = $user->roles()
-                ->whereHas('permissions', function ($query) {
-                    $query->where('name', 'board_management');
-                })
-                ->where('board_id', $board_id)
-                ->exists();
 
-            if ($systemAdminPermission || $boardManagementPermission) {
+            $roles = $user->getRoles();
+            $permissions = $user->getPermissions();
+
+            if (in_array('system_admin', $permissions)) {
+                $board->name = $request->name;
+                $board->save();
+                LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "Board Updated successfully!", $board->team_id, $board_id, null);
+                return response()->json(['board' => $board]);
+            }
+
+            $boardManagerRoles = array_filter($roles, function($role) use ($board_id) {
+                return $role['name'] == 'Board Manager' && $role['board_id'] == $board_id;
+            });
+
+            if (!empty($boardManagerRoles)) {
                 $board->name = $request->name;
                 $board->save();
                 LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "Board Updated successfully!", $board->team_id, $board_id, null);
@@ -97,9 +103,10 @@ class DashboardController extends Controller
         }
 
         LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission to Update Board", null, null, null);
-        return response()->json(['error' => 'Unauthenticated'], 401);
+        return response()->json(['error' => 'You don\'t have permission to update this board.'], 401);
     }
 
+    
     public function destroy($board_id)
     {
         $user = auth()->user();

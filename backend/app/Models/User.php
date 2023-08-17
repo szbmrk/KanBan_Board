@@ -98,9 +98,14 @@ class User extends Authenticatable implements JWTSubject
 
     public function roles()
     {
-        return $this->belongsToMany(Role::class, 'team_members_role', 'team_member_id', 'role_id')
-            ->using(TeamMemberRole::class)
-            ->withPivot('team_member_id', 'role_id'); 
+        return $this->hasManyThrough(
+            Role::class,
+            TeamMemberRole::class,
+            'team_member_id',
+            'role_id',
+            'user_id',
+            'team_member_id'
+        );
     }
     
     public function hasPermission($permission)
@@ -114,11 +119,14 @@ class User extends Authenticatable implements JWTSubject
         }
         return false;
     }
-
+    
     public function getRoles()
     {
-        return $this->teamMembers->flatMap->roles->pluck('name')->unique()->all();
+        return $this->teamMembers->flatMap(function($teamMember) {
+            return $teamMember->roles;
+        })->unique('role_id')->values()->all();
     }
+    
 
     public function getPermissions()
     {
