@@ -86,7 +86,7 @@ class TaskController extends Controller
 
         $task->save();
 
-        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'priority', 'comments', 'attachments')->find($task->task_id);
+        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task->task_id);
 
         //LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Task created successfully!", $teamId, $board_id, $task->task_id);
         return response()->json(['message' => 'Task created successfully', 'task' => $taskWithSubtasksAndTags]);
@@ -133,7 +133,7 @@ class TaskController extends Controller
 
         $task->save();
 
-        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'priority', 'comments', 'attachments')->find($task_id);
+        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task_id);
 
         return response()->json(['message' => 'Task updated successfully', 'task' => $taskWithSubtasksAndTags]);
     }
@@ -284,7 +284,7 @@ class TaskController extends Controller
 
         $subTask->save();
 
-        $subTaskWithSubtasksAndTagsAndComments = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments')->find($subTask->task_id);
+        $subTaskWithSubtasksAndTagsAndComments = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($subTask->task_id);
 
         return response()->json(['message' => 'Subtask created successfully', 'task' => $subTaskWithSubtasksAndTagsAndComments]);
     }
@@ -315,7 +315,7 @@ class TaskController extends Controller
 
         $subTask->save();
 
-        $subTaskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments')->find($subtask_id);
+        $subTaskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($subtask_id);
 
         return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTaskWithSubtasksAndTags]);
     }
