@@ -40,6 +40,7 @@ const Popup = ({
     setTaskAsInspectedTask,
     handlePostComment,
     onPreviousTask,
+    priorities,
     addPriority,
     addDeadline,
     tags
@@ -52,10 +53,6 @@ const Popup = ({
     const [addToCardIconZIndex, setAddToCardIconZIndex] = useState(1);
     const [addToCardContainerPosition, setAddToCardContainerPosition] = useState({ x: 0, y: 0 });
     const [boardTags, setBoardTags] = useState([]);
-    const [newDeadline, setNewDeadline] = useState(null);
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [newPriority, setNewPriority] = useState(null);
-    const [showPriorityPicker, setShowPriorityPicker] = useState(false);
 
     const handleChange = (event) => {
         setEditedText(event.target.value);
@@ -113,12 +110,12 @@ const Popup = ({
         }
     };
 
-    const handleOpenDatePicker = () => {
+    const handleAddDeadline = () => {
         //addDeadline(task.task_id, task.column_id, newDeadline);
     };
 
-    const handleOpenPriorityPicker = () => {
-        //addPriority(task.task_id, task.column_id, newPriority);
+    const handleAddPriority = () => {
+        addPriority(task.task_id, task.column_id, priorities[0].priority_id);
     };
 
     return (
@@ -249,11 +246,11 @@ const Popup = ({
                                     <p>Subtask</p>
                                 </div>
                                 {task.due_date === null &&
-                                    <div className='add-to-card-item' onClick={handleOpenDatePicker}>
+                                    <div className='add-to-card-item' onClick={handleAddDeadline}>
                                         <p>Deadline</p>
                                     </div>}
                                 {task.priority === null &&
-                                    <div className='add-to-card-item' onClick={handleOpenPriorityPicker}>
+                                    <div className='add-to-card-item' onClick={handleAddPriority}>
                                         <p>Priority</p>
                                     </div>}
                                 <div className='add-to-card-item'>

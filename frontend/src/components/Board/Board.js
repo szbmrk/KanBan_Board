@@ -39,6 +39,7 @@ const Board = () => {
     const [isHoveredAI, setIsHoveredAI] = useState(false);
     const [isHoveredX, setIsHoveredX] = useState(false);
     const [columnIndex, setColumnIndex] = useState(null);
+    const [priorities, setPriorities] = useState([]);
     const navigate = useNavigate();
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
@@ -68,6 +69,13 @@ const Board = () => {
 
     const fetchBoardData = async () => {
         try {
+            const prioritiesResponse = await axios.get('/priorities', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setPriorities(prioritiesResponse.data.priorities);
+
             const response = await axios.get(`/boards/${board_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -887,6 +895,7 @@ const Board = () => {
                     handlePostComment={postComment}
                     setTaskAsInspectedTask={setTaskAsInspectedTask}
                     onPreviousTask={handleOpenPreviousTask}
+                    priorities={priorities}
                     tags={inspectedTask.tags}
                 />
             )}
