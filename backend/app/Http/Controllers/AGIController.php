@@ -30,8 +30,13 @@ class AGIController extends Controller
             case "llama":
                 $response = LlamaController::generateTaskLlama($request);
                 break;
+
+            case Str::lower("bard"):
+                $response = BardController::generateTaskBard($request);
+
             case "chatgpt draft":
                 $response = ChatGPTController::GenerateTaskDraftChatGPT($request);
+
                 break;
             default:
                 $response = ChatGPTController::GenerateTaskChatGPT($request);
@@ -51,6 +56,9 @@ class AGIController extends Controller
         switch($request->header('ChosenAI')) {
             case Str::lower("llama"):
                 $response = LlamaController::generateSubtaskLlama($request);
+                break;
+            case Str::lower("bard"):
+                $response = BardController::generateSubtaskBard($request);
                 break;
             default:
                 $response = ChatGPTController::GenerateSubtaskChatGPT($request);

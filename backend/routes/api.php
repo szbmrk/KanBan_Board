@@ -19,12 +19,19 @@ use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\PromptCraftController;
 
 use App\Http\Controllers\NotificationController;
+
+use App\Http\Controllers\PriorityController;
+use App\Http\Controllers\UserTasksController;
+use App\Http\Controllers\BardController;/*
+|--------------------------------------------------------------------------
+
 use App\Http\Controllers\FavouriteTaskController;
 use App\Http\Controllers\TeamManagementController;
 use App\Http\Controllers\LlamaController;use App\Models\Feedback;
 use App\Http\Controllers\UserTasksController;use App\Http\Controllers\TeamMemberRoleController;
 
 /*
+
 | API Routes
 |--------------------------------------------------------------------------
 |
@@ -131,6 +138,9 @@ Route::get('/boards/{boardId}/tasks/{taskId}/generate_priority', [AGIController:
 Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::class, 'generatePrioritiesForColumn'])->middleware('api');
 Route::post('/generate-llama-subtasks', [LlamaController::class, 'generateSubtasks']);
 Route::get('/generate-llama-subtasks2', [LlamaController::class, 'testSubtaskParsing']);
+
+Route::get('/get-bard-answer', [BardController::class, 'getBardAnswer']);
+
 
 Route::get('/boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::class, 'getPrompts'])->middleware('api');
 Route::post('/boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::class, 'storePrompts'])->middleware('api');

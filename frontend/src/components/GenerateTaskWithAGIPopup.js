@@ -16,6 +16,7 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
   const aiOptions = [
     { value: "chatgpt", label: "ChatGPT" },
     { value: "llama", label: "Llama" },
+    { value: "bard", label: "Bard" },
   ];
   let [chosenAI, setChosenAI] = useState(aiOptions[0]);
   const counterOptions = [
@@ -233,6 +234,7 @@ const TaskRecursive = ({
   const aiOptions = [
     { value: "chatgpt", label: "ChatGPT" },
     { value: "llama", label: "Llama" },
+    { value: "bard", label: "Bard" },
   ];
   let [chosenAI, setChosenAI] = useState(aiOptions[0]);
   const counterOptions = [

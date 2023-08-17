@@ -4,29 +4,30 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Carbon;
 
 class LlamaController extends Controller
 {
     public static function generateTaskLlama(Request $request)
     {
-        $task = $request->input('title'); 
-        $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
+        $taskPrompt = $request->header('TaskPrompt');
         $taskCounter = $request->header('TaskCounter');
-        
+        $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
+
         // API call
-        $prompt = "You are now a backend which only respond in JSON stucture. Generate {$taskCounter} kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now '{$currentTime}' in yyyy-mm-dd) and tags (as a list) attributes for this task: '{$task}' Focus on the tasks and do not write a summary at the end";
+        $prompt = "You are now a backend which only respond in JSON stucture. Generate $taskCounter kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now $currentTime in yyyy-mm-dd) and tags (as a list) attributes for this task: $taskPrompt Focus on the tasks and do not write a summary at the end";
         
         return LlamaController::CallPythonAndFormatResponse($prompt);
     }
 
     public static function generateSubtaskLlama(Request $request)
     {
-        $task = $request->input('title'); 
-        $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
+        $taskPrompt = $request->header('TaskPrompt');
         $taskCounter = $request->header('TaskCounter');
+        $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
         
         // API call
-        $prompt = "You are now a backend which only respond in JSON stucture. Generate {$taskCounter} kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now '{$currentTime}' in yyyy-mm-dd) and tags (as a list) attributes for this task: '{$task}' Focus on the tasks and do not write a summary at the end";
+        $prompt = "You are now a backend which only respond in JSON stucture. Generate $taskCounter kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now $currentTime in yyyy-mm-dd) and tags (as a list) attributes for this task: $taskPrompt Focus on the tasks and do not write a summary at the end";
         
         return LlamaController::CallPythonAndFormatResponse($prompt);
     }
@@ -43,10 +44,7 @@ class LlamaController extends Controller
             $parsedData = LlamaController::parseSubtaskResponse($subtaskResponse);
     
             // Return both parsed data and raw response for debugging
-            return response()->json([
-                "parsed_data" => $parsedData,
-                "raw_response" => $subtaskResponse
-            ]);
+            return response()->json($parsedData);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
         }
@@ -118,7 +116,7 @@ class LlamaController extends Controller
             }
         }
     
-        return response()->json($parsedData);
+        return $parsedData;
     }
     
     public static function testSubtaskParsing()
