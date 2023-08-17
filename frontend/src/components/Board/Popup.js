@@ -101,8 +101,8 @@ const Popup = ({
 
     const handleOpenPriorityPicker = (event) => {
         const buttonRect = event.target.getBoundingClientRect();
-        const newX = buttonRect.right - 1025;
-        const newY = buttonRect.top - 320;
+        const newX = buttonRect.right - 140;
+        const newY = buttonRect.top + 25;
         setPriorityPickerPos({ x: newX, y: newY });
         setShowPriorityDropDown(!showPriorityDropDown);
         setPriorityDropDownZIndex(priorityDropDownZIndex === 1 ? 100 : 1);
@@ -138,6 +138,10 @@ const Popup = ({
 
     const handleAddPriority = () => {
         modifyPriority(task.task_id, task.column_id, priorities[0].priority_id);
+    };
+
+    const handleModifyPriority = (priorityId) => {
+        modifyPriority(task.task_id, task.column_id, priorityId);
     };
 
     const handleModifyDeadline = (date) => {
@@ -318,18 +322,19 @@ const Popup = ({
                             setShowPriorityDropDown(false);
                             setPriorityDropDownZIndex(1);
                         }}
-                        style={{
-                            position: 'fixed',
-                            left: priorityPickerPos.x + 'px',
-                            top: priorityPickerPos.y + 'px',
-                        }}
                     >
                         <div
                             className='priority-picker'
+                            style={{
+                                position: 'fixed',
+                                left: priorityPickerPos.x + 'px',
+                                top: priorityPickerPos.y + 'px',
+                            }}
                         >
                             <div className='priority-picker-content'>
                                 {priorities.map((priority, index) => (
-                                    <p className='priority-picker-item' key={index} value={priority.priority_id}>{priority.priority}</p>
+                                    <p className='priority-picker-item' key={index}
+                                        value={priority.priority_id} onClick={() => { handleModifyPriority(priority.priority_id) }}>{priority.priority}</p>
                                 ))}
                             </div>
                         </div>
