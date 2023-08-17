@@ -150,7 +150,7 @@ export const Task = ({
                         {dotsIcon}
                     </span>
                 </div>
-                <div className='tags-container'>
+                <div className='tags'>
                     {task.tags &&
                         task.tags.map((tag, tagIndex) => (
                             <Tag
