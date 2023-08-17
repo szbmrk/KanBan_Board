@@ -106,29 +106,37 @@ class DashboardController extends Controller
         return response()->json(['error' => 'You don\'t have permission to update this board.'], 401);
     }
 
-    
     public function destroy($board_id)
     {
         $user = auth()->user();
+        
+        if (!$user) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
 
         $board = Board::find($board_id);
         if (!$board) {
             LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found on Delete. -> board_id: $board_id", null, null, null);
-            return response()->json(['error' => 'Board not found.'], 401);
+            return response()->json(['error' => 'Board not found.'], 404);
         }
-
-        // Check if user belongs to the team
+        
         if ($user->teams()->where('teams.team_id', $board->team_id)->exists()) {
-            $board->delete();
+            $roles = $user->getRoles();
+            $permissions = $user->getPermissions();
+        
+            $hasSystemAdminPermission = in_array('system_admin', $permissions);
+            $hasBoardManagerRole = array_filter($roles, function($role) use ($board_id) {
+                return $role['name'] == 'Board Manager' && $role['board_id'] == $board_id;
+            });
 
-            LogRequest::instance()->logAction('DELETED BOARD', $user->user_id, "Board Deleted successfully! -> board_id: $board_id", $board->team_id, $board_id, null);
-
-            return response()->json(null, 204);
-        } else {
-
-            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not belong to this team. -> Delete Board", null, null, null);
-            return response()->json(['error' => 'Unauthenticated'], 401);
+            if ($hasSystemAdminPermission || !empty($hasBoardManagerRole)) {
+                $board->delete();
+                LogRequest::instance()->logAction('DELETED BOARD', $user->user_id, "Board Deleted successfully! -> board_id: $board_id", $board->team_id, $board_id, null);
+                return response()->json(['message' => 'Board successfully deleted'], 200);
+            }
         }
+
+        return response()->json(['error' => "You don't have permission to delete this board."], 401);
     }
 
     public function executeAGIBoard(Request $request)
