@@ -101,7 +101,7 @@ const Popup = ({
 
     const handleOpenPriorityPicker = (event) => {
         const buttonRect = event.target.getBoundingClientRect();
-        const newX = buttonRect.right - 140;
+        const newX = buttonRect.right - 160;
         const newY = buttonRect.top + 25;
         setPriorityPickerPos({ x: newX, y: newY });
         setShowPriorityDropDown(!showPriorityDropDown);
