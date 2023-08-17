@@ -707,6 +707,22 @@ const Board = () => {
         }
     }
 
+    const handleAddAttachment = async (task_id, column_id) => {
+        try {
+            const response = await axios.post(`/tasks/${task_id}/attachments`, { link: "https://www.example.com", description: "example description" },
+                { headers: { Authorization: `Bearer ${token}` } });
+            const newAttachment = response.data.attachment;
+            const newBoardData = [...board.columns];
+            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
+            const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
+            task.attachments.push(newAttachment);
+            setBoard({ ...board, columns: newBoardData });
+        }
+        catch (e) {
+            console.error(e);
+        }
+    }
+
     return (
         <>
             {permission === false ? (
@@ -935,6 +951,7 @@ const Board = () => {
                     priorities={priorities}
                     modifyPriority={handleModifyPriority}
                     modifyDeadline={handleModifyDeadline}
+                    addAttachment={handleAddAttachment}
                     tags={inspectedTask.tags}
                 />
             )}

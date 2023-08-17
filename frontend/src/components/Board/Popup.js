@@ -11,6 +11,8 @@ import {
     faFileLines,
     faFireFlameCurved,
     faListCheck,
+    faPaperclip,
+    faTrash,
 } from '@fortawesome/free-solid-svg-icons';
 import axios from "../../api/axios";
 import Subtask from './Subtask';
@@ -28,6 +30,8 @@ const linkIcon = <FontAwesomeIcon icon={faLink} />;
 const stopwatchIcon = <FontAwesomeIcon icon={faStopwatch} />;
 const fileIcon = <FontAwesomeIcon icon={faFileLines} />;
 const priorityIcon = <FontAwesomeIcon icon={faFireFlameCurved} />;
+const attachmentIcon = <FontAwesomeIcon icon={faPaperclip} />
+const trashIcon = <FontAwesomeIcon icon={faTrash} />;
 
 
 const Popup = ({
@@ -44,7 +48,7 @@ const Popup = ({
     priorities,
     modifyPriority,
     modifyDeadline,
-    addDeadline,
+    addAttachment,
     tags
 }) => {
     const popupRef = useRef(null);
@@ -260,6 +264,22 @@ const Popup = ({
                             </div>
                             : <></>}
                         <Comment comments={task.comments} handlePostComment={handlePostCommentFromComment}></Comment>
+                        {task.attachments && task.attachments.length > 0 && (
+                            <div className='attachments-section'>
+                                <div className='subtitle'>
+                                    <span className='icon'>{attachmentIcon}</span>
+                                    <h3>Attachments:</h3>
+                                </div>
+                                <div className='attachment-container'>
+                                    {task.attachments.map((attachment, index) => (
+                                        <div className='attachment' key={index}>
+                                            <a className='attachment-link' href={attachment.link} target="_blank">{attachment.link}</a>
+                                            <span className="delete-button">{trashIcon}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <button
@@ -305,7 +325,7 @@ const Popup = ({
                                     <div className='add-to-card-item' onClick={handleAddPriority}>
                                         <p>Priority</p>
                                     </div>}
-                                <div className='add-to-card-item'>
+                                <div className='add-to-card-item' onClick={() => addAttachment(task.task_id, task.column_id)}>
                                     <p>Attachment</p>
                                 </div>
                                 <div className='add-to-card-item'>

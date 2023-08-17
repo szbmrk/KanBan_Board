@@ -86,7 +86,7 @@ class TaskController extends Controller
 
         $task->save();
 
-        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($task->task_id);
+        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'priority', 'comments', 'attachments')->find($task->task_id);
 
         //LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Task created successfully!", $teamId, $board_id, $task->task_id);
         return response()->json(['message' => 'Task created successfully', 'task' => $taskWithSubtasksAndTags]);
@@ -133,7 +133,7 @@ class TaskController extends Controller
 
         $task->save();
 
-        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'priority', 'comments')->find($task_id);
+        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'priority', 'comments', 'attachments')->find($task_id);
 
         return response()->json(['message' => 'Task updated successfully', 'task' => $taskWithSubtasksAndTags]);
     }
