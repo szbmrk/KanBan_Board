@@ -10,14 +10,12 @@ import {
     faStopwatch,
     faFileLines,
     faFireFlameCurved,
-    faComments,
     faListCheck,
 } from '@fortawesome/free-solid-svg-icons';
 import axios from "../../api/axios";
-import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import Subtask from './Subtask';
 import TagDropdown from "../TagDropdown";
-import { dateFormatOptions } from '../../utils/DateFormat';
+import Comment from './Comment';
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const subtaskIcon = <FontAwesomeIcon icon={faListCheck} />;
@@ -28,8 +26,6 @@ const linkIcon = <FontAwesomeIcon icon={faLink} />;
 const stopwatchIcon = <FontAwesomeIcon icon={faStopwatch} />;
 const fileIcon = <FontAwesomeIcon icon={faFileLines} />;
 const priorityIcon = <FontAwesomeIcon icon={faFireFlameCurved} />;
-const commentsIcon = <FontAwesomeIcon icon={faComments} />;
-const sendMessageIcon = <FontAwesomeIcon icon={faPaperPlane} />;
 
 
 const Popup = ({
@@ -52,7 +48,6 @@ const Popup = ({
     const [showAddToCard, setShowAddToCard] = useState(false);
     const [addToCardIconZIndex, setAddToCardIconZIndex] = useState(1);
     const [addToCardContainerPosition, setAddToCardContainerPosition] = useState({ x: 0, y: 0 });
-    const [addComment, setAddComment] = useState('');
     const [boardTags, setBoardTags] = useState([]);
 
     const handleChange = (event) => {
@@ -95,14 +90,9 @@ const Popup = ({
         setAddToCardIconZIndex(addToCardIconZIndex === 1 ? 100 : 1);
     };
 
-    const handleAddComment = (e) => {
-        setAddComment(e.target.value);
-    };
-
-    const postComment = async () => {
-        handlePostComment(task.task_id, task.column_id, addComment);
-        setAddComment('');
-    };
+    const handlePostCommentFromComment = async (comment) => {
+        handlePostComment(task.task_id, task.column_id, comment);
+    }
 
     const handleGetBoardTags = async () => {
         try {
@@ -204,66 +194,7 @@ const Popup = ({
                                 ))}
                             </div>
                             : <></>}
-                        {task.comments && task.comments.length > 0 ? <>
-                            <div className='subtitle'>
-                                <span className='icon'>{commentsIcon}</span>
-                                <h3>Comments:</h3>
-                            </div>
-                            <div className='comments-container'>
-                                <div class='previous-comments'>
-                                    {task.comments.map((comment, index) => (
-                                        <div
-                                            className={`comment ${sessionStorage.getItem("username") === comment.user.username ? 'own-comment' : 'other-comment'}`}
-                                            key={index}
-                                        >
-                                            <div class="comment-header">
-                                                <span className="username">{comment.user.username}</span>
-                                                <span className="date">{new Date(comment.created_at).toLocaleString("en-US", dateFormatOptions)}</span>
-                                            </div>
-                                            <div className="comment-text">
-                                                {comment.text}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className='add-comment'>
-                                    <div className='add-comment-content'>
-                                        <textarea
-                                            className='add-comment-textarea'
-                                            value={addComment}
-                                            onChange={handleAddComment}
-                                            placeholder='Write your comment here'
-                                        />
-                                        <button className='add-comment-button' onClick={postComment}>
-                                            {sendMessageIcon}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </> : <>
-                            <div className='subtitle'>
-                                <span className='icon'>{commentsIcon}</span>
-                                <h3>Comments:</h3>
-                            </div>
-                            <div className='comments-container'>
-                                <div class='previous-comments'>
-                                    <h3>No comments yet!</h3>
-                                </div>
-                                <div className='add-comment'>
-                                    <div className='add-comment-content'>
-                                        <textarea
-                                            className='add-comment-textarea'
-                                            value={addComment}
-                                            onChange={handleAddComment}
-                                            placeholder='Write your comment here'
-                                        />
-                                        <button className='add-comment-button' onClick={postComment}>
-                                            {sendMessageIcon}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </>}
+                        <Comment comments={task.comments} handlePostComment={handlePostCommentFromComment}></Comment>
                     </div>
                 </div>
                 <button
