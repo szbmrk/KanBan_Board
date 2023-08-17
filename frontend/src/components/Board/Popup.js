@@ -54,8 +54,11 @@ const Popup = ({
     const [showAddToCard, setShowAddToCard] = useState(false);
     const [addToCardIconZIndex, setAddToCardIconZIndex] = useState(1);
     const [addToCardContainerPosition, setAddToCardContainerPosition] = useState({ x: 0, y: 0 });
+    const [priorityPickerPos, setPriorityPickerPos] = useState({ x: 0, y: 0 });
+    const [priorityDropDownZIndex, setPriorityDropDownZIndex] = useState(1);
     const [boardTags, setBoardTags] = useState([]);
     const [newDeadlineDate, setNewDeadlineDate] = useState(null);
+    const [showPriorityDropDown, setShowPriorityDropDown] = useState(false);
 
     const handleChange = (event) => {
         setEditedText(event.target.value);
@@ -66,6 +69,7 @@ const Popup = ({
     };
 
     useEffect(() => {
+        setShowPriorityDropDown(false);
         setNewDeadlineDate(null);
         setEditedText(task.title);
         setEditedDescription(task.description);
@@ -90,12 +94,18 @@ const Popup = ({
         const buttonRect = event.target.getBoundingClientRect();
         const newX = buttonRect.right + 10;
         const newY = buttonRect.top - 300;
-
-        // Set the icon-container's position and show it
         setAddToCardContainerPosition({ x: newX, y: newY });
-
         setShowAddToCard(!showAddToCard);
         setAddToCardIconZIndex(addToCardIconZIndex === 1 ? 100 : 1);
+    };
+
+    const handleOpenPriorityPicker = (event) => {
+        const buttonRect = event.target.getBoundingClientRect();
+        const newX = buttonRect.right - 1025;
+        const newY = buttonRect.top - 320;
+        setPriorityPickerPos({ x: newX, y: newY });
+        setShowPriorityDropDown(!showPriorityDropDown);
+        setPriorityDropDownZIndex(priorityDropDownZIndex === 1 ? 100 : 1);
     };
 
     const handlePostCommentFromComment = async (comment) => {
@@ -164,8 +174,12 @@ const Popup = ({
                             />
                         </div>}
                     {/* TODO: különböző színű icon megjelenítése az id helyett annak függvényében, hogy milyen a prioritása a feledatnak */}
-                    {task.priority && <div className='priority'>{task.priority.priority}</div>}
-                    {/* TODO: onClick szerkeszthetőség elkészítése */}
+                    {task.priority &&
+                        <>
+                            <div onClick={handleOpenPriorityPicker} style={{ zIndex: priorityDropDownZIndex }} className='priority'>
+                                {task.priority.priority}
+                            </div>
+                        </>}
                     {task.parent_task_id === null ? (
                         <span className='close-btn' onClick={onClose}>
                             {closeIcon}
@@ -297,6 +311,30 @@ const Popup = ({
                         </div>
                     </div>
                 )}
+                {showPriorityDropDown &&
+                    <div
+                        className='overlay darken'
+                        onClick={() => {
+                            setShowPriorityDropDown(false);
+                            setPriorityDropDownZIndex(1);
+                        }}
+                        style={{
+                            position: 'fixed',
+                            left: priorityPickerPos.x + 'px',
+                            top: priorityPickerPos.y + 'px',
+                        }}
+                    >
+                        <div
+                            className='priority-picker'
+                        >
+                            <div className='priority-picker-content'>
+                                {priorities.map((priority, index) => (
+                                    <p className='priority-picker-item' key={index} value={priority.priority_id}>{priority.priority}</p>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     );

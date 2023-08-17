@@ -119,7 +119,7 @@
 }
 
 .due-date {
-    width: 30%;
+    width: 17%;
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -136,6 +136,7 @@
     border: none;
     box-shadow: none;
     outline: none;
+    width: 100%;
 }
 
 .priority:hover,
@@ -436,4 +437,38 @@
 
 .add-comment-button:hover {
     color: var(--starred);
+}
+
+.priority-picker {
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid var(--light-gray);
+    border-radius: 8px;
+    padding: 5px;
+    background-color: var(--bg-mostly-black);
+}
+
+.priority-picker-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.priority-picker-content p {
+    margin: 10px 0;
+}
+
+.priority-picker-item {
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.1s ease;
+}
+
+.priority-picker-item:hover {
+    background-color: var(--scrollbar-hover);
 }
