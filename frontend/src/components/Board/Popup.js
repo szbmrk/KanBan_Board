@@ -20,6 +20,7 @@ import TagDropdown from "../TagDropdown";
 import Comment from './Comment';
 import DatePicker from "react-datepicker";
 import { set } from 'lodash';
+import { text } from '@fortawesome/fontawesome-svg-core';
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const subtaskIcon = <FontAwesomeIcon icon={faListCheck} />;
@@ -32,7 +33,6 @@ const fileIcon = <FontAwesomeIcon icon={faFileLines} />;
 const priorityIcon = <FontAwesomeIcon icon={faFireFlameCurved} />;
 const attachmentIcon = <FontAwesomeIcon icon={faPaperclip} />
 const trashIcon = <FontAwesomeIcon icon={faTrash} />;
-
 
 const Popup = ({
     task,
@@ -64,6 +64,21 @@ const Popup = ({
     const [boardTags, setBoardTags] = useState([]);
     const [newDeadlineDate, setNewDeadlineDate] = useState(null);
     const [showPriorityDropDown, setShowPriorityDropDown] = useState(false);
+    const [showAddAttachment, setShowAddAttachment] = useState(false);
+    const [newAttachmentLink, setNewAttachmentLink] = useState('');
+    const [newAttachmentDescription, setNewAttachmentDescription] = useState('');
+    const [linkIsValid, setLinkIsValid] = useState(true);
+
+    const validateLink = (inputLink) => {
+        const urlPattern = /^(http|https):\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/;
+        return urlPattern.test(inputLink);
+    };
+
+    const handleLinkChange = (event) => {
+        const inputValue = event.target.value;
+        setNewAttachmentLink(inputValue);
+        setLinkIsValid(validateLink(inputValue));
+    };
 
     const handleChange = (event) => {
         setEditedText(event.target.value);
@@ -76,6 +91,8 @@ const Popup = ({
     useEffect(() => {
         setShowPriorityDropDown(false);
         setNewDeadlineDate(null);
+        setNewAttachmentLink('');
+        setNewAttachmentDescription('');
         setEditedText(task.title);
         setEditedDescription(task.description);
         handleGetBoardTags();
@@ -84,7 +101,8 @@ const Popup = ({
     useEffect(() => {
         const handleOutsideClick = (event) => {
             if (popupRef.current && !popupRef.current.contains(event.target)) {
-                onClose();
+                if (event.target.className === "overlay") onClose();
+                if (event.target.className === "overlay2") setShowAddAttachment(false);
             }
         };
 
@@ -141,14 +159,6 @@ const Popup = ({
         modifyDeadline(task.task_id, task.column_id, nextWeekTimestamp);
     };
 
-    const handleAddPriority = () => {
-        modifyPriority(task.task_id, task.column_id, priorities[0].priority_id);
-    };
-
-    const handleModifyPriority = (priorityId) => {
-        modifyPriority(task.task_id, task.column_id, priorityId);
-    };
-
     const handleModifyDeadline = (date) => {
         const timestamp = date.toISOString().slice(0, 19).replace('T', ' ');
         modifyDeadline(task.task_id, task.column_id, timestamp);
@@ -163,6 +173,24 @@ const Popup = ({
             newDeadLine.setSeconds(0);
             newDeadLine.setMilliseconds(0);
             handleModifyDeadline(newDeadLine);
+        }
+    };
+
+    const handleAddPriority = () => {
+        modifyPriority(task.task_id, task.column_id, priorities[0].priority_id);
+    };
+
+    const handleModifyPriority = (priorityId) => {
+        modifyPriority(task.task_id, task.column_id, priorityId);
+    };
+
+    const handleAddAttachment = (e) => {
+        e.preventDefault();
+        if (linkIsValid) {
+            addAttachment(task.task_id, task.column_id, newAttachmentLink, newAttachmentDescription);
+            setShowAddAttachment(false);
+            setNewAttachmentLink('');
+            setNewAttachmentDescription('');
         }
     };
 
@@ -326,7 +354,7 @@ const Popup = ({
                                     <div className='add-to-card-item' onClick={handleAddPriority}>
                                         <p>Priority</p>
                                     </div>}
-                                <div className='add-to-card-item' onClick={() => addAttachment(task.task_id, task.column_id)}>
+                                <div className='add-to-card-item' onClick={() => setShowAddAttachment(true)}>
                                     <p>Attachment</p>
                                 </div>
                                 <div className='add-to-card-item'>
@@ -362,6 +390,33 @@ const Popup = ({
                     </div>
                 }
             </div>
+            {showAddAttachment &&
+                <div className='overlay2'>
+                    <div className='attachment-popup-mini-attachment'>
+                        <form className='attachment-popup-content-form-mini' onSubmit={handleAddAttachment}>
+                            <h4>Link:</h4>
+                            <input
+                                type='text'
+                                placeholder='https://example.com'
+                                required
+                                onChange={handleLinkChange}
+                            />
+                            {!linkIsValid && <span className='validation-message'>Invalid link format</span>}
+                            <h4>Description:</h4>
+                            <input
+                                type='textarea'
+                                placeholder='example description'
+                                onChange={(e) => setNewAttachmentDescription(e.target.value)}
+                            />
+                            <button className={linkIsValid ? 'attachment-add-button' : 'attachment-add-button invalid-btn'} disabled={!linkIsValid}>
+                                Add
+                            </button>
+                            <button onClick={() => setShowAddAttachment(false)} type='button' className='attachment-cancel-button'>
+                                Cancel
+                            </button>
+                        </form>
+                    </div>
+                </div>}
         </div>
     );
 };
