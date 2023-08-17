@@ -20,6 +20,9 @@ use App\Http\Controllers\MentionController;
 use App\Models\Feedback;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PriorityController;
+use App\Http\Controllers\TeamMemberRoleController;
+
+/*
 use App\Http\Controllers\UserTasksController;/*
 |--------------------------------------------------------------------------
 | API Routes
@@ -116,6 +119,10 @@ Route::put('/notifications/{notificationId}', [NotificationController::class, 'u
 Route::delete('/notifications/{notificationId}', [NotificationController::class, 'destroy'])->middleware('api');
 
 Route::get('/user/{user_id}/tasks', [UserTasksController::class, 'index'])->middleware('api');
+
+Route::get('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'index'])->middleware('api');
+Route::post('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'store'])->middleware('api');
+Route::delete('/boards/{boardId}/team-member-roles/{teamMemberRoleId}',[TeamMemberRoleController::class, 'destroy'])->middleware('api');
 
 Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_code', [AGIController::class, 'generateCode'])->middleware('api');

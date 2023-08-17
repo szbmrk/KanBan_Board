@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Log;
+use App\Models\Task;
+use App\Models\Team;
 use App\Models\Board;
 use App\Models\Column;
-use App\Models\Task;
-use App\Models\Attachment;
 use App\Models\Comment;
 use App\Models\Mention;
-use App\Models\FavouriteTask;
-use App\Models\Log;
 use App\Models\TaskTag;
-use App\Models\UserTask;
 use App\Models\Feedback;
+use App\Models\UserTask;
+use App\Models\Attachment;
+use Illuminate\Http\Request;
+use App\Models\FavouriteTask;
 use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
@@ -30,7 +31,7 @@ class TaskController extends Controller
         if (!$user->isMemberOfBoard($board_id)) {
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
-
+        $teamId = $board->team->team_id;
         $column_id = $request->input('column_id');
         if ($column_id == null) {
             return response()->json(['error' => 'Column id is required'], 403);
@@ -87,6 +88,7 @@ class TaskController extends Controller
 
         $taskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($task->task_id);
 
+        //LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Task created successfully!", $teamId, $board_id, $task->task_id);
         return response()->json(['message' => 'Task created successfully', 'task' => $taskWithSubtasksAndTags]);
     }
 

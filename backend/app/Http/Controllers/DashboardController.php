@@ -40,7 +40,7 @@ class DashboardController extends Controller
             $board->save();
 
             // Log the successful action
-            //LogRequest::instance()->logAction('CREATED BOARD', $user->user_id, "Board created successfully!", $team_id, $board->board_id, null);
+            LogRequest::instance()->logAction('CREATED BOARD', $user->user_id, "Board created successfully!", $team_id, $board->board_id, null);
 
             return response()->json(['board' => $board], 201);
         } else {
@@ -65,7 +65,7 @@ class DashboardController extends Controller
             $board->save();
 
             // Log the successful action
-            //LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "Board Updated successfully!", $team_id, $board->board_id, null);
+            LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "Board Updated successfully!", $board->team_id, $board_id, null);
 
             return response()->json(['board' => $board]);
         } else {
@@ -89,7 +89,7 @@ class DashboardController extends Controller
         if ($user->teams()->where('teams.team_id', $board->team_id)->exists()) {
             $board->delete();
 
-            //LogRequest::instance()->logAction('DELETED BOARD', $user->user_id, "Board Deleted successfully! -> board_id: $board_id", $board->team_id, $board_id, null);
+            LogRequest::instance()->logAction('DELETED BOARD', $user->user_id, "Board Deleted successfully! -> board_id: $board_id", $board->team_id, $board_id, null);
 
             return response()->json(null, 204);
         } else {

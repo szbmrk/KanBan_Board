@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Team;
 use App\Helpers\LogRequest;
+use App\Models\Role;
 use App\Models\TeamMember;
+use App\Models\Permission;
+use Illuminate\Support\Facades\DB;
 
 class TeamController extends Controller
 {
@@ -21,19 +24,36 @@ class TeamController extends Controller
     {
         $user = auth()->user();
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
+        $request->validate(['name' => 'required|string|max:255']);
 
         $team = new Team();
         $team->name = $request->input('name');
         $team->created_by = $user->user_id;
         $team->save();
 
-        $teamMember = new TeamMember();
-        $teamMember->team_id = $team->team_id;
-        $teamMember->user_id = $user->user_id;
-        $teamMember->save();
+        $teamManagerRole = Role::where('name', 'Team Manager')->first();
+        $teamManagementPermission = Permission::where('name', 'team_management')->first();
+        $teamMemberManagementPermission = Permission::where('name', 'team_member_management')->first();
+        $roleManagementPermission = Permission::where('name', 'role_management')->first();
+
+        $teamMember = TeamMember::create([
+            'team_id' => $team->team_id,
+            'user_id' => $user->user_id,
+        ]);
+
+        $teamMember->roles()->attach($teamManagerRole->role_id);
+
+        if (!$teamManagerRole->permissions->contains($teamManagementPermission)) {
+            $teamManagerRole->permissions()->attach($teamManagementPermission->id);
+        }
+
+        if (!$teamManagerRole->permissions->contains($teamMemberManagementPermission)) {
+            $teamManagerRole->permissions()->attach($teamMemberManagementPermission->id);
+        }
+
+        if (!$teamManagerRole->permissions->contains($roleManagementPermission)) {
+            $teamManagerRole->permissions()->attach($roleManagementPermission->id);
+        }
 
         LogRequest::instance()->logAction('CREATED TEAM', $user->user_id, "Team Created successfully! -> $team->name", $team->team_id, null, null);
         $teamWithMembers = Team::with(['teamMembers.user'])->where('team_id', $team->team_id)->first();
@@ -44,21 +64,27 @@ class TeamController extends Controller
     {
         $user = auth()->user();
 
+        $team = Team::find($id);
+
+        if (!$team) {
+            LogRequest::instance()->logAction('TEAM NOT FOUND', $user->user_id, "Team not found on Update. -> team_id: $id", null, null, null);
+            return response()->json(['error' => 'Team not found'], 404);
+        }
+
+        if (!$user->hasPermission('system_admin')) {
+            if (!$team->teamMembers->contains('user_id', $user->user_id)) {
+                return response()->json(['error' => 'You are not a member of this team.'], 403);
+            }
+
+            if (!$user->hasPermission('team_management')) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have 'team_management' permission. -> Update Team", null, null, null);
+                return response()->json(['error' => 'You don\'t have permission to update this team.'], 403);
+            }
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
-
-        $team = Team::find($id);
-        if (!$team) {
-            LogRequest::instance()->logAction('TEAM NOT FOUND', $user->user_id, "Team not found on Update. -> team_id: $id", null, null, null);
-            return response()->json(['message' => 'Team not found'], 404);
-        }
-
-        $team = Team::where('team_id', $id)->where('created_by', $user->user_id)->first();
-        if (!$team) {
-            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission. -> Update Team", null, null, null);
-            return response()->json(['message' => 'Unauthorized'], 404);
-        }
 
         $team->name = $request->input('name');
         $team->save();
@@ -74,13 +100,18 @@ class TeamController extends Controller
         $team = Team::find($id);
         if (!$team) {
             LogRequest::instance()->logAction('TEAM NOT FOUND', $user->user_id, "Team not found on Delete. -> team_id: $id", null, null, null);
-            return response()->json(['message' => 'Team not found'], 404);
+            return response()->json(['error' => 'Team not found'], 404);
         }
 
-        $team = Team::where('team_id', $id)->where('created_by', $user->user_id)->first();
-        if (!$team) {
-            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission. -> Delete Team", null, null, null);
-            return response()->json(['message' => 'Unauthorized'], 404);
+        if (!$user->hasPermission('system_admin')) {
+            if (!$team->teamMembers->contains('user_id', $user->user_id)) {
+                return response()->json(['error' => 'You are not a member of this team.'], 403);
+            }
+
+            if (!$user->hasPermission('team_management')) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have 'team_management' permission. -> Delete Team", null, null, null);
+                return response()->json(['error' => 'You don\'t have permission to delete this team.'], 403);
+            }
         }
 
         $team->delete();

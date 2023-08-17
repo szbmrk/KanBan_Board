@@ -12,6 +12,8 @@ return new class extends Migration
             $table->id('team_members_role_id');
             $table->unsignedBigInteger('team_member_id')->nullable(false);
             $table->unsignedBigInteger('role_id')->nullable(false);
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
 
             // Add the onDelete('cascade') option to both foreign key definitions
             $table->foreign('team_member_id')->references('team_members_id')->on('team_members')->onDelete('cascade');
