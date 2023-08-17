@@ -39,6 +39,8 @@ const Popup = ({
     setTaskAsInspectedTask,
     handlePostComment,
     onPreviousTask,
+    addPriority,
+    addDeadline,
     tags
 }) => {
     const popupRef = useRef(null);
@@ -112,10 +114,11 @@ const Popup = ({
                 {/* Upper Part */}
                 <div className='upper-part'>
                     <input type='text' className='board-input' value={editedText} onChange={handleChange} />
-                    <div className='due-date'>
-                        <span className='icon'>{stopwatchIcon}</span>
-                        {task.due_date} {/* TODO: onClick szerkeszthetőség elkészítése */}
-                    </div>
+                    {task.due_date &&
+                        <div className='due-date'>
+                            <span className='icon'>{stopwatchIcon}</span>
+                            {task.due_date} {/* TODO: onClick szerkeszthetőség elkészítése */}
+                        </div>}
                     {/* TODO: különböző színű icon megjelenítése az id helyett annak függvényében, hogy milyen a prioritása a feledatnak */}
                     {task.priority && <div className='priority'>{task.priority.priority}</div>}
                     {/* TODO: onClick szerkeszthetőség elkészítése */}
@@ -226,18 +229,20 @@ const Popup = ({
                         >
                             <div className='add-to-card-title'>Add to card</div>
                             <div className='add-to-card-content'>
-                                <div className='add-to-card-item'>
-                                    <p>Tag</p>
-                                </div>
                                 <div
                                     className='add-to-card-item'
                                     onClick={() => addSubtask(task.task_id, task.column_id)}
                                 >
                                     <p>Subtask</p>
                                 </div>
-                                <div className='add-to-card-item'>
-                                    <p>Date</p>
-                                </div>
+                                {task.due_date === null &&
+                                    <div className='add-to-card-item' onClick={() => addDeadline(task.task_id, task.column_id)}>
+                                        <p>Deadline</p>
+                                    </div>}
+                                {task.priority === null &&
+                                    <div className='add-to-card-item' onClick={() => addPriority(task.task_id, task.column_id)}>
+                                        <p>Priority</p>
+                                    </div>}
                                 <div className='add-to-card-item'>
                                     <p>Attachment</p>
                                 </div>
