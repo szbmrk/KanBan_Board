@@ -670,6 +670,43 @@ const Board = () => {
         cardZIndex === 1 ? setCardZIndex(100) : setCardZIndex(1);
     };
 
+    const handleModifyPriority = async (task_id, column_id, priority_id) => {
+        try {
+            const response = await axios.put(`/boards/${board_id}/tasks/${task_id}`, {
+                priority_id: priority_id,
+            },
+                { headers: { Authorization: `Bearer ${token}` } });
+            const newBoardData = [...board.columns];
+            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
+            const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
+            const newTask = response.data.task;
+            task.priority_id = newTask.priority_id;
+            task.priority = newTask.priority;
+            setBoard({ ...board, columns: newBoardData });
+        }
+        catch (e) {
+            console.error(e);
+        }
+    }
+
+    const handleModifyDeadline = async (task_id, column_id, deadline) => {
+        try {
+            const response = await axios.put(`/boards/${board_id}/tasks/${task_id}`, {
+                due_date: deadline,
+            },
+                { headers: { Authorization: `Bearer ${token}` } });
+            const newBoardData = [...board.columns];
+            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
+            const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
+            const newTask = response.data.task;
+            task.due_date = newTask.due_date;
+            setBoard({ ...board, columns: newBoardData });
+        }
+        catch (e) {
+            console.error(e);
+        }
+    }
+
     return (
         <>
             {permission === false ? (
@@ -896,6 +933,8 @@ const Board = () => {
                     setTaskAsInspectedTask={setTaskAsInspectedTask}
                     onPreviousTask={handleOpenPreviousTask}
                     priorities={priorities}
+                    modifyPriority={handleModifyPriority}
+                    modifyDeadline={handleModifyDeadline}
                     tags={inspectedTask.tags}
                 />
             )}

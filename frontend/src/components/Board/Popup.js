@@ -41,7 +41,8 @@ const Popup = ({
     handlePostComment,
     onPreviousTask,
     priorities,
-    addPriority,
+    modifyPriority,
+    modifyDeadline,
     addDeadline,
     tags
 }) => {
@@ -111,11 +112,15 @@ const Popup = ({
     };
 
     const handleAddDeadline = () => {
-        //addDeadline(task.task_id, task.column_id, newDeadline);
+        const nextWeek = new Date();
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        nextWeek.setHours(0, 0, 0, 0);
+        const nextWeekTimestamp = nextWeek.toISOString().slice(0, 19).replace('T', ' ');
+        modifyDeadline(task.task_id, task.column_id, nextWeekTimestamp);
     };
 
     const handleAddPriority = () => {
-        addPriority(task.task_id, task.column_id, priorities[0].priority_id);
+        modifyPriority(task.task_id, task.column_id, priorities[0].priority_id);
     };
 
     return (
