@@ -32,6 +32,19 @@ class LlamaController extends Controller
         return LlamaController::CallPythonAndFormatResponse($prompt);
     }
 
+    public static function GenerateAttachmentLinkLlama(Request $request)
+    {
+        $user = auth()->user();
+        $taskPrompt = $request->header('TaskPrompt');
+        $taskCounter = $request->header('TaskCounter');
+
+        // Prepare the prompt to be sent to the Python script
+        $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes for useful attachment links for this task: '$taskPrompt'";
+        // Construct the Python command with the required arguments and path to the script
+
+        return LlamaController::CallPythonAndFormatResponse($prompt);
+    }
+
     public static function CallPythonAndFormatResponse($prompt) {
         $pythonScriptPath = env('LLAMA_PYTHON_SCRIPT_PATH');
         $apiToken = env('REPLICATE_API_TOKEN');

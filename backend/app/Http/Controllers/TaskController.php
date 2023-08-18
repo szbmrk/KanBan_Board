@@ -90,7 +90,7 @@ class TaskController extends Controller
 
         $task->save();
 
-        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($task->task_id);
+        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task->task_id);
 
         //LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Task created successfully!", $teamId, $board_id, $task->task_id);
         return response()->json(['message' => 'Task created successfully', 'task' => $taskWithSubtasksAndTags]);
@@ -116,20 +116,28 @@ class TaskController extends Controller
         }
 
         $this->validate($request, [
-            'title' => 'required|string|max:100',
+            'title' => 'nullable|string|max:100',
             'description' => 'nullable|string',
             'due_date' => 'nullable|date',
             'priority_id' => 'nullable|integer|exists:priorities,priority_id',
         ]);
 
+        if ($request->input('title')) {
         $task->title = $request->input('title');
+        }
+        if ($request->input('description')) {
         $task->description = $request->input('description');
+        }
+        if ($request->input('due_date')) {
         $task->due_date = $request->input('due_date');
+        }
+        if ($request->input('priority_id')) {
         $task->priority_id = $request->input('priority_id');
+        }
 
         $task->save();
 
-        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($task_id);
+        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task_id);
 
         return response()->json(['message' => 'Task updated successfully', 'task' => $taskWithSubtasksAndTags]);
     }
@@ -280,7 +288,7 @@ class TaskController extends Controller
 
         $subTask->save();
 
-        $subTaskWithSubtasksAndTagsAndComments = Task::with('subtasks', 'tags', 'comments', 'priority')->find($subTask->task_id);
+        $subTaskWithSubtasksAndTagsAndComments = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($subTask->task_id);
 
         return response()->json(['message' => 'Subtask created successfully', 'task' => $subTaskWithSubtasksAndTagsAndComments]);
     }
@@ -311,7 +319,7 @@ class TaskController extends Controller
 
         $subTask->save();
 
-        $subTaskWithSubtasksAndTags = Task::with('subtasks', 'tags')->find($subtask_id);
+        $subTaskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($subtask_id);
 
         return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTaskWithSubtasksAndTags]);
     }
@@ -361,8 +369,11 @@ class TaskController extends Controller
         }
 
         $tasksData = $request->all();
+        $tasks = [];
         $validatedTasksData = [];
 
+        foreach ($tasksData as $taskData) 
+        {
         $existingPositions = Task::where('board_id', $boardId)
             ->where('column_id', $columnId)
             ->pluck('position')
@@ -380,13 +391,23 @@ class TaskController extends Controller
 
         foreach ($tasksData as $taskData) 
         {
+            /* if (isset($taskData['priority_id'])) {
+                $validPriorityIds = [1, 2, 3, 4];
+                if (!in_array($taskData['priority_id'], $validPriorityIds)) {
+                    return response()->json(['error' => 'Invalid priority_id.'], 400);
             $position = $taskData['position'] ?? null;
             if ($position !== null && in_array($position, $existingPositions)) {
                 return response()->json(['error' => "Position $position already exists in the column."], 400);
             }
+            }
 
+            if (isset($taskData['due_date'])) {
+                $currentDate = date('Y-m-d');
+                if ($taskData['due_date'] <= $currentDate) {
+                    return response()->json(['error' => 'Due date must be in the future.'], 400);
             $validatedTasksData[] = $taskData;
         }
+            } */
 
         $tasks = [];
 

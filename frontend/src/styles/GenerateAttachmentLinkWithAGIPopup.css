@@ -1,0 +1,16 @@
+.gt-scrollable-list-attachment {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  max-height: 45vh;
+  min-height: 45vh;
+  overflow-y: auto; /* Enable vertical scrolling when content overflows */
+}
+
+.gt-attachment-item {
+  background-color: #747474;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}

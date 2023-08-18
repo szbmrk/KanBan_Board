@@ -20,8 +20,9 @@ import { Column } from "./Columns";
 import Popup from "./Popup";
 import cloneDeep from "lodash/cloneDeep";
 import GenerateTaskWithAGIPopup from "../GenerateTaskWithAGIPopup";
-import { useNavigate } from "react-router-dom";
+import GenerateAttachmentLinkWithAGIPopup from "../GenerateAttachmentLinkWithAGIPopup";
 import CraftPromptPopup from "../CraftPromptPopup";
+import { useNavigate } from "react-router-dom";
 
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
@@ -41,6 +42,10 @@ const Board = () => {
   const [columnNewTitle, setColumnNewTitle] = useState("");
   const [showGenerateTaskWithAGIPopup, setShowGenerateTaskWithAGIPopup] =
     useState(false);
+  const [
+    showGenerateAttachmentLinkWithAGIPopup,
+    setShowGenerateAttachmentLinkWithAGIPopup,
+  ] = useState(false);
   const [cardZIndex, setCardZIndex] = useState(1);
   const [iconContainerPosition, setIconContainerPosition] = useState({
     x: 0,
@@ -50,8 +55,8 @@ const Board = () => {
   const [isHoveredAI, setIsHoveredAI] = useState(false);
   const [isHoveredX, setIsHoveredX] = useState(false);
   const [columnIndex, setColumnIndex] = useState(null);
+  const [priorities, setPriorities] = useState([]);
   const navigate = useNavigate();
-  const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
 
   const checkIcon = <FontAwesomeIcon icon={faCheck} />;
   const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
@@ -80,6 +85,13 @@ const Board = () => {
 
   const fetchBoardData = async () => {
     try {
+      const prioritiesResponse = await axios.get("/priorities", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setPriorities(prioritiesResponse.data.priorities);
+
       const response = await axios.get(`/boards/${board_id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -749,6 +761,19 @@ const Board = () => {
     setInspectedTask(null);
   };
 
+  const openGenerateAttachmentLinkWithAGIPopup = (task) => {
+    setShowGenerateAttachmentLinkWithAGIPopup(true);
+    console.log(task);
+    if (task) {
+      setInspectedTask(cloneDeep(task));
+    }
+  };
+
+  const handleGenerateAttachmentLinkCancel = () => {
+    setShowGenerateAttachmentLinkWithAGIPopup(false);
+    setInspectedTask(null);
+  };
+
   const handleDotsClick = (event, columnIndex) => {
     const buttonRect = event.target.getBoundingClientRect();
     const newX = buttonRect.right + 20;
@@ -760,12 +785,91 @@ const Board = () => {
     cardZIndex === 1 ? setCardZIndex(100) : setCardZIndex(1);
   };
 
-  const openCraftPromptPopup = () => {
-    setShowCraftPromptPopup(true);
+  const handleModifyPriority = async (task_id, column_id, priority_id) => {
+    try {
+      const response = await axios.put(
+        `/boards/${board_id}/tasks/${task_id}`,
+        {
+          priority_id: priority_id,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const newBoardData = [...board.columns];
+      const columnIndex = newBoardData.findIndex(
+        (column) => column.column_id === column_id
+      );
+      const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
+      const newTask = response.data.task;
+      task.priority_id = newTask.priority_id;
+      task.priority = newTask.priority;
+      setBoard({ ...board, columns: newBoardData });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  const handleCraftPromptCancel = () => {
-    setShowCraftPromptPopup(false);
+  const handleModifyDeadline = async (task_id, column_id, deadline) => {
+    try {
+      const response = await axios.put(
+        `/boards/${board_id}/tasks/${task_id}`,
+        {
+          due_date: deadline,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const newBoardData = [...board.columns];
+      const columnIndex = newBoardData.findIndex(
+        (column) => column.column_id === column_id
+      );
+      const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
+      const newTask = response.data.task;
+      task.due_date = newTask.due_date;
+      setBoard({ ...board, columns: newBoardData });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleAddAttachment = async (task_id, column_id, link, description) => {
+    try {
+      const response = await axios.post(
+        `/tasks/${task_id}/attachments`,
+        { link: link, description: description },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const newAttachment = response.data.attachment;
+      const newBoardData = [...board.columns];
+      const columnIndex = newBoardData.findIndex(
+        (column) => column.column_id === column_id
+      );
+      const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
+      task.attachments.push(newAttachment);
+      setBoard({ ...board, columns: newBoardData });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleDeleteAttachment = async (task_id, column_id, attachment_id) => {
+    try {
+      await axios.delete(`/attachments/${attachment_id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const newBoardData = [...board.columns];
+      const columnIndex = newBoardData.findIndex(
+        (column) => column.column_id === column_id
+      );
+      const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
+      task.attachments.splice(
+        task.attachments.findIndex(
+          (attachment) => attachment.attachment_id === attachment_id
+        ),
+        1
+      );
+      setBoard({ ...board, columns: newBoardData });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -909,6 +1013,9 @@ const Board = () => {
                             generateTasks={(task) =>
                               openGenerateTaskWithAGIPopup(task)
                             }
+                            generateAttachmentLinks={(task) =>
+                              openGenerateAttachmentLinkWithAGIPopup(task)
+                            }
                           />
                         ))}
                       </div>
@@ -985,10 +1092,10 @@ const Board = () => {
               </div>
             </div>
           )}
-          {showCraftPromptPopup && (
-            <CraftPromptPopup
-              board_id={board_id}
-              onCancel={handleCraftPromptCancel}
+          {showGenerateAttachmentLinkWithAGIPopup && (
+            <GenerateAttachmentLinkWithAGIPopup
+              task={inspectedTask}
+              onCancel={handleGenerateAttachmentLinkCancel}
             />
           )}
           {showGenerateTaskWithAGIPopup && (
@@ -1019,6 +1126,11 @@ const Board = () => {
           handlePostComment={postComment}
           setTaskAsInspectedTask={setTaskAsInspectedTask}
           onPreviousTask={handleOpenPreviousTask}
+          priorities={priorities}
+          modifyPriority={handleModifyPriority}
+          modifyDeadline={handleModifyDeadline}
+          addAttachment={handleAddAttachment}
+          deleteAttachment={handleDeleteAttachment}
           tags={inspectedTask.tags}
         />
       )}

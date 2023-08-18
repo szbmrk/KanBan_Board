@@ -72,8 +72,13 @@ class Task extends Model
         return $this->hasMany(Feedback::class, 'task_id');
     }
 
+    public function members()
+    {
+        return $this->belongsToMany(User::class, 'user_tasks', 'task_id', 'user_id');
+    }
+
     public function subtasks()
     {
-        return $this->hasMany(Task::class, 'parent_task_id', 'task_id')->with(['subtasks', 'tags', 'comments', 'priority']);
+        return $this->hasMany(Task::class, 'parent_task_id', 'task_id')->with(['subtasks', 'tags', 'comments', 'priority', 'attachments', 'members']);
     }
 }

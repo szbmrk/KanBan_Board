@@ -28,8 +28,10 @@ use App\Http\Controllers\BardController;
 
 use App\Http\Controllers\FavouriteTaskController;
 use App\Http\Controllers\TeamManagementController;
-use App\Http\Controllers\LlamaController;use App\Models\Feedback;
-use App\Http\Controllers\UserTasksController;use App\Http\Controllers\TeamMemberRoleController;
+use App\Http\Controllers\LlamaController;
+use App\Models\Feedback;
+use App\Http\Controllers\UserTasksController;
+use App\Http\Controllers\TeamMemberRoleController;
 
 /*
 
@@ -128,6 +130,9 @@ Route::put('/notifications/{notificationId}', [NotificationController::class, 'u
 Route::delete('/notifications/{notificationId}', [NotificationController::class, 'destroy'])->middleware('api');
 
 Route::get('/user/{user_id}/tasks', [UserTasksController::class, 'index'])->middleware('api');
+Route::post('/tasks/{task_id}/members', [UserTasksController::class, 'store'])->middleware('api');
+Route::delete('/tasks/{task_id}/members/{user_id}', [UserTasksController::class, 'destroy'])->middleware('api');
+Route::get('/boards/{board_id}/tasks/{task_id}/not_assigned_users', [UserTasksController::class, 'getNotAssigned'])->middleware('api');
 
 Route::get('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'index'])->middleware('api');
 Route::post('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'store'])->middleware('api');
@@ -136,6 +141,7 @@ Route::delete('/boards/{boardId}/team-member-roles/{teamMemberRoleId}',[TeamMemb
 Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');
 Route::get('/AGI/GenerateTask', [AGIController::class, 'GenerateTask'])->middleware('api');
 Route::get('/AGI/GenerateSubtask', [AGIController::class, 'GenerateSubtask'])->middleware('api');
+Route::get('/AGI/GenerateAttachmentLink', [AGIController::class, 'GenerateAttachmentLink'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_code', [AGIController::class, 'generateCode'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_priority', [AGIController::class, 'generatePriority'])->middleware('api');
 Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::class, 'generatePrioritiesForColumn'])->middleware('api');

@@ -67,10 +67,8 @@ class UserController extends Controller
             return response()->json(['error' => 'Signup failed', 'details' => $e->getMessage()], 500);
         }
 
-
         return response()->json(['message' => 'Signup successful']);
     }
-
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
