@@ -14,7 +14,6 @@ class TeamManagementController extends Controller
     {
         $user = auth()->user();
     
-        // Check if the user belongs to that team
         if ($user->teams()->where('teams.team_id', $id)->exists()) {
             $team = Team::with(['teamMembers.user.roles.permissions', 'teamMembers.roles.permissions'])
                 ->findOrFail($id);
@@ -105,20 +104,18 @@ class TeamManagementController extends Controller
     public function teamsByUser($user_id)
     {
         $currentUser = auth()->user();
-
+    
         if (!$currentUser) {
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
     
         $user = User::findOrFail($user_id);
     
-        // Check if the current user is the same as the requested user
         if ($currentUser->id !== $user->id) {
             return response()->json(['error' => 'Unauthorized.'], 403);
         }
-    
-        // Fetch teams associated with the user
-        $teams = $user->teams()->with(['teamMembers.user'])->get();
+
+        $teams = $user->teams()->with(['teamMembers.user.roles.permissions', 'teamMembers.roles.permissions'])->get();
     
         return response()->json(['teams' => $teams]);
     }
