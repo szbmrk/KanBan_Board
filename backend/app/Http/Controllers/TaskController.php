@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Priority;
 use Illuminate\Support\Facades\DB;
 
-
 class TaskController extends Controller
 {
     public function taskStore(Request $request, $board_id)
@@ -597,7 +596,60 @@ class TaskController extends Controller
 
         return response()->json(['message' => 'Subtasks updated successfully'], 200);
     }
-    
-    
+
+    public function deleteExistingTaskWithItsSubtasks($boardId, $columnId,$taskId)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized.'], 401);
+        }
+
+        $task = Task::find($taskId);
+        if (!$task) {
+            return response()->json(['error' => 'Task not found.'], 404);
+        }
+
+        $board = Board::where('board_id', $boardId)->first();
+        if (!$board) {
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+        if(!$board->columns->contains('column_id', $columnId)) {
+            return response()->json(['error' => 'Column not found.'], 404);
+        }
+
+        foreach ($task->subtasks as $subtask) {
+            $this->deleteExistingTaskWithItsSubtasks($boardId,$columnId, $subtask->id);
+        }
+
+        $subtasks = Task::where('parent_task_id', $taskId)->get();
+        foreach ($subtasks as $subtask) {
+            $subtask->delete();
+        }
+
+        $task->attachments()->delete();
+
+        foreach ($task->comments as $comment) {
+            $comment->mentions()->delete();
+            $comment->delete();
+        }
+
+        FavouriteTask::where('task_id', $taskId)->delete();
+
+        Log::where('task_id', $taskId)->delete();
+
+        TaskTag::where('task_id', $taskId)->delete();
+
+        Feedback::where('task_id', $taskId)->delete();
+
+        $task->delete();
+
+        return response()->json(['message' => 'The task and its subtasks deleted successfully']);
+    }
+
+
 
 }

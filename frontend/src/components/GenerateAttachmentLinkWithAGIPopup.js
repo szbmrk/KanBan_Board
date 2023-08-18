@@ -41,11 +41,9 @@ const GenerateAttachmentLinkWithAGIPopup = ({ task, onCancel }) => {
       console.log(attachments);
 
       const res = await axios.post(
-        `/tasks/${task.task_id}/attachments`,
+        `/tasks/${task.task_id}/attachments/multiple`,
         {
-          //attachments: `${attachments}`,
-          link: `${attachments[0].link}`,
-          description: `${attachments[0].description}`,
+          attachments: attachments, // Pass the attachments array directly
         },
         {
           headers: {
