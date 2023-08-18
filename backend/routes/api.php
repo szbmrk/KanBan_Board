@@ -152,4 +152,4 @@ Route::get('/AGI/GenerateTask/CraftedPrompt', [AGIController::class, 'GenerateTa
 
 Route::post('/boards/{boardId}/columns/{columnId}/tasks/create-with-subtasks', [TaskController::class, 'createTasksWithSubtasks'])->middleware('api');
 Route::post('/boards/{boardId}/columns/{columnId}/tasks/{taskId}/SubtasksToExistingTask', [TaskController::class, 'addSubtasksToExistingTask'])->middleware('api');
-
+Route::put('/boards/{boardId}/columns/{columnId}/tasks/{taskId}/SubtasksToExistingTask', [TaskController::class, 'updateExistingTask'])->middleware('api');

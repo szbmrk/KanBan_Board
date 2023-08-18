@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Priority;
 use Illuminate\Support\Facades\DB;
 
+
 class TaskController extends Controller
 {
     public function taskStore(Request $request, $board_id)
@@ -521,5 +522,57 @@ class TaskController extends Controller
         return response()->json(['message' => 'Subtasks added successfully'], 201);
     }
 
+    private function updateSubtasks($parentTask, $subtasks)
+    {
+        foreach ($subtasks as $subtaskData) {
+            if (isset($subtaskData['task_id'])) {
+                $subtask = Task::find($subtaskData['task_id']);
+                            
+                if ($subtask) {
+                    $subtask->update(array_filter($subtaskData, function($value) {
+                        return !is_array($value);
+                    }));
+                    
+                    if (isset($subtaskData['tasks']) && is_array($subtaskData['tasks'])) {
+                        $this->updateSubtasks($subtask, $subtaskData['tasks']);
+                    }
+                }
+            }
+        }
+    }
+
+
+    public function updateExistingTask(Request $request, $boardId, $columnId, $taskId)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized.'], 401);
+        }
+
+        $task = Task::find($taskId);
+        if (!$task) {
+            return response()->json(['error' => 'Task not found.'], 404);
+        }
+
+        $board = Board::where('board_id', $boardId)->first();
+        if (!$board) {
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+        if(!$board->columns->contains('column_id', $columnId)) {
+            return response()->json(['error' => 'Column not found.'], 404);
+        }
+
+        $subtasksData = $request->input('tasks', []);
+
+        $this->updateSubtasks($task, $subtasksData);
+
+        return response()->json(['message' => 'Subtasks updated successfully'], 200);
+    }
+    
+    
 
 }
