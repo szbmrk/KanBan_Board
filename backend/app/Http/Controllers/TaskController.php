@@ -471,6 +471,10 @@ class TaskController extends Controller
         $subtasksData = $request->all();
 
         $validator = Validator::make($subtasksData, [
+            '*.description' => 'nullable|string|max:1000',
+            '*.tasks.*.description' => 'nullable|string|max:1000',
+            '*.priority_id' => 'in:1,2,3,4',
+            '*.tasks.*.priority_id' => 'in:1,2,3,4',
             '*.due_date' => 'nullable|date|after:today',
             '*.tasks.*.due_date' => 'nullable|date|after:today',
         ]);
@@ -567,6 +571,19 @@ class TaskController extends Controller
         }
 
         $subtasksData = $request->input('tasks', []);
+
+        $validator = Validator::make($subtasksData, [
+            '*.description' => 'nullable|string|max:1000',
+            '*.tasks.*.description' => 'nullable|string|max:1000',
+            '*.priority_id' => 'in:1,2,3,4',
+            '*.tasks.*.priority_id' => 'in:1,2,3,4',
+            '*.due_date' => 'nullable|date|after:today',
+            '*.tasks.*.due_date' => 'nullable|date|after:today',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
 
         $this->updateSubtasks($task, $subtasksData);
 
