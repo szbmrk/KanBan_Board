@@ -92,6 +92,7 @@ Route::post('/boards/{board_id}/tasks/{parent_task_id}/subtasks', [TaskControlle
 Route::put('/boards/{board_id}/subtasks/{subtask_id}', [TaskController::class, 'subtaskUpdate'])->middleware('api');
 Route::delete('/boards/{board_id}/subtasks/{subtask_id}', [TaskController::class, 'subtaskDestroy'])->middleware('api');
 Route::post('/boards/{boardId}/columns/{columnId}/tasks/create-with-subtasks', [TaskController::class, 'createTasksWithSubtasks'])->middleware('api');
+Route::put('/boards/{boardId}/columns/{columnId}/tasks/update-with-subtasks', [TaskController::class, 'updateTasksWithSubtasks'])->middleware('api');
 Route::post('/boards/{boardId}/columns/{columnId}/tasks/{taskId}/SubtasksToExistingTask', [TaskController::class, 'addSubtasksToExistingTask'])->middleware('api');
 Route::put('/boards/{boardId}/columns/{columnId}/tasks/{taskId}/SubtasksToExistingTask', [TaskController::class, 'updateExistingTask'])->middleware('api');
 Route::delete('/boards/{boardId}/columns/{columnId}/tasks/{taskId}/SubtasksToExistingTask', [TaskController::class, 'deleteExistingTaskWithItsSubtasks'])->middleware('api');

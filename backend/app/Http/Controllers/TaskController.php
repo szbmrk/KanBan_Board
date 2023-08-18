@@ -478,6 +478,8 @@ class TaskController extends Controller
         $subtasksData = $request->all();
 
         $validator = Validator::make($subtasksData, [
+            '*.title' => 'string|max:100',
+            '*.tasks.*.title' => 'string|max:100',
             '*.description' => 'nullable|string|max:1000',
             '*.tasks.*.description' => 'nullable|string|max:1000',
             '*.priority_id' => 'in:1,2,3,4',
@@ -580,6 +582,8 @@ class TaskController extends Controller
         $subtasksData = $request->input('tasks', []);
 
         $validator = Validator::make($subtasksData, [
+            '*.title' => 'string|max:100',
+            '*.tasks.*.title' => 'string|max:100',
             '*.description' => 'nullable|string|max:1000',
             '*.tasks.*.description' => 'nullable|string|max:1000',
             '*.priority_id' => 'in:1,2,3,4',
@@ -650,6 +654,101 @@ class TaskController extends Controller
         return response()->json(['message' => 'The task and its subtasks deleted successfully']);
     }
 
+    public function updateTasksWithSubtasks(Request $request, $boardId, $columnId)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized.'], 401);
+        }
+
+        $board = Board::where('board_id', $boardId)->first();
+        if (!$board) {
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+
+        if (!$board->columns->contains('column_id', $columnId)) {
+            return response()->json(['error' => 'Column not found.'], 404);
+        }
+
+        $tasksData = $request->all();
+
+        DB::beginTransaction();
+    
+        try {
+            foreach ($tasksData as $taskData) {
+                $validator = Validator::make($tasksData, [
+                    '*.title' => 'string|max:100',
+                    '*.tasks.*.title' => 'string|max:100',
+                    '*.description' => 'nullable|string|max:1000',
+                    '*.tasks.*.description' => 'nullable|string|max:1000',
+                    '*.priority_id' => 'in:1,2,3,4',
+                    '*.tasks.*.priority_id' => 'in:1,2,3,4',
+                    '*.due_date' => 'nullable|date|after:today',
+                    '*.tasks.*.due_date' => 'nullable|date|after:today',
+                ]);
+            
+                if ($validator->fails()) {
+                    return response()->json(['errors' => $validator->errors()], 400);
+                }
+                $this->processTaskData($taskData, $boardId, $columnId);
+            }
+    
+            DB::commit();
+    
+        } catch (\Exception $e) {
+            DB::rollback();
+    
+            return response()->json(['error' => 'There was an error while updating tasks.','message' => $e->getMessage()], 500);
+        }
+
+        return response()->json(['message' => 'Tasks updated successfully'], 200);
+    }
+
+    private function processTaskData($taskData, $boardId, $columnId, $parentTask = null)
+    {
+        $mainTask = null; // Inicializáljuk a változót null-ra
+        
+        if (isset($taskData['title'])) {
+            if (isset($taskData['task_id'])) {
+                $existingTask = Task::find($taskData['task_id']);
+                if ($existingTask) {
+                    $this->updateTask($existingTask, $taskData);
+                    $mainTask = $existingTask; 
+                }
+            } else {
+                $mainTask = $this->createTask($taskData, $boardId, $columnId);
+                if ($parentTask !== null) {
+                    $mainTask->parentTask()->associate($parentTask);
+                    $mainTask->save();
+                }
+            }
+            
+            if (isset($taskData['tasks']) && is_array($taskData['tasks'])) {
+                foreach ($taskData['tasks'] as $subtaskData) {
+                    $this->processTaskData($subtaskData, $boardId, $columnId, $mainTask);
+                }
+            }
+        }
+    }
+    
+    
+
+    
+    
+
+
+    
+
+
+    private function updateTask($task, $data)
+    {
+        $task->fill($data);
+        $task->update($data);
+    }
 
 
 }
