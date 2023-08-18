@@ -33,7 +33,7 @@ export default function EditProfile() {
             console.log(err);
         }
     }
-    
+
 
     const handlePaste = (e) => {
         e.preventDefault();
@@ -90,8 +90,8 @@ export default function EditProfile() {
     return (
         <div className='content'>
             {formData.username === '' ? (
-                    <Loader />
-            ) :(
+                <Loader />
+            ) : (
                 <div>
 
                     <h1>Edit your profile</h1>
@@ -182,10 +182,10 @@ export default function EditProfile() {
                                 <h1>{error}</h1>
                             )
                         }
-                        <button type='submit'>Submit</button>
+                        <button type='submit' className='manageButton'>Submit</button>
                     </form>
-                    <button onClick={handleDeleteButton}>Delete</button>
-        
+                    <button className='delete_button' onClick={handleDeleteButton}>Delete profile</button>
+
                     {deleteIsClicked && <DeleteConfirm OnClose={handleDeleteButton} />}
                 </div>
             )}

@@ -8,7 +8,6 @@ import { AuthContext } from '../../auth/AuthContext';
 
 const homeIcon = <FontAwesomeIcon icon={faHome} />;
 const tableIcon = <FontAwesomeIcon icon={faTable} />;
-const signOutIcon = <FontAwesomeIcon icon={faSignOutAlt} />;
 const AssignedTasksIcon = <FontAwesomeIcon icon={faListCheck} />;
 const PeopleGroup = <FontAwesomeIcon icon={faPeopleGroup} />;
 const Sidebar = () => {
@@ -42,13 +41,6 @@ const Sidebar = () => {
                         <Link to='/permissiontable'>
                             {tableIcon}
                             <span>Permission table</span>
-                        </Link>
-                    </li>
-
-                    <li>
-                        <Link to='/login' onClick={onLogout}>
-                            {signOutIcon}
-                            <span>Logout</span>
                         </Link>
                     </li>
                 </ul>
