@@ -131,6 +131,7 @@ Route::delete('/boards/{boardId}/team-member-roles/{teamMemberRoleId}', [TeamMem
 Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');
 Route::get('/AGI/GenerateTask', [AGIController::class, 'GenerateTask'])->middleware('api');
 Route::get('/AGI/GenerateSubtask', [AGIController::class, 'GenerateSubtask'])->middleware('api');
+Route::get('/AGI/GenerateAttachmentLink', [AGIController::class, 'GenerateAttachmentLink'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_code', [AGIController::class, 'generateCode'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_priority', [AGIController::class, 'generatePriority'])->middleware('api');
 Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::class, 'generatePrioritiesForColumn'])->middleware('api');
