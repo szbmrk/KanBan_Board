@@ -34,8 +34,7 @@ class TeamController extends Controller
         $teamManagerRole = Role::where('name', 'Team Manager')->first();
         $teamManagementPermission = Permission::where('name', 'team_management')->first();
         $teamMemberManagementPermission = Permission::where('name', 'team_member_management')->first();
-        $roleManagementPermission = Permission::where('name', 'role_management')->first();
-
+      
         $teamMember = TeamMember::create([
             'team_id' => $team->team_id,
             'user_id' => $user->user_id,
@@ -50,16 +49,11 @@ class TeamController extends Controller
         if (!$teamManagerRole->permissions->contains($teamMemberManagementPermission)) {
             $teamManagerRole->permissions()->attach($teamMemberManagementPermission->id);
         }
-
-        if (!$teamManagerRole->permissions->contains($roleManagementPermission)) {
-            $teamManagerRole->permissions()->attach($roleManagementPermission->id);
-        }
-
+        
         LogRequest::instance()->logAction('CREATED TEAM', $user->user_id, "Team Created successfully! -> $team->name", $team->team_id, null, null);
-        $teamWithMembers = Team::with(['teamMembers.user'])->where('team_id', $team->team_id)->first();
-        return response()->json(['message' => 'Team Created successfully!', 'team' => $teamWithMembers]);
-    }
-
+        return response()->json(['message' => 'Team Created successfully!']);   
+    }    
+    
     public function update(Request $request, $id)
     {
         $user = auth()->user();
