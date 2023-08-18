@@ -369,11 +369,8 @@ class TaskController extends Controller
         }
 
         $tasksData = $request->all();
-        $tasks = [];
         $validatedTasksData = [];
 
-        foreach ($tasksData as $taskData) 
-        {
         $existingPositions = Task::where('board_id', $boardId)
             ->where('column_id', $columnId)
             ->pluck('position')
@@ -391,23 +388,13 @@ class TaskController extends Controller
 
         foreach ($tasksData as $taskData) 
         {
-            /* if (isset($taskData['priority_id'])) {
-                $validPriorityIds = [1, 2, 3, 4];
-                if (!in_array($taskData['priority_id'], $validPriorityIds)) {
-                    return response()->json(['error' => 'Invalid priority_id.'], 400);
             $position = $taskData['position'] ?? null;
             if ($position !== null && in_array($position, $existingPositions)) {
                 return response()->json(['error' => "Position $position already exists in the column."], 400);
             }
-            }
 
-            if (isset($taskData['due_date'])) {
-                $currentDate = date('Y-m-d');
-                if ($taskData['due_date'] <= $currentDate) {
-                    return response()->json(['error' => 'Due date must be in the future.'], 400);
             $validatedTasksData[] = $taskData;
         }
-            } */
 
         $tasks = [];
 
