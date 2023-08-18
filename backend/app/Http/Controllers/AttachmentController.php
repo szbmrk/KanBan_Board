@@ -133,10 +133,16 @@ class AttachmentController extends Controller
             'attachments.*.link' => 'required|string',
         ]);
 
+        $attachmentsData = $request->json('attachments');
+
+        if (!is_array($attachmentsData)) {
+            return response()->json(['error' => 'Attachments data is missing or not in the expected format'], 400);
+        }
+
         $attachments = [];
 
-        foreach ($request->input('attachments') as $attachmentData) {
-            $attachment = new Attachment([
+        foreach ($attachmentsData as $attachmentData) {
+         $attachment = new Attachment([
                 'task_id' => $task_id,
                 'link' => $attachmentData['link'],
                 'description' => $attachmentData['description'] ?? null,
