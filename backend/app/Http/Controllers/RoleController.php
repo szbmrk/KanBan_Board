@@ -53,12 +53,18 @@ class RoleController extends Controller
             return response()->json(['error' => 'Board not found'], 404);
         }
     
-        if (!$user->hasPermission('system_admin')) {
+        if (!in_array('system_admin', $user->getPermissions())) {
             if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
                 return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
             }
             
-            if (!$user->hasPermission('role_management')) {
+            $rolesOnBoard = $user->getRoles($boardId);
+    
+            $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function($role) {
+                return in_array('role_management', $role->permissions->pluck('name')->toArray());
+            });
+    
+            if (!$hasRoleManagementPermission) {
                 return response()->json(['error' => 'You don\'t have permission to create a new role on this board.'], 403);
             }
         }
@@ -88,7 +94,7 @@ class RoleController extends Controller
         $role->save();
     
         return response()->json(['message' => 'Role created successfully'], 201);
-    }
+    }    
     
     public function update(Request $request, $boardId, $roleId)
     {

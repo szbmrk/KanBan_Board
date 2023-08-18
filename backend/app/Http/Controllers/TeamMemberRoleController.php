@@ -9,7 +9,6 @@ use App\Models\Role;
 use App\Models\TeamMember;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class TeamMemberRoleController extends Controller
 {
@@ -51,9 +50,7 @@ class TeamMemberRoleController extends Controller
     public function store(Request $request, $boardId)
     {
         $user = auth()->user();
-        Log::info('Authenticated user:', ['user' => $user]);
 
-        
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
@@ -65,8 +62,20 @@ class TeamMemberRoleController extends Controller
 
         $permissions = $user->getPermissions();
 
-        if (!in_array('system_admin', $permissions) && !in_array('team_member_role_management', $permissions)) {
-            return response()->json(['error' => 'You don\'t have permission to create a new role on this board.'], 403);
+        if (!in_array('system_admin', $permissions)) {
+            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+            }
+            
+            $rolesOnBoard = $user->getRoles($boardId);
+    
+            $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function($role) {
+                return in_array('team_member_role_management', $role->permissions->pluck('name')->toArray());
+            });
+    
+            if (!$hasRoleManagementPermission) {
+                return response()->json(['error' => 'You don\'t have permission to create a new role on this board.'], 403);
+            }
         }
 
         if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
@@ -88,6 +97,13 @@ class TeamMemberRoleController extends Controller
 
         if ($teamMember->team_id !== $board->team_id) {
             return response()->json(['error' => 'The selected team member is not part of the team that owns this board.'], 403);
+        }
+
+        $existingEntry = TeamMemberRole::where('team_member_id', $teamMember->team_members_id)
+                                        ->where('role_id', $roleId)
+                                        ->first();
+        if ($existingEntry) {
+        return response()->json(['error' => 'An entry with the same team member and role already exists.'], 400);
         }
 
         $teamMemberRole = new TeamMemberRole();
