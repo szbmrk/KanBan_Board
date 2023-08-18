@@ -59,7 +59,7 @@ class Task extends Model
 
     public function comments()
     {
-        return $this->hasMany(Comment::class, 'task_id');
+        return $this->hasMany(Comment::class, 'task_id')->with('user');
     }
 
     public function tags()
@@ -72,8 +72,13 @@ class Task extends Model
         return $this->hasMany(Feedback::class, 'task_id');
     }
 
+    public function members()
+    {
+        return $this->belongsToMany(User::class, 'user_tasks', 'task_id', 'user_id');
+    }
+
     public function subtasks()
     {
-        return $this->hasMany(Task::class, 'parent_task_id', 'task_id')->with(['subtasks', 'tags']);
+        return $this->hasMany(Task::class, 'parent_task_id', 'task_id')->with(['subtasks', 'tags', 'comments', 'priority', 'attachments', 'members']);
     }
 }

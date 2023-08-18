@@ -146,26 +146,4 @@ class DashboardController extends Controller
         return response()->json(['error' => "You don't have permission to delete this board."], 401);
     }
 
-    public function executeAGIBoard(Request $request)
-    {
-        $user = auth()->user();
-        $taskPrompt = $request->header('TaskPrompt');
-        $taskCounter = $request->header('TaskCounter');
-        $todayDate = Carbon::today()->format('Y-m-d');
-
-        // Prepare the prompt to be sent to the Python script
-        $prompt = "Generate $taskCounter kanban tickets in JSON structure in a list with title, description, due_date (if the start date is now '$todayDate' in yyyy-MM-dd HH:mm:ss) and tags (as a list) attributes for this task: '$taskPrompt'";
-        // Construct the Python command with the required arguments and path to the script
-
-        $path = env('PYTHON_SCRIPT_PATH');
-        $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
-
-        $cleanData = trim($response);
-        $cleanData = str_replace("'", "\"", $response);
-
-        $formattedResponse = json_decode($cleanData, true);
-
-        return $formattedResponse;
-    }
-
 }

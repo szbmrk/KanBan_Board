@@ -11,16 +11,16 @@ class PriorityController extends Controller
     public function index()
     {
         $user = auth()->user();
-        if (!$user) { 
-                return response()->json(['error' => 'Unauthorized'], 401); 
-        } 
-            
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
         $priorities = Priority::all();
 
         if ($priorities->isEmpty()) {
             return response()->json(['error' => 'No priorities found'], 404);
         }
 
-        return response()->json([$priorities]);
+        return response()->json(['priorities' => $priorities]);
     }
 }

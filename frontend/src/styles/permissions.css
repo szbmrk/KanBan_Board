@@ -1,0 +1,59 @@
+table {
+    color: black;
+    background-color: var(--bg-dark);
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    overflow-y: auto;
+    overflow-x: auto;
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    width: auto;
+}
+
+.permission {
+    font-weight: bold;
+}
+
+th,
+td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+    width: fit-content;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+/* Styling for the checkbox column */
+td input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+/* Styling for permission description */
+.description {
+    font-size: 12px;
+    color: #888;
+}
+
+/* Styling for the submit button */
+.submit-btn[type="submit"] {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.submit-btn[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+p {
+    text-align: center;
+}
