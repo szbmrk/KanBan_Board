@@ -30,12 +30,19 @@ class AGIController extends Controller
                 $response = LlamaController::generateTaskLlama($request);
                 break;
             case Str::lower("bard"):
+                if($request->header('Draft') == true)
+                {
+                    $response = BardController::generateTaskDraftBard($request);
+                    break;
+                }
                 $response = BardController::generateTaskBard($request);
                 break;
-            case Str::lower("chatgpt draft"):
-                $response = ChatGPTController::GenerateTaskDraftChatGPT($request);
-                break;
             default:
+                if($request->header('Draft') == true)
+                {
+                    $response = ChatGPTController::GenerateTaskDraftChatGPT($request);
+                    break;
+                }
                 $response = ChatGPTController::GenerateTaskChatGPT($request);
                 break;
         }

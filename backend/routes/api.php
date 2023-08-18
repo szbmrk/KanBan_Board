@@ -148,7 +148,6 @@ Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::cla
 Route::post('/generate-llama-subtasks', [LlamaController::class, 'generateSubtasks']);
 Route::get('/generate-llama-subtasks2', [LlamaController::class, 'testSubtaskParsing']);
 
-Route::get('/get-bard-answer', [BardController::class, 'getBardAnswer']);
 
 
 Route::get('/boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::class, 'getPrompts'])->middleware('api');
