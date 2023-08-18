@@ -13,10 +13,12 @@ class TeamManagementController extends Controller
     public function show($id)
     {
         $user = auth()->user();
-
-        //check if the user belong to that team
+    
+        // Check if the user belongs to that team
         if ($user->teams()->where('teams.team_id', $id)->exists()) {
-            $team = Team::with(['teamMembers.user'])->findOrFail($id);
+            $team = Team::with(['teamMembers.user.roles.permissions', 'teamMembers.roles.permissions'])
+                ->findOrFail($id);
+    
             return response()->json(['team' => $team]);
         } else {
             return response()->json(['error' => 'Unauthenticated or team not found.'], 401);
