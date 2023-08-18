@@ -1,0 +1,38 @@
+.title-bar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    background-color: var(--bg-dark);
+}
+
+.title-name {
+    font-family: var(--basic-font);
+    font-size: 2em;
+    margin: 20px;
+}
+
+.title-bar-buttons {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-right: 20px;
+}
+
+.title-bar-buttons ul {
+    list-style: none;
+}
+
+.title-bar-buttons li {
+    font-size: 1.2em;
+}
