@@ -81,4 +81,22 @@ class AGIController extends Controller
     
         return $response;
     }
+
+    public function GenerateAttachmentLink(Request $request)
+    {
+        $user = auth()->user();
+
+        $response;
+        
+        switch($request->header('ChosenAI')) {
+            case Str::lower("llama"):
+                $response = LlamaController::GenerateAttachmentLinkLlama($request);
+                break;
+            default:
+                $response = ChatGPTController::GenerateAttachmentLinkChatGPT($request);
+                break;
+        }
+
+        return $response;
+    }
 }
