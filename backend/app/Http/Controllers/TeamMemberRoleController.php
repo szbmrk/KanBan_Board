@@ -118,29 +118,34 @@ class TeamMemberRoleController extends Controller
     {
         try {
             $user = auth()->user();
+            
             if (!$user) {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
     
             $board = Board::find($boardId);
     
-            if ($user->hasRequiredRole(['System Admin'])) {
-
-            } else {
+            if (!$board) {
+                return response()->json(['error' => 'Board not found'], 404);
+            }
+    
+            $permissions = $user->getPermissions();
+    
+            if (!in_array('system_admin', $permissions)) {
                 if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
                     return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
                 }
     
-                if (!$user->hasRequiredRole(['Board Manager']) && !$user->hasRequiredRole(['Team Manager'])) {
-                    return response()->json(['error' => 'You don\'t have the required role to delete a role on this board.'], 403);
-                }
+                $rolesOnBoard = $user->getRoles($boardId);
+                
+                // Check if the user has the necessary permission for role management
+                $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function($role) {
+                    return in_array('team_member_role_management', $role->permissions->pluck('name')->toArray());
+                });
     
-                if (!$user->hasPermission('team_members_role_managment')) {
+                if (!$hasRoleManagementPermission) {
                     return response()->json(['error' => 'You don\'t have permission to delete a role on this board.'], 403);
                 }
-            }
-            if (!$board) {
-                return response()->json(['error' => 'Board not found'], 404);
             }
     
             $teamMemberRole = TeamMemberRole::find($teamMemberRoleId);
