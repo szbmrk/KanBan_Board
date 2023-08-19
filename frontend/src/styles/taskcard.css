@@ -17,7 +17,6 @@
   justify-content: flex-start;
   align-items: center;
   gap: 5px;
-  margin-top: 20px;
 }
 
 .task-card div:nth-child(2) {
@@ -34,7 +33,6 @@
 }
 
 .tags {
-  margin-left: 30px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -56,10 +54,6 @@
   margin: 5px;
   float: left;
   font-size: 12px;
-}
-
-.comments {
-  margin-top: 10px;
 }
 
 .comment {

@@ -112,4 +112,47 @@ class AttachmentController extends Controller
 
         return response()->json(['message' => 'Attachment deleted successfully']);
     }
+
+    public function storeMultiple(Request $request, $task_id)
+    {
+        $user = auth()->user();
+        
+        $task = Task::find($task_id);
+
+        if (!$task) {
+            return response()->json(['error' => 'Task not found'], 404);
+        }
+
+        $board = $task->column->board;
+
+        if (!$user->isMemberOfBoard($board->board_id)) {
+            return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+
+        $request->validate([
+            'attachments.*.link' => 'required|string',
+        ]);
+
+        $attachmentsData = $request->json('attachments');
+
+        if (!is_array($attachmentsData)) {
+            return response()->json(['error' => 'Attachments data is missing or not in the expected format'], 400);
+        }
+
+        $attachments = [];
+
+        foreach ($attachmentsData as $attachmentData) {
+         $attachment = new Attachment([
+                'task_id' => $task_id,
+                'link' => $attachmentData['link'],
+                'description' => $attachmentData['description'] ?? null,
+            ]);
+
+            $attachment->save();
+            $attachments[] = $attachment;
+        }
+
+        return response()->json(['message' => 'Attachments created successfully']);
+    }
+
 }

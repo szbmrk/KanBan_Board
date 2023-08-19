@@ -37,12 +37,14 @@ const Sidebar = () => {
                             <span>Teams</span>
                         </Link>
                     </li>
+
                     <li>
                         <Link to='/permissiontable'>
                             {tableIcon}
                             <span>Permission table</span>
                         </Link>
                     </li>
+
                     <li>
                         <Link to='/login' onClick={onLogout}>
                             {signOutIcon}
