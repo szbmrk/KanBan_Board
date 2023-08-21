@@ -2,22 +2,26 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CraftedPrompt extends Model
 {
-    protected $primaryKey = 'crafted_prompt_id'; // Set the primary key field name
+    use HasFactory;
+
+    protected $primaryKey = 'crafted_prompt_id'; // Define the primary key field name
+
     protected $fillable = [
-        'board_id', 'crafted_prompt_text', 'craft_with', 'created_by'
+        'crafted_prompt_title',
+        'board_id',
+        'agi_behavior_id',
+        'crafted_prompt_text',
+        'craft_with',
+        'action',
+        'created_by',
     ];
 
-    public function board()
-    {
-        return $this->belongsTo(Board::class, 'board_id', 'board_id');
-    }
-
-    public function creator()
-    {
-        return $this->belongsTo(User::class, 'created_by', 'user_id');
-    }
+    // Define relationships with other tables (if any)
+    
+    // Define any additional model methods or attributes as needed
 }
