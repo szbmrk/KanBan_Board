@@ -48,16 +48,19 @@ const Board = () => {
     const [isHoveredX, setIsHoveredX] = useState(false);
     const [columnIndex, setColumnIndex] = useState(null);
     const [priorities, setPriorities] = useState([]);
+    const [ownPermissions, setOwnPermissions] = useState([]);
     const navigate = useNavigate();
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
 
     const token = sessionStorage.getItem('token');
+    const team_member = JSON.parse(sessionStorage.getItem('team_members'));
 
     useEffect(() => {
         document.title = 'Board';
         fetchBoardData();
+        //setOwnPermissions(team_member.teams.filter(team => team.team_id === data.team_id).map(permission => permission.permission_data));
     }, []);
 
     useEffect(() => {
@@ -82,6 +85,7 @@ const Board = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
+            console.log(prioritiesResponse);
             setPriorities(prioritiesResponse.data.priorities);
 
             const response = await axios.get(`/boards/${board_id}`, {
@@ -958,9 +962,11 @@ const Board = () => {
                                         </div>
                                     </Column>
                                 ))}
-                                <div className='card-container addbtn-column' onClick={handleAddColumn}>
-                                    {plusIcon} Add new column
-                                </div>
+                                {
+                                    <div className='card-container addbtn-column' onClick={handleAddColumn}>
+                                        {plusIcon} Add new column
+                                    </div>
+                                }
                             </div>
                         </div>
                     )}
