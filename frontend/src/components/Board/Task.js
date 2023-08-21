@@ -33,6 +33,7 @@ export const Task = ({
   id,
   index,
   task,
+  craftedPromptsTask,
   divName,
   favouriteTask,
   unFavouriteTask,
@@ -43,6 +44,7 @@ export const Task = ({
   setTaskAsInspectedTask,
   generateTasks,
   generateAttachmentLinks,
+  HandleCraftedPromptTaskClick,
 }) => {
   const [bouncingStarIcon, setBouncingStarIcon] = useState(regularStarIcon);
   const [isHoveredEdit, setIsHoveredEdit] = useState(false);
@@ -236,24 +238,27 @@ export const Task = ({
               </span>
               <p>Generate Subtasks</p>
             </div>
-            <div
-              className="option"
-              onMouseEnter={() => setIsHoveredAttachmentLink(true)}
-              onMouseLeave={() => setIsHoveredAttachmentLink(false)}
-              onClick={() => handleAttachmentLinks()}
-            >
-              <span
-                className="ai-button"
-                style={{
-                  color: isHoveredAttachmentLink
-                    ? "var(--attachment-link)"
-                    : "",
-                }}
+            {craftedPromptsTask.map((craftedPrompt, index) => (
+              <div
+                key={index}
+                className="option"
+                onMouseEnter={() => setIsHoveredAI(true)}
+                onMouseLeave={() => setIsHoveredAI(false)}
+                onClick={() =>
+                  HandleCraftedPromptTaskClick(craftedPrompt, task)
+                }
               >
-                {attachmentLinkIcon}
-              </span>
-              <p>Generate Attachment Links</p>
-            </div>
+                <span
+                  className="ai-button"
+                  style={{
+                    color: isHoveredAI ? "var(--magic)" : "",
+                  }}
+                >
+                  {aiIcon}
+                </span>
+                <p>{craftedPrompt.crafted_prompt_title}</p>
+              </div>
+            ))}
             {task.is_favourite ? (
               <div
                 className="option"

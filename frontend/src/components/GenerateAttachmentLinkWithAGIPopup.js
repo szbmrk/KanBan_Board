@@ -8,9 +8,15 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 
-const GenerateAttachmentLinkWithAGIPopup = ({ task, onCancel }) => {
+const GenerateAttachmentLinkWithAGIPopup = ({
+  task,
+  attachmentLinks,
+  onCancel,
+}) => {
   let [editedTask, setEditedTask] = useState(task);
-  let [attachments, setAttachments] = useState([]);
+  let [attachments, setAttachments] = useState(
+    attachmentLinks ? attachmentLinks : []
+  );
   const popupRef = useRef(null);
   const aiOptions = [
     { value: "chatgpt", label: "ChatGPT" },

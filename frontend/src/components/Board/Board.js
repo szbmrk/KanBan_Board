@@ -42,6 +42,7 @@ const Board = () => {
   const [columnNewTitle, setColumnNewTitle] = useState("");
   const [showGenerateTaskWithAGIPopup, setShowGenerateTaskWithAGIPopup] =
     useState(false);
+  const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
   const [
     showGenerateAttachmentLinkWithAGIPopup,
     setShowGenerateAttachmentLinkWithAGIPopup,
@@ -56,6 +57,9 @@ const Board = () => {
   const [isHoveredX, setIsHoveredX] = useState(false);
   const [columnIndex, setColumnIndex] = useState(null);
   const [priorities, setPriorities] = useState([]);
+  const [craftedPrompts, setCraftedPrompts] = useState([]);
+  const [craftedPromptsBoard, setCraftedPromptsBoard] = useState([]);
+  const [craftedPromptsTask, setCraftedPromptsTask] = useState([]);
   const navigate = useNavigate();
 
   const checkIcon = <FontAwesomeIcon icon={faCheck} />;
@@ -101,6 +105,8 @@ const Board = () => {
       setPermission(true);
       let tempBoard = response.data.board;
       let tempColumns = tempBoard.columns;
+
+      reloadCraftedPrompts();
 
       // Sort the columns and tasks by position
       tempColumns.map((column) =>
@@ -692,6 +698,8 @@ const Board = () => {
   //popup
   const [showPopup, setShowPopup] = useState(false);
   const [inspectedTask, setInspectedTask] = useState(null);
+  const [inspectedAttachmentLinks, setInspectedAttachmentLinks] =
+    useState(null);
 
   const setTaskAsInspectedTask = (task) => {
     setInspectedTask(task);
@@ -752,7 +760,11 @@ const Board = () => {
     setShowGenerateTaskWithAGIPopup(true);
     console.log(task);
     if (task) {
-      setInspectedTask([cloneDeep(task)]);
+      if (Array.isArray(task)) {
+        setInspectedTask(cloneDeep(task));
+      } else {
+        setInspectedTask([cloneDeep(task)]);
+      }
     }
   };
 
@@ -761,17 +773,139 @@ const Board = () => {
     setInspectedTask(null);
   };
 
-  const openGenerateAttachmentLinkWithAGIPopup = (task) => {
+  const openGenerateAttachmentLinkWithAGIPopup = (task, attachmentLink) => {
     setShowGenerateAttachmentLinkWithAGIPopup(true);
     console.log(task);
     if (task) {
       setInspectedTask(cloneDeep(task));
+    }
+    if (attachmentLink) {
+      setInspectedAttachmentLinks(attachmentLink);
     }
   };
 
   const handleGenerateAttachmentLinkCancel = () => {
     setShowGenerateAttachmentLinkWithAGIPopup(false);
     setInspectedTask(null);
+  };
+
+  const reloadCraftedPrompts = async () => {
+    const craftedPromptsResponse = await axios.get(
+      `/boards/${board_id}/AGI/crafted-prompts`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("crafted prompts");
+    console.log(craftedPromptsResponse.data);
+    setCraftedPrompts(craftedPromptsResponse.data);
+    console.log("craftedPrompts");
+    console.log(craftedPrompts);
+    const boardPrompts = craftedPromptsResponse.data.filter(
+      (prompt) => prompt.action === "GENERATETASK"
+    );
+    const taskPrompts = craftedPromptsResponse.data.filter(
+      (prompt) =>
+        prompt.action === "GENERATESUBTASK" ||
+        prompt.action === "GENERATEATTACHMENTLINK"
+    );
+
+    setCraftedPromptsBoard(boardPrompts);
+    setCraftedPromptsTask(taskPrompts);
+    console.log(craftedPromptsBoard);
+    console.log(craftedPromptsTask);
+  };
+
+  const openCraftPromptPopup = () => {
+    setShowCraftPromptPopup(true);
+  };
+
+  const handleCraftPromptCancel = () => {
+    setShowCraftPromptPopup(false);
+  };
+
+  const useCrafterPromptOnColumn = async (craftedPrompt) => {
+    console.log("craftedPrompt");
+    console.log(craftedPrompt);
+
+    try {
+      const token = sessionStorage.getItem("token");
+
+      const res = await axios.get(
+        `/boards/${board_id}/AGI/crafted-prompts/${craftedPrompt.crafted_prompt_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("res.data");
+      console.log(res.data);
+
+      switch (craftedPrompt.action) {
+        case "GENERATETASK":
+          openGenerateTaskWithAGIPopup(res.data);
+          /* setShowGenerateTaskWithAGIPopup(true);
+          setInspectedTask(res.data); */
+          break;
+        default:
+          break;
+      }
+
+      console.log(res);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const useCrafterPromptOnTask = async (craftedPrompt, task) => {
+    console.log("craftedPrompt");
+    console.log(craftedPrompt);
+
+    try {
+      const token = sessionStorage.getItem("token");
+
+      const res = await axios.get(
+        `/boards/${board_id}/AGI/crafted-prompts/${craftedPrompt.crafted_prompt_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      switch (craftedPrompt.action) {
+        case "GENERATESUBTASK":
+          task.tasks = res.data;
+          /*           setShowGenerateTaskWithAGIPopup(true);
+          setInspectedTask(task); */
+          openGenerateTaskWithAGIPopup(task);
+          break;
+        case "GENERATEATTACHMENTLINK":
+          /*           setShowGenerateTaskWithAGIPopup(true);
+          setInspectedTask(res.data); */
+          openGenerateAttachmentLinkWithAGIPopup(task, res.data);
+          break;
+        default:
+          break;
+      }
+
+      console.log(res);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const HandleCraftedPromptColumnClick = (craftedPrompt) => {
+    useCrafterPromptOnColumn(craftedPrompt);
+  };
+
+  const HandleCraftedPromptTaskClick = (craftedPrompt, task) => {
+    useCrafterPromptOnTask(craftedPrompt, task);
   };
 
   const handleDotsClick = (event, columnIndex) => {
@@ -891,6 +1025,9 @@ const Board = () => {
           ) : (
             <div className="content">
               <h1>{board.name}</h1>
+              <button onClick={() => openCraftPromptPopup()}>
+                Craft prompt
+              </button>
               <div className="div-container">
                 {board.columns.map((column, index) => (
                   <Column
@@ -976,6 +1113,7 @@ const Board = () => {
                             id={task.task_id}
                             index={taskIndex}
                             task={task}
+                            craftedPromptsTask={craftedPromptsTask}
                             divName={`div${index + 1}`}
                             favouriteTask={handleFavouriteTask}
                             unFavouriteTask={handleUnFavouriteTask}
@@ -1015,6 +1153,12 @@ const Board = () => {
                             }
                             generateAttachmentLinks={(task) =>
                               openGenerateAttachmentLinkWithAGIPopup(task)
+                            }
+                            HandleCraftedPromptTaskClick={(
+                              craftedPrompt,
+                              task
+                            ) =>
+                              HandleCraftedPromptTaskClick(craftedPrompt, task)
                             }
                           />
                         ))}
@@ -1071,8 +1215,29 @@ const Board = () => {
                   >
                     {aiIcon}
                   </span>
-                  <p>Generate Subtasks</p>
+                  <p>Generate Tasks</p>
                 </div>
+                {craftedPromptsBoard.map((craftedPrompt, index) => (
+                  <div
+                    key={index}
+                    className="option"
+                    onMouseEnter={() => setIsHoveredAI(true)}
+                    onMouseLeave={() => setIsHoveredAI(false)}
+                    onClick={() =>
+                      HandleCraftedPromptColumnClick(craftedPrompt)
+                    }
+                  >
+                    <span
+                      className="ai-button"
+                      style={{
+                        color: isHoveredAI ? "var(--magic)" : "",
+                      }}
+                    >
+                      {aiIcon}
+                    </span>
+                    <p>{craftedPrompt.crafted_prompt_title}</p>
+                  </div>
+                ))}
                 <div
                   className="option"
                   onMouseEnter={() => setIsHoveredX(true)}
@@ -1095,7 +1260,15 @@ const Board = () => {
           {showGenerateAttachmentLinkWithAGIPopup && (
             <GenerateAttachmentLinkWithAGIPopup
               task={inspectedTask}
+              attachmentLinks={inspectedAttachmentLinks}
               onCancel={handleGenerateAttachmentLinkCancel}
+            />
+          )}
+          {showCraftPromptPopup && (
+            <CraftPromptPopup
+              board_id={board_id}
+              reloadCraftedPrompts={reloadCraftedPrompts}
+              onCancel={handleCraftPromptCancel}
             />
           )}
           {showGenerateTaskWithAGIPopup && (

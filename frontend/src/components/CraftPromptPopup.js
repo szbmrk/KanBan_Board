@@ -8,7 +8,7 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 
-const CraftPromptPopup = ({ board_id, onCancel }) => {
+const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
   const promptInputRef = useRef(null);
   const titleInputRef = useRef(null);
   const popupRef = useRef(null);
@@ -21,7 +21,7 @@ const CraftPromptPopup = ({ board_id, onCancel }) => {
   const actionOptions = [
     { value: "GENERATETASK", label: "Generate Task" },
     { value: "GENERATESUBTASK", label: "Generate Subtask" },
-    { value: "GENERATEATTACHMENTLIST", label: "Generate Attachment Link" },
+    { value: "GENERATEATTACHMENTLINK", label: "Generate Attachment Link" },
   ];
   let [chosenAction, setChosenAction] = useState(actionOptions[0]);
 
@@ -51,6 +51,10 @@ const CraftPromptPopup = ({ board_id, onCancel }) => {
           },
         }
       );
+
+      if (res) {
+        reloadCraftedPrompts();
+      }
 
       console.log(res);
       console.log(res.data);
