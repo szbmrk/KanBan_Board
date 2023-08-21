@@ -179,7 +179,14 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
                     ) : (
                         <>
                             <div className='gt-input-container'>
-                                <h3>Give me a task to generate tickets about:</h3>
+                                <p
+                                    style={{
+                                        fontSize: '1.2em',
+                                        textAlign: 'left',
+                                    }}
+                                >
+                                    Give me a task to generate tickets about:
+                                </p>
                                 <input type='text' placeholder='Enter task title' ref={taskTitleInputRef} />
                                 <div className='gt-action-buttons'>
                                     <div className='dropdown-container'>
@@ -276,7 +283,21 @@ const TaskRecursive = ({
 
     return (
         <div className={deepness > 0 ? 'gt-input-container gt-space' : 'gt-input-container'} key={index}>
-            <h3>{editedTasks.length > 0 ? `Generate subtasks for "${task.title}" task` : 'Generate task'}</h3>
+            <p
+                style={
+                    editedTasks.length > 0
+                        ? {
+                              fontSize: '1.1em',
+                              textAlign: 'left',
+                          }
+                        : {
+                              fontSize: '1.2em',
+                              textAlign: 'center',
+                          }
+                }
+            >
+                {editedTasks.length > 0 ? `Generate subtasks for "${task.title}" task` : 'Generate task'}
+            </p>
             <div className='gt-attributes-container'>
                 <div className='gt-attributes'>
                     <p className='title'>Title:</p>
