@@ -17,10 +17,8 @@ export default function Dashboard() {
     const [selectedTeamId, setSelectedTeamId] = useState(null);
     const [selectedBoardId, setSelectedBoardId] = useState(null);
     const [hoveredBoardId, setHoveredBoardId] = useState(null);
-    const [ownPermissions, setOwnPermissions] = useState([]);
 
     const token = sessionStorage.getItem('token');
-    const permissions = JSON.parse(sessionStorage.getItem('permissions'));
 
     useEffect(() => {
         document.title = 'Dashboard'
@@ -31,7 +29,6 @@ export default function Dashboard() {
 
         //backendről fetchelés
         fetchDashboardData();
-        console.log(permissions);
     }, []);
 
     const fetchDashboardData = async () => {
@@ -42,8 +39,15 @@ export default function Dashboard() {
                 },
             });
             console.log(response.data);
-            setTeams(response.data.teams);
-            setOwnPermissions(permissions.teams.filter(team => team.team_id === response.data.teams[0].team_id).map(permission => permission.permission_data));
+            const teamData= response.data.teams;
+            const permissions = JSON.parse(sessionStorage.getItem('permissions'));
+            teamData.map((team) => {
+                const newTeam=team;
+                newTeam.permissions=permissions.teams.filter(permission => permission.team_id === team.team_id).map(permission => permission.permission_data);
+                return newTeam;
+            });
+            console.log(teamData); 
+            setTeams(teamData);
         } catch (e) {
             console.error(e);
         }
@@ -207,7 +211,7 @@ export default function Dashboard() {
                                                     <Link to={`/board/${board.board_id}`} className='board-title'>
                                                         <p>{board.name}</p>
                                                     </Link>
-                                                    {ownPermissions.some(permission => permission.id === 5) &&
+                                                    {//ownPermissions.some(permission => permission.id === 5) &&
                                                         <span
                                                             className='delete-board-button'
                                                             style={{
@@ -223,7 +227,7 @@ export default function Dashboard() {
                                                         >
                                                             {closeIcon}
                                                         </span>}
-                                                    {ownPermissions.some(permission => permission.id === 5) &&
+                                                    {//ownPermissions.some(permission => permission.id === 5) &&
                                                         <span
                                                             className='edit-board-button'
                                                             style={{

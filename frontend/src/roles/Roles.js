@@ -8,7 +8,6 @@ export const SetRoles =  async (token) => {
                 Authorization: `Bearer ${token}`,
             }
         });
-            console.log(response.data);
             sessionStorage.setItem('permissions', roleHandler(response.data));
     } catch (error) {
         console.log(error);
@@ -19,7 +18,6 @@ export const SetRoles =  async (token) => {
 function roleHandler(data)
 {
     let team_member = data.user.team_members;
-    console.log(team_member);
     let roles = { general_role: [], teams: [] };
     for (let i = 0; i < team_member.length; i++) {
         if (team_member[i].team_id === null) {
