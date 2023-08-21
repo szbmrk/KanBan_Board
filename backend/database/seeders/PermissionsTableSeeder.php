@@ -46,11 +46,21 @@ class PermissionsTableSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'name' => 'team_members_role_management',
+                'name' => 'team_member_role_management',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
-            ];
+            [
+                'name' => 'roles_permissions_management',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'name' => 'column_management',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+        ];
 
             DB::table('permissions')->insert($permissions);
     }

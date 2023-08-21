@@ -32,6 +32,7 @@ use App\Http\Controllers\LlamaController;
 use App\Models\Feedback;
 use App\Http\Controllers\UserTasksController;
 use App\Http\Controllers\TeamMemberRoleController;
+use App\Http\Controllers\RolePermissionController;
 
 /*
 
@@ -141,6 +142,10 @@ Route::get('/boards/{board_id}/tasks/{task_id}/not_assigned_users', [UserTasksCo
 Route::get('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'index'])->middleware('api');
 Route::post('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'store'])->middleware('api');
 Route::delete('/boards/{boardId}/team-member-roles/{teamMemberRoleId}',[TeamMemberRoleController::class, 'destroy'])->middleware('api');
+
+Route::get('/boards/{boardId}/role-permissions', [RolePermissionController::class, 'index'])->middleware('api');
+Route::post('/boards/{boardId}/roles/{roleId}/permissions', [RolePermissionController::class, 'store'])->middleware('api');
+Route::delete('/boards/{boardId}/roles/{roleId}/permissions/{permissionId}', [RolePermissionController::class, 'destroy'])->middleware('api');
 
 Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');
 Route::get('/AGI/GenerateTask', [AGIController::class, 'GenerateTask'])->middleware('api');
