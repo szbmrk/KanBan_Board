@@ -111,8 +111,6 @@ export default function EditProfile() {
             {formData.username === '' ? (
                 <Loader />
             ) : (
-                <Loader />
-            ) : (
                 <div>
                     <h1>Edit your profile</h1>
                     <form className='edit-profile-form' onSubmit={handleSubmit}>
