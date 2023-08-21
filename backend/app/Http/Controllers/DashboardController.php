@@ -36,7 +36,7 @@ class DashboardController extends Controller
     
         $team_id = $request->team_id;
         if ($user->teams()->where('teams.team_id', $team_id)->exists()) {
-            
+    
             $board = new Board;
             $board->name = $request->name;
             $board->team_id = $team_id;
@@ -52,6 +52,7 @@ class DashboardController extends Controller
             $boardManagementPermission = Permission::firstOrCreate(['name' => 'board_management']);
             $roleManagementPermission = Permission::firstOrCreate(['name' => 'role_management']);
             $teamMemberRoleManagementPermission = Permission::firstOrCreate(['name' => 'team_member_role_management']);
+            $columnManagementPermission = Permission::firstOrCreate(['name' => 'column_management']);
     
             if (!$boardManagerRole->permissions->contains($boardManagementPermission)) {
                 $boardManagerRole->permissions()->attach($boardManagementPermission->id);
@@ -63,6 +64,10 @@ class DashboardController extends Controller
     
             if (!$boardManagerRole->permissions->contains($teamMemberRoleManagementPermission)) {
                 $boardManagerRole->permissions()->attach($teamMemberRoleManagementPermission->id);
+            }
+    
+            if (!$boardManagerRole->permissions->contains($columnManagementPermission)) {
+                $boardManagerRole->permissions()->attach($columnManagementPermission->id);
             }
     
             LogRequest::instance()->logAction('CREATED BOARD', $user->user_id, "Board created successfully!", $team_id, $board->board_id, null);
