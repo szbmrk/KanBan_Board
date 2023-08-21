@@ -19,9 +19,12 @@ class AgiBehaviorTableSeeder extends Seeder
             [
                 'act_as_a' => 'Backend developer',
             ],
+            [
+                'act_as_a' => 'Code reviewer',
+            ],
             // Add more sample data as needed
         ];
 
-        DB::table('agi_behavior')->insert($data);
+        DB::table('agi_behaviors')->insert($data);
     }
 }

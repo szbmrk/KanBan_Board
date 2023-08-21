@@ -1,38 +1,40 @@
 <?php
+use App\Models\Feedback;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AGIController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\BardController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BoardController;
+use App\Http\Controllers\LlamaController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\MentionController;
 use App\Http\Controllers\TaskTagController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\PriorityController;
+
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\AttachmentController;
-use App\Http\Controllers\PromptCraftController;
 
-use App\Http\Controllers\NotificationController;
-
-use App\Http\Controllers\TeamManagementController;
 use App\Http\Controllers\UserTasksController;
-use App\Http\Controllers\BardController;
+use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\AgiBehaviorController;
+
 /*
 |--------------------------------------------------------------------------
 
+use App\Http\Controllers\AgiBehaviorController;
+use App\Http\Controllers\PromptCraftController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\FavouriteTaskController;
-use App\Http\Controllers\TeamManagementController;
-use App\Http\Controllers\LlamaController;
-use App\Models\Feedback;
-use App\Http\Controllers\UserTasksController;
-use App\Http\Controllers\TeamMemberRoleController;
 use App\Http\Controllers\RolePermissionController;
+use App\Http\Controllers\TeamManagementController;
+use App\Http\Controllers\TeamManagementController;
+use App\Http\Controllers\TeamMemberRoleController;
 
 /*
 
@@ -168,4 +170,6 @@ Route::delete('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraf
 Route::get('/boards/{boardId}/AGI/crafted-prompts/{craftedPromptId}', [PromptCraftController::class, 'usePrompts'])->middleware('api');
 
 Route::get('/AGI/GenerateTask/CraftedPrompt', [AGIController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
+
+Route::get('/boards/{boardId}/GetBehaviors', [AgiBehaviorController::class, 'GetBehaviors'])->middleware('api');
 

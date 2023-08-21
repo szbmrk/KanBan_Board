@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\AgiBehavior;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Board extends Model
 {
@@ -51,4 +52,6 @@ class Board extends Model
     {
         return $this->hasManyThrough(TeamMember::class, Team::class);
     }
+
+    
 }

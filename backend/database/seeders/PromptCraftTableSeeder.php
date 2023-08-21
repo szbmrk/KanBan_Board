@@ -30,6 +30,15 @@ class PromptCraftTableSeeder extends Seeder
                 'action' => 'GENERATETASK',
                 'created_by' => 1,
             ],
+            [
+                'crafted_prompt_title' => 'Code review: Login page',
+                'board_id' => 2,
+                'agi_behavior_id' => 3,
+                'crafted_prompt_text' => 'Make a code review for the code of the login page.',
+                'craft_with' => 'CHATGPT',
+                'action' => 'GENERATETASK',
+                'created_by' => 1,
+            ],
             // Add more sample data as needed
         ];
 

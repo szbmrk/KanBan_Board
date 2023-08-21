@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         
-        Schema::create('agi_behavior', function (Blueprint $table) {
+        Schema::create('agi_behaviors', function (Blueprint $table) {
             $table->id('agi_behavior_id')->nullable(false);
             $table->text('act_as_a')->nullable(false);
             $table->timestamps();
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('agi_behavior');
+        Schema::dropIfExists('agi_behaviors');
     }
 };
