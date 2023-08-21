@@ -240,5 +240,50 @@ class ChatGPTController extends Controller
         return ChatGPTController::CallPythonAndFormatResponse($prompt);
 
     }
+
+    public static function GenerateCodeReviewChatGPT(Request $request) 
+    {
+        $code = $request->input('code');
+        $prompt = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''.";
+
+        return ChatGPTController::CallPythonAndFormatResponseCodeReview($prompt);
+    }
+
+    public static function CallPythonAndFormatResponseCodeReview($prompt) {
+        $path = env('PYTHON_SCRIPT_PATH');
+        $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
+        // Find the position of 'Code review:'
+        $codeReviewPos = strpos($response, 'Code review:');
+        if($codeReviewPos == false) {
+            $codeReviewPos = strpos($response, 'Code Review:');
+        }
+
+        if($codeReviewPos == false) {
+            $codeReviewPos = strpos($response, 'Code Review');
+        }
+
+        if($codeReviewPos == false) {
+            $codeReviewPos = strpos($response, 'Code review');
+        }
+
+        if($codeReviewPos == false) {
+            $codeReviewPos = strpos($response, 'code review');
+        }
+        
+        if ($codeReviewPos !== false) {
+            // Extract everything after 'Code Review:'
+            $codeReview = substr($response, $codeReviewPos + strlen('Code Review:'));
+            // Remove leading and trailing whitespace and newline characters
+            $codeReview = trim($codeReview);
+            //$codeReview = json_encode($codeReview);
+            return response()->json([
+                'codeReview' => $codeReview,
+            ]);
+        } else {
+            return 'Code review not found in the response.';
+        }
+
+        
+    }
     
 }

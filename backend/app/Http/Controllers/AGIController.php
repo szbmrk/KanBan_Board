@@ -113,4 +113,25 @@ class AGIController extends Controller
 
         return $response;
     }
+
+    public function GenerateCodeReview(Request $request)
+    {
+        //without json stingify it will not work!!!
+        $user = auth()->user();
+
+        $response;
+        
+        switch($request->header('ChosenAI')) {
+            /* case Str::lower("llama"):
+                $response = LlamaController::GenerateAttachmentLinkLlama($request);
+                break; */
+            case Str::lower("bard"):
+                //$response = BardController::GenerateCodeReviewBard($request);
+                break;
+            default:
+                $response = ChatGPTController::GenerateCodeReviewChatGPT($request);
+                break;
+        }
+        return $response;
+    }
 }
