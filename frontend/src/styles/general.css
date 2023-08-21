@@ -1,127 +1,175 @@
-@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,400;1,100;1,400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,400;1,100;1,400&display=swap");
 
-:root{
-    --dark-gray: #404040;
-    --dark-grayRGB: 64, 64, 64;
-    --light-gray: #cbcbcb;
-    --light-grayRGB: 203, 203, 203;
-    --off-white: #f0f0f0;
-    --button: #3d506b;
-    --important: rgba(255, 0, 0, 0.4);
-    --important-light: rgba(255, 0, 0, 0.6);
-    --basic-font: 'Raleway', sans-serif;
-    --confirm: #359138;
-    --starred: #f5d142;
-    --magic: #937bff;
-    --scrollbar-hover: #555;
-    --bg-dark: rgba(var(--dark-grayRGB), 0.5);
-    --bg-light: rgba(var(--light-grayRGB), 0.5);
-    --bg-mostly-black: #1f1f1f;
+:root {
+  --dark-gray: #404040;
+  --dark-grayRGB: 64, 64, 64;
+  --light-gray: #cbcbcb;
+  --light-grayRGB: 203, 203, 203;
+  --off-white: #f0f0f0;
+  --button: #3d506b;
+  --important: rgba(255, 0, 0, 0.4);
+  --important-light: rgba(255, 0, 0, 0.6);
+  --basic-font: "Raleway", sans-serif;
+  --confirm: #359138;
+  --starred: #f5d142;
+  --magic: #937bff;
+  --attachment-link: #49b6ff;
+  --scrollbar-hover: #555;
+  --bg-dark: rgba(var(--dark-grayRGB), 0.5);
+  --bg-light: rgba(var(--light-grayRGB), 0.5);
+  --bg-mostly-black: #1f1f1f;
 }
 
-*{
-    box-sizing: border-box;
-    padding: 0;
-    margin: 0;
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 html {
-    font-family: var(--basic-font);
+  font-family: var(--basic-font);
 }
 
 body {
-    color: var(--dark-gray);
-    line-height: 1.6;
-    background: url('./imgs/background-small.jpg') no-repeat center;
-    background-size: cover;
-    height: 100vh;
-    width: 100vw;
+  color: var(--dark-gray);
+  line-height: 1.6;
+  background: url("./imgs/background-small.jpg") no-repeat center;
+  background-size: cover;
+  height: 100vh;
+  width: 100vw;
 }
 
 .background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: url('./imgs/background.jpg') no-repeat center;
-    background-size: cover;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url("./imgs/background.jpg") no-repeat center;
+  background-size: cover;
 }
 .content {
-    text-align: center;
-    margin: 0 auto;
-    height: calc(100vh - 50px);
-    overflow: auto;
+  position: relative;
+  text-align: center;
+  margin: 0 auto;
+  height: calc(100vh - 50px);
+  overflow: auto;
 }
 
 .card-title {
-    color: var(--light-gray);
-    margin: 0 20px 30px;
-    border-bottom: 1px solid var(--light-gray);
-}
-  
-::selection {
-    background: var(--dark-gray);
-    color: var(--light-gray);
+  color: var(--light-gray);
+  margin: 0 20px 30px;
+  border-bottom: 1px solid var(--light-gray);
 }
 
+::selection {
+  background: var(--dark-gray);
+  color: var(--light-gray);
+}
 
 /* <Scrollbar> */
 ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-    overflow: hidden;
+  width: 10px;
+  height: 10px;
+  overflow: hidden;
 }
 
 ::-webkit-scrollbar-track {
-    background: transparent; 
-    margin: 5px 0;
+  background: transparent;
+  margin: 5px 0;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--dark-gray);
-    border-radius: 4px;
+  background: var(--dark-gray);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--scrollbar-hover);; 
+  background: var(--scrollbar-hover);
 }
 
 ::-webkit-scrollbar-button {
-    display: none;
+  display: none;
 }
 /* </Scrollbar> */
 
-
 /* Declaring classNames for responsiveness */
-  
+
 @media only screen and (min-width: 600px) {
-/* For tablets: */
-.col-s-1 {width: 8.33%;}
-.col-s-2 {width: 16.66%;}
-.col-s-3 {width: 25%;}
-.col-s-4 {width: 33.33%;}
-.col-s-5 {width: 41.66%;}
-.col-s-6 {width: 50%;}
-.col-s-7 {width: 58.33%;}
-.col-s-8 {width: 66.66%;}
-.col-s-9 {width: 75%;}
-.col-s-10 {width: 83.33%;}
-.col-s-11 {width: 91.66%;}
-.col-s-12 {width: 100%;}
+  /* For tablets: */
+  .col-s-1 {
+    width: 8.33%;
+  }
+  .col-s-2 {
+    width: 16.66%;
+  }
+  .col-s-3 {
+    width: 25%;
+  }
+  .col-s-4 {
+    width: 33.33%;
+  }
+  .col-s-5 {
+    width: 41.66%;
+  }
+  .col-s-6 {
+    width: 50%;
+  }
+  .col-s-7 {
+    width: 58.33%;
+  }
+  .col-s-8 {
+    width: 66.66%;
+  }
+  .col-s-9 {
+    width: 75%;
+  }
+  .col-s-10 {
+    width: 83.33%;
+  }
+  .col-s-11 {
+    width: 91.66%;
+  }
+  .col-s-12 {
+    width: 100%;
+  }
 }
 @media only screen and (min-width: 768px) {
-/* For desktop: */
-.col-1 {width: 8.33%;}
-.col-2 {width: 16.66%;}
-.col-3 {width: 25%;}
-.col-4 {width: 33.33%;}
-.col-5 {width: 41.66%;}
-.col-6 {width: 50%;}
-.col-7 {width: 58.33%;}
-.col-8 {width: 66.66%;}
-.col-9 {width: 75%;}
-.col-10 {width: 83.33%;}
-.col-11 {width: 91.66%;}
-.col-12 {width: 100%;}
+  /* For desktop: */
+  .col-1 {
+    width: 8.33%;
+  }
+  .col-2 {
+    width: 16.66%;
+  }
+  .col-3 {
+    width: 25%;
+  }
+  .col-4 {
+    width: 33.33%;
+  }
+  .col-5 {
+    width: 41.66%;
+  }
+  .col-6 {
+    width: 50%;
+  }
+  .col-7 {
+    width: 58.33%;
+  }
+  .col-8 {
+    width: 66.66%;
+  }
+  .col-9 {
+    width: 75%;
+  }
+  .col-10 {
+    width: 83.33%;
+  }
+  .col-11 {
+    width: 91.66%;
+  }
+  .col-12 {
+    width: 100%;
+  }
 }

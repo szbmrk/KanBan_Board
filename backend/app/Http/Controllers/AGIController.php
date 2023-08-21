@@ -22,22 +22,23 @@ class AGIController extends Controller
     public function GenerateTask(Request $request)
     {
         $user = auth()->user();
-    
-        $chosenAI = Str::lower($request->header('ChosenAI'));
+
         $response;
     
-        switch ($chosenAI) {
-            case "llama":
+        switch($request->header('ChosenAI')) {
+            case Str::lower("llama"):
                 $response = LlamaController::generateTaskLlama($request);
                 break;
-            case "chatgpt draft":
+            case Str::lower("bard"):
+                $response = BardController::generateTaskBard($request);
+                break;
+            case Str::lower("chatgpt draft"):
                 $response = ChatGPTController::GenerateTaskDraftChatGPT($request);
                 break;
             default:
                 $response = ChatGPTController::GenerateTaskChatGPT($request);
                 break;
         }
-    
         return $response;
     }
     
@@ -51,6 +52,9 @@ class AGIController extends Controller
         switch($request->header('ChosenAI')) {
             case Str::lower("llama"):
                 $response = LlamaController::generateSubtaskLlama($request);
+                break;
+            case Str::lower("bard"):
+                $response = BardController::generateSubtaskBard($request);
                 break;
             default:
                 $response = ChatGPTController::GenerateSubtaskChatGPT($request);
@@ -79,6 +83,24 @@ class AGIController extends Controller
                 break;
         }
     
+        return $response;
+    }
+
+    public function GenerateAttachmentLink(Request $request)
+    {
+        $user = auth()->user();
+
+        $response;
+        
+        switch($request->header('ChosenAI')) {
+            case Str::lower("llama"):
+                $response = LlamaController::GenerateAttachmentLinkLlama($request);
+                break;
+            default:
+                $response = ChatGPTController::GenerateAttachmentLinkChatGPT($request);
+                break;
+        }
+
         return $response;
     }
 }

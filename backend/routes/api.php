@@ -19,6 +19,13 @@ use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\PromptCraftController;
 
 use App\Http\Controllers\NotificationController;
+
+use App\Http\Controllers\TeamManagementController;
+use App\Http\Controllers\UserTasksController;
+use App\Http\Controllers\BardController;
+/*
+|--------------------------------------------------------------------------
+
 use App\Http\Controllers\FavouriteTaskController;
 use App\Http\Controllers\TeamManagementController;
 use App\Http\Controllers\LlamaController;
@@ -27,6 +34,7 @@ use App\Http\Controllers\UserTasksController;
 use App\Http\Controllers\TeamMemberRoleController;
 
 /*
+
 | API Routes
 |--------------------------------------------------------------------------
 |
@@ -84,6 +92,10 @@ Route::get('/boards/{board_id}/tasks/{task_id}/subtasks', [TaskController::class
 Route::post('/boards/{board_id}/tasks/{parent_task_id}/subtasks', [TaskController::class, 'subtaskStore'])->middleware('api');
 Route::put('/boards/{board_id}/subtasks/{subtask_id}', [TaskController::class, 'subtaskUpdate'])->middleware('api');
 Route::delete('/boards/{board_id}/subtasks/{subtask_id}', [TaskController::class, 'subtaskDestroy'])->middleware('api');
+Route::post('/boards/{boardId}/columns/{columnId}/tasks/create-with-subtasks', [TaskController::class, 'createTasksWithSubtasks'])->middleware('api');
+Route::post('/boards/{boardId}/columns/{columnId}/tasks/{taskId}/SubtasksToExistingTask', [TaskController::class, 'addSubtasksToExistingTask'])->middleware('api');
+Route::put('/boards/{boardId}/columns/{columnId}/tasks/{taskId}/SubtasksToExistingTask', [TaskController::class, 'updateExistingTask'])->middleware('api');
+Route::delete('/boards/{boardId}/columns/{columnId}/tasks/{taskId}/SubtasksToExistingTask', [TaskController::class, 'deleteExistingTaskWithItsSubtasks'])->middleware('api');
 
 Route::get('/tasks/{task_id}/comments', [CommentController::class, 'index'])->middleware('api');
 Route::post('/tasks/{task_id}/comments', [CommentController::class, 'commentStore'])->middleware('api');
@@ -94,15 +106,17 @@ Route::delete('/boards/{board_id}/tasks/{task_id}/tags/{tag_id}', [TaskTagContro
 
 Route::get('/tasks/{task_id}/attachments', [AttachmentController::class, 'index'])->middleware('api');
 Route::post('/tasks/{task_id}/attachments', [AttachmentController::class, 'store'])->middleware('api');
+Route::post('/tasks/{task_id}/attachments/multiple', [AttachmentController::class, 'storeMultiple'])->middleware('api');
 Route::put('/attachments/{attachment_id}', [AttachmentController::class, 'update'])->middleware('api');
 Route::delete('/attachments/{attachment_id}', [AttachmentController::class, 'destroy'])->middleware('api');
+
 Route::get('/favourite/{user_id}', [FavouriteTaskController::class, 'index'])->middleware('api');
 Route::post('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'store'])->middleware('api');
 Route::delete('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'destroy'])->middleware('api');
 
 Route::get('/boards/{boardId}/roles', [RoleController::class, 'index'])->middleware('api');
 Route::post('/boards/{boardId}/roles', [RoleController::class, 'store'])->middleware('api');
-Route::put('/boards/{boardId}/roles/{roleId}', [RoleController::class, 'update'])->middleware('api');
+Route::put('/boards/{boardId}/roles/{roleId}',[RoleController::class, 'update'])->middleware('api');
 Route::delete('/boards/{boardId}/roles/{roleId}', [RoleController::class, 'destroy'])->middleware('api');
 
 Route::get('/boards/{boardId}/tasks/{taskId}/mentions', [MentionController::class, 'index'])->middleware('api');
@@ -127,16 +141,20 @@ Route::get('/boards/{board_id}/tasks/{task_id}/not_assigned_users', [UserTasksCo
 
 Route::get('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'index'])->middleware('api');
 Route::post('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'store'])->middleware('api');
-Route::delete('/boards/{boardId}/team-member-roles/{teamMemberRoleId}', [TeamMemberRoleController::class, 'destroy'])->middleware('api');
+Route::delete('/boards/{boardId}/team-member-roles/{teamMemberRoleId}',[TeamMemberRoleController::class, 'destroy'])->middleware('api');
 
 Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');
 Route::get('/AGI/GenerateTask', [AGIController::class, 'GenerateTask'])->middleware('api');
 Route::get('/AGI/GenerateSubtask', [AGIController::class, 'GenerateSubtask'])->middleware('api');
+Route::get('/AGI/GenerateAttachmentLink', [AGIController::class, 'GenerateAttachmentLink'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_code', [AGIController::class, 'generateCode'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_priority', [AGIController::class, 'generatePriority'])->middleware('api');
 Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::class, 'generatePrioritiesForColumn'])->middleware('api');
 Route::post('/generate-llama-subtasks', [LlamaController::class, 'generateSubtasks']);
 Route::get('/generate-llama-subtasks2', [LlamaController::class, 'testSubtaskParsing']);
+
+Route::get('/get-bard-answer', [BardController::class, 'getBardAnswer']);
+
 
 Route::get('/boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::class, 'getPrompts'])->middleware('api');
 Route::post('/boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::class, 'storePrompts'])->middleware('api');
@@ -145,4 +163,3 @@ Route::delete('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraf
 
 Route::get('/AGI/GenerateTask/CraftedPrompt', [AGIController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
 
-Route::post('/boards/{boardId}/columns/{columnId}/tasks/create-with-subtasks', [TaskController::class, 'createTasksWithSubtasks'])->middleware('api');

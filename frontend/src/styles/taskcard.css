@@ -33,7 +33,6 @@
 }
 
 .tags {
-  margin-left: 30px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;

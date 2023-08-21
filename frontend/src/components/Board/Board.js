@@ -4,9 +4,10 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Task, plusIcon } from './Task';
 import ConfirmationPopup from './ConfirmationPopup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faXmark, faWandMagicSparkles, faEllipsis } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faXmark, faWandMagicSparkles, faEllipsis, faShare, faCog } from '@fortawesome/free-solid-svg-icons';
 import '../../styles/board.css';
 import '../../styles/popup.css';
+import '../../styles/titlebar.css';
 import { useParams } from 'react-router';
 import axios from '../../api/axios';
 import Error from '../Error';
@@ -15,8 +16,9 @@ import { Column } from './Columns';
 import Popup from './Popup';
 import cloneDeep from 'lodash/cloneDeep';
 import GenerateTaskWithAGIPopup from '../GenerateTaskWithAGIPopup';
-import { useNavigate } from 'react-router-dom';
+import GenerateAttachmentLinkWithAGIPopup from '../GenerateAttachmentLinkWithAGIPopup';
 import CraftPromptPopup from '../CraftPromptPopup';
+import { useNavigate } from 'react-router-dom';
 
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
@@ -34,9 +36,14 @@ const Board = () => {
     const editBoxRef = useRef(null);
     const [columnNewTitle, setColumnNewTitle] = useState('');
     const [showGenerateTaskWithAGIPopup, setShowGenerateTaskWithAGIPopup] = useState(false);
+    const [showGenerateAttachmentLinkWithAGIPopup, setShowGenerateAttachmentLinkWithAGIPopup] = useState(false);
     const [cardZIndex, setCardZIndex] = useState(1);
-    const [iconContainerPosition, setIconContainerPosition] = useState({ x: 0, y: 0 });
+    const [iconContainerPosition, setIconContainerPosition] = useState({
+        x: 0,
+        y: 0,
+    });
     const [showIconContainer, setShowIconContainer] = useState(false);
+    const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
     const [isHoveredAI, setIsHoveredAI] = useState(false);
     const [isHoveredX, setIsHoveredX] = useState(false);
     const [columnIndex, setColumnIndex] = useState(null);
@@ -665,6 +672,19 @@ const Board = () => {
         setInspectedTask(null);
     };
 
+    const openGenerateAttachmentLinkWithAGIPopup = (task) => {
+        setShowGenerateAttachmentLinkWithAGIPopup(true);
+        console.log(task);
+        if (task) {
+            setInspectedTask(cloneDeep(task));
+        }
+    };
+
+    const handleGenerateAttachmentLinkCancel = () => {
+        setShowGenerateAttachmentLinkWithAGIPopup(false);
+        setInspectedTask(null);
+    };
+
     const handleDotsClick = (event, columnIndex) => {
         const buttonRect = event.target.getBoundingClientRect();
         const newX = buttonRect.right + 20;
@@ -737,7 +757,9 @@ const Board = () => {
 
     const handleDeleteAttachment = async (task_id, column_id, attachment_id) => {
         try {
-            await axios.delete(`/attachments/${attachment_id}`, { headers: { Authorization: `Bearer ${token}` } });
+            await axios.delete(`/attachments/${attachment_id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
             const newBoardData = [...board.columns];
             const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
             const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
@@ -749,6 +771,10 @@ const Board = () => {
         } catch (e) {
             console.error(e);
         }
+    };
+
+    const handleShowCraftPromptPopup = () => {
+        setShowCraftPromptPopup(true);
     };
 
     const handleAddMember = async (task_id, column_id, member_id) => {
@@ -777,7 +803,6 @@ const Board = () => {
         }
     }
 
-
     return (
         <>
             {permission === false ? (
@@ -796,7 +821,28 @@ const Board = () => {
                         </div>
                     ) : (
                         <div className='content'>
-                            <h1>{board.name}</h1>
+                            <div className='title-bar'>
+                                <h1 className='title-name'>{board.name}</h1>
+                                <div className='title-bar-buttons'>
+                                    <ul>
+                                        <li>
+                                            <span
+                                                className='ai-button'
+                                                onMouseEnter={() => setIsHoveredAI(true)}
+                                                onMouseLeave={() => setIsHoveredAI(false)}
+                                                onClick={() => {
+                                                    handleShowCraftPromptPopup();
+                                                }}
+                                                style={{
+                                                    color: isHoveredAI ? 'var(--magic)' : 'var(--dark-gray)',
+                                                }}
+                                            >
+                                                {aiIcon}
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                             <div className='div-container'>
                                 {board.columns.map((column, index) => (
                                     <Column
@@ -846,14 +892,6 @@ const Board = () => {
                                                     >
                                                         <h2 className='card-title'>{column.name}</h2>
                                                     </div>
-                                                    {/*index === 0 && (
-                                                        <span
-                                                            className='ai-button generate-task-button'
-                                                            onClick={() => openGenerateTaskWithAGIPopup(null)}
-                                                        >
-                                                            {aiIcon}
-                                                        </span>
-                                                    )*/}
                                                     <div className='options' style={{ visibility: 'visible' }}>
                                                         <span
                                                             className='dots'
@@ -908,6 +946,9 @@ const Board = () => {
                                                             )
                                                         }
                                                         generateTasks={(task) => openGenerateTaskWithAGIPopup(task)}
+                                                        generateAttachmentLinks={(task) =>
+                                                            openGenerateAttachmentLinkWithAGIPopup(task)
+                                                        }
                                                     />
                                                 ))}
                                             </div>
@@ -980,6 +1021,12 @@ const Board = () => {
                             </div>
                         </div>
                     )}
+                    {showGenerateAttachmentLinkWithAGIPopup && (
+                        <GenerateAttachmentLinkWithAGIPopup
+                            task={inspectedTask}
+                            onCancel={handleGenerateAttachmentLinkCancel}
+                        />
+                    )}
                     {showGenerateTaskWithAGIPopup && (
                         <GenerateTaskWithAGIPopup tasks={inspectedTask} onCancel={handleGenerateTaskCancel} />
                     )}
@@ -989,6 +1036,9 @@ const Board = () => {
                             onCancel={handleColumnDeleteCancel}
                             onConfirm={handleColumnDeleteConfirm}
                         />
+                    )}
+                    {showCraftPromptPopup && (
+                        <CraftPromptPopup board_id={board.board_id} onCancel={() => setShowCraftPromptPopup(false)} />
                     )}
                 </DndProvider>
             )}
