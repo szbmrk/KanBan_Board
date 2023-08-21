@@ -188,6 +188,7 @@ export default function Dashboard() {
     };
 
     const checkPermissonToManageBoard = (board_id, permissions) => {
+        //TODO Refactor
         let response = false;
         permissions.map(permission => {
             if (permission.name === "system_admin") {
