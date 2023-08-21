@@ -39,14 +39,14 @@ export default function Dashboard() {
                 },
             });
             console.log(response.data);
-            const teamData= response.data.teams;
+            const teamData = response.data.teams;
             const permissions = JSON.parse(sessionStorage.getItem('permissions'));
             teamData.map((team) => {
-                const newTeam=team;
-                newTeam.permissions=permissions.teams.filter(permission => permission.team_id === team.team_id).map(permission => permission.permission_data);
+                const newTeam = team;
+                newTeam.permissions = permissions.teams.filter(permission => permission.team_id === team.team_id).map(permission => permission.permission_data);
                 return newTeam;
             });
-            console.log(teamData); 
+            console.log(teamData);
             setTeams(teamData);
         } catch (e) {
             console.error(e);
@@ -187,6 +187,21 @@ export default function Dashboard() {
         setHoveredBoardId(null);
     };
 
+    const checkPermissonToManageBoard = (board_id, permissions) => {
+        let response = false;
+        permissions.map(permission => {
+            if (permission.name === "system_admin") {
+                response = true;
+            }
+        });
+        permissions.map(permission => {
+            if (permission.name === "board_manager" && permission.permission_data.board_id === board_id) {
+                response = true;
+            }
+        });
+        return response;
+    }
+
     return (
         <div className='content'>
             {teams.length === 0 ? (
@@ -211,7 +226,7 @@ export default function Dashboard() {
                                                     <Link to={`/board/${board.board_id}`} className='board-title'>
                                                         <p>{board.name}</p>
                                                     </Link>
-                                                    {//ownPermissions.some(permission => permission.id === 5) &&
+                                                    {checkPermissonToManageBoard(board.board_id, team.permissions) === true &&
                                                         <span
                                                             className='delete-board-button'
                                                             style={{
@@ -227,7 +242,7 @@ export default function Dashboard() {
                                                         >
                                                             {closeIcon}
                                                         </span>}
-                                                    {//ownPermissions.some(permission => permission.id === 5) &&
+                                                    {checkPermissonToManageBoard(board.board_id, team.permissions) === true &&
                                                         <span
                                                             className='edit-board-button'
                                                             style={{
