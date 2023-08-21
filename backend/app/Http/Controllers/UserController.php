@@ -162,14 +162,27 @@ class UserController extends Controller
     public function showPermissions()
     {
         $user = auth()->user();
-
+    
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-
-        $roles = $user->getRoles();
-            $permissions = $user->getPermissions(); 
-
-        return response()->json(['user' => $user]);
+    
+        $userPermissions = [];
+    
+        foreach ($user->teamMembers as $teamMember) {
+            foreach ($teamMember->roles as $role) {
+                foreach ($role->permissions as $permission) {
+                    $permissionData = [
+                        'permission' => $permission->name,
+                        'team_id' => $teamMember->team_id,
+                        'board_id' => $role->board_id,
+                    ];
+    
+                    $userPermissions[] = $permissionData;
+                }
+            }
+        }
+    
+        return response()->json(['permissions' => $userPermissions]);
     }
 }
