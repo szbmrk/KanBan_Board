@@ -53,6 +53,7 @@ class DashboardController extends Controller
             $roleManagementPermission = Permission::firstOrCreate(['name' => 'role_management']);
             $teamMemberRoleManagementPermission = Permission::firstOrCreate(['name' => 'team_member_role_management']);
             $columnManagementPermission = Permission::firstOrCreate(['name' => 'column_management']);
+            $rolesPermissionsManagementPermission = Permission::firstOrCreate(['name' => 'roles_permissions_management']);
     
             if (!$boardManagerRole->permissions->contains($boardManagementPermission)) {
                 $boardManagerRole->permissions()->attach($boardManagementPermission->id);
@@ -65,9 +66,13 @@ class DashboardController extends Controller
             if (!$boardManagerRole->permissions->contains($teamMemberRoleManagementPermission)) {
                 $boardManagerRole->permissions()->attach($teamMemberRoleManagementPermission->id);
             }
-    
+
             if (!$boardManagerRole->permissions->contains($columnManagementPermission)) {
                 $boardManagerRole->permissions()->attach($columnManagementPermission->id);
+            }
+
+            if (!$boardManagerRole->permissions->contains($rolesPermissionsManagementPermission)) {
+                $boardManagerRole->permissions()->attach($rolesPermissionsManagementPermission->id);
             }
     
             LogRequest::instance()->logAction('CREATED BOARD', $user->user_id, "Board created successfully!", $team_id, $board->board_id, null);
