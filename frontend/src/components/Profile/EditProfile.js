@@ -28,6 +28,7 @@ export default function EditProfile() {
     const [profileImageUrl, setProfileImageUrl] = useState(
         'https://www.pngitem.com/pimgs/m/30-307416_profile-icon-png-image-free-download-searchpng-employee.png'
     );
+    const [display, setDisplay] = useState('none');
 
     const getProfileData = async () => {
         try {
@@ -74,7 +75,11 @@ export default function EditProfile() {
                 console.log(err);
             }
         else if (formData.newPassword !== formData.confirmPassword) {
+            setDisplay('block');
             setError('New passwords do not match!');
+            setTimeout(() => {
+                setDisplay('none');
+            }, 8000);
         } else {
             try {
                 const response = await axios.put(
@@ -91,7 +96,11 @@ export default function EditProfile() {
                 );
                 console.log(response);
             } catch (err) {
+                setDisplay('block');
                 setError(err.response.data.error);
+                setTimeout(() => {
+                    setDisplay('none');
+                }, 8000);
             }
         }
     }
@@ -180,7 +189,11 @@ export default function EditProfile() {
                                 onPaste={handlePaste}
                             />
                         </div>
-                        {error !== '' && <h1>{error}</h1>}
+                        {error !== '' && (
+                            <div className='errorBox' style={{ display }}>
+                                <p>{error}</p>
+                            </div>
+                        )}
                         <button className='confirm-button' type='submit'>
                             Save
                         </button>

@@ -84,7 +84,6 @@ a {
 .errorBox {
     background-color: var(--important);
     color: var(--dark-gray);
-    font-weight: bold;
     text-align: center;
     padding: 5px;
     border: solid 1px var(--dark-gray);

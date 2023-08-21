@@ -63,6 +63,13 @@
     color: var(--light-gray);
 }
 
+.form-group-edit input[type="text"]::selection,
+.form-group-edit input[type="email"]::selection,
+.form-group-edit input[type="password"]::selection {
+    background: var(--light-gray);
+    color: var(--dark-gray);
+  }
+
 .confirm-button {
     width: 100%;
     margin-top: 20px;
@@ -101,4 +108,28 @@ p {
     text-align: center;
     margin-left: auto;
     margin-right: auto;
+}
+
+.password-confirmation {
+    width: 80%;
+}
+
+.password-confirmation input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    font-family: var(--basic-font);
+    font-size: 16px;
+    background: transparent;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    outline: none;
+    border-bottom: 1px solid var(--light-gray);
+    color: var(--light-gray);
+}
+
+.errorBox {
+    width: 100%;
+    color: var(--light-gray);
+    border: 1px solid var(--important);
 }

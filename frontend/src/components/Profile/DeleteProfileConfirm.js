@@ -1,11 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import axios from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/editprofile.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
+
+const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
 const DeleteProfileConfirm = ({ OnClose }) => {
     const [confirmPassword, setPassword] = useState('');
     const [error, setError] = useState(false);
+    const [display, setDisplay] = useState('none');
+
     const navigate = useNavigate();
 
     async function DeleteUser() {
@@ -21,7 +27,11 @@ const DeleteProfileConfirm = ({ OnClose }) => {
             });
             navigate('/login');
         } catch (error) {
-            setError(true);
+            setDisplay('block');
+            setError('Invalid password');
+            setTimeout(() => {
+                setDisplay('none');
+            }, 8000);
         }
     }
 
@@ -31,48 +41,40 @@ const DeleteProfileConfirm = ({ OnClose }) => {
     }
 
     return (
-        <div className="overlay">
-            <div className='popup'>
-                <div className="popup-content">
-                    <div>
-                        <button className="close-btn" onClick={OnClose}>
-                            Close
-                        </button>
+        <div className='overlay'>
+            <div className='popup popup-mini'>
+                <span className='close-btn' onClick={OnClose}>
+                    {closeIcon}
+                </span>
+                <p className='confirmation-text'>Are you sure you want delete your profile?</p>
+                <div className='password-confirmation'>
+                    <input
+                        className='input_field'
+                        type='password'
+                        id='password'
+                        name='password'
+                        value={confirmPassword}
+                        onChange={handleChange}
+                        placeholder='Enter your password'
+                        required
+                    />
+                </div>
+                {error !== '' && (
+                    <div className='errorBox' style={{ display }}>
+                        <p>{error}</p>
                     </div>
-                    <p>Are you sure you want delete your profile?</p>
-                    <div className='password_confirmation'>
-                        Your password:
-                        <input className="input_field"
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={confirmPassword}
-                            onChange={handleChange}
-                            placeholder="Enter your password"
-                            required
-                        />
-                    </div>
-                    <div className='buttons'>
-                        <table className='buttons'>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <button onClick={OnClose} className='manageButton'>Cancel</button>
-                                    </td>
-                                    <td>
-                                        <button className='delete_button' onClick={DeleteUser}>Delete</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    {error &&
-                        (<h1>Password is incorrect!</h1>)
-                    }
+                )}
+                <div className='button-container'>
+                    <button onClick={OnClose} className='manageButton'>
+                        Cancel
+                    </button>
+                    <button className='delete_button' onClick={DeleteUser}>
+                        Delete
+                    </button>
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default DeleteProfileConfirm;
