@@ -1,12 +1,12 @@
-import React, { useState, useRef, useEffect } from "react";
-import "react-datepicker/dist/react-datepicker.css";
-import axios from "../api/axios";
-import "../styles/popup.css";
-import "../styles/GenerateAttachmentLinkWithAGIPopup.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import Dropdown from "react-dropdown";
-import "react-dropdown/style.css";
+import React, { useState, useRef, useEffect } from 'react';
+import 'react-datepicker/dist/react-datepicker.css';
+import axios from '../api/axios';
+import '../styles/popup.css';
+import '../styles/GenerateTaskWithAGIPopup.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
 
 const GenerateAttachmentLinkWithAGIPopup = ({
   task,
@@ -19,21 +19,21 @@ const GenerateAttachmentLinkWithAGIPopup = ({
   );
   const popupRef = useRef(null);
   const aiOptions = [
-    { value: "chatgpt", label: "ChatGPT" },
-    { value: "llama", label: "Llama" },
+        { value: 'chatgpt', label: 'ChatGPT' },
+        { value: 'llama', label: 'Llama' },
   ];
   let [chosenAI, setChosenAI] = useState(aiOptions[0]);
   const counterOptions = [
-    { value: "1", label: "1" },
-    { value: "2", label: "2" },
-    { value: "3", label: "3" },
-    { value: "4", label: "4" },
-    { value: "5", label: "5" },
-    { value: "6", label: "6" },
-    { value: "7", label: "7" },
-    { value: "8", label: "8" },
-    { value: "9", label: "9" },
-    { value: "10", label: "10" },
+        { value: '1', label: '1' },
+        { value: '2', label: '2' },
+        { value: '3', label: '3' },
+        { value: '4', label: '4' },
+        { value: '5', label: '5' },
+        { value: '6', label: '6' },
+        { value: '7', label: '7' },
+        { value: '8', label: '8' },
+        { value: '9', label: '9' },
+        { value: '10', label: '10' },
   ];
   let [taskCounter, setTaskCounter] = useState(counterOptions[0]);
 
@@ -41,9 +41,9 @@ const GenerateAttachmentLinkWithAGIPopup = ({
 
   const saveToDatabase = async (task, attachments) => {
     try {
-      const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem('token');
 
-      console.log("attachments");
+            console.log('attachments');
       console.log(attachments);
 
       const res = await axios.post(
@@ -66,9 +66,9 @@ const GenerateAttachmentLinkWithAGIPopup = ({
 
   const generateAttachment = async (task, ai, counter) => {
     try {
-      const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem('token');
 
-      console.log("task");
+            console.log('task');
       console.log(task);
       console.log(counter);
       const res = await axios.get(`/AGI/GenerateAttachmentLink`, {
@@ -118,72 +118,71 @@ const GenerateAttachmentLinkWithAGIPopup = ({
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [onCancel]);
 
   return (
-    <div className="overlay">
-      <div className="popup">
-        <span className="close-btn" onClick={onCancel}>
+        <div className='overlay'>
+            <div className='popup agi-popup'>
+                <span className='close-btn' onClick={onCancel}>
           {closeIcon}
         </span>
-        <div className="gt-popup-content">
-          <div className="gt-input-container">
+                <div className='gt-popup-content'>
+                    <div className='gt-input-container'>
             <p>Generate attachment links for: {editedTask.title}</p>
+                        <div className='dropdown-container'>
             <p>Select the number of attachment(s):</p>
             <Dropdown
               options={counterOptions}
               value={taskCounter}
               onChange={(selectedOption) => setTaskCounter(selectedOption)}
             />
+                        </div>
+                        <div className='dropdown-container'>
             <p>Select an AI:</p>
             <Dropdown
               options={aiOptions}
               value={chosenAI}
               onChange={(selectedOption) => setChosenAI(selectedOption)}
             />
+                        </div>
             <button
-              onClick={() =>
-                generateAttachment(
-                  editedTask,
-                  chosenAI.value,
-                  taskCounter.value
-                )
-              }
+                            className='generate-button'
+                            onClick={() => generateAttachment(editedTask, chosenAI.value, taskCounter.value)}
             >
               Generate Attachment(s)
             </button>
           </div>
           {attachments.length > 0 && (
-            <div className="gt-attachment-list-content">
-              <div className="gt-scrollable-list-attachment">
+                        <div className='gt-input-container'>
                 {attachments.map((attachment, index) => (
-                  <div key={index} className="gt-attachment-item">
-                    <p>Description:</p>
+                                <div key={index} className='gt-attributes-container'>
+                                    <div className='gt-attributes'>
+                                        <p className='title'>Description:</p>
                     <textarea
-                      type="text"
+                                            type='text'
                       value={attachment.description}
-                      onChange={(event) =>
-                        handleDescriptionChange(event, index)
-                      }
+                                            onChange={(event) => handleDescriptionChange(event, index)}
                     />
-                    <p>Link:</p>
+                                    </div>
+                                    <div className='gt-attributes'>
+                                        <p className='title'>Link:</p>
                     <textarea
-                      type="text"
+                                            type='text'
                       value={attachment.link}
                       onChange={(event) => handleLinkChange(event, index)}
                     />
                   </div>
+                                </div>
                 ))}
-              </div>
 
               <div>
-                <button onClick={() => saveToDatabase(editedTask, attachments)}>
-                  Save to database
+                                <button className='save-button' onClick={() => saveToDatabase(editedTask, attachments)}>
+                                    Save
                 </button>
               </div>
             </div>

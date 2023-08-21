@@ -75,13 +75,12 @@
     height: 100%;
     padding: 10px 50px 20px;
     display: grid;
-    grid-template-rows: repeat(6, 1fr);
     grid-template-columns: 60% 40%;
     row-gap: 10px;
     column-gap: 20px;
 }
 
-.popup p {
+.confirmation-text {
     margin-bottom: 30px;
 }
 
@@ -555,7 +554,7 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    color: white;
+    color: var(--light-gray);
     font-weight: bold;
     background-color: var(--dark-gray);
 }
@@ -566,13 +565,13 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    color: white;
+    color: var(--light-gray);
     font-weight: bold;
     background-color: var(--dark-gray);
 }
 
 .validation-message {
-    color: rgb(241, 80, 80);
+    color: var(--important);
 }
 
 .invalid-btn {
@@ -615,4 +614,9 @@
 
 .member .delete-icon:hover {
     color: var(--important);
+}
+
+.agi-popup {
+    height: fit-content;
+    padding: 40px 20px;
 }

@@ -137,7 +137,7 @@ const Teams = () => {
                 }
             });
             const tempData = response.data.teams;
-            console.log(tempData);
+            console.log(response.data.teams);
             setTeams(tempData);
         }
         catch (error) {
@@ -148,13 +148,30 @@ const Teams = () => {
     return (
         <div className="content">
             {teams.length === 0 ? (
-                <Loader />
+                <div>
+                    No teams yet
+                    <div
+                        className='board add-board'
+                        onClick={() => addTeam()}
+                    >
+                        <span>Add new team</span>
+                    </div>
+                    {manageIsClicked &&
+                        <TeamManager teamData={[]} onClose={addTeam} ChangeTeamName={ChangeTeamName} addTeam={AddTeam} />
+                    }
+                </div>
             ) : (
                 <div className="scrollable-container">
                     {teams.map((team, index) => (
                         <TeamCard key={index} data={team} deleteUserFromTeam={deleteUserFromTeam} ChangeTeamName={ChangeTeamName} AddUsers={AddUsers} DeleteTeam={DeleteTeam} />
                     ))}
-                    <button onClick={addTeam}>Add team</button>
+
+                    <div
+                        className='board add-board'
+                        onClick={() => addTeam()}
+                    >
+                        <span>Add new team</span>
+                    </div>
                     {manageIsClicked &&
                         <TeamManager teamData={[]} onClose={addTeam} ChangeTeamName={ChangeTeamName} addTeam={AddTeam} />
                     }

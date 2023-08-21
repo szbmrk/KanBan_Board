@@ -6,14 +6,24 @@ import AddUser from './AddUser';
 import Loader from '../Loader';
 
 const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTeam }) => {
+  const user_id = parseInt(sessionStorage.getItem('user_id'));
+  const team_member = JSON.parse(sessionStorage.getItem('permissions'));
+  const ownPermissions = team_member.teams.filter(team => team.team_id === data.team_id).map(permission => permission.permission_data);
 
   const [manageIsClicked, setManage] = useState(false);
   const [deleteIsClicked, setDelete] = useState(false);
   const [addIsClicked, setAdd] = useState(false);
   const [teamData, setTeamData] = useState([]);
+  const [createdBy, setCreatedBy] = useState('');
 
   useEffect(() => {
-    console.log(data);
+    document.title = 'Teams';
+    for (let i = 0; i < data.team_members.length; i++) {
+      if (data.team_members[i].user_id === data.created_by) {
+        setCreatedBy(data.team_members[i].user.username);
+        break;
+      }
+    }
   }, []);
 
   function ManageTeam() {
@@ -35,12 +45,10 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
         <div className="card">
           <div className="card-header">
             <h2>{data.name}</h2>
-            <p>Created by User {data.created_by}</p>
           </div>
           <div className="card-content">
+            <h3>Created by: {createdBy}</h3>
             <p>Created at: {data.created_at}</p>
-            <p>Team ID: {data.team_id}</p>
-            <p>Parent Team ID: {data.parent_team_id !== null ? data.parent_team_id : 'None'}</p>
             <h3>Team Members:</h3>
             <table>
               <tbody>
@@ -48,13 +56,14 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
 
                   <tr>
                     <td>
-                      <li key={index}>{member.user.username}</li>
+                      <h3 key={index}>{member.user.username}</h3>
                     </td>
                     <td>
-                      {data.created_by !== member.user.user_id &&
-                        <button onClick={() => deleteUserFromTeam(data.team_id, member.user.user_id)}>
-                          Remove user from team
-                        </button>}
+                      {data.created_by !== member.user.user_id && ownPermissions.some(permission => permission.id === 4) &&
+                        (
+                          < button className='delete_button' onClick={() => deleteUserFromTeam(data.team_id, member.user.user_id)}>
+                            Remove user from team
+                          </button>)}
                     </td>
 
                   </tr>
@@ -62,7 +71,25 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
               </tbody>
             </table>
 
-            <div><button id='manageButton' onClick={ManageTeam}>Change team name</button><button onClick={handleDeleteButton}>Delete Team</button><button onClick={handleAddButton}>Add Users</button></div>
+            <div>
+              {ownPermissions.some(permission => permission.id === 3) &&
+                (
+                  <div>
+                    <button className='manageButton' onClick={ManageTeam}>
+                      Change team name
+                    </button>
+                    <button className='delete_button' onClick={handleDeleteButton}>
+                      Delete Team
+                    </button>
+                  </div>
+                )
+              }
+              {ownPermissions.some(permission => permission.id === 4) &&
+                <button className='manageButton' onClick={handleAddButton}>
+                  Add Users
+                </button>
+              }
+            </div>
           </div>
           {manageIsClicked &&
             <TeamManager teamData={teamData} onClose={ManageTeam} ChangeTeamName={ChangeTeamName} />
@@ -76,8 +103,9 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
             <AddUser teamID={data.team_id} OnClose={handleAddButton} AddUsers={AddUsers} />
           }
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 };
 

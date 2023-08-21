@@ -9,9 +9,12 @@ import {
   faXmark,
   faWandMagicSparkles,
   faEllipsis,
+  faShare,
+  faCog,
 } from "@fortawesome/free-solid-svg-icons";
 import "../../styles/board.css";
 import "../../styles/popup.css";
+import "../../styles/titlebar.css";
 import { useParams } from "react-router";
 import axios from "../../api/axios";
 import Error from "../Error";
@@ -42,7 +45,6 @@ const Board = () => {
   const [columnNewTitle, setColumnNewTitle] = useState("");
   const [showGenerateTaskWithAGIPopup, setShowGenerateTaskWithAGIPopup] =
     useState(false);
-  const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
   const [
     showGenerateAttachmentLinkWithAGIPopup,
     setShowGenerateAttachmentLinkWithAGIPopup,
@@ -53,10 +55,13 @@ const Board = () => {
     y: 0,
   });
   const [showIconContainer, setShowIconContainer] = useState(false);
+  const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
   const [isHoveredAI, setIsHoveredAI] = useState(false);
   const [isHoveredX, setIsHoveredX] = useState(false);
   const [columnIndex, setColumnIndex] = useState(null);
   const [priorities, setPriorities] = useState([]);
+
+  const [ownPermissions, setOwnPermissions] = useState([]);
   const [craftedPrompts, setCraftedPrompts] = useState([]);
   const [craftedPromptsBoard, setCraftedPromptsBoard] = useState([]);
   const [craftedPromptsTask, setCraftedPromptsTask] = useState([]);
@@ -66,10 +71,12 @@ const Board = () => {
   const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
 
   const token = sessionStorage.getItem("token");
+  const team_member = JSON.parse(sessionStorage.getItem("team_members"));
 
   useEffect(() => {
     document.title = "Board";
     fetchBoardData();
+    //setOwnPermissions(team_member.teams.filter(team => team.team_id === data.team_id).map(permission => permission.permission_data));
   }, []);
 
   useEffect(() => {
@@ -94,6 +101,7 @@ const Board = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(prioritiesResponse);
       setPriorities(prioritiesResponse.data.priorities);
 
       const response = await axios.get(`/boards/${board_id}`, {
@@ -1006,6 +1014,37 @@ const Board = () => {
     }
   };
 
+  const handleAddMember = async (task_id, column_id, member_id) => {
+    try {
+      const response = await axios.post(
+        `/tasks/${task_id}/members`,
+        { user_id: member_id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const newMember = response.data.member;
+      const newBoardData = [...board.columns];
+      const columnIndex = newBoardData.findIndex(
+        (column) => column.column_id === column_id
+      );
+      const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
+      task.members.push(newMember);
+      setBoard({ ...board, columns: newBoardData });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleDeleteMember = async (task_id, column_id, member_id) => {
+    try {
+      const response = await axios.delete(
+        `/tasks/${task_id}/members/${member_id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
     <>
       {permission === false ? (
@@ -1024,11 +1063,32 @@ const Board = () => {
             </div>
           ) : (
             <div className="content">
-              <h1>{board.name}</h1>
-              <button onClick={() => openCraftPromptPopup()}>
-                Craft prompt
-              </button>
+              <div className="title-bar">
+                <h1 className="title-name">{board.name}</h1>
+                <div className="title-bar-buttons">
+                  <ul>
+                    <li>
+                      <span
+                        className="ai-button"
+                        onMouseEnter={() => setIsHoveredAI(true)}
+                        onMouseLeave={() => setIsHoveredAI(false)}
+                        onClick={() => {
+                          openCraftPromptPopup();
+                        }}
+                        style={{
+                          color: isHoveredAI
+                            ? "var(--magic)"
+                            : "var(--dark-gray)",
+                        }}
+                      >
+                        {aiIcon}
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
               <div className="div-container">
+                {" "}
                 {board.columns.map((column, index) => (
                   <Column
                     key={index}
@@ -1081,14 +1141,6 @@ const Board = () => {
                           >
                             <h2 className="card-title">{column.name}</h2>
                           </div>
-                          {/*index === 0 && (
-                                                        <span
-                                                            className='ai-button generate-task-button'
-                                                            onClick={() => openGenerateTaskWithAGIPopup(null)}
-                                                        >
-                                                            {aiIcon}
-                                                        </span>
-                                                    )*/}
                           <div
                             className="options"
                             style={{ visibility: "visible" }}
@@ -1176,12 +1228,14 @@ const Board = () => {
                     </div>
                   </Column>
                 ))}
-                <div
-                  className="card-container addbtn-column"
-                  onClick={handleAddColumn}
-                >
-                  {plusIcon} Add new column
-                </div>
+                {
+                  <div
+                    className="card-container addbtn-column"
+                    onClick={handleAddColumn}
+                  >
+                    {plusIcon} Add new column
+                  </div>
+                }
               </div>
             </div>
           )}
@@ -1219,8 +1273,8 @@ const Board = () => {
                 </div>
                 {craftedPromptsBoard.map((craftedPrompt, index) => (
                   <div
-                    key={index}
                     className="option"
+                    key={index}
                     onMouseEnter={() => setIsHoveredAI(true)}
                     onMouseLeave={() => setIsHoveredAI(false)}
                     onClick={() =>
@@ -1304,6 +1358,8 @@ const Board = () => {
           modifyDeadline={handleModifyDeadline}
           addAttachment={handleAddAttachment}
           deleteAttachment={handleDeleteAttachment}
+          addMember={handleAddMember}
+          deleteMember={handleDeleteMember}
           tags={inspectedTask.tags}
         />
       )}

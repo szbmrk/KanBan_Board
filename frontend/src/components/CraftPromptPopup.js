@@ -79,48 +79,59 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
 
   return (
     <div className="overlay">
-      <div className="popup">
+      <div className="popup agi-popup">
         <span className="close-btn" onClick={onCancel}>
           {closeIcon}
         </span>
         <div className="gt-popup-content">
           <div className="gt-input-container">
-            <p>Give this prompt a title:</p>
-            <input
-              type="text"
-              placeholder="Enter the title of this prompt"
-              ref={titleInputRef}
-            />
-            <p>Enter your own prompt:</p>
-            <input
-              type="text"
-              placeholder="Enter your own prompt"
-              ref={promptInputRef}
-            />
-            <p>Choose an action for the prompt:</p>
-            <Dropdown
-              options={actionOptions}
-              value={chosenAction}
-              onChange={(selectedOption) => setChosenAction(selectedOption)}
-            />
-            <p>Choose an AI you want to fulfill your prompt with:</p>
-            <Dropdown
-              options={aiOptions}
-              value={chosenAI}
-              onChange={(selectedOption) => setChosenAI(selectedOption)}
-            />
-            <button
-              onClick={() =>
-                SavePrompt(
-                  titleInputRef.current.value,
-                  promptInputRef.current.value,
-                  chosenAI.value,
-                  chosenAction.value
-                )
-              }
-            >
-              Save prompt
-            </button>
+            <div className="gt-input-title">
+              <p>Give this prompt a title:</p>
+              <input
+                type="text"
+                placeholder="Enter the title of this prompt"
+                ref={titleInputRef}
+              />
+            </div>
+            <div className="gt-input-prompt">
+              <p>Enter your own prompt:</p>
+              <input
+                type="text"
+                placeholder="Enter your own prompt"
+                ref={promptInputRef}
+              />
+            </div>
+            <div className="gt-action-buttons">
+              <div className="dropdown-container">
+                <p>Choose an action for the prompt:</p>
+                <Dropdown
+                  options={actionOptions}
+                  value={chosenAction}
+                  onChange={(selectedOption) => setChosenAction(selectedOption)}
+                />
+              </div>
+              <div className="dropdown-container">
+                <p>Choose an AI you want to fulfill your prompt with:</p>
+                <Dropdown
+                  options={aiOptions}
+                  value={chosenAI}
+                  onChange={(selectedOption) => setChosenAI(selectedOption)}
+                />
+              </div>
+              <button
+                className="generate-button"
+                onClick={() =>
+                  SavePrompt(
+                    titleInputRef.current.value,
+                    promptInputRef.current.value,
+                    chosenAI.value,
+                    chosenAction.value
+                  )
+                }
+              >
+                Send prompt
+              </button>
+            </div>
           </div>
         </div>
       </div>

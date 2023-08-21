@@ -49,6 +49,7 @@ body {
   background-size: cover;
 }
 .content {
+  position: relative;
   text-align: center;
   margin: 0 auto;
   height: calc(100vh - 50px);

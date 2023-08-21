@@ -28,7 +28,7 @@ const ConfirmationPopup = ({ text, onCancel, onConfirm }) => {
                 <span className='close-btn' onClick={onCancel}>
                     {closeIcon}
                 </span>
-                <p>Are you sure you want to delete "{text}"?</p>
+                <p className='confirmation-text'>Are you sure you want to delete "{text}"?</p>
                 <div className='button-container'>
                     <button onClick={onCancel}>Cancel</button>
                     <button onClick={onConfirm}>Delete</button>
