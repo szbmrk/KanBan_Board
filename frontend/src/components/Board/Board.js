@@ -779,29 +779,31 @@ const Board = () => {
 
     const handleAddMember = async (task_id, column_id, member_id) => {
         try {
-            const response = await axios.post(`/tasks/${task_id}/members`, { user_id: member_id },
-                { headers: { Authorization: `Bearer ${token}` } });
+            const response = await axios.post(
+                `/tasks/${task_id}/members`,
+                { user_id: member_id },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
             const newMember = response.data.member;
             const newBoardData = [...board.columns];
             const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
             const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
             task.members.push(newMember);
             setBoard({ ...board, columns: newBoardData });
-        }
-        catch (e) {
+        } catch (e) {
             console.error(e);
         }
-    }
+    };
 
     const handleDeleteMember = async (task_id, column_id, member_id) => {
         try {
-            const response = await axios.delete(`/tasks/${task_id}/members/${member_id}`,
-                { headers: { Authorization: `Bearer ${token}` } });
-        }
-        catch (e) {
+            const response = await axios.delete(`/tasks/${task_id}/members/${member_id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+        } catch (e) {
             console.error(e);
         }
-    }
+    };
 
     return (
         <>

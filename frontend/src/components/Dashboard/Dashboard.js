@@ -23,7 +23,7 @@ export default function Dashboard() {
     const permissions = JSON.parse(sessionStorage.getItem('permissions'));
 
     useEffect(() => {
-        document.title = 'Dashboard'
+        document.title = 'Dashboard';
         const user_id = sessionStorage.getItem('user_id');
         if (user_id) {
             setUserID(user_id);
@@ -43,7 +43,11 @@ export default function Dashboard() {
             });
             console.log(response.data);
             setTeams(response.data.teams);
-            setOwnPermissions(permissions.teams.filter(team => team.team_id === response.data.teams[0].team_id).map(permission => permission.permission_data));
+            setOwnPermissions(
+                permissions.teams
+                    .filter((team) => team.team_id === response.data.teams[0].team_id)
+                    .map((permission) => permission.permission_data)
+            );
         } catch (e) {
             console.error(e);
         }
@@ -207,9 +211,9 @@ export default function Dashboard() {
                                                     <Link to={`/board/${board.board_id}`} className='board-title'>
                                                         <p>{board.name}</p>
                                                     </Link>
-                                                    {ownPermissions.some(permission => permission.id === 5) &&
+                                                    {ownPermissions.some((permission) => permission.id === 5) && (
                                                         <span
-                                                            className='delete-board-button'
+                                                            className='delete-button'
                                                             style={{
                                                                 visibility:
                                                                     hoveredBoardId === board.board_id
@@ -222,19 +226,24 @@ export default function Dashboard() {
                                                             }
                                                         >
                                                             {closeIcon}
-                                                        </span>}
-                                                    {ownPermissions.some(permission => permission.id === 5) &&
+                                                        </span>
+                                                    )}
+                                                    {ownPermissions.some((permission) => permission.id === 5) && (
                                                         <span
                                                             className='edit-board-button'
                                                             style={{
                                                                 display:
-                                                                    hoveredBoardId === board.board_id ? 'block' : 'none',
+                                                                    hoveredBoardId === board.board_id
+                                                                        ? 'block'
+                                                                        : 'none',
                                                             }}
-                                                            onClick={() => openAddBoardPopup(team.team_id, board.board_id)}
+                                                            onClick={() =>
+                                                                openAddBoardPopup(team.team_id, board.board_id)
+                                                            }
                                                         >
                                                             {pencilIcon}
                                                         </span>
-                                                    }
+                                                    )}
                                                 </div>
                                             ))}
                                             <div
@@ -277,8 +286,7 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
     useEffect(() => {
         if (boardId) {
             fetchDashboardData();
-        }
-        else {
+        } else {
             setIsLoading(false);
         }
     }, [boardId]);
@@ -305,8 +313,10 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
     };
 
     return (
-        <div className='content'>
-            {isLoading ? <Loader /> :
+        <>
+            {isLoading ? (
+                <Loader />
+            ) : (
                 <form className='popup-content-form-mini' onSubmit={handleSave}>
                     <span className='close-btn' onClick={onClose}>
                         {closeIcon}
@@ -320,11 +330,9 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
                         className='popup-input-mini'
                         required
                     />
-                    <button className='board-save-button'>
-                        Save
-                    </button>
+                    <button className='board-save-button'>Save</button>
                 </form>
-            }
-        </div>
+            )}
+        </>
     );
 };

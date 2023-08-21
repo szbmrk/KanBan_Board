@@ -418,6 +418,7 @@ const Popup = ({
                                                 <span
                                                     onClick={() => handleDeleteMember(member.user_id)}
                                                     className='delete-icon'
+                                                    data-hover='Delete Member'
                                                 >
                                                     {closeIcon}
                                                 </span>

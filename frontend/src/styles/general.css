@@ -62,6 +62,42 @@ body {
   border-bottom: 1px solid var(--light-gray);
 }
 
+.delete-icon {
+    position: absolute;
+    top: 15px;
+    right: 0;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+
+.delete-icon:hover {
+    color: var(--important);
+}
+
+.delete-icon::before {
+    content: attr(data-hover);
+    position: absolute;
+    top: 0;
+    left: 20px;
+    padding: 5px;
+    width: max-content;
+    font-family: var(--basic-font);
+    font-size: 0.8em;
+    color: var(--light-gray);
+    background-color: var(--scrollbar-hover);
+    transition: opacity 0.3s ease;
+    border-radius: 5px;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.delete-icon:hover::before {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease;
+}
+
+
 ::selection {
   background: var(--dark-gray);
   color: var(--light-gray);

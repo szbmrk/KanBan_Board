@@ -586,11 +586,11 @@
 .member-container {
     width: 90%;
     margin-left: 10%;
-    overflow-y: auto;
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
     flex-direction: column;
+    gap: 10px;
 }
 
 .member {
@@ -603,17 +603,6 @@
 
 .member p {
     margin: 0;
-}
-
-.member .delete-icon {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    cursor: pointer;
-}
-
-.member .delete-icon:hover {
-    color: var(--important);
 }
 
 .agi-popup {

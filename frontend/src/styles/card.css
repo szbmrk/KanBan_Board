@@ -74,11 +74,11 @@
     animation: rotate 0.5s;
 }
 
-.delete-button {
+.delete-task-button {
     color: var(--light-gray);
 }
 
-.delete-button:hover {
+.delete-task-button:hover {
     color: var(--important);
 }
 
