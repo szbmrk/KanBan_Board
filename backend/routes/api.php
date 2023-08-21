@@ -17,7 +17,7 @@ use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\PromptCraftController;
-
+use App\Http\Controllers\TeamMemberRoleController;
 use App\Http\Controllers\NotificationController;
 
 use App\Http\Controllers\TeamManagementController;
