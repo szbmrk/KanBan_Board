@@ -195,7 +195,7 @@ export default function Dashboard() {
             }
         });
         permissions.map(permission => {
-            if (permission.name === "board_manager" && permission.permission_data.board_id === board_id) {
+            if (permission.name === "board_manager" /*&& permission.permission_data.board_id === board_id*/) {
                 response = true;
             }
         });
