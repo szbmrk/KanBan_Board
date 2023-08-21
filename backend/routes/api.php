@@ -23,6 +23,8 @@ use App\Http\Controllers\NotificationController;
 
 use App\Http\Controllers\UserTasksController;
 use App\Http\Controllers\BardController;
+use App\Http\Controllers\ChatGPTController;
+
 /*
 |--------------------------------------------------------------------------
 
@@ -149,6 +151,10 @@ Route::get('/AGI/GenerateAttachmentLink', [AGIController::class, 'GenerateAttach
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_code', [AGIController::class, 'generateCode'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_priority', [AGIController::class, 'generatePriority'])->middleware('api');
 Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::class, 'generatePrioritiesForColumn'])->middleware('api');
+Route::get('/AGI/generate-documentation-task/board/{boardId}/task/{taskId}', [AGIController::class, 'GenerateTaskDocumentationPerTask'])->middleware('api');
+Route::get('/AGI/generate-documentation-board/{boardId}', [AGIController::class, 'GenerateTaskDocumentationPerBoard'])->middleware('api');
+Route::get('/AGI/generate-documentation-column/board/{boardId}/column/{columnId}', [AGIController::class, 'GenerateTaskDocumentationPerColumn'])->middleware('api');
+
 Route::post('/generate-llama-subtasks', [LlamaController::class, 'generateSubtasks']);
 Route::get('/generate-llama-subtasks2', [LlamaController::class, 'testSubtaskParsing']);
 
@@ -160,5 +166,5 @@ Route::post('/boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::cla
 Route::put('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraftController::class, 'updatePrompts'])->middleware('api');
 Route::delete('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraftController::class, 'destroyPrompts'])->middleware('api');
 
-Route::get('/AGI/GenerateTask/CraftedPrompt', [AGIController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
+Route::get('/AGI/GenerateTask/CraftedPrompt', [ChatGPTController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
 
