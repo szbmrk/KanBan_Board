@@ -184,11 +184,10 @@ export default function EditProfile() {
                         <button className='confirm-button' type='submit'>
                             Save
                         </button>
-                        <span className='delete-button' onClick={handleDeleteButton} data-hover='Delete Account'>
-                            {deleteIcon}
-                        </span>
+                        <button className='delete-button' onClick={handleDeleteButton} data-hover='Delete Account'>
+                            Delete Account
+                        </button>
                     </form>
-
                     {deleteIsClicked && <DeleteConfirm OnClose={handleDeleteButton} />}
                 </div>
             )}

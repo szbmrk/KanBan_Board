@@ -81,33 +81,20 @@
 }
 
 .delete-button {
-    position: absolute;
-    top: 15px;
-    right: 0;
-    transform: translate(-50%, -50%);
-}
-
-.delete-button::before {
-    content: attr(data-hover);
-    position: absolute;
-    top: 0;
-    left: 20px;
-    padding: 10px;
-    width: max-content;
-    font-family: var(--basic-font);
-    font-size: 0.8em;
-    color: var(--light-gray);
-    background-color: var(--bg-dark);
-    transition: opacity 0.3s ease;
+    width: 100%;
+    margin-top: 20px;
+    padding: 10px 0;
+    border: 1px solid var(--important);
     border-radius: 5px;
-    visibility: hidden;
-    opacity: 0;
+    background: var(--important-hover);
+    color: var(--important);
+    transition: all 0.3s ease;
 }
 
-.delete-button:hover::before {
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.3s ease;
+.delete-button:hover {
+    background: var(--important);
+    border: 1px solid var(--important);
+    color: var(--light-gray);
 }
 
 p {
