@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Carbon;
+use App\Models\Task;
+use App\Models\Board;
+use App\Helpers\ExecutePythonScript;
+
 
 class LlamaController extends Controller
 {
@@ -137,5 +141,102 @@ class LlamaController extends Controller
         $response = "\n Sure\n!\n Here\n are\n three\n Kan\nban\n tasks\n in\n JSON\n structure\n based\n on\n the\n task\n \"\nCreate\n drag\n and\n drop\n function\n on\n backend\n\":\n\n\n\n\n[\n\n\n\n {\n\n\n  \n \"\ntitle\n\":\n \"\nDrag\n and\n Drop\n Function\n Im\nplementation\n\",\n\n\n  \n \"\ndescription\n\":\n \"\nIm\nplement\n a\n drag\n and\n drop\n functionality\n on\n the\n backend\n to\n allow\n users\n to\n easily\n upload\n files\n and\n move\n them\n between\n lists\n.\",\n\n\n  \n \"\ndue\n_\ndate\n\":\n \"\n2\n0\n2\n3\n-\n0\n8\n-\n1\n1\n\",\n\n\n  \n \"\ntags\n\":\n [\"\nbackend\n development\n\",\n \"\ndrag\n and\n drop\n functionality\n\",\n \"\nfile\n upload\n\"]\n\n\n\n },\n\n\n\n {\n\n\n  \n \"\ntitle\n\":\n \"\nAPI\n Integr\nation\n for\n Drag\n and\n Drop\n\",\n\n\n  \n \"\ndescription\n\":\n \"\nIntegr\nate\n the\n drag\n and\n drop\n functionality\n with\n the\n API\n to\n enable\n se\nam\nless\n communication\n between\n the\n front\nend\n and\n backend\n.\",\n\n\n  \n \"\ndue\n_\ndate\n\":\n \"\n2\n0\n2\n3\n-\n0\n8\n-\n1\n8\n\",\n\n\n  \n \"\ntags\n\":\n [\"\nAPI\n integration\n\",\n \"\ndrag\n and\n drop\n functionality\n\",\n \"\nbackend\n development\n\"]\n\n\n\n },\n\n\n\n {\n\n\n  \n \"\ntitle\n\":\n \"\nTest\ning\n and\n Debug\nging\n for\n Drag\n and\n Drop\n\",\n\n\n  \n \"\ndescription\n\":\n \"\nTest\n and\n debug\n the\n implemented\n drag\n and\n drop\n functionality\n to\n ensure\n it\n works\n correctly\n and\n fixes\n any\n issues\n that\n arise\n.\",\n\n\n  \n \"\ndue\n_\ndate\n\":\n \"\n2\n0\n2\n3\n-\n0\n9\n-\n0\n1\n\",\n\n\n  \n \"\ntags\n\":\n [\"\ntesting\n and\n debugging\n\",\n \"\ndrag\n and\n drop\n functionality\n\",\n \"\nbackend\n development\n\"]\n\n\n\n }\n\n\n]\n\n\n\n\nNote\n:\n The\n due\n dates\n are\n based\n on\n the\n assumption\n that\n the\n task\n starts\n on\n August\n \n1\n1\n,\n \n2\n0\n2\n3\n.\n";
         
         return LlamaController::parseSubtaskResponse($response);
+    }
+
+    public static function GenerateTaskDocumentationPerTask($boardId,$taskId)
+    {
+        $user = auth()->user();
+        if(!$user){
+            return response()->json([
+                'error' => 'Unauthorized!',
+            ]);
+        }
+
+        $task = Task::find($taskId);
+        if(!$task){
+            return response()->json([
+                'error' => 'Task not found!',
+            ]);
+        }
+        $board = Board::where('board_id', $boardId)->first();
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+        
+        $prompt = "Generate documentation or a longer description for the task with the following title: {$task->title}, description: {$task->description}.";
+        $path = env('PYTHON_SCRIPT_PATH');
+        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        $cleanData = trim($response);
+
+        return [
+            'response' => $cleanData
+        ];
+    }
+
+    public static function GenerateTaskDocumentationPerBoard($boardId)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json([
+                'error' => 'Unauthorized!',
+            ]);
+        }
+
+        $tasks = Task::where('board_id', $boardId)->get();
+        if ($tasks->isEmpty()) {
+            return response()->json([
+                'error' => 'No tasks found for the given board!',
+            ]);
+        }
+
+        $allTaskDescriptions = '';
+        foreach ($tasks as $task) {
+            $allTaskDescriptions .= "Task title: {$task->title}, description: {$task->description}. ";
+        }
+
+        $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
+        $path = env('PYTHON_SCRIPT_PATH');
+        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        $cleanData = trim($response);
+
+        return [
+            'response' => $cleanData
+        ];
+    }
+
+    public static function GenerateTaskDocumentationPerColumn($boardId, $columnId)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json([
+                'error' => 'Unauthorized!',
+            ]);
+        }
+
+        $tasks = Task::where('column_id', $columnId)->get();
+        if ($tasks->isEmpty()) {
+            return response()->json([
+                'error' => 'No tasks found for the given column!',
+            ]);
+        }
+
+        $board = Board::where('board_id', $boardId)->first();
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+
+        $allTaskDescriptions = '';
+        foreach ($tasks as $task) {
+            $allTaskDescriptions .= "Task title: {$task->title}, description: {$task->description}. ";
+        }
+
+        $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
+        $path = env('PYTHON_SCRIPT_PATH');
+        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        $cleanData = trim($response);
+
+        return [
+            'response' => $cleanData
+        ];
     }
 }

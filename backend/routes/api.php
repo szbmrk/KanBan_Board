@@ -23,6 +23,9 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TeamManagementController;
 use App\Http\Controllers\UserTasksController;
 use App\Http\Controllers\BardController;
+use App\Http\Controllers\ChatGPTController;
+use App\Http\Controllers\AGIAnswersController;
+
 /*
 |--------------------------------------------------------------------------
 
@@ -155,6 +158,10 @@ Route::get('/AGI/GenerateAttachmentLink', [AGIController::class, 'GenerateAttach
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_code', [AGIController::class, 'generateCode'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_priority', [AGIController::class, 'generatePriority'])->middleware('api');
 Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::class, 'generatePrioritiesForColumn'])->middleware('api');
+Route::get('/AGI/generate-documentation-task/board/{boardId}/task/{taskId}', [AGIController::class, 'GenerateTaskDocumentationPerTask'])->middleware('api');
+Route::get('/AGI/generate-documentation-board/{boardId}', [AGIController::class, 'GenerateTaskDocumentationPerBoard'])->middleware('api');
+Route::get('/AGI/generate-documentation-column/board/{boardId}/column/{columnId}', [AGIController::class, 'GenerateTaskDocumentationPerColumn'])->middleware('api');
+
 Route::post('/generate-llama-subtasks', [LlamaController::class, 'generateSubtasks']);
 Route::get('/generate-llama-subtasks2', [LlamaController::class, 'testSubtaskParsing']);
 
@@ -166,5 +173,11 @@ Route::put('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraftCo
 Route::delete('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraftController::class, 'destroyPrompts'])->middleware('api');
 Route::get('/boards/{boardId}/AGI/crafted-prompts/{craftedPromptId}', [PromptCraftController::class, 'usePrompts'])->middleware('api');
 
-Route::get('/AGI/GenerateTask/CraftedPrompt', [AGIController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
+Route::get('/AGI/GenerateTask/CraftedPrompt', [ChatGPTController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
 
+Route::get('/AGI/answers/boards/{boardId}', [AGIAnswersController::class, 'index'])->middleware('api');
+Route::post('/AGI/answers/boards/{boardId}', [AGIAnswersController::class, 'storePerBoard'])->middleware('api');
+Route::post('/AGI/answers/boards/{boardId}/task/{task_id}', [AGIAnswersController::class, 'storePerTask'])->middleware('api');
+Route::post('/AGI/answers/boards/{boardId}/column/{column_id}', [AGIAnswersController::class, 'storePerColumn'])->middleware('api');
+Route::put('/AGI/answers/boards/{boardId}/task/{task_id}/answer/{answer_id}', [AGIAnswersController::class, 'update'])->middleware('api');
+Route::delete('/AGI/boards/{boardId}/answers/{answerId}', [AGIAnswersController::class, 'destroy'])->middleware('api');
