@@ -12,6 +12,28 @@ const AuthProvider = (props) => {
         sessionStorage.setItem('user_id', data.user.user_id);
         sessionStorage.setItem('username', data.user.username);
         sessionStorage.setItem('email', data.user.email);
+
+        let team_member = data.user.team_members;
+        let roles = { general_role: [], teams: [] };
+        for (let i = 0; i < team_member.length; i++) {
+            if (team_member[i].team_id === null) {
+                for (let j = 0; j < team_member[i].roles.length; j++) {
+                    for (let k = 0; k < team_member[i].roles[j].permissions.length; k++)
+                        roles.general_role.push(team_member[i].roles[j].permissions[k]);
+                }
+            }
+            else {
+                for (let j = 0; j < team_member[i].roles.length; j++) {
+                    for (let k = 0; k < team_member[i].roles[j].permissions.length; k++) {
+                        roles.teams.push({ team_id: team_member[i].team_id, permission_data: team_member[i].roles[j].permissions[k] });
+                    }
+                }
+            }
+        }
+
+
+        console.log(roles);
+        sessionStorage.setItem('permissions', JSON.stringify(roles));
         setIsLoggedIn(true);
         navigate('/dashboard');
     };
