@@ -302,7 +302,7 @@ const Popup = ({
                                         <h3>Tags:</h3>
                                     </div>
                                     <div className='tags'>
-                                        <TagDropdown tags={tags} allTags={boardTags}></TagDropdown>
+                                        <TagDropdown tags={task.tags} allTags={boardTags}></TagDropdown>
                                         <span className='addbtn-tag'>{plusIcon}</span>
                                     </div>
                                 </>
