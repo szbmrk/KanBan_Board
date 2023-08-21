@@ -43,7 +43,7 @@ export default function Dashboard() {
             const permissions = JSON.parse(sessionStorage.getItem('permissions'));
             teamData.map((team) => {
                 const newTeam = team;
-                newTeam.permissions = permissions.teams.filter(permission => permission.team_id === team.team_id).map(permission => permission.permission_data);
+                newTeam.permissions = permissions.teams.filter(permission => permission.team_id === team.team_id);
                 return newTeam;
             });
             console.log(teamData);
