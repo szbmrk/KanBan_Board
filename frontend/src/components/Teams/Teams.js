@@ -3,10 +3,13 @@ import axios from "../../api/axios";
 import TeamCard from "./TeamCard";
 import TeamManager from "./TeamManager";
 import Loader from "../Loader";
+import { SetRoles } from "../../roles/Roles";
 
 const Teams = () => {
     const token = sessionStorage.getItem('token');
     const user_id = sessionStorage.getItem('user_id');
+    const [team_member, setTeamMember]=useState(JSON.parse(sessionStorage.getItem('permissions')));
+  
 
     const [teams, setTeams] = useState([]);
     const [manageIsClicked, setManage] = useState(false);
@@ -15,6 +18,16 @@ const Teams = () => {
         document.title = 'Teams'
         getTeams();
     }, []);
+
+    useEffect(() => {
+        ResetRoles();
+    }, [teams]);
+
+    async function ResetRoles() {
+        await SetRoles(token);
+        setTeamMember(JSON.parse(sessionStorage.getItem('permissions')));
+        console.log('x');
+    }
 
     function addTeam() {
         setManage(!manageIsClicked);
@@ -48,7 +61,6 @@ const Teams = () => {
                     },
                 }
             );
-            console.log(response);
             const newTeamData = teams.map((team) => {
                 if (team.team_id === team_id) {
                     team.team_members = [...team.team_members, ...response.data.added_members];
@@ -76,6 +88,7 @@ const Teams = () => {
             newTeamData.push(response.data.team);
             console.log(newTeamData);
             setTeams(newTeamData);
+            SetRoles(token);
         } catch (error) {
             console.log(error.response);
         }
@@ -163,7 +176,7 @@ const Teams = () => {
             ) : (
                 <div className="scrollable-container">
                     {teams.map((team, index) => (
-                        <TeamCard key={index} data={team} deleteUserFromTeam={deleteUserFromTeam} ChangeTeamName={ChangeTeamName} AddUsers={AddUsers} DeleteTeam={DeleteTeam} />
+                        <TeamCard key={index} data={team} deleteUserFromTeam={deleteUserFromTeam} ChangeTeamName={ChangeTeamName} AddUsers={AddUsers} DeleteTeam={DeleteTeam} team_member={team_member} />
                     ))}
 
                     <div

@@ -5,11 +5,9 @@ import DeleteConfirm from './DeleteConfirm';
 import AddUser from './AddUser';
 import Loader from '../Loader';
 
-const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTeam }) => {
+const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTeam, team_member }) => {
   const user_id = parseInt(sessionStorage.getItem('user_id'));
-  const team_member = JSON.parse(sessionStorage.getItem('permissions'));
   const ownPermissions = team_member.teams.filter(team => team.team_id === data.team_id).map(permission => permission.permission_data);
-
   const [manageIsClicked, setManage] = useState(false);
   const [deleteIsClicked, setDelete] = useState(false);
   const [addIsClicked, setAdd] = useState(false);

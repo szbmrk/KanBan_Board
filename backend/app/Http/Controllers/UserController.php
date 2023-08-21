@@ -158,4 +158,18 @@ class UserController extends Controller
 
         return response()->json(['message' => 'User deleted successfully'], 200);
     }
+
+    public function showPermissions()
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $roles = $user->getRoles();
+            $permissions = $user->getPermissions(); 
+
+        return response()->json(['user' => $user]);
+    }
 }
