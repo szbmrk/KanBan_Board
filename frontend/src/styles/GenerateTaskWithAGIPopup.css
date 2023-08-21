@@ -108,6 +108,14 @@
   color: var(--light-gray);
 }
 
+.dropdown-numbers .Dropdown-control {
+width: max-content;
+}
+
+.dropdown-AGI  .Dropdown-control {
+width: 100px;
+}
+
 .Dropdown-root .Dropdown-menu {
   border: 1px solid var(--light-gray);
   border-radius: 5px;
