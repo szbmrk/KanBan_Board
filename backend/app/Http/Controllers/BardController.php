@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\LlamaController;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
+use App\Models\Board;
 
 class BardController extends Controller
 {
@@ -114,6 +115,104 @@ class BardController extends Controller
         return $parsedData;
     }
 
+
+    public static function GenerateTaskDocumentationPerTask($boardId,$taskId)
+    {
+        $user = auth()->user();
+        if(!$user){
+            return response()->json([
+                'error' => 'Unauthorized!',
+            ]);
+        }
+
+        $task = Task::find($taskId);
+        if(!$task){
+            return response()->json([
+                'error' => 'Task not found!',
+            ]);
+        }
+        $board = Board::where('board_id', $boardId)->first();
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+        
+        $prompt = "Generate documentation or a longer description for the task with the following title: {$task->title}, description: {$task->description}.";
+        $path = env('PYTHON_SCRIPT_PATH');
+        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        $cleanData = trim($response);
+
+        return [
+            'response' => $cleanData
+        ];
+    }
+
+    public static function GenerateTaskDocumentationPerBoard($boardId)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json([
+                'error' => 'Unauthorized!',
+            ]);
+        }
+
+        $tasks = Task::where('board_id', $boardId)->get();
+        if ($tasks->isEmpty()) {
+            return response()->json([
+                'error' => 'No tasks found for the given board!',
+            ]);
+        }
+
+        $allTaskDescriptions = '';
+        foreach ($tasks as $task) {
+            $allTaskDescriptions .= "Task title: {$task->title}, description: {$task->description}. ";
+        }
+
+        $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
+        $path = env('PYTHON_SCRIPT_PATH');
+        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        $cleanData = trim($response);
+
+        return [
+            'response' => $cleanData
+        ];
+    }
+
+    public static function GenerateTaskDocumentationPerColumn($boardId, $columnId)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json([
+                'error' => 'Unauthorized!',
+            ]);
+        }
+
+        $tasks = Task::where('column_id', $columnId)->get();
+        if ($tasks->isEmpty()) {
+            return response()->json([
+                'error' => 'No tasks found for the given column!',
+            ]);
+        }
+
+        $board = Board::where('board_id', $boardId)->first();
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+
+        $allTaskDescriptions = '';
+        foreach ($tasks as $task) {
+            $allTaskDescriptions .= "Task title: {$task->title}, description: {$task->description}. ";
+        }
+
+        $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
+        $path = env('PYTHON_SCRIPT_PATH');
+        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        $cleanData = trim($response);
+
+        return [
+            'response' => $cleanData
+        ];
+    }
+
     public static function CallPythonAndFormatResponseDraft($prompt, $responseCounter)
     {
         $pythonScriptPath = env('BARD_PYTHON_SCRIPT_PATH'); // Path to your Python script
@@ -179,7 +278,6 @@ class BardController extends Controller
 
         return $parsedData;
     }
-
 
 
 }

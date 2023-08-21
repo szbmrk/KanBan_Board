@@ -51,4 +51,9 @@ class Board extends Model
     {
         return $this->hasManyThrough(TeamMember::class, Team::class);
     }
+
+    public function agiAnswers()
+    {
+        return $this->hasMany(AGIAnswers::class, 'board_id');
+    }
 }
