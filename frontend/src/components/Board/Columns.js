@@ -53,7 +53,7 @@ export const Column = ({
         <div
             className='column'
             ref={(node) => drag(drop(node))}
-            style={{ opacity, display, zIndex }}
+            style={{ opacity, display, zIndex: zIndex }}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
         >
