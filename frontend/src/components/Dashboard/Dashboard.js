@@ -265,7 +265,7 @@ export default function Dashboard() {
                                                         >
                                                             {pencilIcon}
                                                         </span>
-                                                    )}
+                                                    }
                                                 </div>
                                             ))}
                                             <div
