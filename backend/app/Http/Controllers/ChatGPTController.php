@@ -12,6 +12,7 @@ use App\Helpers\ExecutePythonScript;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\LlamaController;
+use App\Models\Board;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 
@@ -241,49 +242,62 @@ class ChatGPTController extends Controller
 
     }
 
-    public static function GenerateCodeReviewChatGPT(Request $request) 
+    public static function GenerateCodeReviewOrDocumentation(Request $request, $boardId,$expectedType) 
     {
+        $user = auth()->user();
+        if(!$user)
+        {
+            return response()->json([
+                'error' => 'Unauthorized!',
+            ]);
+        }
+        $board = Board::where('board_id', $boardId)->first();
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        $team = $board->team;
+
+        if (!$team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team.'], 404);
+        }
+
         $code = $request->input('code');
-        $prompt = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''.";
-
-        return ChatGPTController::CallPythonAndFormatResponseCodeReview($prompt);
+        $promptCodeReview = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''.";
+        $promptDocumentation = "Use only UTF-8 chars! Act as an senior programmer and generate a documentation for the following code: '''$code'''.";
+    
+        if ($expectedType === 'Code review') {
+            $prompt = $promptCodeReview;
+        } elseif ($expectedType === 'Documentation') {
+            $prompt = $promptDocumentation;
+        } else {
+            return response()->json([
+                'error' => 'Invalid expected type.',
+            ], 400);
+        }
+    
+        return ChatGPTController::CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType);
     }
+    
+    public static function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType) {
 
-    public static function CallPythonAndFormatResponseCodeReview($prompt) {
         $path = env('PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
-        // Find the position of 'Code review:'
-        $codeReviewPos = strpos($response, 'Code review:');
-        if($codeReviewPos == false) {
-            $codeReviewPos = strpos($response, 'Code Review:');
-        }
-
-        if($codeReviewPos == false) {
-            $codeReviewPos = strpos($response, 'Code Review');
-        }
-
-        if($codeReviewPos == false) {
-            $codeReviewPos = strpos($response, 'Code review');
-        }
-
-        if($codeReviewPos == false) {
-            $codeReviewPos = strpos($response, 'code review');
-        }
+        $foundKeyPhrase = strtolower($expectedType) . ':';
+        $review = substr($response, stripos($response, $foundKeyPhrase) + strlen($foundKeyPhrase));
+        $review = trim($review);
+        return response()->json([
         
-        if ($codeReviewPos !== false) {
-            // Extract everything after 'Code Review:'
-            $codeReview = substr($response, $codeReviewPos + strlen('Code Review:'));
-            // Remove leading and trailing whitespace and newline characters
-            $codeReview = trim($codeReview);
-            //$codeReview = json_encode($codeReview);
-            return response()->json([
-                'codeReview' => $codeReview,
-            ]);
-        } else {
-            return 'Code review not found in the response.';
-        }
-
-        
+            'reviewType' => $expectedType,
+            'review' => $review,
+            
+            ]);    
     }
+        
+    
+    
+
+    
     
 }

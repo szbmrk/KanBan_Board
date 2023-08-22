@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\LlamaController;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
+use app\Models\Board;
 
 class BardController extends Controller
 {
@@ -180,6 +181,57 @@ class BardController extends Controller
         return $parsedData;
     }
 
+    public static function GenerateCodeReviewOrDocumentation(Request $request, $boardId, $expectedType) 
+    {
+        $user = auth()->user();
+        if(!$user)
+        {
+            return response()->json([
+                'error' => 'Unauthorized!',
+            ]);
+        }
+        $board = Board::where('board_id', $boardId)->first();
 
+        if (!$board) {
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        $team = $board->team;
+
+        if (!$team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team.'], 404);
+        }
+
+        $code = $request->input('code');
+        $promptCodeReview = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''.";
+        $promptDocumentation = "Use only UTF-8 chars! Act as an senior programmer and generate a documentation for the following code: '''$code'''.";
+    
+        if ($expectedType === 'Code review') {
+            $prompt = $promptCodeReview;
+        } elseif ($expectedType === 'Documentation') {
+            $prompt = $promptDocumentation;
+        } else {
+            return response()->json([
+                'error' => 'Invalid expected type.',
+            ], 400);
+        }
+    
+        return BardController::CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType);
+    }
+    
+    public static function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType) {
+
+        $path = env('BARD_PYTHON_SCRIPT_PATH');
+        $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
+        $foundKeyPhrase = strtolower($expectedType) . ':';
+        $review = substr($response, stripos($response, $foundKeyPhrase) + strlen($foundKeyPhrase));
+        $review = trim($review);
+        return response()->json([
+        
+            'reviewType' => $expectedType,
+            'review' => $review,
+            
+            ]);    
+    }
 
 }

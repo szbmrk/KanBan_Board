@@ -15,6 +15,7 @@ use App\Http\Controllers\LlamaController;
 use App\Http\Controllers\ChatGPTController;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 
 class AGIController extends Controller
@@ -114,24 +115,27 @@ class AGIController extends Controller
         return $response;
     }
 
-    public function GenerateCodeReview(Request $request)
-    {
-        //without json stingify it will not work!!!
-        $user = auth()->user();
+    public function GenerateCodeReviewOrDocumentation(Request $request, $boardId)
+{
+    //without json stingify it will not work!!!
+    $user = auth()->user();
 
-        $response;
+    $response;
+    $chosenType = $request->header('ChosenType');
+    
         
-        switch($request->header('ChosenAI')) {
-            /* case Str::lower("llama"):
-                $response = LlamaController::GenerateAttachmentLinkLlama($request);
-                break; */
-            case Str::lower("bard"):
-                //$response = BardController::GenerateCodeReviewBard($request);
-                break;
-            default:
-                $response = ChatGPTController::GenerateCodeReviewChatGPT($request);
-                break;
-        }
-        return $response;
+    switch($request->header('ChosenAI')) {
+         case Str::lower("llama"):
+            $response = LlamaController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
+            break;
+        case Str::lower("bard"):
+            $response = BardController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
+            break;
+        default:
+            $response = ChatGPTController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
+            break;
     }
+    return $response;
+}
+
 }

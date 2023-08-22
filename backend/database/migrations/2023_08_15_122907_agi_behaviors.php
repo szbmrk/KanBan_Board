@@ -14,7 +14,7 @@ return new class extends Migration
         
         Schema::create('agi_behaviors', function (Blueprint $table) {
             $table->id('agi_behavior_id')->nullable(false);
-            $table->text('act_as_a')->nullable(false);
+            $table->text('act_as_a')->nullable(true);
             $table->timestamps();
 
         });
