@@ -42,10 +42,13 @@ class TaskTagController extends Controller
         if (!$team->teamMembers->contains('user_id', $user->user_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
+
         $tags = TaskTag::where('board_id', $board_id)
             ->where('task_id', $task_id)
             ->get(); 
-    
+
+        $tags = $tags->sortBy('tag_id');
+        
         return response()->json($tags); 
     }
 
