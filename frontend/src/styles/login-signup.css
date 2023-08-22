@@ -11,6 +11,10 @@
     border: 1px solid var(--dark-gray);
     border-radius: 10px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 40px;
 }
 
 .signup-form h2, 
@@ -20,9 +24,6 @@
     font-size: 36px;
 }
 
-.form-group {
-    margin-bottom: 40px;
-}
 
 .form-group label {
     display: none;
