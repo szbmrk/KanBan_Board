@@ -26,6 +26,7 @@ import GenerateTaskWithAGIPopup from "../GenerateTaskWithAGIPopup";
 import GenerateAttachmentLinkWithAGIPopup from "../GenerateAttachmentLinkWithAGIPopup";
 import CraftPromptPopup from "../CraftPromptPopup";
 import { useNavigate } from "react-router-dom";
+import CodePopup from "../CodePopup";
 
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
@@ -56,6 +57,7 @@ const Board = () => {
   });
   const [showIconContainer, setShowIconContainer] = useState(false);
   const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
+  const [showCodePopup, setShowCodePopup] = useState(false);
   const [isHoveredAI, setIsHoveredAI] = useState(false);
   const [isHoveredX, setIsHoveredX] = useState(false);
   const [columnIndex, setColumnIndex] = useState(null);
@@ -843,6 +845,14 @@ const Board = () => {
     setShowCraftPromptPopup(false);
   };
 
+  const openCodePopup = () => {
+    setShowCodePopup(true);
+  };
+
+  const handleCodeCancel = () => {
+    setShowCodePopup(false);
+  };
+
   const useCrafterPromptOnColumn = async (craftedPrompt, column) => {
     console.log("craftedPrompt");
     console.log(craftedPrompt);
@@ -1082,6 +1092,25 @@ const Board = () => {
                         onMouseLeave={() => setIsHoveredAI(false)}
                         onClick={() => {
                           openCraftPromptPopup();
+                        }}
+                        style={{
+                          color: isHoveredAI
+                            ? "var(--magic)"
+                            : "var(--dark-gray)",
+                        }}
+                      >
+                        {aiIcon}
+                      </span>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li>
+                      <span
+                        className="ai-button"
+                        onMouseEnter={() => setIsHoveredAI(true)}
+                        onMouseLeave={() => setIsHoveredAI(false)}
+                        onClick={() => {
+                          openCodePopup();
                         }}
                         style={{
                           color: isHoveredAI
@@ -1346,6 +1375,9 @@ const Board = () => {
               reloadCraftedPrompts={reloadCraftedPrompts}
               onCancel={handleCraftPromptCancel}
             />
+          )}
+          {showCodePopup && (
+            <CodePopup board_id={board_id} onCancel={handleCodeCancel} />
           )}
           {showGenerateTaskWithAGIPopup && (
             <GenerateTaskWithAGIPopup
