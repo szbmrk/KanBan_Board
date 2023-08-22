@@ -25,7 +25,35 @@ const CodePopup = ({ board_id, onCancel }) => {
 
   const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
-  const handleRunClick = () => {};
+  const handleRunClick = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+
+      console.log("selectedOption");
+      console.log(selectedOption);
+      console.log(inputCode);
+      const res = await axios.get(
+        `/boards/${board_id}/AGI/GenerateCodeReviewOrDocumentation`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            ChosenType: `${selectedOption}`,
+            ChosenAI: `${chosenAI}`,
+            "Content-Type": "application/json",
+          },
+          params: {
+            code: inputCode,
+          },
+        }
+      );
+
+      console.log(res);
+      console.log(res.data.review);
+      setOutput(res.data.review);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <div className="overlay">
@@ -33,38 +61,39 @@ const CodePopup = ({ board_id, onCancel }) => {
         <span className="close-btn" onClick={onCancel}>
           {closeIcon}
         </span>
-        <div className="gt-popup-content"></div>
-        <h2>Coding popup</h2>
+        <div className="gt-popup-content">
+          <h2>Coding popup</h2>
 
-        <p>Your code:</p>
-        <textarea
-          className="code-textarea"
-          value={inputCode}
-          onChange={(e) => setInputCode(e.target.value)}
-        />
+          <p>Your code:</p>
+          <textarea
+            className="code-textarea"
+            value={inputCode}
+            onChange={(e) => setInputCode(e.target.value)}
+          />
 
-        <p>Which AI do you want to use?</p>
-        <Dropdown
-          className="code-dropdown"
-          options={aiOptions}
-          value={chosenAI}
-          onChange={(selectedOption) => setChosenAI(selectedOption)}
-        />
+          <p>Which AI do you want to use?</p>
+          <Dropdown
+            className="code-dropdown"
+            options={aiOptions}
+            value={chosenAI}
+            onChange={(selectedOption) => setChosenAI(selectedOption)}
+          />
 
-        <p>Choose what you would like to do:</p>
-        <Dropdown
-          className="code-dropdown"
-          options={codeOptions}
-          value={selectedOption}
-          onChange={(option) => setSelectedOption(option.value)}
-          placeholder="Select an option"
-        />
+          <p>Choose what you would like to do:</p>
+          <Dropdown
+            className="code-dropdown"
+            options={codeOptions}
+            value={selectedOption}
+            onChange={(option) => setSelectedOption(option.value)}
+            placeholder="Select an option"
+          />
 
-        <button className="run-button" onClick={handleRunClick}>
-          Run
-        </button>
+          <button className="run-button" onClick={handleRunClick}>
+            Run
+          </button>
 
-        <textarea className="output-textarea" value={output} disabled />
+          <textarea className="output-textarea" value={output} disabled />
+        </div>
       </div>
     </div>
   );
