@@ -23,6 +23,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserTasksController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\AgiBehaviorController;
+use App\Http\Controllers\PromptCraftController;
 
 /*
 |--------------------------------------------------------------------------

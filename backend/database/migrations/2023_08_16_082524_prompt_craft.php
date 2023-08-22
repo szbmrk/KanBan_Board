@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('crafted_prompt_id')->nullable(false);
             $table->text('crafted_prompt_title')->nullable(false);
             $table->unsignedBigInteger('board_id')->nullable(false);
-            $table->unsignedBigInteger('agi_behavior_id')->nullable(false);
+            $table->unsignedBigInteger('agi_behavior_id')->nullable(true);
             $table->text('crafted_prompt_text')->nullable(false);
             $table->enum('craft_with', [
                 'CHATGPT', 'LLAMA', 'BARD'
