@@ -9,6 +9,7 @@ import {
   faXmark,
   faWandMagicSparkles,
   faEllipsis,
+  faTrash,
   faShare,
   faCog,
 } from "@fortawesome/free-solid-svg-icons";
@@ -26,9 +27,11 @@ import GenerateTaskWithAGIPopup from "../GenerateTaskWithAGIPopup";
 import GenerateAttachmentLinkWithAGIPopup from "../GenerateAttachmentLinkWithAGIPopup";
 import CraftPromptPopup from "../CraftPromptPopup";
 import { useNavigate } from "react-router-dom";
+import CodePopup from "../CodePopup";
 
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
+export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
 
 const Board = () => {
   const { board_id, column_to_show_id, task_to_show_id } = useParams();
@@ -49,23 +52,24 @@ const Board = () => {
     showGenerateAttachmentLinkWithAGIPopup,
     setShowGenerateAttachmentLinkWithAGIPopup,
   ] = useState(false);
-  const [cardZIndex, setCardZIndex] = useState(1);
+  const [columnZIndex, setColumnZIndex] = useState(1);
   const [iconContainerPosition, setIconContainerPosition] = useState({
     x: 0,
     y: 0,
   });
   const [showIconContainer, setShowIconContainer] = useState(false);
   const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
+  const [showCodePopup, setShowCodePopup] = useState(false);
   const [isHoveredAI, setIsHoveredAI] = useState(false);
   const [isHoveredX, setIsHoveredX] = useState(false);
   const [columnIndex, setColumnIndex] = useState(null);
   const [priorities, setPriorities] = useState([]);
 
-  const [ownPermissions, setOwnPermissions] = useState([]);
   const [craftedPrompts, setCraftedPrompts] = useState([]);
   const [craftedPromptsBoard, setCraftedPromptsBoard] = useState([]);
   const [craftedPromptsTask, setCraftedPromptsTask] = useState([]);
   const navigate = useNavigate();
+  const [hoveredColumnId, setHoveredColumnId] = useState(null);
 
   const checkIcon = <FontAwesomeIcon icon={faCheck} />;
   const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
@@ -843,6 +847,14 @@ const Board = () => {
     setShowCraftPromptPopup(false);
   };
 
+  const openCodePopup = () => {
+    setShowCodePopup(true);
+  };
+
+  const handleCodeCancel = () => {
+    setShowCodePopup(false);
+  };
+
   const useCrafterPromptOnColumn = async (craftedPrompt, column) => {
     console.log("craftedPrompt");
     console.log(craftedPrompt);
@@ -932,7 +944,7 @@ const Board = () => {
     setColumnIndex(columnIndex);
     setIconContainerPosition({ x: newX, y: newY });
     setShowIconContainer(!showIconContainer);
-    cardZIndex === 1 ? setCardZIndex(100) : setCardZIndex(1);
+    columnZIndex === 1 ? setColumnZIndex(100) : setColumnZIndex(1);
   };
 
   const handleModifyPriority = async (task_id, column_id, priority_id) => {
@@ -1022,6 +1034,10 @@ const Board = () => {
     }
   };
 
+  const handleShowCraftPromptPopup = () => {
+    setShowCraftPromptPopup(true);
+  };
+
   const handleAddMember = async (task_id, column_id, member_id) => {
     try {
       const response = await axios.post(
@@ -1053,6 +1069,14 @@ const Board = () => {
     }
   };
 
+  const handleMouseEnterOnColumn = (columnId) => {
+    setHoveredColumnId(columnId);
+  };
+
+  const handleMouseLeaveOnColumn = () => {
+    setHoveredColumnId(null);
+  };
+
   return (
     <>
       {permission === false ? (
@@ -1081,7 +1105,26 @@ const Board = () => {
                         onMouseEnter={() => setIsHoveredAI(true)}
                         onMouseLeave={() => setIsHoveredAI(false)}
                         onClick={() => {
-                          openCraftPromptPopup();
+                          handleShowCraftPromptPopup();
+                        }}
+                        style={{
+                          color: isHoveredAI
+                            ? "var(--magic)"
+                            : "var(--dark-gray)",
+                        }}
+                      >
+                        {aiIcon}
+                      </span>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li>
+                      <span
+                        className="ai-button"
+                        onMouseEnter={() => setIsHoveredAI(true)}
+                        onMouseLeave={() => setIsHoveredAI(false)}
+                        onClick={() => {
+                          openCodePopup();
                         }}
                         style={{
                           color: isHoveredAI
@@ -1096,13 +1139,19 @@ const Board = () => {
                 </div>
               </div>
               <div className="div-container">
-                {" "}
                 {board.columns.map((column, index) => (
                   <Column
                     key={index}
                     divIndex={index}
                     moveColumnFrontend={moveColumnFrontend}
                     moveColumnBackend={moveColumnBackend}
+                    onMouseEnter={() => handleMouseEnterOnColumn(index)}
+                    onMouseLeave={handleMouseLeaveOnColumn}
+                    zIndex={
+                      columnIndex === index
+                        ? columnZIndex
+                        : () => setColumnZIndex(1)
+                    }
                   >
                     <div className="card-container">
                       {editingColumnIndex === index ? (
@@ -1151,15 +1200,17 @@ const Board = () => {
                           </div>
                           <div
                             className="options"
-                            style={{ visibility: "visible" }}
+                            style={{
+                              visibility:
+                                hoveredColumnId === index
+                                  ? "visible"
+                                  : "hidden",
+                              transition: "visibility 0.1s ease",
+                            }}
                           >
                             <span
                               className="dots"
                               onClick={(e) => handleDotsClick(e, index)}
-                              style={{
-                                visibility: "visible",
-                                transition: "visibility 0.1s ease",
-                              }}
                             >
                               {dotsIcon}
                             </span>
@@ -1258,7 +1309,7 @@ const Board = () => {
               className="overlay"
               onClick={() => {
                 setShowIconContainer(false);
-                setCardZIndex(1);
+                setColumnZIndex(1);
               }}
             >
               <div
@@ -1292,7 +1343,6 @@ const Board = () => {
                 </div>
                 {craftedPromptsBoard.map((craftedPrompt, index) => (
                   <div
-                    className="option"
                     key={index}
                     onMouseEnter={() => setIsHoveredAI(true)}
                     onMouseLeave={() => setIsHoveredAI(false)}
@@ -1326,7 +1376,7 @@ const Board = () => {
                       color: isHoveredX ? "var(--important)" : "",
                     }}
                   >
-                    {xMarkIcon}
+                    {trashIcon}
                   </span>
                   <p>Delete Column</p>
                 </div>
@@ -1336,16 +1386,11 @@ const Board = () => {
           {showGenerateAttachmentLinkWithAGIPopup && (
             <GenerateAttachmentLinkWithAGIPopup
               task={inspectedTask}
-              attachmentLinks={inspectedAttachmentLinks}
               onCancel={handleGenerateAttachmentLinkCancel}
             />
           )}
-          {showCraftPromptPopup && (
-            <CraftPromptPopup
-              board_id={board_id}
-              reloadCraftedPrompts={reloadCraftedPrompts}
-              onCancel={handleCraftPromptCancel}
-            />
+          {showCodePopup && (
+            <CodePopup board_id={board_id} onCancel={handleCodeCancel} />
           )}
           {showGenerateTaskWithAGIPopup && (
             <GenerateTaskWithAGIPopup
@@ -1360,6 +1405,12 @@ const Board = () => {
               text={board.columns[columnToDeleteIndex]?.title}
               onCancel={handleColumnDeleteCancel}
               onConfirm={handleColumnDeleteConfirm}
+            />
+          )}
+          {showCraftPromptPopup && (
+            <CraftPromptPopup
+              board_id={board.board_id}
+              onCancel={() => setShowCraftPromptPopup(false)}
             />
           )}
         </DndProvider>

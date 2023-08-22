@@ -24,12 +24,14 @@ use App\Http\Controllers\UserTasksController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\AgiBehaviorController;
 use App\Http\Controllers\PromptCraftController;
+use App\Http\Controllers\TeamMemberRoleController;
 
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\TeamManagementController;
+use App\Http\Controllers\ChatGPTController;
+use App\Http\Controllers\AGIAnswersController;
 use App\Http\Controllers\FavouriteTaskController;
 use App\Http\Controllers\RolePermissionController;
-use App\Http\Controllers\TeamManagementController;
-use App\Http\Controllers\TeamMemberRoleController;
 
 /*
 
@@ -46,6 +48,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/user/permissions', [UserController::class, 'showPermissions'])->middleware('api');
 Route::post('/user/signup', [UserController::class, 'signup']);
 Route::post('/user/login', [UserController::class, 'login']);
 Route::get('/user/check-login', [UserController::class, 'checkLogin']);
@@ -149,10 +152,14 @@ Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api
 Route::get('/AGI/GenerateTask', [AGIController::class, 'GenerateTask'])->middleware('api');
 Route::get('/AGI/GenerateSubtask', [AGIController::class, 'GenerateSubtask'])->middleware('api');
 Route::get('/AGI/GenerateAttachmentLink', [AGIController::class, 'GenerateAttachmentLink'])->middleware('api');
-Route::get('/AGI/GenerateCodeReviewOrDocumentation', [AGIController::class, 'GenerateCodeReviewOrDocumentation'])->middleware('api');
+Route::get('/boards/{boardId}/AGI/GenerateCodeReviewOrDocumentation', [AGIController::class, 'GenerateCodeReviewOrDocumentation'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_code', [AGIController::class, 'generateCode'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_priority', [AGIController::class, 'generatePriority'])->middleware('api');
 Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::class, 'generatePrioritiesForColumn'])->middleware('api');
+Route::get('/AGI/generate-documentation-task/board/{boardId}/task/{taskId}', [AGIController::class, 'GenerateTaskDocumentationPerTask'])->middleware('api');
+Route::get('/AGI/generate-documentation-board/{boardId}', [AGIController::class, 'GenerateTaskDocumentationPerBoard'])->middleware('api');
+Route::get('/AGI/generate-documentation-column/board/{boardId}/column/{columnId}', [AGIController::class, 'GenerateTaskDocumentationPerColumn'])->middleware('api');
+
 Route::post('/generate-llama-subtasks', [LlamaController::class, 'generateSubtasks']);
 Route::get('/generate-llama-subtasks2', [LlamaController::class, 'testSubtaskParsing']);
 
@@ -164,8 +171,7 @@ Route::put('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraftCo
 Route::delete('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraftController::class, 'destroyPrompts'])->middleware('api');
 Route::get('/boards/{boardId}/AGI/crafted-prompts/{craftedPromptId}', [PromptCraftController::class, 'usePrompts'])->middleware('api');
 
-Route::get('/AGI/GenerateTask/CraftedPrompt', [AGIController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
+Route::get('/AGI/GenerateTask/CraftedPrompt', [ChatGPTController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
 
 Route::get('/boards/{boardId}/GetBehaviors', [AgiBehaviorController::class, 'GetBehaviors'])->middleware('api');
-Route::post('/boards/{boardId}/StoreBehavior', [AgiBehaviorController::class, 'StoreBehavior'])->middleware('api');
 

@@ -302,7 +302,7 @@ const Popup = ({
                                         <h3>Tags:</h3>
                                     </div>
                                     <div className='tags'>
-                                        <TagDropdown tags={tags} allTags={boardTags}></TagDropdown>
+                                        <TagDropdown tags={task.tags} allTags={boardTags}></TagDropdown>
                                         <span className='addbtn-tag'>{plusIcon}</span>
                                     </div>
                                 </>
@@ -418,6 +418,7 @@ const Popup = ({
                                                 <span
                                                     onClick={() => handleDeleteMember(member.user_id)}
                                                     className='delete-icon'
+                                                    data-hover='Delete Member'
                                                 >
                                                     {closeIcon}
                                                 </span>

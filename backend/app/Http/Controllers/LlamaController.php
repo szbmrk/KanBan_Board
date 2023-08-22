@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Carbon;
+use App\Models\Task;
+use App\Models\Board;
 use App\Helpers\ExecutePythonScript;
 
 class LlamaController extends Controller
@@ -139,9 +141,122 @@ class LlamaController extends Controller
         
         return LlamaController::parseSubtaskResponse($response);
     }
-
-    public static function GenerateCodeReviewOrDocumentation(Request $request, $expectedType) 
+    public static function GenerateTaskDocumentationPerTask($boardId,$taskId)
     {
+        $user = auth()->user();
+        if(!$user){
+            return response()->json([
+                'error' => 'Unauthorized!',
+            ]);
+        }
+
+        $task = Task::find($taskId);
+        if(!$task){
+            return response()->json([
+                'error' => 'Task not found!',
+            ]);
+        }
+        $board = Board::where('board_id', $boardId)->first();
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+        
+        $prompt = "Generate documentation or a longer description for the task with the following title: {$task->title}, description: {$task->description}.";
+        $path = env('PYTHON_SCRIPT_PATH');
+        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        $cleanData = trim($response);
+
+        return [
+            'response' => $cleanData
+        ];
+    }
+
+    public static function GenerateTaskDocumentationPerBoard($boardId)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json([
+                'error' => 'Unauthorized!',
+            ]);
+        }
+
+        $tasks = Task::where('board_id', $boardId)->get();
+        if ($tasks->isEmpty()) {
+            return response()->json([
+                'error' => 'No tasks found for the given board!',
+            ]);
+        }
+
+        $allTaskDescriptions = '';
+        foreach ($tasks as $task) {
+            $allTaskDescriptions .= "Task title: {$task->title}, description: {$task->description}. ";
+        }
+
+        $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
+        $path = env('PYTHON_SCRIPT_PATH');
+        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        $cleanData = trim($response);
+
+        return [
+            'response' => $cleanData
+        ];
+    }
+
+    public static function GenerateTaskDocumentationPerColumn($boardId, $columnId)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json([
+                'error' => 'Unauthorized!',
+            ]);
+        }
+
+        $tasks = Task::where('column_id', $columnId)->get();
+        if ($tasks->isEmpty()) {
+            return response()->json([
+                'error' => 'No tasks found for the given column!',
+            ]);
+        }
+
+        $board = Board::where('board_id', $boardId)->first();
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+
+        $allTaskDescriptions = '';
+        foreach ($tasks as $task) {
+            $allTaskDescriptions .= "Task title: {$task->title}, description: {$task->description}. ";
+        }
+
+        $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
+        $path = env('PYTHON_SCRIPT_PATH');
+        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        $cleanData = trim($response);
+
+        return [
+            'response' => $cleanData
+        ];
+    }    public static function GenerateCodeReviewOrDocumentation(Request $request, $boardId, $expectedType) 
+    {
+        $user = auth()->user();
+        if(!$user)
+        {
+            return response()->json([
+                'error' => 'Unauthorized!',
+            ]);
+        }
+        $board = Board::where('board_id', $boardId)->first();
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        $team = $board->team;
+
+        if (!$team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team.'], 404);
+        }
+
         $code = $request->input('code');
         $promptCodeReview = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''.";
         $promptDocumentation = "Use only UTF-8 chars! Act as an senior programmer and generate a documentation for the following code: '''$code'''.";
@@ -172,5 +287,4 @@ class LlamaController extends Controller
             'review' => $review,
             
             ]);    
-    }
-}
+    }}

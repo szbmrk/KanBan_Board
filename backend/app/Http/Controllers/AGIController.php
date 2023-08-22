@@ -114,8 +114,73 @@ class AGIController extends Controller
 
         return $response;
     }
+    public function GenerateTaskDocumentationPerTask(Request $request, $boardId, $taskId)
+    {
+        $user = auth()->user();
 
-    public function GenerateCodeReviewOrDocumentation(Request $request)
+        $response;
+        
+        switch($request->header('ChosenAI')) {
+            case Str::lower("llama"):
+                $response = LlamaController::GenerateTaskDocumentationPerTask($boardId, $taskId);
+                break;
+            case Str::lower("bard"):
+                $response = BardController::GenerateTaskDocumentationPerTask($boardId, $taskId);
+                break;
+            default:
+                $response = ChatGPTController::GenerateTaskDocumentationPerTask($boardId, $taskId);
+                break;
+
+
+
+        }
+
+        return $response;
+    }
+
+    public function GenerateTaskDocumentationPerBoard(Request $request, $boardId)
+    {
+        $user = auth()->user();
+
+        $response;
+        
+        switch($request->header('ChosenAI')) {
+            case Str::lower("llama"):
+                $response = LlamaController::GenerateTaskDocumentationPerBoard($boardId);
+                break;
+            case Str::lower("bard"):
+                $response = BardController::GenerateTaskDocumentationPerBoard($boardId);
+                break;
+            default:
+                $response = ChatGPTController::GenerateTaskDocumentationPerBoard($boardId);
+                break;
+        }
+
+        return $response;
+    }
+
+    public function GenerateTaskDocumentationPerColumn(Request $request, $boardId, $taskId)
+    {
+        $user = auth()->user();
+
+        $response;
+        
+        switch($request->header('ChosenAI')) {
+            case Str::lower("llama"):
+                $response = LlamaController::GenerateTaskDocumentationPerColumn($boardId, $taskId);
+                break;
+            case Str::lower("bard"):
+                $response = BardController::GenerateTaskDocumentationPerColumn($boardId, $taskId);
+                break;
+            default:
+                $response = ChatGPTController::GenerateTaskDocumentationPerColumn($boardId, $taskId);
+                break;
+        }
+
+        return $response;
+    }
+
+    public function GenerateCodeReviewOrDocumentation(Request $request, $boardId)
 {
     //without json stingify it will not work!!!
     $user = auth()->user();
@@ -125,19 +190,18 @@ class AGIController extends Controller
     
         
     switch($request->header('ChosenAI')) {
-        /* case Str::lower("llama"):
-            $response = LlamaController::GenerateAttachmentLinkLlama($request);
-            break; */
+         case Str::lower("llama"):
+            $response = LlamaController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
+            break;
         case Str::lower("bard"):
-            //$response = BardController::GenerateCodeReviewBard($request);
+            $response = BardController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
             break;
         default:
-
-            $response = ChatGPTController::GenerateCodeReviewOrDocumentation($request,$chosenType);
+            $response = ChatGPTController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
             break;
     }
-    Log::info("Response from Python: " . $response);
     return $response;
 }
+
 
 }

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { useDrag, useDrop } from "react-dnd";
-import "../../styles/card.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
+import '../../styles/card.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus,
   faPencil,
@@ -9,22 +9,20 @@ import {
   faStar as faSolidStar,
   faEllipsis,
   faLink,
-} from "@fortawesome/free-solid-svg-icons";
-import { faStar as faRegularStar } from "@fortawesome/free-regular-svg-icons";
-import Tag from "../Tag";
-import { aiIcon } from "./Board";
+} from '@fortawesome/free-solid-svg-icons';
+import { faStar as faRegularStar } from '@fortawesome/free-regular-svg-icons';
+import Tag from '../Tag';
+import { aiIcon } from './Board';
 
 const ItemTypes = {
-  CARD: "card",
+    CARD: 'card',
 };
 
 export const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 export const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
 export const regularStarIcon = <FontAwesomeIcon icon={faRegularStar} />;
-export const regularStarIconBouncing = (
-  <FontAwesomeIcon icon={faRegularStar} bounce />
-);
+export const regularStarIconBouncing = <FontAwesomeIcon icon={faRegularStar} bounce />;
 export const solidStarIcon = <FontAwesomeIcon icon={faSolidStar} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
 export const attachmentLinkIcon = <FontAwesomeIcon icon={faLink} />;
@@ -130,8 +128,8 @@ export const Task = ({
 
   const [hoveredCardId, setHoveredCardId] = useState(null);
 
-  const handleMouseEnterOnCard = (boardId) => {
-    setHoveredCardId(boardId);
+    const handleMouseEnterOnCard = (taskId) => {
+        setHoveredCardId(taskId);
   };
 
   const handleMouseLeaveOnCard = () => {
@@ -182,8 +180,7 @@ export const Task = ({
                 key={tagIndex}
                 name={tag.name}
                 color={tag.color}
-                extraClassName={`tag-on-board ${
-                  activeTags.includes(task.tags) ? "clicked" : ""
+                                extraClassName={`tag-on-board ${activeTags.includes(task.tags) ? "clicked" : ""
                 }`}
                 enableClickBehavior={true}
                 onClick={() => handleTagClick(task.tags)}

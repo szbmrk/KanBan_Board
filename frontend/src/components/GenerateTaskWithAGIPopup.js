@@ -206,7 +206,14 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
           ) : (
             <>
               <div className="gt-input-container">
-                <h3>Give me a task to generate tickets about:</h3>
+                <p
+                  style={{
+                    fontSize: "1.2em",
+                    textAlign: "left",
+                  }}
+                >
+                  Give me a task to generate tickets about:
+                </p>
                 <input
                   type="text"
                   placeholder="Enter task title"
@@ -216,6 +223,7 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
                   <div className="dropdown-container">
                     <p>How many tasks do you want to generate?</p>
                     <Dropdown
+                      className="dropdown-numbers"
                       options={counterOptions}
                       value={taskCounter}
                       onChange={(selectedOption) =>
@@ -226,6 +234,7 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
                   <div className="dropdown-container">
                     <p>Which AI do you want to use?</p>
                     <Dropdown
+                      className="dropdown-AGI"
                       options={aiOptions}
                       value={chosenAI}
                       onChange={(selectedOption) => setChosenAI(selectedOption)}
@@ -312,11 +321,23 @@ const TaskRecursive = ({
       }
       key={index}
     >
-      <h3>
+      <p
+        style={
+          editedTasks.length > 0
+            ? {
+                fontSize: "1.1em",
+                textAlign: "left",
+              }
+            : {
+                fontSize: "1.2em",
+                textAlign: "center",
+              }
+        }
+      >
         {editedTasks.length > 0
           ? `Generate subtasks for "${task.title}" task`
           : "Generate task"}
-      </h3>
+      </p>
       <div className="gt-attributes-container">
         <div className="gt-attributes">
           <p className="title">Title:</p>
@@ -360,6 +381,7 @@ const TaskRecursive = ({
         <div className="dropdown-container">
           <p>How many subtasks do you want to generate?</p>
           <Dropdown
+            className="dropdown-numbers"
             options={counterOptions}
             value={taskCounter}
             onChange={(selectedOption) => setTaskCounter(selectedOption)}
@@ -368,6 +390,7 @@ const TaskRecursive = ({
         <div className="dropdown-container">
           <p>Which AI do you want to use?</p>
           <Dropdown
+            className="dropdown-AGI"
             options={aiOptions}
             value={chosenAI}
             onChange={(selectedOption) => setChosenAI(selectedOption)}

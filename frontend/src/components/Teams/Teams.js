@@ -3,18 +3,32 @@ import axios from "../../api/axios";
 import TeamCard from "./TeamCard";
 import TeamManager from "./TeamManager";
 import Loader from "../Loader";
+import { SetRoles } from "../../roles/Roles";
 
 const Teams = () => {
     const token = sessionStorage.getItem('token');
     const user_id = sessionStorage.getItem('user_id');
+    const [ownPermissions, setOwnPermissions] = useState([]);
+    const [teamPermissions, setTeamPermissions] = useState([]);
+
 
     const [teams, setTeams] = useState([]);
     const [manageIsClicked, setManage] = useState(false);
 
     useEffect(() => {
-        document.title = 'Teams'
+        document.title = 'Teams';
         getTeams();
     }, []);
+
+    useEffect(() => {
+        ResetRoles();
+    }, [teams]);
+
+    async function ResetRoles() {
+        await SetRoles(token);
+        setTeamPermissions(JSON.parse(sessionStorage.getItem('permissions')).teams);
+        setOwnPermissions(JSON.parse(sessionStorage.getItem('permissions')).general_role);
+    }
 
     function addTeam() {
         setManage(!manageIsClicked);
@@ -22,17 +36,15 @@ const Teams = () => {
 
     async function DeleteTeam(teamId) {
         try {
-            await axios.delete(`/dashboard/teams/${teamId}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
-                });
+            await axios.delete(`/dashboard/teams/${teamId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             console.log(teamId);
             const newTeamData = teams.filter((team) => team.team_id !== teamId);
             setTeams(newTeamData);
-        }
-        catch (error) {
+        } catch (error) {
             console.log(error.response);
         }
     }
@@ -48,7 +60,6 @@ const Teams = () => {
                     },
                 }
             );
-            console.log(response);
             const newTeamData = teams.map((team) => {
                 if (team.team_id === team_id) {
                     team.team_members = [...team.team_members, ...response.data.added_members];
@@ -63,7 +74,8 @@ const Teams = () => {
 
     async function AddTeam(teamName) {
         try {
-            const response = await axios.post(`/dashboard/teams/`,
+            const response = await axios.post(
+                `/dashboard/teams/`,
                 { name: teamName },
                 {
                     headers: {
@@ -76,6 +88,7 @@ const Teams = () => {
             newTeamData.push(response.data.team);
             console.log(newTeamData);
             setTeams(newTeamData);
+            ResetRoles();
         } catch (error) {
             console.log(error.response);
         }
@@ -108,12 +121,11 @@ const Teams = () => {
     async function deleteUserFromTeam(team_id, user_id) {
         const token = sessionStorage.getItem('token');
         try {
-            await axios.delete(`/team/${team_id}/management/${user_id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
-                });
+            await axios.delete(`/team/${team_id}/management/${user_id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             const newTeamData = teams.map((team) => {
                 if (team.team_id === team_id) {
                     const newTeamMembers = team.team_members.filter((member) => member.user_id !== user_id);
@@ -122,63 +134,63 @@ const Teams = () => {
                 return team;
             });
             setTeams(newTeamData);
-        }
-        catch (error) {
+        } catch (error) {
             console.log(error.response);
         }
     }
 
     const getTeams = async () => {
-
         try {
             const response = await axios.get(`/user/${user_id}/teams`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                }
+                },
             });
             const tempData = response.data.teams;
             console.log(response.data.teams);
             setTeams(tempData);
-        }
-        catch (error) {
+        } catch (error) {
             console.log(error.response);
         }
-
-    }
+    };
     return (
         <div className="content">
-            {teams.length === 0 ? (
-                <div>
-                    No teams yet
-                    <div
-                        className='board add-board'
-                        onClick={() => addTeam()}
-                    >
-                        <span>Add new team</span>
+            <div className='teams-container'>
+                {teams.length === 0 ? (
+                    <div>
+                        No teams yet
+                        <div
+                            className='board add-board'
+                            onClick={() => addTeam()}
+                        >
+                            <span>Add new team</span>
+                        </div>
+                        {manageIsClicked &&
+                            <TeamManager teamData={[]} onClose={addTeam} ChangeTeamName={ChangeTeamName} addTeam={AddTeam} />
+                        }
                     </div>
-                    {manageIsClicked &&
-                        <TeamManager teamData={[]} onClose={addTeam} ChangeTeamName={ChangeTeamName} addTeam={AddTeam} />
-                    }
-                </div>
-            ) : (
-                <div className="scrollable-container">
-                    {teams.map((team, index) => (
-                        <TeamCard key={index} data={team} deleteUserFromTeam={deleteUserFromTeam} ChangeTeamName={ChangeTeamName} AddUsers={AddUsers} DeleteTeam={DeleteTeam} />
-                    ))}
+                ) : (
+                    <>
+                        {teams.map((team, index) => (
+                            <TeamCard key={index} data={team} deleteUserFromTeam={deleteUserFromTeam} ChangeTeamName={ChangeTeamName} AddUsers={AddUsers} DeleteTeam={DeleteTeam} ownPermissions={ownPermissions} teamPermissions={teamPermissions} />
+                        ))}
 
-                    <div
-                        className='board add-board'
-                        onClick={() => addTeam()}
-                    >
-                        <span>Add new team</span>
-                    </div>
-                    {manageIsClicked &&
-                        <TeamManager teamData={[]} onClose={addTeam} ChangeTeamName={ChangeTeamName} addTeam={AddTeam} />
-                    }
-                </div>
-            )}
+                        <div className='board add-board' onClick={() => addTeam()}>
+                            <span>Add new team</span>
+                        </div>
+                        {manageIsClicked && (
+                            <TeamManager
+                                teamData={[]}
+                                onClose={addTeam}
+                                ChangeTeamName={ChangeTeamName}
+                                addTeam={AddTeam}
+                            />
+                        )}
+                    </>
+                )}
+            </div>
         </div>
-    )
-}
+    );
+};
 
 export default Teams;
