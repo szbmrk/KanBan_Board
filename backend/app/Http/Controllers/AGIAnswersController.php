@@ -29,10 +29,11 @@ class AGIAnswersController extends Controller
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
-        $answers = $board->AGIAnswers->map(function ($answer) {
-        $filteredAnswer = $answer->only(['agi_answer_id', 'taskDocumentation', 'task_id', 'board_id', 'column_id', 'user_id', 'created_at', 'updated_at']);
-            return $filteredAnswer;
-        });
+        $answers = $board->AGIAnswers->filter(function ($answer) {
+            return $answer->codeReviewOrDocumentationType === null && $answer->codeReviewOrDocumentation === null;
+        })->map(function ($answer) {
+            return $answer->only(['taskDocumentation', 'task_id', 'board_id', 'column_id', 'user_id', 'created_at', 'updated_at']);
+        })->values();
 
         if ($answers->isEmpty()) {
             return response()->json(['error' => 'No answers found.'], 404);
@@ -67,11 +68,19 @@ class AGIAnswersController extends Controller
         if ($task->board_id !== $board->board_id) {
             return response()->json(['error' => 'Task does not belong to the specified board.'], 400);
         }
+        try { 
+            $this->validate($request, [
+                'taskDocumentation' => 'string',
+            ]);
+        } catch (ValidationException) {
+            return response()->json(['error' => 'Invalid task documentation'], 400);
+        }
 
         $answer = new AGIAnswers([
             'taskDocumentation' => $request->input('taskDocumentation'),
             'board_id' => $board->board_id,
             'task_id' => $task->task_id,
+            'user_id' => $user->user_id,
         ]);
 
         $answer->save();
@@ -102,10 +111,19 @@ class AGIAnswersController extends Controller
             return response()->json(['error' => 'Task not found.'], 404);
         }
 
+        try { 
+            $this->validate($request, [
+                'taskDocumentation' => 'string',
+            ]);
+        } catch (ValidationException) {
+            return response()->json(['error' => 'Invalid task documentation'], 400);
+        }
+
         $answer = new AGIAnswers([
             'taskDocumentation' => $request->input('taskDocumentation'),
             'board_id' => $board->board_id,
             'column_id' => $column->column_id,
+            'user_id' => $user->user_id,
         ]);
 
         $answer->save();
@@ -130,9 +148,18 @@ class AGIAnswersController extends Controller
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
+        try { 
+            $this->validate($request, [
+                'taskDocumentation' => 'string',
+            ]);
+        } catch (ValidationException) {
+            return response()->json(['error' => 'Invalid task documentation'], 400);
+        }
+
         $answer = new AGIAnswers([
             'taskDocumentation' => $request->input('taskDocumentation'),
             'board_id' => $board->board_id,
+            'user_id' => $user->user_id,
         ]);
 
         $answer->save();
@@ -140,7 +167,7 @@ class AGIAnswersController extends Controller
         return response()->json(['message' => 'Answer added successfully.'], 201);
     }
 
-    public function update(Request $request, $boardId, $taskId, $answerId)
+    public function update(Request $request, $boardId, $answerId)
     {
         $user = auth()->user();
         if (!$user) {
@@ -155,21 +182,18 @@ class AGIAnswersController extends Controller
 
         if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
-        }
+        }  
 
-        $task = Task::find($taskId);
-
-        if (!$task) {
-            return response()->json(['error' => 'Task not found.'], 404);
-        }
-
-        if ($task->board_id !== $board->board_id) {
-            return response()->json(['error' => 'Task does not belong to the specified board.'], 400);
+        try { 
+            $this->validate($request, [
+                'taskDocumentation' => 'string',
+            ]);
+        } catch (ValidationException) {
+            return response()->json(['error' => 'Invalid task documentation'], 400);
         }
 
         $answer = AGIAnswers::where('agi_answer_id', $answerId)
             ->where('board_id', $board->board_id)
-            ->where('task_id', $task->task_id)
             ->first();
 
         if (!$answer) {
@@ -206,6 +230,10 @@ class AGIAnswersController extends Controller
 
         if (!$answer) {
             return response()->json(['error' => 'Answer not found.'], 404);
+        }
+
+        if ($answer->codeReviewOrDocumentationType !== null || $answer->codeReviewOrDocumentation !== null) {
+            return response()->json(['error' => 'Cannot delete this answer.'], 400);
         }
 
         $answer = AGIAnswers::where('agi_answer_id', $answerId)
@@ -360,6 +388,9 @@ class AGIAnswersController extends Controller
 
         if (!$answer) {
             return response()->json(['error' => 'Answer not found.'], 404);
+        }
+        if ($answer->taskDocumentation !== null) {
+            return response()->json(['error' => 'Cannot delete this answer.'], 400);
         }
         $answer->delete();
         return response()->json(['message' => 'Answer deleted successfully'], 200);   
