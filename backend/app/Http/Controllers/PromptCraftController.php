@@ -31,9 +31,6 @@ class PromptCraftController extends Controller
 
         $craftedPrompts = CraftedPrompt::where('board_id', $boardId)->get();
         
-        if ($craftedPrompts->isEmpty()) {
-            return response()->json(['error' => 'No crafted prompts found for this board.'], 404);
-        }
 
         return response()->json($craftedPrompts, 200);
     }
@@ -59,7 +56,7 @@ class PromptCraftController extends Controller
             'crafted_prompt_title' => 'required|string',
             'crafted_prompt_text' => 'required|string',
             'craft_with' => 'required|in:CHATGPT,LLAMA,BARD', 
-            'action' => 'required|in:GENERATETASK, GENERATESUBTASK, GENERATEATTACHMENTLINK', 
+            'action' => 'required|in:GENERATETASK,GENERATESUBTASK,GENERATEATTACHMENTLINK', 
             ]);
         }
         catch (ValidationException) 
@@ -178,6 +175,47 @@ class PromptCraftController extends Controller
     }
 
    
+    public function usePrompts(Request $request, $boardId, $craftedPromptId)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized.'], 401);
+        }
 
+        $board = Board::where('board_id', $boardId)->first();
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+
+        $craftedPrompt = CraftedPrompt::where('crafted_prompt_id', $craftedPromptId)->get()->first();
+        
+/*         if ($craftedPrompts->isEmpty()) {
+            return response()->json(['error' => 'No crafted prompts found for this board.'], 404);
+        } */
+
+        $request->headers->set('ChosenAI', $craftedPrompt->craft_with);
+        $request->headers->set('TaskPrompt', $craftedPrompt->crafted_prompt_text);
+        $request->headers->set('TaskCounter', "2");
+        //$request->headers->set('PrecraftedPrompt', $craftedPrompt->crafted_prompt_text);
+
+        switch ($craftedPrompt->action) {
+            case "GENERATESUBTASK":
+                $response = AGIController::GenerateSubtask($request);
+                break;
+            case "GENERATEATTACHMENTLINK":
+                $response = AGIController::GenerateAttachmentLink($request);
+                break;
+            default:
+                $response = AGIController::GenerateTask($request);
+                break;
+        }
+
+        return $response;
+    }
 }
 

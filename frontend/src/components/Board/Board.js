@@ -4,15 +4,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Task, plusIcon } from './Task';
 import ConfirmationPopup from './ConfirmationPopup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faCheck,
-    faXmark,
-    faWandMagicSparkles,
-    faEllipsis,
-    faTrash,
-    faShare,
-    faCog,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faXmark, faWandMagicSparkles, faEllipsis, faTrash, faShare, faCog } from '@fortawesome/free-solid-svg-icons';
 import '../../styles/board.css';
 import '../../styles/popup.css';
 import '../../styles/titlebar.css';
@@ -40,12 +32,17 @@ const Board = () => {
     const [columnPositions, setColumnPositions] = useState([]);
     const [editingColumnIndex, setEditingColumnIndex] = useState(null);
     const [columnToDeleteIndex, setColumnToDeleteIndex] = useState(null);
-    const [showDeleteConfirmation, setShowDeleteColumnConfirmation] = useState(false);
+    const [showDeleteConfirmation, setShowDeleteColumnConfirmation] =
+        useState(false);
     const originalTitle = useRef(null);
     const editBoxRef = useRef(null);
-    const [columnNewTitle, setColumnNewTitle] = useState('');
-    const [showGenerateTaskWithAGIPopup, setShowGenerateTaskWithAGIPopup] = useState(false);
-    const [showGenerateAttachmentLinkWithAGIPopup, setShowGenerateAttachmentLinkWithAGIPopup] = useState(false);
+    const [columnNewTitle, setColumnNewTitle] = useState("");
+    const [showGenerateTaskWithAGIPopup, setShowGenerateTaskWithAGIPopup] =
+        useState(false);
+    const [
+        showGenerateAttachmentLinkWithAGIPopup,
+        setShowGenerateAttachmentLinkWithAGIPopup,
+    ] = useState(false);
     const [columnZIndex, setColumnZIndex] = useState(1);
     const [iconContainerPosition, setIconContainerPosition] = useState({
         x: 0,
@@ -57,18 +54,21 @@ const Board = () => {
     const [isHoveredX, setIsHoveredX] = useState(false);
     const [columnIndex, setColumnIndex] = useState(null);
     const [priorities, setPriorities] = useState([]);
-    const [ownPermissions, setOwnPermissions] = useState([]);
+
+    const [craftedPrompts, setCraftedPrompts] = useState([]);
+    const [craftedPromptsBoard, setCraftedPromptsBoard] = useState([]);
+    const [craftedPromptsTask, setCraftedPromptsTask] = useState([]);
     const navigate = useNavigate();
     const [hoveredColumnId, setHoveredColumnId] = useState(null);
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
 
-    const token = sessionStorage.getItem('token');
-    const team_member = JSON.parse(sessionStorage.getItem('team_members'));
+    const token = sessionStorage.getItem("token");
+    const team_member = JSON.parse(sessionStorage.getItem("team_members"));
 
     useEffect(() => {
-        document.title = 'Board';
+        document.title = "Board";
         fetchBoardData();
         //setOwnPermissions(team_member.teams.filter(team => team.team_id === data.team_id).map(permission => permission.permission_data));
     }, []);
@@ -81,16 +81,16 @@ const Board = () => {
             }
         };
 
-        document.addEventListener('click', handleClickOutside);
+        document.addEventListener("click", handleClickOutside);
 
         return () => {
-            document.removeEventListener('click', handleClickOutside);
+            document.removeEventListener("click", handleClickOutside);
         };
     }, [editingColumnIndex]);
 
     const fetchBoardData = async () => {
         try {
-            const prioritiesResponse = await axios.get('/priorities', {
+            const prioritiesResponse = await axios.get("/priorities", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -108,14 +108,20 @@ const Board = () => {
             let tempBoard = response.data.board;
             let tempColumns = tempBoard.columns;
 
+            reloadCraftedPrompts();
+
             // Sort the columns and tasks by position
-            tempColumns.map((column) => column.tasks.sort((a, b) => a.position - b.position));
+            tempColumns.map((column) =>
+                column.tasks.sort((a, b) => a.position - b.position)
+            );
             tempBoard.columns = tempColumns.sort((a, b) => a.position - b.position);
 
-            let tempColumnPositions = tempBoard.columns.map((column) => column.column_id);
+            let tempColumnPositions = tempBoard.columns.map(
+                (column) => column.column_id
+            );
             setColumnPositions(tempColumnPositions);
 
-            console.log('Columns: ', tempBoard.columns);
+            console.log("Columns: ", tempBoard.columns);
 
             setBoard(tempBoard);
 
@@ -123,7 +129,10 @@ const Board = () => {
                 const columnIndex = tempBoard.columns.findIndex(
                     (column) => column.column_id === parseInt(column_to_show_id)
                 );
-                const task = findTaskById(tempBoard.columns[columnIndex].tasks, parseInt(task_to_show_id));
+                const task = findTaskById(
+                    tempBoard.columns[columnIndex].tasks,
+                    parseInt(task_to_show_id)
+                );
                 if (task) {
                     setTaskAsInspectedTask(task);
                 }
@@ -131,7 +140,7 @@ const Board = () => {
             }
         } catch (e) {
             console.error(e);
-            if (e.response.status === 403) setError('No permission');
+            if (e.response.status === 403) setError("No permission");
             else setError(e.message);
             setPermission(false);
         }
@@ -140,9 +149,9 @@ const Board = () => {
     const handleAddColumn = async () => {
         try {
             const formData = new FormData();
-            formData.append('name', 'New Column');
-            formData.append('is_finished', 0);
-            formData.append('task_limit', 5);
+            formData.append("name", "New Column");
+            formData.append("is_finished", 0);
+            formData.append("task_limit", 5);
             const res = await axios.post(`/boards/${board_id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -169,7 +178,11 @@ const Board = () => {
             setEditingColumnIndex(null);
 
             let tempPositions = columnPositions;
-            tempPositions.splice(hoverIndex, 0, tempPositions.splice(dragIndex, 1)[0]);
+            tempPositions.splice(
+                hoverIndex,
+                0,
+                tempPositions.splice(dragIndex, 1)[0]
+            );
             axios.post(
                 `/boards/${board_id}/columns/positions`,
                 { columns: tempPositions },
@@ -206,14 +219,17 @@ const Board = () => {
     };
 
     const handleColumnDeleteConfirm = () => {
-        console.log('confirm');
+        console.log("confirm");
 
         try {
-            axios.delete(`/boards/${board_id}/columns/${board.columns[columnToDeleteIndex].column_id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            axios.delete(
+                `/boards/${board_id}/columns/${board.columns[columnToDeleteIndex].column_id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
 
             const newBoardData = [...board.columns];
             newBoardData.splice(columnToDeleteIndex, 1);
@@ -228,7 +244,7 @@ const Board = () => {
     };
 
     const handleColumnDeleteCancel = () => {
-        console.log('cancel');
+        console.log("cancel");
         setShowDeleteColumnConfirmation(false);
         setColumnToDeleteIndex(null);
     };
@@ -263,7 +279,7 @@ const Board = () => {
             setBoard({ ...board, columns: newColumnData });
         } else {
             // Update the title if the changes were saved
-            if (columnNewTitle === '') {
+            if (columnNewTitle === "") {
                 // Reset the title if the changes were cancelled
                 try {
                     const column_id = board.columns[columnIndex].column_id;
@@ -332,7 +348,12 @@ const Board = () => {
         }
     };
 
-    const moveCardFrontend = (dragIndex, hoverIndex, sourceDivIndex, targetDivIndex) => {
+    const moveCardFrontend = (
+        dragIndex,
+        hoverIndex,
+        sourceDivIndex,
+        targetDivIndex
+    ) => {
         const sourceDiv = board.columns[sourceDivIndex];
         const targetDiv = board.columns[targetDivIndex];
         const draggedCard = sourceDiv.tasks[dragIndex];
@@ -349,17 +370,26 @@ const Board = () => {
         setBoard({ ...board, columns: newBoardData });
     };
 
-    const moveCardBackend = async (dragIndex, hoverIndex, sourceDivIndex, targetDivIndex) => {
+    const moveCardBackend = async (
+        dragIndex,
+        hoverIndex,
+        sourceDivIndex,
+        targetDivIndex
+    ) => {
         const sourceDiv = board.columns[sourceDivIndex];
         const task_to_modify_id = sourceDiv.tasks[hoverIndex].task_id;
         const to_column_id = sourceDiv.column_id;
         if (hoverIndex === 0) {
-            sourceDiv.tasks[hoverIndex].position = sourceDiv.tasks[hoverIndex + 1].position / 2;
+            sourceDiv.tasks[hoverIndex].position =
+                sourceDiv.tasks[hoverIndex + 1].position / 2;
         } else if (hoverIndex === sourceDiv.tasks.length - 1) {
-            sourceDiv.tasks[hoverIndex].position = sourceDiv.tasks[hoverIndex - 1].position + 1;
+            sourceDiv.tasks[hoverIndex].position =
+                sourceDiv.tasks[hoverIndex - 1].position + 1;
         } else {
             sourceDiv.tasks[hoverIndex].position =
-                (sourceDiv.tasks[hoverIndex - 1].position + sourceDiv.tasks[hoverIndex + 1].position) / 2;
+                (sourceDiv.tasks[hoverIndex - 1].position +
+                    sourceDiv.tasks[hoverIndex + 1].position) /
+                2;
         }
 
         const position = sourceDiv.tasks[hoverIndex].position;
@@ -412,8 +442,12 @@ const Board = () => {
                 }
             );
             const newTaskData = [...board.columns];
-            const columnIndex = newTaskData.findIndex((column) => column.column_id === column_id);
-            const taskIndex = newTaskData[columnIndex].tasks.findIndex((task) => task.task_id === task_id);
+            const columnIndex = newTaskData.findIndex(
+                (column) => column.column_id === column_id
+            );
+            const taskIndex = newTaskData[columnIndex].tasks.findIndex(
+                (task) => task.task_id === task_id
+            );
             newTaskData[columnIndex].tasks[taskIndex].title = title;
             newTaskData[columnIndex].tasks[taskIndex].description = description;
             setBoard({ ...board, columns: newTaskData });
@@ -429,10 +463,16 @@ const Board = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            const targetDiv = board.columns.find((column) => column.column_id === column_id);
-            const updatedtasks = targetDiv.tasks.filter((task) => task.task_id !== taskId);
+            const targetDiv = board.columns.find(
+                (column) => column.column_id === column_id
+            );
+            const updatedtasks = targetDiv.tasks.filter(
+                (task) => task.task_id !== taskId
+            );
             const newColumnData = [...board.columns];
-            const columnIndex = newColumnData.findIndex((column) => column.column_id === column_id);
+            const columnIndex = newColumnData.findIndex(
+                (column) => column.column_id === column_id
+            );
             newColumnData[columnIndex] = { ...targetDiv, tasks: updatedtasks };
             setBoard({ ...board, columns: newColumnData });
         } catch (e) {
@@ -496,15 +536,20 @@ const Board = () => {
         try {
             const response = await axios.post(
                 `/boards/${board_id}/tasks/${parent_task_id}/subtasks`,
-                { title: 'New subtask' },
+                { title: "New subtask" },
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
             const newSubtask = response.data.task;
             const newBoardData = [...board.columns];
-            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
-            const task = findTaskById(newBoardData[columnIndex].tasks, parent_task_id);
+            const columnIndex = newBoardData.findIndex(
+                (column) => column.column_id === column_id
+            );
+            const task = findTaskById(
+                newBoardData[columnIndex].tasks,
+                parent_task_id
+            );
             task.subtasks.push(newSubtask);
             setBoard({ ...board, columns: newBoardData });
         } catch (err) {
@@ -520,8 +565,13 @@ const Board = () => {
                 },
             });
             const newBoardData = [...board.columns];
-            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
-            const task = findTaskById(newBoardData[columnIndex].tasks, parent_task_id);
+            const columnIndex = newBoardData.findIndex(
+                (column) => column.column_id === column_id
+            );
+            const task = findTaskById(
+                newBoardData[columnIndex].tasks,
+                parent_task_id
+            );
             task.subtasks.splice(
                 task.subtasks.findIndex((subtask) => subtask.task_id === subtask_id),
                 1
@@ -532,7 +582,13 @@ const Board = () => {
         }
     };
 
-    const handleEditSubtask = async (subtask_id, parent_task_id, column_id, title, description) => {
+    const handleEditSubtask = async (
+        subtask_id,
+        parent_task_id,
+        column_id,
+        title,
+        description
+    ) => {
         try {
             await axios.put(
                 `/boards/${board_id}/subtasks/${subtask_id}`,
@@ -542,8 +598,13 @@ const Board = () => {
                 }
             );
             const newBoardData = [...board.columns];
-            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
-            const task = findTaskById(newBoardData[columnIndex].tasks, parent_task_id);
+            const columnIndex = newBoardData.findIndex(
+                (column) => column.column_id === column_id
+            );
+            const task = findTaskById(
+                newBoardData[columnIndex].tasks,
+                parent_task_id
+            );
             task.subtasks.map((subtask) => {
                 if (subtask.task_id === subtask_id) {
                     subtask.title = title;
@@ -570,8 +631,13 @@ const Board = () => {
                 }
             );
             const newBoardData = [...board.columns];
-            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
-            const task = findTaskById(newBoardData[columnIndex].tasks, parent_task_id);
+            const columnIndex = newBoardData.findIndex(
+                (column) => column.column_id === column_id
+            );
+            const task = findTaskById(
+                newBoardData[columnIndex].tasks,
+                parent_task_id
+            );
             task.subtasks.map((subtask) => {
                 if (subtask.task_id === subtask_id) {
                     subtask.is_favourite = true;
@@ -591,8 +657,13 @@ const Board = () => {
                 },
             });
             const newBoardData = [...board.columns];
-            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
-            const task = findTaskById(newBoardData[columnIndex].tasks, parent_task_id);
+            const columnIndex = newBoardData.findIndex(
+                (column) => column.column_id === column_id
+            );
+            const task = findTaskById(
+                newBoardData[columnIndex].tasks,
+                parent_task_id
+            );
             task.subtasks.map((subtask) => {
                 if (subtask.task_id === subtask_id) {
                     subtask.is_favourite = false;
@@ -615,7 +686,9 @@ const Board = () => {
             );
             const newComment = response.data.comment;
             const newBoardData = [...board.columns];
-            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
+            const columnIndex = newBoardData.findIndex(
+                (column) => column.column_id === column_id
+            );
             const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
             task.comments.push(newComment);
             setBoard({ ...board, columns: newBoardData });
@@ -627,6 +700,8 @@ const Board = () => {
     //popup
     const [showPopup, setShowPopup] = useState(false);
     const [inspectedTask, setInspectedTask] = useState(null);
+    const [inspectedAttachmentLinks, setInspectedAttachmentLinks] =
+        useState(null);
 
     const setTaskAsInspectedTask = (task) => {
         setInspectedTask(task);
@@ -639,18 +714,32 @@ const Board = () => {
 
     const handleOpenPreviousTask = (previousTask_id, column_id) => {
         setShowPopup(false);
-        const tasks = board.columns.find((column) => column.column_id === column_id).tasks;
+        const tasks = board.columns.find(
+            (column) => column.column_id === column_id
+        ).tasks;
         const previousTask = findTaskById(tasks, previousTask_id);
         setInspectedTask(previousTask);
         setShowPopup(true);
     };
 
-    const handleSavePopup = async (task_id, parent_task_id, column_id, newTitle, newDescription) => {
+    const handleSavePopup = async (
+        task_id,
+        parent_task_id,
+        column_id,
+        newTitle,
+        newDescription
+    ) => {
         if (parent_task_id === null) {
             await handleEditTask(task_id, column_id, newTitle, newDescription);
             setShowPopup(false);
         } else {
-            await handleEditSubtask(task_id, parent_task_id, column_id, newTitle, newDescription);
+            await handleEditSubtask(
+                task_id,
+                parent_task_id,
+                column_id,
+                newTitle,
+                newDescription
+            );
         }
     };
 
@@ -673,7 +762,11 @@ const Board = () => {
         setShowGenerateTaskWithAGIPopup(true);
         console.log(task);
         if (task) {
-            setInspectedTask([cloneDeep(task)]);
+            if (Array.isArray(task)) {
+                setInspectedTask(cloneDeep(task));
+            } else {
+                setInspectedTask([cloneDeep(task)]);
+            }
         }
     };
 
@@ -682,17 +775,139 @@ const Board = () => {
         setInspectedTask(null);
     };
 
-    const openGenerateAttachmentLinkWithAGIPopup = (task) => {
+    const openGenerateAttachmentLinkWithAGIPopup = (task, attachmentLink) => {
         setShowGenerateAttachmentLinkWithAGIPopup(true);
         console.log(task);
         if (task) {
             setInspectedTask(cloneDeep(task));
+        }
+        if (attachmentLink) {
+            setInspectedAttachmentLinks(attachmentLink);
         }
     };
 
     const handleGenerateAttachmentLinkCancel = () => {
         setShowGenerateAttachmentLinkWithAGIPopup(false);
         setInspectedTask(null);
+    };
+
+    const reloadCraftedPrompts = async () => {
+        const craftedPromptsResponse = await axios.get(
+            `/boards/${board_id}/AGI/crafted-prompts`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        console.log("crafted prompts");
+        console.log(craftedPromptsResponse.data);
+        setCraftedPrompts(craftedPromptsResponse.data);
+        console.log("craftedPrompts");
+        console.log(craftedPrompts);
+        const boardPrompts = craftedPromptsResponse.data.filter(
+            (prompt) => prompt.action === "GENERATETASK"
+        );
+        const taskPrompts = craftedPromptsResponse.data.filter(
+            (prompt) =>
+                prompt.action === "GENERATESUBTASK" ||
+                prompt.action === "GENERATEATTACHMENTLINK"
+        );
+
+        setCraftedPromptsBoard(boardPrompts);
+        setCraftedPromptsTask(taskPrompts);
+        console.log(craftedPromptsBoard);
+        console.log(craftedPromptsTask);
+    };
+
+    const openCraftPromptPopup = () => {
+        setShowCraftPromptPopup(true);
+    };
+
+    const handleCraftPromptCancel = () => {
+        setShowCraftPromptPopup(false);
+    };
+
+    const useCrafterPromptOnColumn = async (craftedPrompt) => {
+        console.log("craftedPrompt");
+        console.log(craftedPrompt);
+
+        try {
+            const token = sessionStorage.getItem("token");
+
+            const res = await axios.get(
+                `/boards/${board_id}/AGI/crafted-prompts/${craftedPrompt.crafted_prompt_id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log("res.data");
+            console.log(res.data);
+
+            switch (craftedPrompt.action) {
+                case "GENERATETASK":
+                    openGenerateTaskWithAGIPopup(res.data);
+                    /* setShowGenerateTaskWithAGIPopup(true);
+                    setInspectedTask(res.data); */
+                    break;
+                default:
+                    break;
+            }
+
+            console.log(res);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const useCrafterPromptOnTask = async (craftedPrompt, task) => {
+        console.log("craftedPrompt");
+        console.log(craftedPrompt);
+
+        try {
+            const token = sessionStorage.getItem("token");
+
+            const res = await axios.get(
+                `/boards/${board_id}/AGI/crafted-prompts/${craftedPrompt.crafted_prompt_id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            switch (craftedPrompt.action) {
+                case "GENERATESUBTASK":
+                    task.tasks = res.data;
+                    /*           setShowGenerateTaskWithAGIPopup(true);
+                    setInspectedTask(task); */
+                    openGenerateTaskWithAGIPopup(task);
+                    break;
+                case "GENERATEATTACHMENTLINK":
+                    /*           setShowGenerateTaskWithAGIPopup(true);
+                    setInspectedTask(res.data); */
+                    openGenerateAttachmentLinkWithAGIPopup(task, res.data);
+                    break;
+                default:
+                    break;
+            }
+
+            console.log(res);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const HandleCraftedPromptColumnClick = (craftedPrompt) => {
+        useCrafterPromptOnColumn(craftedPrompt);
+    };
+
+    const HandleCraftedPromptTaskClick = (craftedPrompt, task) => {
+        useCrafterPromptOnTask(craftedPrompt, task);
     };
 
     const handleDotsClick = (event, columnIndex) => {
@@ -716,7 +931,9 @@ const Board = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             const newBoardData = [...board.columns];
-            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
+            const columnIndex = newBoardData.findIndex(
+                (column) => column.column_id === column_id
+            );
             const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
             const newTask = response.data.task;
             task.priority_id = newTask.priority_id;
@@ -737,7 +954,9 @@ const Board = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             const newBoardData = [...board.columns];
-            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
+            const columnIndex = newBoardData.findIndex(
+                (column) => column.column_id === column_id
+            );
             const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
             const newTask = response.data.task;
             task.due_date = newTask.due_date;
@@ -756,7 +975,9 @@ const Board = () => {
             );
             const newAttachment = response.data.attachment;
             const newBoardData = [...board.columns];
-            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
+            const columnIndex = newBoardData.findIndex(
+                (column) => column.column_id === column_id
+            );
             const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
             task.attachments.push(newAttachment);
             setBoard({ ...board, columns: newBoardData });
@@ -771,10 +992,14 @@ const Board = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const newBoardData = [...board.columns];
-            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
+            const columnIndex = newBoardData.findIndex(
+                (column) => column.column_id === column_id
+            );
             const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
             task.attachments.splice(
-                task.attachments.findIndex((attachment) => attachment.attachment_id === attachment_id),
+                task.attachments.findIndex(
+                    (attachment) => attachment.attachment_id === attachment_id
+                ),
                 1
             );
             setBoard({ ...board, columns: newBoardData });
@@ -796,7 +1021,9 @@ const Board = () => {
             );
             const newMember = response.data.member;
             const newBoardData = [...board.columns];
-            const columnIndex = newBoardData.findIndex((column) => column.column_id === column_id);
+            const columnIndex = newBoardData.findIndex(
+                (column) => column.column_id === column_id
+            );
             const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
             task.members.push(newMember);
             setBoard({ ...board, columns: newBoardData });
@@ -807,9 +1034,10 @@ const Board = () => {
 
     const handleDeleteMember = async (task_id, column_id, member_id) => {
         try {
-            const response = await axios.delete(`/tasks/${task_id}/members/${member_id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const response = await axios.delete(
+                `/tasks/${task_id}/members/${member_id}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
         } catch (e) {
             console.error(e);
         }

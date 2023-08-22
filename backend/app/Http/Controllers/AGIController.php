@@ -19,7 +19,7 @@ use Illuminate\Support\Carbon;
 
 class AGIController extends Controller
 {
-    public function GenerateTask(Request $request)
+    public static function GenerateTask(Request $request)
     {
         $user = auth()->user();
 
@@ -30,12 +30,19 @@ class AGIController extends Controller
                 $response = LlamaController::generateTaskLlama($request);
                 break;
             case Str::lower("bard"):
+                if($request->header('Draft') == true)
+                {
+                    $response = BardController::generateTaskDraftBard($request);
+                    break;
+                }
                 $response = BardController::generateTaskBard($request);
                 break;
-            case Str::lower("chatgpt draft"):
-                $response = ChatGPTController::GenerateTaskDraftChatGPT($request);
-                break;
             default:
+                if($request->header('Draft') == true)
+                {
+                    $response = ChatGPTController::GenerateTaskDraftChatGPT($request);
+                    break;
+                }
                 $response = ChatGPTController::GenerateTaskChatGPT($request);
                 break;
         }
@@ -43,7 +50,7 @@ class AGIController extends Controller
     }
     
 
-    public function GenerateSubtask(Request $request)
+    public static function GenerateSubtask(Request $request)
     {
         $user = auth()->user();
 
@@ -64,7 +71,7 @@ class AGIController extends Controller
         return $response;
     }
 
-    public function GenerateTaskCraftedPrompt(Request $request)
+    public static function GenerateTaskCraftedPrompt(Request $request)
     {
         $user = auth()->user();
     
@@ -79,14 +86,14 @@ class AGIController extends Controller
                 $response = ChatGPTController::GenerateTaskDraftChatGPT($request);
                 break;
             default:
-                $response = ChatGPTController::GenerateCraftedTaskChatGPT($request);
+                $response = ChatGPTController::GenerateTaskChatGPT($request);
                 break;
         }
     
         return $response;
     }
 
-    public function GenerateAttachmentLink(Request $request)
+    public static function GenerateAttachmentLink(Request $request)
     {
         $user = auth()->user();
 
@@ -96,6 +103,9 @@ class AGIController extends Controller
             case Str::lower("llama"):
                 $response = LlamaController::GenerateAttachmentLinkLlama($request);
                 break;
+            case Str::lower("bard"):
+                $response = BardController::GenerateAttachmentLinkBard($request);
+                break;
             default:
                 $response = ChatGPTController::GenerateAttachmentLinkChatGPT($request);
                 break;
@@ -103,4 +113,68 @@ class AGIController extends Controller
 
         return $response;
     }
+
+    public function GenerateTaskDocumentationPerTask(Request $request, $boardId, $taskId)
+    {
+        $user = auth()->user();
+
+        $response;
+        
+        switch($request->header('ChosenAI')) {
+            case Str::lower("llama"):
+                $response = LlamaController::GenerateTaskDocumentationPerTask($boardId, $taskId);
+                break;
+            case Str::lower("bard"):
+                $response = BardController::GenerateTaskDocumentationPerTask($boardId, $taskId);
+                break;
+            default:
+                $response = ChatGPTController::GenerateTaskDocumentationPerTask($boardId, $taskId);
+                break;
+        }
+
+        return $response;
+    }
+
+    public function GenerateTaskDocumentationPerBoard(Request $request, $boardId)
+    {
+        $user = auth()->user();
+
+        $response;
+        
+        switch($request->header('ChosenAI')) {
+            case Str::lower("llama"):
+                $response = LlamaController::GenerateTaskDocumentationPerBoard($boardId);
+                break;
+            case Str::lower("bard"):
+                $response = BardController::GenerateTaskDocumentationPerBoard($boardId);
+                break;
+            default:
+                $response = ChatGPTController::GenerateTaskDocumentationPerBoard($boardId);
+                break;
+        }
+
+        return $response;
+    }
+
+    public function GenerateTaskDocumentationPerColumn(Request $request, $boardId, $taskId)
+    {
+        $user = auth()->user();
+
+        $response;
+        
+        switch($request->header('ChosenAI')) {
+            case Str::lower("llama"):
+                $response = LlamaController::GenerateTaskDocumentationPerColumn($boardId, $taskId);
+                break;
+            case Str::lower("bard"):
+                $response = BardController::GenerateTaskDocumentationPerColumn($boardId, $taskId);
+                break;
+            default:
+                $response = ChatGPTController::GenerateTaskDocumentationPerColumn($boardId, $taskId);
+                break;
+        }
+
+        return $response;
+    }
+
 }

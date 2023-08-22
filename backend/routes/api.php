@@ -17,12 +17,15 @@ use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\PromptCraftController;
-
+use App\Http\Controllers\TeamMemberRoleController;
 use App\Http\Controllers\NotificationController;
 
 use App\Http\Controllers\TeamManagementController;
 use App\Http\Controllers\UserTasksController;
 use App\Http\Controllers\BardController;
+use App\Http\Controllers\ChatGPTController;
+use App\Http\Controllers\AGIAnswersController;
+
 /*
 |--------------------------------------------------------------------------
 
@@ -32,6 +35,7 @@ use App\Http\Controllers\LlamaController;
 use App\Models\Feedback;
 use App\Http\Controllers\UserTasksController;
 use App\Http\Controllers\TeamMemberRoleController;
+use App\Http\Controllers\RolePermissionController;
 
 /*
 
@@ -48,6 +52,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/user/permissions', [UserController::class, 'showPermissions'])->middleware('api');
 Route::post('/user/signup', [UserController::class, 'signup']);
 Route::post('/user/login', [UserController::class, 'login']);
 Route::get('/user/check-login', [UserController::class, 'checkLogin']);
@@ -92,6 +97,7 @@ Route::post('/boards/{board_id}/tasks/{parent_task_id}/subtasks', [TaskControlle
 Route::put('/boards/{board_id}/subtasks/{subtask_id}', [TaskController::class, 'subtaskUpdate'])->middleware('api');
 Route::delete('/boards/{board_id}/subtasks/{subtask_id}', [TaskController::class, 'subtaskDestroy'])->middleware('api');
 Route::post('/boards/{boardId}/columns/{columnId}/tasks/create-with-subtasks', [TaskController::class, 'createTasksWithSubtasks'])->middleware('api');
+Route::put('/boards/{boardId}/columns/{columnId}/tasks/update-with-subtasks', [TaskController::class, 'updateTasksWithSubtasks'])->middleware('api');
 Route::post('/boards/{boardId}/columns/{columnId}/tasks/{taskId}/SubtasksToExistingTask', [TaskController::class, 'addSubtasksToExistingTask'])->middleware('api');
 Route::put('/boards/{boardId}/columns/{columnId}/tasks/{taskId}/SubtasksToExistingTask', [TaskController::class, 'updateExistingTask'])->middleware('api');
 Route::delete('/boards/{boardId}/columns/{columnId}/tasks/{taskId}/SubtasksToExistingTask', [TaskController::class, 'deleteExistingTaskWithItsSubtasks'])->middleware('api');
@@ -142,6 +148,10 @@ Route::get('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::cla
 Route::post('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'store'])->middleware('api');
 Route::delete('/boards/{boardId}/team-member-roles/{teamMemberRoleId}',[TeamMemberRoleController::class, 'destroy'])->middleware('api');
 
+Route::get('/boards/{boardId}/role-permissions', [RolePermissionController::class, 'index'])->middleware('api');
+Route::post('/boards/{boardId}/roles/{roleId}/permissions', [RolePermissionController::class, 'store'])->middleware('api');
+Route::delete('/boards/{boardId}/roles/{roleId}/permissions/{permissionId}', [RolePermissionController::class, 'destroy'])->middleware('api');
+
 Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');
 Route::get('/AGI/GenerateTask', [AGIController::class, 'GenerateTask'])->middleware('api');
 Route::get('/AGI/GenerateSubtask', [AGIController::class, 'GenerateSubtask'])->middleware('api');
@@ -149,16 +159,26 @@ Route::get('/AGI/GenerateAttachmentLink', [AGIController::class, 'GenerateAttach
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_code', [AGIController::class, 'generateCode'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_priority', [AGIController::class, 'generatePriority'])->middleware('api');
 Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::class, 'generatePrioritiesForColumn'])->middleware('api');
+Route::get('/AGI/generate-documentation-task/board/{boardId}/task/{taskId}', [AGIController::class, 'GenerateTaskDocumentationPerTask'])->middleware('api');
+Route::get('/AGI/generate-documentation-board/{boardId}', [AGIController::class, 'GenerateTaskDocumentationPerBoard'])->middleware('api');
+Route::get('/AGI/generate-documentation-column/board/{boardId}/column/{columnId}', [AGIController::class, 'GenerateTaskDocumentationPerColumn'])->middleware('api');
+
 Route::post('/generate-llama-subtasks', [LlamaController::class, 'generateSubtasks']);
 Route::get('/generate-llama-subtasks2', [LlamaController::class, 'testSubtaskParsing']);
 
-Route::get('/get-bard-answer', [BardController::class, 'getBardAnswer']);
 
 
 Route::get('/boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::class, 'getPrompts'])->middleware('api');
 Route::post('/boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::class, 'storePrompts'])->middleware('api');
 Route::put('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraftController::class, 'updatePrompts'])->middleware('api');
 Route::delete('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraftController::class, 'destroyPrompts'])->middleware('api');
+Route::get('/boards/{boardId}/AGI/crafted-prompts/{craftedPromptId}', [PromptCraftController::class, 'usePrompts'])->middleware('api');
 
-Route::get('/AGI/GenerateTask/CraftedPrompt', [AGIController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
+Route::get('/AGI/GenerateTask/CraftedPrompt', [ChatGPTController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
 
+Route::get('/AGI/answers/boards/{boardId}', [AGIAnswersController::class, 'index'])->middleware('api');
+Route::post('/AGI/answers/boards/{boardId}', [AGIAnswersController::class, 'storePerBoard'])->middleware('api');
+Route::post('/AGI/answers/boards/{boardId}/task/{task_id}', [AGIAnswersController::class, 'storePerTask'])->middleware('api');
+Route::post('/AGI/answers/boards/{boardId}/column/{column_id}', [AGIAnswersController::class, 'storePerColumn'])->middleware('api');
+Route::put('/AGI/answers/boards/{boardId}/task/{task_id}/answer/{answer_id}', [AGIAnswersController::class, 'update'])->middleware('api');
+Route::delete('/AGI/boards/{boardId}/answers/{answerId}', [AGIAnswersController::class, 'destroy'])->middleware('api');

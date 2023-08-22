@@ -1,0 +1,119 @@
+diff --git a/backend/app/Http/Controllers/AGIController.php b/backend/app/Http/Controllers/AGIController.php
+index 812b0b5..0fd96f2 100644
+--- a/backend/app/Http/Controllers/AGIController.php
++++ b/backend/app/Http/Controllers/AGIController.php
+@@ -7,14 +7,15 @@
+ use App\Models\Column;
+ use App\Models\TaskTag;
+ use App\Models\Priority;
++use Illuminate\Support\Str;
+ use Illuminate\Http\Request;
++use App\Models\CraftedPrompt;
++use Illuminate\Support\Carbon;
+ use App\Helpers\ExecutePythonScript;
+ use Illuminate\Support\Facades\Http;
+ use Illuminate\Support\Facades\Storage;
+ use App\Http\Controllers\LlamaController;
+ use App\Http\Controllers\ChatGPTController;
+-use Illuminate\Support\Str;
+-use Illuminate\Support\Carbon;
+ 
+ 
+ class AGIController extends Controller
+@@ -74,20 +75,39 @@ public function GenerateSubtask(Request $request)
+     public function GenerateTaskCraftedPrompt(Request $request)
+     {
+         $user = auth()->user();
+-    
+-        $chosenAI = Str::lower($request->header('ChosenAI'));
++
++        $promptId = $request->header('CraftedPromptID');
++        $chosenCraftedTask = CraftedPrompt::find($promptId);
++
++        $chosenAI = $chosenCraftedTask->craft_with;
++        $action = $chosenCraftedTask->action;
+         $response;
++
+     
+         switch ($chosenAI) {
+-            case "llama":
++            case "LLAMA":
+                 $response = LlamaController::generateTaskLlama($request);
+                 break;
+-            case "chatgpt draft":
++            case "BARD":
+                 $response = ChatGPTController::GenerateTaskDraftChatGPT($request);
+                 break;
+             default:
+-                $response = ChatGPTController::GenerateCraftedTaskChatGPT($request);
+-                break;
++                if($action == "GENERATETASK") 
++                {
++                    $response = ChatGPTController::GenerateCraftedTaskChatGPT($request, $chosenCraftedTask);
++                    break;
++                }
++                if($action == "GENERATESUBTASK") 
++                {
++                    $response = ChatGPTController::GenerateCraftedSubtaskChatGPT($request, $chosenCraftedTask);
++                    break;
++                }
++                if($action == "GENERATEATTACHMENTLINK") 
++                {
++                    $response = ChatGPTController::GenerateAttachmentLinkChatGPT($request);
++                    break;
++                }
++               
+         }
+     
+         return $response;
+diff --git a/backend/app/Http/Controllers/ChatGPTController.php b/backend/app/Http/Controllers/ChatGPTController.php
+index b9f5968..3cc2946 100644
+--- a/backend/app/Http/Controllers/ChatGPTController.php
++++ b/backend/app/Http/Controllers/ChatGPTController.php
+@@ -7,13 +7,14 @@
+ use App\Models\Column;
+ use App\Models\TaskTag;
+ use App\Models\Priority;
++use Illuminate\Support\Str;
+ use Illuminate\Http\Request;
++use App\Models\CraftedPrompt;
++use Illuminate\Support\Carbon;
+ use App\Helpers\ExecutePythonScript;
+ use Illuminate\Support\Facades\Http;
+ use Illuminate\Support\Facades\Storage;
+ use App\Http\Controllers\LlamaController;
+-use Illuminate\Support\Str;
+-use Illuminate\Support\Carbon;
+ 
+ 
+ class ChatGPTController extends Controller
+@@ -229,13 +230,26 @@ public static function generatePrioritiesForColumn(Request $request, $boardId, $
+         ]);
+     }
+ 
+-    public static function GenerateCraftedTaskChatGPT(Request $request)
++    public static function GenerateCraftedTaskChatGPT(Request $request, $chosenCraftedTask)
++    {
++        $taskCounter = $request->header('TaskCounter');
++        $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
++        
++        $prompt = "Generate $taskCounter task kanban board tickets. JSON structure in a list. title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list). '$chosenCraftedTask->crafted_prompt_text'. Act as i said.";
++
++        return ChatGPTController::CallPythonAndFormatResponse($prompt);
++
++    }
++
++    public static function GenerateCraftedSubtaskChatGPT(Request $request, $chosenCraftedTask)
+     {
+-        $taskPrompt = $request->header('TaskPrompt'); // Correct the header key spelling
+         $taskCounter = $request->header('TaskCounter');
+         $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
++        $taskId = $request->header('TaskId');
++        
++        $task = Task::find($taskId);
+ 
+-        $prompt = "Generate $taskCounter task kanban board tickets. JSON structure in a list. title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list). '$taskPrompt'. Act as i said.";
++        $prompt = "Generate $taskCounter subtask kanban tickets in JSON structure in a list with title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list) attributes for this ticket: title:$task->title, description: $task->description. This is your job to do: '$chosenCraftedTask->crafted_prompt_text'. Act as i said.";
+ 
+         return ChatGPTController::CallPythonAndFormatResponse($prompt);
+ 

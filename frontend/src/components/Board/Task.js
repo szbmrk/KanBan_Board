@@ -31,6 +31,7 @@ export const Task = ({
     id,
     index,
     task,
+    craftedPromptsTask,
     divName,
     favouriteTask,
     unFavouriteTask,
@@ -41,6 +42,7 @@ export const Task = ({
     setTaskAsInspectedTask,
     generateTasks,
     generateAttachmentLinks,
+    HandleCraftedPromptTaskClick,
 }) => {
     const [bouncingStarIcon, setBouncingStarIcon] = useState(regularStarIcon);
     const [isHoveredEdit, setIsHoveredEdit] = useState(false);
@@ -145,36 +147,40 @@ export const Task = ({
         <>
             <div
                 ref={(node) => drag(drop(node))}
-                className='card'
+                className="card"
                 style={{
                     opacity,
-                    cursor: 'grab',
+                    cursor: "grab",
                     zIndex: cardZIndex,
                 }}
                 onMouseEnter={() => handleMouseEnterOnCard(id)}
                 onMouseLeave={handleMouseLeaveOnCard}
             >
-                <div className='task-title'>{task.title}</div>
-                <div className='options' style={{ visibility: hoveredCardId === id ? 'visible' : 'hidden' }}>
+                <div className="task-title">{task.title}</div>
+                <div
+                    className="options"
+                    style={{ visibility: hoveredCardId === id ? "visible" : "hidden" }}
+                >
                     <span
-                        className='dots'
+                        className="dots"
                         onClick={handleDotsClick}
                         style={{
-                            visibility: hoveredCardId === id ? 'visible' : 'hidden',
-                            transition: 'visibility 0.1s ease',
+                            visibility: hoveredCardId === id ? "visible" : "hidden",
+                            transition: "visibility 0.1s ease",
                         }}
                     >
                         {dotsIcon}
                     </span>
                 </div>
-                <div className='tags'>
+                <div className="tags">
                     {task.tags &&
                         task.tags.map((tag, tagIndex) => (
                             <Tag
                                 key={tagIndex}
                                 name={tag.name}
                                 color={tag.color}
-                                extraClassName={`tag-on-board ${activeTags.includes(task.tags) ? 'clicked' : ''}`}
+                                extraClassName={`tag-on-board ${activeTags.includes(task.tags) ? "clicked" : ""
+                                    }`}
                                 enableClickBehavior={true}
                                 onClick={() => handleTagClick(task.tags)}
                             />
@@ -183,30 +189,30 @@ export const Task = ({
             </div>
             {showIconContainer && (
                 <div
-                    className='overlay'
+                    className="overlay"
                     onClick={() => {
                         setShowIconContainer(false);
                         setCardZIndex(1);
                     }}
                 >
                     <div
-                        className='icon-container'
+                        className="icon-container"
                         style={{
-                            position: 'fixed',
-                            left: iconContainerPosition.x + 'px',
-                            top: iconContainerPosition.y + 'px',
+                            position: "fixed",
+                            left: iconContainerPosition.x + "px",
+                            top: iconContainerPosition.y + "px",
                         }}
                     >
                         <div
-                            className='option'
+                            className="option"
                             onMouseEnter={() => setIsHoveredEdit(true)}
                             onMouseLeave={() => setIsHoveredEdit(false)}
                             onClick={() => setTaskAsInspectedTask(task)}
                         >
                             <span
-                                className='edit-button'
+                                className="edit-button"
                                 style={{
-                                    animation: isHoveredEdit ? 'rotate 0.5s' : 'none',
+                                    animation: isHoveredEdit ? "rotate 0.5s" : "none",
                                 }}
                             >
                                 {pencilIcon}
@@ -214,48 +220,53 @@ export const Task = ({
                             <p>Edit</p>
                         </div>
                         <div
-                            className='option'
+                            className="option"
                             onMouseEnter={() => setIsHoveredAI(true)}
                             onMouseLeave={() => setIsHoveredAI(false)}
                             onClick={() => handleAI()}
                         >
                             <span
-                                className='ai-button'
+                                className="ai-button"
                                 style={{
-                                    color: isHoveredAI ? 'var(--magic)' : '',
+                                    color: isHoveredAI ? "var(--magic)" : "",
                                 }}
                             >
                                 {aiIcon}
                             </span>
                             <p>Generate Subtasks</p>
                         </div>
-                        <div
-                            className='option'
-                            onMouseEnter={() => setIsHoveredAttachmentLink(true)}
-                            onMouseLeave={() => setIsHoveredAttachmentLink(false)}
-                            onClick={() => handleAttachmentLinks()}
-                        >
-                            <span
-                                className='ai-button'
-                                style={{
-                                    color: isHoveredAttachmentLink ? 'var(--attachment-link)' : '',
-                                }}
+                        {craftedPromptsTask.map((craftedPrompt, index) => (
+                            <div
+                                key={index}
+                                className="option"
+                                onMouseEnter={() => setIsHoveredAI(true)}
+                                onMouseLeave={() => setIsHoveredAI(false)}
+                                onClick={() =>
+                                    HandleCraftedPromptTaskClick(craftedPrompt, task)
+                                }
                             >
-                                {attachmentLinkIcon}
-                            </span>
-                            <p>Generate Attachment Links</p>
-                        </div>
+                                <span
+                                    className="ai-button"
+                                    style={{
+                                        color: isHoveredAI ? "var(--magic)" : "",
+                                    }}
+                                >
+                                    {aiIcon}
+                                </span>
+                                <p>{craftedPrompt.crafted_prompt_title}</p>
+                            </div>
+                        ))}
                         {task.is_favourite ? (
                             <div
-                                className='option'
+                                className="option"
                                 onMouseEnter={() => setIsHoveredFavorite(true)}
                                 onMouseLeave={() => setIsHoveredFavorite(false)}
                                 onClick={() => unFavouriteTask(id, task.column_id)}
                             >
                                 <span
-                                    className='favourite-button solid-icon'
+                                    className="favourite-button solid-icon"
                                     style={{
-                                        color: isHoveredFavorite ? 'var(--light-gray)' : '',
+                                        color: isHoveredFavorite ? "var(--light-gray)" : "",
                                     }}
                                 >
                                     {solidStarIcon}
@@ -264,33 +275,36 @@ export const Task = ({
                             </div>
                         ) : (
                             <div
-                                className='option'
+                                className="option"
                                 onMouseEnter={() => setIsHoveredFavorite(true)}
                                 onMouseLeave={() => setIsHoveredFavorite(false)}
                                 onClick={() => favouriteTask(id, task.column_id)}
                             >
                                 <span
-                                    className='favourite-button regular-icon'
+                                    className="favourite-button regular-icon"
                                     onMouseEnter={handleMouseEnterOnStarIcon}
                                     onMouseLeave={handleMouseLeaveOnStarIcon}
-                                    style={{ color: isHoveredFavorite ? 'var(--starred)' : '' }}
+                                    style={{ color: isHoveredFavorite ? "var(--starred)" : "" }}
                                 >
                                     {bouncingStarIcon}
                                 </span>
-                                <p onMouseEnter={handleMouseEnterOnStarIcon} onMouseLeave={handleMouseLeaveOnStarIcon}>
+                                <p
+                                    onMouseEnter={handleMouseEnterOnStarIcon}
+                                    onMouseLeave={handleMouseLeaveOnStarIcon}
+                                >
                                     Add to Favourites
                                 </p>
                             </div>
                         )}
                         <div
-                            className='option'
+                            className="option"
                             onMouseEnter={() => setIsHoveredDelete(true)}
                             onMouseLeave={() => setIsHoveredDelete(false)}
                             onClick={() => deleteTask(id, task.column_id)}
                         >
                             <span
-                                className='delete-task-button'
-                                style={{ color: isHoveredDelete ? 'var(--important)' : '' }}
+                                className="delete-button"
+                                style={{ color: isHoveredDelete ? "var(--important)" : "" }}
                             >
                                 {trashIcon}
                             </span>

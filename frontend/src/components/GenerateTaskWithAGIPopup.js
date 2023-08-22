@@ -1,12 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import axios from '../api/axios';
-import '../styles/popup.css';
-import '../styles/GenerateTaskWithAGIPopup.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import Dropdown from 'react-dropdown';
+import React, { useState, useRef, useEffect } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import axios from "../api/axios";
+import "../styles/popup.css";
+import "../styles/GenerateTaskWithAGIPopup.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import Dropdown from "react-dropdown";
 
 const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
     let [editedTasks, setEditedTasks] = useState(tasks ? [...tasks] : []);
@@ -58,11 +58,13 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
         setEditedTasks(updatedTasks);
     };
 
-    const saveToDatabase = () => {};
+    const saveToDatabase = () => {
+        console.log(editedTasks);
+    };
 
     const generateTask = async (taskPrompt, task, ai, counter) => {
         try {
-            const token = sessionStorage.getItem('token');
+            const token = sessionStorage.getItem("token");
 
             console.log(taskPrompt);
             console.log(counter);
@@ -80,7 +82,9 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
 
             if (task) {
                 task.tasks = res.data;
-                const updatedTask = task ? { ...task, tasks: res.data } : { tasks: res.data };
+                const updatedTask = task
+                    ? { ...task, tasks: res.data }
+                    : { tasks: res.data };
                 const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
 
                 setEditedTasks(updatedTasks);
@@ -97,9 +101,11 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
             task === updatedTask
                 ? updatedTask
                 : {
-                      ...task,
-                      tasks: task.tasks ? updateTaskInEditedTasks(task.tasks, updatedTask) : task.tasks,
-                  }
+                    ...task,
+                    tasks: task.tasks
+                        ? updateTaskInEditedTasks(task.tasks, updatedTask)
+                        : task.tasks,
+                }
         );
     };
 
@@ -110,16 +116,16 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
             }
         };
 
-        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutside);
 
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [onCancel]);
 
     const generateSubtask = async (taskPrompt, task, ai, counter) => {
         try {
-            const token = sessionStorage.getItem('token');
+            const token = sessionStorage.getItem("token");
 
             console.log(taskPrompt);
             console.log(counter);
@@ -137,7 +143,9 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
 
             if (task) {
                 task.tasks = res.data;
-                const updatedTask = task ? { ...task, tasks: res.data } : { tasks: res.data };
+                const updatedTask = task
+                    ? { ...task, tasks: res.data }
+                    : { tasks: res.data };
                 const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
 
                 setEditedTasks(updatedTasks);
@@ -241,32 +249,32 @@ const TaskRecursive = ({
     editedTasks,
 }) => {
     const aiOptions = [
-        { value: 'chatgpt', label: 'ChatGPT' },
-        { value: 'llama', label: 'Llama' },
-        { value: 'bard', label: 'Bard' },
+        { value: "chatgpt", label: "ChatGPT" },
+        { value: "llama", label: "Llama" },
+        { value: "bard", label: "Bard" },
     ];
     let [chosenAI, setChosenAI] = useState(aiOptions[0]);
     const counterOptions = [
-        { value: '1', label: '1' },
-        { value: '2', label: '2' },
-        { value: '3', label: '3' },
-        { value: '4', label: '4' },
-        { value: '5', label: '5' },
-        { value: '6', label: '6' },
-        { value: '7', label: '7' },
-        { value: '8', label: '8' },
-        { value: '9', label: '9' },
-        { value: '10', label: '10' },
+        { value: "1", label: "1" },
+        { value: "2", label: "2" },
+        { value: "3", label: "3" },
+        { value: "4", label: "4" },
+        { value: "5", label: "5" },
+        { value: "6", label: "6" },
+        { value: "7", label: "7" },
+        { value: "8", label: "8" },
+        { value: "9", label: "9" },
+        { value: "10", label: "10" },
     ];
     let [taskCounter, setTaskCounter] = useState(counterOptions[0]);
 
     const formatDate = (date) => {
         const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const seconds = String(date.getSeconds()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+        const day = String(date.getDate()).padStart(2, "0");
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        const seconds = String(date.getSeconds()).padStart(2, "0");
 
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     };
@@ -274,7 +282,7 @@ const TaskRecursive = ({
     const generateSubtaskPrepare = (task) => {
         console.log(chosenAI);
         generateSubtask(
-            `${task.description}, due_date: '${task.due_date ? task.due_date : '-'}'`,
+            `${task.description}, due_date: '${task.due_date ? task.due_date : "-"}'`,
             task,
             chosenAI.value,
             taskCounter.value
@@ -287,13 +295,13 @@ const TaskRecursive = ({
                 style={
                     editedTasks.length > 0
                         ? {
-                              fontSize: '1.1em',
-                              textAlign: 'left',
-                          }
+                            fontSize: '1.1em',
+                            textAlign: 'left',
+                        }
                         : {
-                              fontSize: '1.2em',
-                              textAlign: 'center',
-                          }
+                            fontSize: '1.2em',
+                            textAlign: 'center',
+                        }
                 }
             >
                 {editedTasks.length > 0 ? `Generate subtasks for "${task.title}" task` : 'Generate task'}

@@ -29,14 +29,14 @@ class DashboardController extends Controller
             //'response' => $response,
         ]);
     }
-
+    
     public function store(Request $request)
     {
         $user = auth()->user();
     
         $team_id = $request->team_id;
         if ($user->teams()->where('teams.team_id', $team_id)->exists()) {
-            
+    
             $board = new Board;
             $board->name = $request->name;
             $board->team_id = $team_id;
@@ -50,15 +50,29 @@ class DashboardController extends Controller
             }
     
             $boardManagementPermission = Permission::firstOrCreate(['name' => 'board_management']);
-            $roleManagementPermission = Permission::firstOrCreate(['name' => 'role_management']); // Role management permission
+            $roleManagementPermission = Permission::firstOrCreate(['name' => 'role_management']);
+            $teamMemberRoleManagementPermission = Permission::firstOrCreate(['name' => 'team_member_role_management']);
+            $columnManagementPermission = Permission::firstOrCreate(['name' => 'column_management']);
+            $rolesPermissionsManagementPermission = Permission::firstOrCreate(['name' => 'roles_permissions_management']);
     
             if (!$boardManagerRole->permissions->contains($boardManagementPermission)) {
                 $boardManagerRole->permissions()->attach($boardManagementPermission->id);
             }
     
-            // Check and attach role_management permission if not exists
             if (!$boardManagerRole->permissions->contains($roleManagementPermission)) {
                 $boardManagerRole->permissions()->attach($roleManagementPermission->id);
+            }
+    
+            if (!$boardManagerRole->permissions->contains($teamMemberRoleManagementPermission)) {
+                $boardManagerRole->permissions()->attach($teamMemberRoleManagementPermission->id);
+            }
+
+            if (!$boardManagerRole->permissions->contains($columnManagementPermission)) {
+                $boardManagerRole->permissions()->attach($columnManagementPermission->id);
+            }
+
+            if (!$boardManagerRole->permissions->contains($rolesPermissionsManagementPermission)) {
+                $boardManagerRole->permissions()->attach($rolesPermissionsManagementPermission->id);
             }
     
             LogRequest::instance()->logAction('CREATED BOARD', $user->user_id, "Board created successfully!", $team_id, $board->board_id, null);
