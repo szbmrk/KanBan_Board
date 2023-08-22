@@ -45,9 +45,10 @@ class TaskTagController extends Controller
 
         $tags = TaskTag::where('board_id', $board_id)
             ->where('task_id', $task_id)
-            ->get(); 
+            ->orderBy('tag_id')
+            ->get();
 
-        $tags = $tags->sortBy('tag_id');
+       
         
         return response()->json($tags); 
     }
