@@ -8,7 +8,8 @@ import { SetRoles } from "../../roles/Roles";
 const Teams = () => {
     const token = sessionStorage.getItem('token');
     const user_id = sessionStorage.getItem('user_id');
-    const [team_member, setTeamMember]=useState(JSON.parse(sessionStorage.getItem('permissions')));
+    const [ownPermissions, setOwnPermissions] = useState([]);
+    const [teamPermissions, setTeamPermissions] = useState([]);
   
 
     const [teams, setTeams] = useState([]);
@@ -25,8 +26,8 @@ const Teams = () => {
 
     async function ResetRoles() {
         await SetRoles(token);
-        setTeamMember(JSON.parse(sessionStorage.getItem('permissions')));
-        console.log('x');
+        setTeamPermissions(JSON.parse(sessionStorage.getItem('permissions')).teams);
+        setOwnPermissions(JSON.parse(sessionStorage.getItem('permissions')).general_role);
     }
 
     function addTeam() {
@@ -88,7 +89,7 @@ const Teams = () => {
             newTeamData.push(response.data.team);
             console.log(newTeamData);
             setTeams(newTeamData);
-            SetRoles(token);
+            ResetRoles();
         } catch (error) {
             console.log(error.response);
         }
@@ -176,7 +177,7 @@ const Teams = () => {
             ) : (
                 <div className="scrollable-container">
                     {teams.map((team, index) => (
-                        <TeamCard key={index} data={team} deleteUserFromTeam={deleteUserFromTeam} ChangeTeamName={ChangeTeamName} AddUsers={AddUsers} DeleteTeam={DeleteTeam} team_member={team_member} />
+                        <TeamCard key={index} data={team} deleteUserFromTeam={deleteUserFromTeam} ChangeTeamName={ChangeTeamName} AddUsers={AddUsers} DeleteTeam={DeleteTeam} ownPermissions={ownPermissions} teamPermissions={teamPermissions} />
                     ))}
 
                     <div

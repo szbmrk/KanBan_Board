@@ -4,18 +4,19 @@ import '../../styles/teamcard.css';
 import DeleteConfirm from './DeleteConfirm';
 import AddUser from './AddUser';
 import Loader from '../Loader';
+import RolesManager from './RolesManager';
 
-const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTeam, team_member }) => {
-  const user_id = parseInt(sessionStorage.getItem('user_id'));
-  const ownPermissions = team_member.teams.filter(team => team.team_id === data.team_id).map(permission => permission.permission_data);
+const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTeam, ownPermissions, teamPermissions }) => {
   const [manageIsClicked, setManage] = useState(false);
   const [deleteIsClicked, setDelete] = useState(false);
   const [addIsClicked, setAdd] = useState(false);
+  const [rolesIsClicked, setRoles] = useState(false);
   const [teamData, setTeamData] = useState([]);
   const [createdBy, setCreatedBy] = useState('');
 
   useEffect(() => {
     document.title = 'Teams';
+    console.log(data);
     for (let i = 0; i < data.team_members.length; i++) {
       if (data.team_members[i].user_id === data.created_by) {
         setCreatedBy(data.team_members[i].user.username);
@@ -35,6 +36,45 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
 
   function handleAddButton() {
     setAdd(!addIsClicked);
+  }
+  function handleRolesButton(){
+    setRoles(!rolesIsClicked);
+  }
+
+  const checkPermissonToManageTeam = (team_id) => {
+    //TODO Refactor
+    console.log(teamPermissions);
+    if (ownPermissions.includes('system_admin')) {
+      return true;
+    }
+    if (teamPermissions.length === 0) {
+      return false;
+    }
+    for (let i = 0; i < teamPermissions.length; i++) {
+      if (teamPermissions[i].team_id === team_id) {
+        if (teamPermissions[i].permission === 'team_management') {
+          return true;
+        }
+      }
+    }
+  }
+
+  const checkPermissonToManageTeamMembers = (team_id) => {
+    //TODO Refactor
+    console.log(teamPermissions);
+    if (ownPermissions.includes('system_admin')) {
+      return true;
+    }
+    if (teamPermissions.length === 0) {
+      return false;
+    }
+    for (let i = 0; i < teamPermissions.length; i++) {
+      if (teamPermissions[i].team_id === team_id) {
+        if (teamPermissions[i].permission === 'team_member_management') {
+          return true;
+        }
+      }
+    }
   }
 
   return (
@@ -57,11 +97,20 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
                       <h3 key={index}>{member.user.username}</h3>
                     </td>
                     <td>
-                      {data.created_by !== member.user.user_id && ownPermissions.some(permission => permission.id === 4) &&
+                      {data.created_by !== member.user.user_id && checkPermissonToManageTeamMembers(data.team_id) &&
                         (
                           < button className='delete_button' onClick={() => deleteUserFromTeam(data.team_id, member.user.user_id)}>
                             Remove user from team
                           </button>)}
+                    </td>
+                    <td>
+                      {data.created_by !== member.user.user_id && (checkPermissonToManageTeamMembers(data.team_id) || checkPermissonToManageTeam(data.team_id)) &&
+                        (
+                          <button onClick={handleRolesButton}>
+                            Manage roles
+                          </button>
+                        )
+                      }
                     </td>
 
                   </tr>
@@ -70,7 +119,7 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
             </table>
 
             <div>
-              {ownPermissions.some(permission => permission.id === 3) &&
+              {checkPermissonToManageTeam(data.team_id) &&
                 (
                   <div>
                     <button className='manageButton' onClick={ManageTeam}>
@@ -82,7 +131,7 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
                   </div>
                 )
               }
-              {ownPermissions.some(permission => permission.id === 4) &&
+              {checkPermissonToManageTeamMembers(data.team_id) &&
                 <button className='manageButton' onClick={handleAddButton}>
                   Add Users
                 </button>
@@ -99,6 +148,10 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
           {
             addIsClicked &&
             <AddUser teamID={data.team_id} OnClose={handleAddButton} AddUsers={AddUsers} />
+          }
+          {
+            rolesIsClicked &&
+              <RolesManager OnClose={handleRolesButton} team_id={data.team_id}/>
           }
         </div>
       )
