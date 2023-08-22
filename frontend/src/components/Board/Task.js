@@ -125,8 +125,8 @@ export const Task = ({
 
     const [hoveredCardId, setHoveredCardId] = useState(null);
 
-    const handleMouseEnterOnCard = (boardId) => {
-        setHoveredCardId(boardId);
+    const handleMouseEnterOnCard = (taskId) => {
+        setHoveredCardId(taskId);
     };
 
     const handleMouseLeaveOnCard = () => {

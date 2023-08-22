@@ -4,7 +4,15 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Task, plusIcon } from './Task';
 import ConfirmationPopup from './ConfirmationPopup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faXmark, faWandMagicSparkles, faEllipsis, faShare, faCog } from '@fortawesome/free-solid-svg-icons';
+import {
+    faCheck,
+    faXmark,
+    faWandMagicSparkles,
+    faEllipsis,
+    faTrash,
+    faShare,
+    faCog,
+} from '@fortawesome/free-solid-svg-icons';
 import '../../styles/board.css';
 import '../../styles/popup.css';
 import '../../styles/titlebar.css';
@@ -22,6 +30,7 @@ import { useNavigate } from 'react-router-dom';
 
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
+export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
 
 const Board = () => {
     const { board_id, column_to_show_id, task_to_show_id } = useParams();
@@ -37,7 +46,7 @@ const Board = () => {
     const [columnNewTitle, setColumnNewTitle] = useState('');
     const [showGenerateTaskWithAGIPopup, setShowGenerateTaskWithAGIPopup] = useState(false);
     const [showGenerateAttachmentLinkWithAGIPopup, setShowGenerateAttachmentLinkWithAGIPopup] = useState(false);
-    const [cardZIndex, setCardZIndex] = useState(1);
+    const [columnZIndex, setColumnZIndex] = useState(1);
     const [iconContainerPosition, setIconContainerPosition] = useState({
         x: 0,
         y: 0,
@@ -50,6 +59,7 @@ const Board = () => {
     const [priorities, setPriorities] = useState([]);
     const [ownPermissions, setOwnPermissions] = useState([]);
     const navigate = useNavigate();
+    const [hoveredColumnId, setHoveredColumnId] = useState(null);
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
@@ -693,7 +703,7 @@ const Board = () => {
         setColumnIndex(columnIndex);
         setIconContainerPosition({ x: newX, y: newY });
         setShowIconContainer(!showIconContainer);
-        cardZIndex === 1 ? setCardZIndex(100) : setCardZIndex(1);
+        columnZIndex === 1 ? setColumnZIndex(100) : setColumnZIndex(1);
     };
 
     const handleModifyPriority = async (task_id, column_id, priority_id) => {
@@ -805,6 +815,14 @@ const Board = () => {
         }
     };
 
+    const handleMouseEnterOnColumn = (columnId) => {
+        setHoveredColumnId(columnId);
+    };
+
+    const handleMouseLeaveOnColumn = () => {
+        setHoveredColumnId(null);
+    };
+
     return (
         <>
             {permission === false ? (
@@ -852,6 +870,9 @@ const Board = () => {
                                         divIndex={index}
                                         moveColumnFrontend={moveColumnFrontend}
                                         moveColumnBackend={moveColumnBackend}
+                                        onMouseEnter={() => handleMouseEnterOnColumn(index)}
+                                        onMouseLeave={handleMouseLeaveOnColumn}
+                                        zIndex={columnIndex === index ? columnZIndex : () => setColumnZIndex(1)}
                                     >
                                         <div className='card-container'>
                                             {editingColumnIndex === index ? (
@@ -894,14 +915,17 @@ const Board = () => {
                                                     >
                                                         <h2 className='card-title'>{column.name}</h2>
                                                     </div>
-                                                    <div className='options' style={{ visibility: 'visible' }}>
+                                                    <div
+                                                        className='options'
+                                                        style={{
+                                                            visibility:
+                                                                hoveredColumnId === index ? 'visible' : 'hidden',
+                                                            transition: 'visibility 0.1s ease',
+                                                        }}
+                                                    >
                                                         <span
                                                             className='dots'
                                                             onClick={(e) => handleDotsClick(e, index)}
-                                                            style={{
-                                                                visibility: 'visible',
-                                                                transition: 'visibility 0.1s ease',
-                                                            }}
                                                         >
                                                             {dotsIcon}
                                                         </span>
@@ -977,7 +1001,7 @@ const Board = () => {
                             className='overlay'
                             onClick={() => {
                                 setShowIconContainer(false);
-                                setCardZIndex(1);
+                                setColumnZIndex(1);
                             }}
                         >
                             <div
@@ -1002,7 +1026,7 @@ const Board = () => {
                                     >
                                         {aiIcon}
                                     </span>
-                                    <p>Generate Subtasks</p>
+                                    <p>Generate Tasks</p>
                                 </div>
                                 <div
                                     className='option'
@@ -1016,7 +1040,7 @@ const Board = () => {
                                             color: isHoveredX ? 'var(--important)' : '',
                                         }}
                                     >
-                                        {xMarkIcon}
+                                        {trashIcon}
                                     </span>
                                     <p>Delete Column</p>
                                 </div>

@@ -1,11 +1,19 @@
-import { useState } from "react";
-import { useDrag, useDrop } from "react-dnd";
+import { useState } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
 
-export const Column = ({ divIndex, moveColumnFrontend, moveColumnBackend, children }) => {
+export const Column = ({
+    divIndex,
+    moveColumnFrontend,
+    moveColumnBackend,
+    children,
+    onMouseEnter,
+    onMouseLeave,
+    zIndex,
+}) => {
     const [originalPos, setOriginalPos] = useState(null);
 
     const [{ isDragging }, drag] = useDrag({
-        type: "DIV",
+        type: 'DIV',
         item() {
             setOriginalPos(divIndex);
             return { index: divIndex };
@@ -22,7 +30,7 @@ export const Column = ({ divIndex, moveColumnFrontend, moveColumnBackend, childr
     });
 
     const [, drop] = useDrop({
-        accept: "DIV",
+        accept: 'DIV',
         hover(item, monitor) {
             const sourceDivIndex = item.index;
             const targetDivIndex = divIndex;
@@ -39,10 +47,16 @@ export const Column = ({ divIndex, moveColumnFrontend, moveColumnBackend, childr
     });
 
     const opacity = isDragging ? 0.75 : 1;
-    const display = "flex";
+    const display = 'flex';
 
     return (
-        <div ref={(node) => drag(drop(node))} style={{ opacity, display }}>
+        <div
+            className='column'
+            ref={(node) => drag(drop(node))}
+            style={{ opacity, display, zIndex }}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+        >
             {children}
         </div>
     );
