@@ -1171,12 +1171,12 @@ const Board = () => {
                                 <li
                                     onMouseEnter={() => setIsHoveredAI(true)}
                                     onMouseLeave={() => setIsHoveredAI(false)}
+                                    onClick={() => {
+                                        handleShowCraftPromptPopup();
+                                    }}
                                 >
                                     <span
                                         className='craft-button'
-                                        onClick={() => {
-                                            handleShowCraftPromptPopup();
-                                        }}
                                         style={{
                                             color: isHoveredAI ? 'var(--craft)' : '',
                                         }}
@@ -1188,12 +1188,12 @@ const Board = () => {
                                 <li
                                     onMouseEnter={() => setIsHoveredCode(true)}
                                     onMouseLeave={() => setIsHoveredCode(false)}
+                                    onClick={() => {
+                                        openCodePopup();
+                                    }}
                                 >
                                     <span
                                         className='code-button'
-                                        onClick={() => {
-                                            openCodePopup();
-                                        }}
                                         style={{
                                             color: isHoveredCode ? 'var(--code)' : '',
                                         }}
