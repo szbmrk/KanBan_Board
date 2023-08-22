@@ -173,6 +173,7 @@ Route::get('/boards/{boardId}/AGI/crafted-prompts/{craftedPromptId}', [PromptCra
 
 Route::get('/AGI/GenerateTask/CraftedPrompt', [ChatGPTController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
 
-Route::get('/boards/{boardId}/GetBehaviors', [AgiBehaviorController::class, 'GetBehaviors'])->middleware('api');
-Route::post('/boards/{boardId}/StoreBehavior', [AgiBehaviorController::class, 'StoreBehavior'])->middleware('api');
+Route::get('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'GetBehaviors'])->middleware('api');
+Route::post('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'StoreBehavior'])->middleware('api');
+Route::delete('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'DestroyBehavior'])->middleware('api');
 
