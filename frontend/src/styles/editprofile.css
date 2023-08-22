@@ -104,12 +104,6 @@
     color: var(--light-gray);
 }
 
-p {
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 .password-confirmation {
     width: 80%;
 }

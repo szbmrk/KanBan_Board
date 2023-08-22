@@ -18,6 +18,7 @@
   --bg-dark: rgba(var(--dark-grayRGB), 0.5);
   --bg-light: rgba(var(--light-grayRGB), 0.5);
   --bg-mostly-black: #1f1f1f;
+  --notification-type: #7a7a7a;
 }
 
 * {
