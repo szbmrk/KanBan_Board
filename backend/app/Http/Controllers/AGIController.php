@@ -115,7 +115,7 @@ class AGIController extends Controller
         return $response;
     }
 
-    public function GenerateCodeReviewOrDocumentation(Request $request)
+    public function GenerateCodeReviewOrDocumentation(Request $request, $boardId)
 {
     //without json stingify it will not work!!!
     $user = auth()->user();
@@ -125,18 +125,16 @@ class AGIController extends Controller
     
         
     switch($request->header('ChosenAI')) {
-        /* case Str::lower("llama"):
-            $response = LlamaController::GenerateAttachmentLinkLlama($request);
-            break; */
+         case Str::lower("llama"):
+            $response = LlamaController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
+            break;
         case Str::lower("bard"):
-            //$response = BardController::GenerateCodeReviewBard($request);
+            $response = BardController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
             break;
         default:
-
-            $response = ChatGPTController::GenerateCodeReviewOrDocumentation($request,$chosenType);
+            $response = ChatGPTController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
             break;
     }
-    Log::info("Response from Python: " . $response);
     return $response;
 }
 

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Carbon;
 use App\Helpers\ExecutePythonScript;
+use App\Models\Board;
 
 class LlamaController extends Controller
 {
@@ -140,8 +141,27 @@ class LlamaController extends Controller
         return LlamaController::parseSubtaskResponse($response);
     }
 
-    public static function GenerateCodeReviewOrDocumentation(Request $request, $expectedType) 
+    public static function GenerateCodeReviewOrDocumentation(Request $request, $boardId, $expectedType) 
     {
+        $user = auth()->user();
+        if(!$user)
+        {
+            return response()->json([
+                'error' => 'Unauthorized!',
+            ]);
+        }
+        $board = Board::where('board_id', $boardId)->first();
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        $team = $board->team;
+
+        if (!$team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team.'], 404);
+        }
+
         $code = $request->input('code');
         $promptCodeReview = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''.";
         $promptDocumentation = "Use only UTF-8 chars! Act as an senior programmer and generate a documentation for the following code: '''$code'''.";
