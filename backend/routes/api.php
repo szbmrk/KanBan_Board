@@ -25,6 +25,7 @@ use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\AgiBehaviorController;
 use App\Http\Controllers\PromptCraftController;
 use App\Http\Controllers\TeamMemberRoleController;
+
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TeamManagementController;
 use App\Http\Controllers\ChatGPTController;
@@ -172,10 +173,7 @@ Route::get('/boards/{boardId}/AGI/crafted-prompts/{craftedPromptId}', [PromptCra
 
 Route::get('/AGI/GenerateTask/CraftedPrompt', [ChatGPTController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
 
-Route::get('/boards/{boardId}/GetBehaviors', [AgiBehaviorController::class, 'GetBehaviors'])->middleware('api');
-Route::get('/AGI/answers/boards/{boardId}', [AGIAnswersController::class, 'index'])->middleware('api');
-Route::post('/AGI/answers/boards/{boardId}', [AGIAnswersController::class, 'storePerBoard'])->middleware('api');
-Route::post('/AGI/answers/boards/{boardId}/task/{task_id}', [AGIAnswersController::class, 'storePerTask'])->middleware('api');
-Route::post('/AGI/answers/boards/{boardId}/column/{column_id}', [AGIAnswersController::class, 'storePerColumn'])->middleware('api');
-Route::put('/AGI/answers/boards/{boardId}/task/{task_id}/answer/{answer_id}', [AGIAnswersController::class, 'update'])->middleware('api');
-Route::delete('/AGI/boards/{boardId}/answers/{answerId}', [AGIAnswersController::class, 'destroy'])->middleware('api');
+Route::get('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'GetBehaviors'])->middleware('api');
+Route::post('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'StoreBehavior'])->middleware('api');
+Route::delete('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'DestroyBehavior'])->middleware('api');
+
