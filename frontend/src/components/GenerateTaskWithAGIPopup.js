@@ -62,17 +62,14 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
     try {
       const token = sessionStorage.getItem("token");
       console.log(editedTasks);
-      //JSON.stringify(roles);
-      let jsonformat = JSON.stringify(editedTasks);
 
       const res = await axios.put(
         `/boards/${board_id}/columns/${column.column_id}/tasks/update-with-subtasks`,
-        {
-          jsonformat,
-        },
+        editedTasks,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
