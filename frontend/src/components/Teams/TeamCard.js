@@ -92,11 +92,9 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
                         </div>
                     </div>
                     <div className='teamcard-body'>
-                        <h3>Team Members:</h3>
                         <div className='team-members'>
                             {data.team_members.map((member, index) => (
                                 <>
-                                    <h3 key={index}>{member.user.username}</h3>
                                     <table>
                                       <thead>
                                         <tr>
@@ -106,7 +104,7 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
                                       </thead>
                                       <tbody>
                                         <tr>
-                                          <td>{member.user.username}</td>
+                                          <td><h3>{member.user.username}</h3></td>
                                           <td>
                                             {member.roles.map((role, index) => (
                                                 <p key={index}>{role.board_id!==null ? role.name + " in "+ role.board.name: role.name} </p>

@@ -57,6 +57,7 @@ async function AddRoleToUser(){
             }
         });
         console.log(response);
+        OnClose();
     }
     catch (error) {
         console.log(error);
