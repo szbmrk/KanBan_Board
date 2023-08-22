@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Board;
+use App\Models\AgiBehavior;
 use Illuminate\Http\Request;
 use App\Models\CraftedPrompt;
 use App\Http\Controllers\AGIController;
@@ -63,8 +64,27 @@ class PromptCraftController extends Controller
         {
             return response()->json(['error' => 'Invalid craft with or action value'], 400);
         }
-        
+
         $craftedPrompt = new CraftedPrompt();
+        if($request->input('agi_behavior') != null) 
+        {
+            //find agi behaviorid by the act_as_a value
+            $agiBehavior = AgiBehavior::where('act_as_a', $request->input('agi_behavior'))->first();
+ 
+
+            if (!$agiBehavior) {
+                $agiBehavior = new AgiBehavior();
+                $agiBehavior->act_as_a = $request->input('agi_behavior');
+                $agiBehavior->save();
+                $craftedPrompt->agi_behavior_id = $agiBehavior->agi_behavior_id;
+            } 
+        }
+        else 
+        {
+            $craftedPrompt->agi_behavior_id = null;
+        }
+
+        
         $craftedPrompt->crafted_prompt_title = $request->input('crafted_prompt_title');
         $craftedPrompt->crafted_prompt_text = $request->input('crafted_prompt_text');
         $craftedPrompt->craft_with = $request->input('craft_with');
@@ -98,6 +118,7 @@ class PromptCraftController extends Controller
             'crafted_prompt_text' => 'string',
             'craft_with' => 'in:CHATGPT,LLAMA,BARD',
             'action' => 'in:GENERATETASK,GENERATESUBTASK,GENERATEATTACHMENTLINK',
+
         ]);
 
         if ($validator->fails()) {
@@ -140,6 +161,24 @@ class PromptCraftController extends Controller
             $prompt->action = $request->input('action');
         }
 
+        if($request->input('agi_behavior') != null) 
+        {
+            
+        
+            //find agi behaviorid by the act_as_a value
+            $agiBehavior = AgiBehavior::where('act_as_a', $request->input('agi_behavior'))->first();
+        
+ 
+
+            if (!$agiBehavior) {
+                $agiBehavior = new AgiBehavior();
+                $agiBehavior->act_as_a = $request->input('agi_behavior');
+                $agiBehavior->save();
+                $prompt->agi_behavior_id = $agiBehavior->agi_behavior_id;
+            }
+        }
+
+        
         $prompt->save();
 
         return response()->json(['message' => 'Prompt updated successfully.'], 200);
