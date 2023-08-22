@@ -28,7 +28,9 @@ return new class extends Migration
 
             // Add the onDelete('cascade') option to both foreign key definitions
             $table->foreign('board_id')->references('board_id')->on('boards')->onDelete('cascade');
-            $table->foreign('agi_behavior_id')->references('agi_behavior_id')->on('agi_behaviors')->onDelete('cascade');
+            //instead of cascade, set the agi_behavior_id to null
+            $table->foreign('agi_behavior_id')->references('agi_behavior_id')->on('agi_behaviors')->onDelete('set null');
+            
             $table->foreign('created_by')->references('user_id')->on('users')->onDelete('cascade');
         });
     }

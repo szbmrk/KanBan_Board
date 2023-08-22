@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('board_id')->nullable(false);
 
             $table->timestamps();
-
+            
             $table->foreign('board_id')->references('board_id')->on('boards')->onDelete('cascade');
 
         });
