@@ -15,6 +15,8 @@ use App\Http\Controllers\LlamaController;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use App\Models\Board;
+use Illuminate\Support\Facades\DB;
+
 
 
 class ChatGPTController extends Controller
@@ -339,6 +341,35 @@ class ChatGPTController extends Controller
         ];
     }
 
+
+    public function generatePerformanceSummary(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+    
+        // Lekérdezés az adatbázisból az adott idő intervallumban lévő logokra
+        $logs = DB::table('logs')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
+    
+        $logEntries = [];
+        foreach ($logs as $log) {
+            $details = json_decode($log->details); // JSON dekódolás
+            $logEntry = [
+                'action' => $log->action,
+                'details' => $details,
+            ];
+            $logEntries[] = $logEntry;
+        }
+    
+        // Átadjuk a log bejegyzéseket a Python scriptnek
+        $pythonScriptPath = env('PERFORMANCE_PYTHON_SCRIPT_PATH');
+        $encodedLogEntries = json_encode($logEntries);
+        $command = "python {$pythonScriptPath} " . escapeshellarg($encodedLogEntries);
+        $response = shell_exec($command);
+    
+        return response()->json(['response' => $response]);
+    }
 
     
 }

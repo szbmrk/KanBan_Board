@@ -64,6 +64,7 @@ class TaskController extends Controller
                 }),
             ],
             'priority_id' => 'nullable|integer|exists:priorities,priority_id',
+            'completed' => 'boolean',
         ]);
 
         $lastTask = Task::where('column_id', $request->input('column_id'))
@@ -119,6 +120,7 @@ class TaskController extends Controller
             'description' => 'nullable|string',
             'due_date' => 'nullable|date',
             'priority_id' => 'nullable|integer|exists:priorities,priority_id',
+            'completed' => 'nullable|boolean',
         ]);
 
         if ($request->input('title')) {
@@ -132,6 +134,9 @@ class TaskController extends Controller
         }
         if ($request->input('priority_id')) {
         $task->priority_id = $request->input('priority_id');
+        }
+        if ($request->has('completed')) { 
+            $task->completed = $request->input('completed'); 
         }
 
         $task->save();
@@ -751,4 +756,19 @@ class TaskController extends Controller
     }
 
 
+    public function boardTaskCompletionRate(Request $request, $board_id)
+    {
+        $totalTasks = Task::where('board_id', $board_id)->count();
+        $completedTasks = Task::where('board_id', $board_id)->where('completed', true)->count();
+    
+        if ($totalTasks > 0) {
+            $completionRate = ($completedTasks / $totalTasks) * 100;
+        } else {
+            $completionRate = 0;
+        }
+    
+        return response()->json(['completion_rate' => $completionRate]);
+    }
+
 }
+
