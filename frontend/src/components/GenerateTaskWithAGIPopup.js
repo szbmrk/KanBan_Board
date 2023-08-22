@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
 
-const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
+const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
   let [editedTasks, setEditedTasks] = useState(tasks ? [...tasks] : []);
   const taskTitleInputRef = useRef(null);
   const popupRef = useRef(null);
@@ -58,8 +58,30 @@ const GenerateTaskWithAGIPopup = ({ tasks, onCancel }) => {
     setEditedTasks(updatedTasks);
   };
 
-  const saveToDatabase = () => {
-    console.log(editedTasks);
+  const saveToDatabase = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+      console.log(editedTasks);
+      //JSON.stringify(roles);
+      let jsonformat = JSON.stringify(editedTasks);
+
+      const res = await axios.put(
+        `/boards/${board_id}/columns/${column.column_id}/tasks/update-with-subtasks`,
+        {
+          jsonformat,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log(res);
+      console.log(res.data);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const generateTask = async (taskPrompt, task, ai, counter) => {

@@ -33,6 +33,7 @@ export const Task = ({
   id,
   index,
   task,
+  column,
   craftedPromptsTask,
   divName,
   favouriteTask,
@@ -138,7 +139,7 @@ export const Task = ({
   };
 
   const handleAI = () => {
-    generateTasks(task);
+    generateTasks(task, column);
   };
 
   const handleAttachmentLinks = () => {
@@ -245,7 +246,7 @@ export const Task = ({
                 onMouseEnter={() => setIsHoveredAI(true)}
                 onMouseLeave={() => setIsHoveredAI(false)}
                 onClick={() =>
-                  HandleCraftedPromptTaskClick(craftedPrompt, task)
+                  HandleCraftedPromptTaskClick(craftedPrompt, task, column)
                 }
               >
                 <span
