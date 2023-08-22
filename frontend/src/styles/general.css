@@ -19,6 +19,9 @@
   --bg-light: rgba(var(--light-grayRGB), 0.5);
   --bg-mostly-black: #1f1f1f;
   --notification-type: #7a7a7a;
+  --code: #ff8c00;
+  --craft: #5bffc8;
+  --light-blue: #00bfff;
 }
 
 * {
