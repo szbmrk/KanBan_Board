@@ -180,6 +180,38 @@ class BardController extends Controller
         return $parsedData;
     }
 
+    public static function GenerateCodeReviewOrDocumentation(Request $request, $expectedType) 
+    {
+        $code = $request->input('code');
+        $promptCodeReview = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''.";
+        $promptDocumentation = "Use only UTF-8 chars! Act as an senior programmer and generate a documentation for the following code: '''$code'''.";
+    
+        if ($expectedType === 'Code review') {
+            $prompt = $promptCodeReview;
+        } elseif ($expectedType === 'Documentation') {
+            $prompt = $promptDocumentation;
+        } else {
+            return response()->json([
+                'error' => 'Invalid expected type.',
+            ], 400);
+        }
+    
+        return BardController::CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType);
+    }
+    
+    public static function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType) {
 
+        $path = env('BARD_PYTHON_SCRIPT_PATH');
+        $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
+        $foundKeyPhrase = strtolower($expectedType) . ':';
+        $review = substr($response, stripos($response, $foundKeyPhrase) + strlen($foundKeyPhrase));
+        $review = trim($review);
+        return response()->json([
+        
+            'reviewType' => $expectedType,
+            'review' => $review,
+            
+            ]);    
+    }
 
 }
