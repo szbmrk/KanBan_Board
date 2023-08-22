@@ -75,6 +75,7 @@ class PromptCraftController extends Controller
             if (!$agiBehavior) {
                 $agiBehavior = new AgiBehavior();
                 $agiBehavior->act_as_a = $request->input('agi_behavior');
+                $agiBehavior->board_id = $boardId;
                 $agiBehavior->save();
                 $craftedPrompt->agi_behavior_id = $agiBehavior->agi_behavior_id;
             } 
@@ -173,6 +174,7 @@ class PromptCraftController extends Controller
             if (!$agiBehavior) {
                 $agiBehavior = new AgiBehavior();
                 $agiBehavior->act_as_a = $request->input('agi_behavior');
+                $agiBehavior->board_id = $boardId;
                 $agiBehavior->save();
                 $prompt->agi_behavior_id = $agiBehavior->agi_behavior_id;
             }

@@ -25,7 +25,6 @@ use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\AgiBehaviorController;
 use App\Http\Controllers\PromptCraftController;
 
-use App\Http\Controllers\PromptCraftController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\FavouriteTaskController;
 use App\Http\Controllers\RolePermissionController;
@@ -168,4 +167,5 @@ Route::get('/boards/{boardId}/AGI/crafted-prompts/{craftedPromptId}', [PromptCra
 Route::get('/AGI/GenerateTask/CraftedPrompt', [AGIController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
 
 Route::get('/boards/{boardId}/GetBehaviors', [AgiBehaviorController::class, 'GetBehaviors'])->middleware('api');
+Route::post('/boards/{boardId}/StoreBehavior', [AgiBehaviorController::class, 'StoreBehavior'])->middleware('api');
 
