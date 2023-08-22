@@ -181,27 +181,27 @@ class AGIController extends Controller
     }
 
     public function GenerateCodeReviewOrDocumentation(Request $request, $boardId)
-{
-    //without json stingify it will not work!!!
-    $user = auth()->user();
+    {
+        //without json stingify it will not work!!!
+        $user = auth()->user();
 
-    $response;
-    $chosenType = $request->header('ChosenType');
-    
+        $response;
+        $chosenType = $request->header('ChosenType');
         
-    switch($request->header('ChosenAI')) {
-         case Str::lower("llama"):
-            $response = LlamaController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
-            break;
-        case Str::lower("bard"):
-            $response = BardController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
-            break;
-        default:
-            $response = ChatGPTController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
-            break;
+            
+        switch($request->header('ChosenAI')) {
+            case Str::lower("llama"):
+                $response = LlamaController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
+                break;
+            case Str::lower("bard"):
+                $response = BardController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
+                break;
+            default:
+                $response = ChatGPTController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
+                break;
+        }
+        return $response;
     }
-    return $response;
-}
 
 
 }

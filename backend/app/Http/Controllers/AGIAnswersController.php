@@ -7,11 +7,12 @@ use App\Models\Board;
 use App\Models\AGIAnswers;
 use App\Models\Task;
 use App\Models\Column;
+use Illuminate\Validation\ValidationException;
 
 
 class AGIAnswersController extends Controller
 {
-    public function index($boardId)
+    public function indexTaskDocumentation($boardId)
     {
         $user = auth()->user();
         if (!$user) {
@@ -28,9 +29,12 @@ class AGIAnswersController extends Controller
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
-        $answers = $board->AGIAnswers;
+        $answers = $board->AGIAnswers->map(function ($answer) {
+        $filteredAnswer = $answer->only(['agi_answer_id', 'taskDocumentation', 'task_id', 'board_id', 'column_id', 'user_id', 'created_at', 'updated_at']);
+            return $filteredAnswer;
+        });
 
-        if(!$answers) {
+        if ($answers->isEmpty()) {
             return response()->json(['error' => 'No answers found.'], 404);
         }
 
@@ -65,7 +69,7 @@ class AGIAnswersController extends Controller
         }
 
         $answer = new AGIAnswers([
-            'answer' => $request->input('answer'),
+            'taskDocumentation' => $request->input('taskDocumentation'),
             'board_id' => $board->board_id,
             'task_id' => $task->task_id,
         ]);
@@ -99,7 +103,7 @@ class AGIAnswersController extends Controller
         }
 
         $answer = new AGIAnswers([
-            'answer' => $request->input('answer'),
+            'taskDocumentation' => $request->input('taskDocumentation'),
             'board_id' => $board->board_id,
             'column_id' => $column->column_id,
         ]);
@@ -127,7 +131,7 @@ class AGIAnswersController extends Controller
         }
 
         $answer = new AGIAnswers([
-            'answer' => $request->input('answer'),
+            'taskDocumentation' => $request->input('taskDocumentation'),
             'board_id' => $board->board_id,
         ]);
 
@@ -173,7 +177,7 @@ class AGIAnswersController extends Controller
         }
 
         $answer->fill([
-            'answer' => $request->input('answer', $answer->answer), // Csak a beérkező adat vagy a meglévő adat marad
+            'taskDocumentation' => $request->input('taskDocumentation', $answer->taskDocumentation),
         ]);
 
         $answer->save();
@@ -217,6 +221,153 @@ class AGIAnswersController extends Controller
 
         return response()->json(['message' => 'Answer deleted successfully.'], 200);
     }
+
+    public function indexCodeReviewOrDocumentation($boardId)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized.'], 401);
+        }
+
+        $board = Board::find($boardId);
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+
+        $answers = $board->AGIAnswers->filter(function ($answer) {
+            return $answer->codeReviewOrDocumentationType !== null && $answer->codeReviewOrDocumentation !== null;
+        })->map(function ($answer) {
+            return $answer->only(['agi_answer_id', 'codeReviewOrDocumentationType', 'codeReviewOrDocumentation', 'board_id', 'user_id', 'created_at', 'updated_at']);
+        })->values(); 
+    
+        if ($answers->isEmpty()) {
+            return response()->json(['error' => 'No answers found.'], 404);
+        }
+        return response()->json(['answers' => $answers], 200);
+    }
+
+    public function storeCodeReviewOrDocumentation(Request $request, $boardId)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized.'], 401);
+        }
+
+        $board = Board::find($boardId);
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+
+        try{ 
+            $this->validate($request, [
+            'codeReviewOrDocumentationType' => 'required|in:DOCUMENTATION,CODE REVIEW',
+            'codeReviewOrDocumentation' => 'required|string',
+            ]);
+            
+        }
+        catch (ValidationException) 
+        {
+            return response()->json(['error' => 'Invalid code review or documentation type Or code review or documentation'], 400);
+        }
+
+        $data = $request->only(['codeReviewOrDocumentationType', 'codeReviewOrDocumentation']);
+
+        $answer = new AGIAnswers([
+            'codeReviewOrDocumentationType' => $data['codeReviewOrDocumentationType'],
+            'codeReviewOrDocumentation' => $data['codeReviewOrDocumentation'],
+            'board_id' => $board->board_id,
+            'user_id' => $user->user_id,
+        ]);
+
+        $answer->save();
+
+        return response()->json(['message' => 'Answer created successfully'], 201);
+    }
+
+    public function updateCodeReviewOrDocumentation(Request $request, $boardId, $answerId)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized.'], 401);
+        }
+
+        $board = Board::find($boardId);
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+
+        try { 
+            $this->validate($request, [
+                'codeReviewOrDocumentationType' => 'in:DOCUMENTATION,CODE REVIEW',
+                'codeReviewOrDocumentation' => 'string',
+            ]);
+        } catch (ValidationException) {
+            return response()->json(['error' => 'Invalid code review or documentation type or code review or documentation'], 400);
+        }
+
+        $data = $request->only(['codeReviewOrDocumentationType', 'codeReviewOrDocumentation']);
+
+        $answer = AGIAnswers::find($answerId);
+
+        if (!$answer) {
+            return response()->json(['error' => 'Answer not found.'], 404);
+        }
+
+        $data = $request->only(['codeReviewOrDocumentationType', 'codeReviewOrDocumentation']);
+    
+        foreach ($data as $key => $value) {
+            if (!is_null($value)) {
+                $answer->$key = $value;}}
+    
+        $answer->save();
+    
+        return response()->json(['message' => 'Answer updated successfully'], 200);   
+    }
+
+    public function destroyCodeReviewOrDocumentation($boardId, $answerId)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized.'], 401);
+        }
+
+        $board = Board::find($boardId);
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found.'], 404);
+        }
+
+        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        }
+
+        $answer = AGIAnswers::find($answerId);
+
+        if (!$answer) {
+            return response()->json(['error' => 'Answer not found.'], 404);
+        }
+        $answer->delete();
+        return response()->json(['message' => 'Answer deleted successfully'], 200);   
+    }
+
+
+
+
 
     
 

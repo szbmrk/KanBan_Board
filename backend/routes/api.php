@@ -177,3 +177,15 @@ Route::get('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'GetBeh
 Route::post('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'StoreBehavior'])->middleware('api');
 Route::delete('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'DestroyBehavior'])->middleware('api');
 
+
+Route::get('/AGI/taskDocumentation/boards/{boardId}', [AGIAnswersController::class, 'indexTaskDocumentation'])->middleware('api');
+Route::post('/AGI/taskDocumentation/boards/{boardId}', [AGIAnswersController::class, 'storePerBoard'])->middleware('api');
+Route::post('/AGI/taskDocumentation/boards/{boardId}/task/{task_id}', [AGIAnswersController::class, 'storePerTask'])->middleware('api');
+Route::post('/AGI/taskDocumentation/boards/{boardId}/column/{column_id}', [AGIAnswersController::class, 'storePerColumn'])->middleware('api');
+Route::put('/AGI/taskDocumentation/boards/{boardId}/task/{task_id}/answer/{answer_id}', [AGIAnswersController::class, 'update'])->middleware('api');
+Route::delete('/AGI/boards/{boardId}/taskDocumentation/{taskDocumentationId}', [AGIAnswersController::class, 'destroy'])->middleware('api');
+Route::get('/AGI/CodeReviewOrDocumentation/boards/{boardId}', [AGIAnswersController::class, 'indexCodeReviewOrDocumentation'])->middleware('api');
+Route::post('/AGI/CodeReviewOrDocumentation/boards/{boardId}', [AGIAnswersController::class, 'storeCodeReviewOrDocumentation'])->middleware('api');
+Route::put('/AGI/CodeReviewOrDocumentation/boards/{boardId}/agiAnswer/{agiAnswerId}', [AGIAnswersController::class, 'updateCodeReviewOrDocumentation'])->middleware('api');
+Route::delete('/AGI/CodeReviewOrDocumentation/boards/{boardId}/agiAnswer/{agiAnswerId}', [AGIAnswersController::class, 'destroyCodeReviewOrDocumentation'])->middleware('api');
+
