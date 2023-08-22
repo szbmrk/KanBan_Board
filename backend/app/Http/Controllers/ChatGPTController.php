@@ -341,20 +341,18 @@ class ChatGPTController extends Controller
         ];
     }
 
-
     public function generatePerformanceSummary(Request $request)
     {
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
     
-        // Lekérdezés az adatbázisból az adott idő intervallumban lévő logokra
         $logs = DB::table('logs')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get();
     
         $logEntries = [];
         foreach ($logs as $log) {
-            $details = json_decode($log->details); // JSON dekódolás
+            $details = json_decode($log->details);
             $logEntry = [
                 'action' => $log->action,
                 'details' => $details,
@@ -362,14 +360,15 @@ class ChatGPTController extends Controller
             $logEntries[] = $logEntry;
         }
     
-        // Átadjuk a log bejegyzéseket a Python scriptnek
+        $introText = "Act as a Statistics Performance Assistance and create a comprehensive view: ";
+        $encodedLogEntries = json_encode($introText . json_encode($logEntries));
+    
         $pythonScriptPath = env('PERFORMANCE_PYTHON_SCRIPT_PATH');
-        $encodedLogEntries = json_encode($logEntries);
-        $command = "python {$pythonScriptPath} " . escapeshellarg($encodedLogEntries);
+        $apiKey = env('OPENAI_API_KEY');
+        $command = "python {$pythonScriptPath} " . escapeshellarg($encodedLogEntries) . " " . escapeshellarg($apiKey);
         $response = shell_exec($command);
     
         return response()->json(['response' => $response]);
     }
-
     
 }
