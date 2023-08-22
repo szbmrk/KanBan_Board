@@ -25,15 +25,10 @@ use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\AgiBehaviorController;
 use App\Http\Controllers\PromptCraftController;
 
-/*
-|--------------------------------------------------------------------------
-
-use App\Http\Controllers\AgiBehaviorController;
 use App\Http\Controllers\PromptCraftController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\FavouriteTaskController;
 use App\Http\Controllers\RolePermissionController;
-use App\Http\Controllers\TeamManagementController;
 use App\Http\Controllers\TeamManagementController;
 use App\Http\Controllers\TeamMemberRoleController;
 
@@ -155,7 +150,7 @@ Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api
 Route::get('/AGI/GenerateTask', [AGIController::class, 'GenerateTask'])->middleware('api');
 Route::get('/AGI/GenerateSubtask', [AGIController::class, 'GenerateSubtask'])->middleware('api');
 Route::get('/AGI/GenerateAttachmentLink', [AGIController::class, 'GenerateAttachmentLink'])->middleware('api');
-Route::get('/AGI/GenerateCodeReview', [AGIController::class, 'GenerateCodeReview'])->middleware('api');
+Route::get('/AGI/GenerateCodeReviewOrDocumentation', [AGIController::class, 'GenerateCodeReviewOrDocumentation'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_code', [AGIController::class, 'generateCode'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_priority', [AGIController::class, 'generatePriority'])->middleware('api');
 Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::class, 'generatePrioritiesForColumn'])->middleware('api');

@@ -35,6 +35,13 @@ def generate_code():
 
     return generated_code
 
+def clean_response(response):
+    cleaned_response = response.replace('\n', ' ')
+    cleaned_response = ' '.join(cleaned_response.split())
+    return cleaned_response
+
+
 if __name__ == "__main__":
     code = generate_code()
-    print(code)
+    cleaned_code = clean_response(code)
+    print(cleaned_code)

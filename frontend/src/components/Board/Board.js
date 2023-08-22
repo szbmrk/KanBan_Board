@@ -130,6 +130,8 @@ const Board = () => {
       console.log("Columns: ", tempBoard.columns);
 
       setBoard(tempBoard);
+      console.log("tempBoard");
+      console.log(tempBoard);
 
       if (task_to_show_id) {
         const columnIndex = tempBoard.columns.findIndex(
@@ -706,6 +708,7 @@ const Board = () => {
   //popup
   const [showPopup, setShowPopup] = useState(false);
   const [inspectedTask, setInspectedTask] = useState(null);
+  const [inspectedColumn, setInspectedColumn] = useState(null);
   const [inspectedAttachmentLinks, setInspectedAttachmentLinks] =
     useState(null);
 
@@ -764,7 +767,10 @@ const Board = () => {
     return null;
   };
 
-  const openGenerateTaskWithAGIPopup = (task) => {
+  const openGenerateTaskWithAGIPopup = (task, column) => {
+    console.log("column");
+    console.log(column);
+
     setShowGenerateTaskWithAGIPopup(true);
     console.log(task);
     if (task) {
@@ -774,11 +780,13 @@ const Board = () => {
         setInspectedTask([cloneDeep(task)]);
       }
     }
+    setInspectedColumn(cloneDeep(column));
   };
 
   const handleGenerateTaskCancel = () => {
     setShowGenerateTaskWithAGIPopup(false);
     setInspectedTask(null);
+    setInspectedColumn(null);
   };
 
   const openGenerateAttachmentLinkWithAGIPopup = (task, attachmentLink) => {
@@ -835,7 +843,7 @@ const Board = () => {
     setShowCraftPromptPopup(false);
   };
 
-  const useCrafterPromptOnColumn = async (craftedPrompt) => {
+  const useCrafterPromptOnColumn = async (craftedPrompt, column) => {
     console.log("craftedPrompt");
     console.log(craftedPrompt);
 
@@ -856,7 +864,7 @@ const Board = () => {
 
       switch (craftedPrompt.action) {
         case "GENERATETASK":
-          openGenerateTaskWithAGIPopup(res.data);
+          openGenerateTaskWithAGIPopup(res.data, column);
           /* setShowGenerateTaskWithAGIPopup(true);
           setInspectedTask(res.data); */
           break;
@@ -870,7 +878,7 @@ const Board = () => {
     }
   };
 
-  const useCrafterPromptOnTask = async (craftedPrompt, task) => {
+  const useCrafterPromptOnTask = async (craftedPrompt, task, column) => {
     console.log("craftedPrompt");
     console.log(craftedPrompt);
 
@@ -891,7 +899,7 @@ const Board = () => {
           task.tasks = res.data;
           /*           setShowGenerateTaskWithAGIPopup(true);
           setInspectedTask(task); */
-          openGenerateTaskWithAGIPopup(task);
+          openGenerateTaskWithAGIPopup(task, column);
           break;
         case "GENERATEATTACHMENTLINK":
           /*           setShowGenerateTaskWithAGIPopup(true);
@@ -908,12 +916,12 @@ const Board = () => {
     }
   };
 
-  const HandleCraftedPromptColumnClick = (craftedPrompt) => {
-    useCrafterPromptOnColumn(craftedPrompt);
+  const HandleCraftedPromptColumnClick = (craftedPrompt, column) => {
+    useCrafterPromptOnColumn(craftedPrompt, column);
   };
 
-  const HandleCraftedPromptTaskClick = (craftedPrompt, task) => {
-    useCrafterPromptOnTask(craftedPrompt, task);
+  const HandleCraftedPromptTaskClick = (craftedPrompt, task, column) => {
+    useCrafterPromptOnTask(craftedPrompt, task, column);
   };
 
   const handleDotsClick = (event, columnIndex) => {
@@ -1165,6 +1173,7 @@ const Board = () => {
                             id={task.task_id}
                             index={taskIndex}
                             task={task}
+                            column={column}
                             craftedPromptsTask={craftedPromptsTask}
                             divName={`div${index + 1}`}
                             favouriteTask={handleFavouriteTask}
@@ -1200,17 +1209,22 @@ const Board = () => {
                                 parseInt(targetDiv.substr(3)) - 1
                               )
                             }
-                            generateTasks={(task) =>
-                              openGenerateTaskWithAGIPopup(task)
+                            generateTasks={(task, column) =>
+                              openGenerateTaskWithAGIPopup(task, column)
                             }
                             generateAttachmentLinks={(task) =>
                               openGenerateAttachmentLinkWithAGIPopup(task)
                             }
                             HandleCraftedPromptTaskClick={(
                               craftedPrompt,
-                              task
+                              task,
+                              column
                             ) =>
-                              HandleCraftedPromptTaskClick(craftedPrompt, task)
+                              HandleCraftedPromptTaskClick(
+                                craftedPrompt,
+                                task,
+                                column
+                              )
                             }
                           />
                         ))}
@@ -1259,7 +1273,12 @@ const Board = () => {
                   className="option"
                   onMouseEnter={() => setIsHoveredAI(true)}
                   onMouseLeave={() => setIsHoveredAI(false)}
-                  onClick={() => openGenerateTaskWithAGIPopup(null)}
+                  onClick={() =>
+                    openGenerateTaskWithAGIPopup(
+                      null,
+                      board.columns[columnIndex]
+                    )
+                  }
                 >
                   <span
                     className="ai-button"
@@ -1278,7 +1297,10 @@ const Board = () => {
                     onMouseEnter={() => setIsHoveredAI(true)}
                     onMouseLeave={() => setIsHoveredAI(false)}
                     onClick={() =>
-                      HandleCraftedPromptColumnClick(craftedPrompt)
+                      HandleCraftedPromptColumnClick(
+                        craftedPrompt,
+                        board.columns[columnIndex]
+                      )
                     }
                   >
                     <span
@@ -1327,6 +1349,8 @@ const Board = () => {
           )}
           {showGenerateTaskWithAGIPopup && (
             <GenerateTaskWithAGIPopup
+              board_id={board_id}
+              column={inspectedColumn}
               tasks={inspectedTask}
               onCancel={handleGenerateTaskCancel}
             />
