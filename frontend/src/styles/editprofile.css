@@ -1,34 +1,129 @@
-body {
-    text-align: center;
+.edit-profile-form {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    padding: 100px 25px 25px;
+    margin: 100px auto;
+    background: var(--dark-gray);
+    border-radius: 8px;
+    box-shadow: 0 0 10px var(--mostly-black);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
 }
 
-.delete_button {
-    background-color: red;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.input_field {
-    height: fit-content;
-    width: fit-content;
-    border-radius: 7px;
-}
-
-.buttons {
+.profile-image-container {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 150px;
+    border: 3px solid var(--dark-gray);
+    border-radius: 50%;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
-    margin-top: 20px;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
+    align-items: center;
+    overflow: hidden;
 }
 
-p {
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
+.profile-image {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+    cursor: pointer;
+}
+
+.form-group-edit {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.form-group-edit label {
+    display: none;
+}
+
+.form-group-edit input[type="text"],
+.form-group-edit input[type="email"],
+.form-group-edit input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    font-family: var(--basic-font);
+    font-size: 16px;
+    background: transparent;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    outline: none;
+    border-bottom: 1px solid var(--light-gray);
+    color: var(--light-gray);
+}
+
+.form-group-edit input[type="text"]::selection,
+.form-group-edit input[type="email"]::selection,
+.form-group-edit input[type="password"]::selection {
+    background: var(--light-gray);
+    color: var(--dark-gray);
+  }
+
+.confirm-button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 10px 0;
+    border-radius: 4px;
+    background: var(--dark-gray);
+    color: var(--light-gray);
+    border: 1px solid var(--light-gray);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.confirm-button:hover {
+    background: var(--confirm);
+    border: 1px solid var(--confirm);
+}
+
+.delete-button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 10px 0;
+    border: 1px solid var(--important);
+    border-radius: 5px;
+    background: var(--important-hover);
+    color: var(--important);
+    transition: all 0.3s ease;
+}
+
+.delete-button:hover {
+    background: var(--important);
+    border: 1px solid var(--important);
+    color: var(--light-gray);
+}
+
+.password-confirmation {
+    width: 80%;
+}
+
+.password-confirmation input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    font-family: var(--basic-font);
+    font-size: 16px;
+    background: transparent;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    outline: none;
+    border-bottom: 1px solid var(--light-gray);
+    color: var(--light-gray);
+}
+
+.errorBox {
+    width: 100%;
+    color: var(--light-gray);
+    border: 1px solid var(--important);
 }

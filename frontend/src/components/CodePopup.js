@@ -6,7 +6,7 @@ import axios from "../api/axios";
 import "../styles/popup.css";
 import "../styles/CodePopup.css";
 
-const CodePopup = ({ onCancel }) => {
+const CodePopup = ({ board_id, onCancel }) => {
   const codeOptions = [
     { value: "Documentation", label: "Documentation" },
     { value: "Code review", label: "Code review" },

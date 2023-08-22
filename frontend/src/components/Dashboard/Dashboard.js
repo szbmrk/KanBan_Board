@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import Loader from '../Loader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faPencil, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { SetRoles } from '../../roles/Roles';
 
 const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
@@ -18,21 +19,26 @@ export default function Dashboard() {
     const [selectedBoardId, setSelectedBoardId] = useState(null);
     const [hoveredBoardId, setHoveredBoardId] = useState(null);
     const [ownPermissions, setOwnPermissions] = useState([]);
+    const [teamPermissions, setTeamPermissions] = useState([]);
+
 
     const token = sessionStorage.getItem('token');
-    const permissions = JSON.parse(sessionStorage.getItem('permissions'));
+    const user_id = sessionStorage.getItem('user_id');
 
     useEffect(() => {
         document.title = 'Dashboard'
-        const user_id = sessionStorage.getItem('user_id');
         if (user_id) {
             setUserID(user_id);
         }
-
         //backendről fetchelés
         fetchDashboardData();
-        console.log(permissions);
     }, []);
+
+    async function ResetRoles() {
+        await SetRoles(token);
+        setTeamPermissions(JSON.parse(sessionStorage.getItem('permissions')).teams);
+        setOwnPermissions(JSON.parse(sessionStorage.getItem('permissions')).general_role);
+    }
 
     const fetchDashboardData = async () => {
         try {
@@ -42,8 +48,10 @@ export default function Dashboard() {
                 },
             });
             console.log(response.data);
-            setTeams(response.data.teams);
-            setOwnPermissions(permissions.teams.filter(team => team.team_id === response.data.teams[0].team_id).map(permission => permission.permission_data));
+            const teamData = response.data.teams;
+            console.log(teamData);
+            setTeams(teamData);
+            ResetRoles();
         } catch (e) {
             console.error(e);
         }
@@ -83,6 +91,7 @@ export default function Dashboard() {
                     return team;
                 });
             });
+            ResetRoles();
         } catch (error) {
             console.error(error);
         }
@@ -183,6 +192,24 @@ export default function Dashboard() {
         setHoveredBoardId(null);
     };
 
+    const checkPermissonToManageBoard = (board_id, team_id) => {
+        //TODO Refactor
+        console.log(teamPermissions);
+        if (ownPermissions.includes('system_admin')) {
+            return true;
+        }
+        if (teamPermissions.length === 0) {
+            return false;
+        }
+        for (let i = 0; i < teamPermissions.length; i++) {
+            if (teamPermissions[i].team_id === team_id && teamPermissions[i].board_id === board_id) {
+                if (teamPermissions[i].permission === 'board_management') {
+                    return true;
+                }
+            }
+        }
+    }
+
     return (
         <div className='content'>
             {teams.length === 0 ? (
@@ -207,9 +234,9 @@ export default function Dashboard() {
                                                     <Link to={`/board/${board.board_id}`} className='board-title'>
                                                         <p>{board.name}</p>
                                                     </Link>
-                                                    {ownPermissions.some(permission => permission.id === 5) &&
+                                                    {checkPermissonToManageBoard(board.board_id, team.team_id) === true &&
                                                         <span
-                                                            className='delete-board-button'
+                                                            className='delete-button'
                                                             style={{
                                                                 visibility:
                                                                     hoveredBoardId === board.board_id
@@ -223,14 +250,18 @@ export default function Dashboard() {
                                                         >
                                                             {closeIcon}
                                                         </span>}
-                                                    {ownPermissions.some(permission => permission.id === 5) &&
+                                                    {checkPermissonToManageBoard(board.board_id, team.team_id) === true &&
                                                         <span
                                                             className='edit-board-button'
                                                             style={{
                                                                 display:
-                                                                    hoveredBoardId === board.board_id ? 'block' : 'none',
+                                                                    hoveredBoardId === board.board_id
+                                                                        ? 'block'
+                                                                        : 'none',
                                                             }}
-                                                            onClick={() => openAddBoardPopup(team.team_id, board.board_id)}
+                                                            onClick={() =>
+                                                                openAddBoardPopup(team.team_id, board.board_id)
+                                                            }
                                                         >
                                                             {pencilIcon}
                                                         </span>
@@ -277,8 +308,7 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
     useEffect(() => {
         if (boardId) {
             fetchDashboardData();
-        }
-        else {
+        } else {
             setIsLoading(false);
         }
     }, [boardId]);
@@ -305,8 +335,10 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
     };
 
     return (
-        <div className='content'>
-            {isLoading ? <Loader /> :
+        <>
+            {isLoading ? (
+                <Loader />
+            ) : (
                 <form className='popup-content-form-mini' onSubmit={handleSave}>
                     <span className='close-btn' onClick={onClose}>
                         {closeIcon}
@@ -320,11 +352,9 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
                         className='popup-input-mini'
                         required
                     />
-                    <button className='board-save-button'>
-                        Save
-                    </button>
+                    <button className='board-save-button'>Save</button>
                 </form>
-            }
-        </div>
+            )}
+        </>
     );
 };

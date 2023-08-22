@@ -12,39 +12,32 @@ use Illuminate\Support\Facades\DB;
 
 class TeamMemberRoleController extends Controller
 {
-    
-
     public function index($boardId)
     {
         $user = auth()->user();
-
+        
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+        
         $board = Board::find($boardId);
-
+        
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
         }
-
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
-            return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+        
+        $rolesOnBoard = $user->getRoles($boardId);
+        $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function($role) {
+            return in_array('team_member_role_management', $role->permissions->pluck('name')->toArray());
+        });
+        
+        if (!$hasRoleManagementPermission) {
+            return response()->json(['error' => 'You don\'t have permission to manage team member roles on this board.'], 403);
         }
-
-        $teamMemberRoles = TeamMemberRole::whereHas('teamMember.team', function ($query) use ($user, $boardId) {
-            $query->where('user_id', $user->user_id)
-                ->whereHas('boards', function ($subQuery) use ($boardId) {
-                    $subQuery->where('board_id', $boardId);
-                });
-        })
-        ->with(['role', 'teamMember'])
-        ->get();
-
-        if ($teamMemberRoles->isEmpty()) {
-            return response()->json(['error' => 'No roles found'], 404);
-        }
-
-        return response()->json(['roles' => $teamMemberRoles]);
+        
+        $allRoles = Role::where('board_id', $boardId)->get(); // Módosított lekérdezés
+        
+        return response()->json(['roles' => $allRoles]);
     }
 
     public function store(Request $request, $boardId)

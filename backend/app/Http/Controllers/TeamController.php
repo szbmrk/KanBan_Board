@@ -51,7 +51,8 @@ class TeamController extends Controller
         }
         
         LogRequest::instance()->logAction('CREATED TEAM', $user->user_id, "Team Created successfully! -> $team->name", $team->team_id, null, null);
-        return response()->json(['message' => 'Team Created successfully!']);   
+        $team=Team::with(['teamMembers.user.roles.permissions', 'teamMembers.roles.permissions'])->find($team->team_id);
+        return response()->json(['message' => 'Team Created successfully!', 'team' => $team]);         
     }    
     
     public function update(Request $request, $id)
