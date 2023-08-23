@@ -17,6 +17,8 @@ use Illuminate\Support\Carbon;
 use App\Models\Board;
 use Illuminate\Support\Facades\DB;
 use App\Models\SummaryLog;
+use Illuminate\Support\Facades\Log;
+
 
 
 
@@ -414,27 +416,35 @@ class ChatGPTController extends Controller
         // Számlálók
         $totalTasksCreated = 0;
         $totalTasksFinished = 0;
-        $promptDetails = "Here are the summaries for the past 5 workdays:\n";
+        $dates = [];
+        $tasksCreated = [];
+        $tasksFinished = [];
+    
         foreach ($summaries as $summary) {
             $totalTasksCreated += $summary->tasks_created_count;
             $totalTasksFinished += $summary->tasks_finished_count;
-    
-            $logsAsString = is_array($summary->logs) ? json_encode($summary->logs) : $summary->logs;
-            $summaryAsString = is_array($summary->summary) ? json_encode($summary->summary) : $summary->summary;
-            $promptDetails .= "\nOn {$summary->date}: {$summaryAsString} - Logs: {$logsAsString} - Created: {$summary->tasks_created_count} - Finished: {$summary->tasks_finished_count}.";
+            
+            $dates[] = $summary->date;
+            $tasksCreated[] = $summary->tasks_created_count;
+            $tasksFinished[] = $summary->tasks_finished_count;
         }
     
-        // Készítsünk egy promptot az AGI-nak
-        $prompt = "Over the past 5 workdays, a total of {$totalTasksCreated} tasks were created and {$totalTasksFinished} tasks were finished on our Kanban board.\n\n{$promptDetails}\n\nGiven these summaries, can you provide a detailed statistical analysis on productivity, performance, and insights on the most efficient day and other relevant statistics?";
-    
+        $prompt = "In 5 days: Created: {$totalTasksCreated}. Finished: {$totalTasksFinished}. ";
+        for ($i = 0; $i < 5; $i++) {
+            $prompt .= "{$dates[$i]} - C: {$tasksCreated[$i]}, F: {$tasksFinished[$i]}. ";
+        }
+
         // Python script futtatása
         $pythonScriptPath = env('PERFORMANCE_PYTHON_SCRIPT_PATH');
         $apiKey = env('OPENAI_API_KEY');
         $command = "python {$pythonScriptPath} " . escapeshellarg($prompt) . " " . escapeshellarg($apiKey);
         $response = shell_exec($command);
-
+    
         // Válasz visszaadása
-        return response()->json(['response' => $response]);
+        return response()->json([
+            'prompt' => $prompt,
+            'response' => $response
+        ]);        
     }
     
 }
