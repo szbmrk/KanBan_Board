@@ -986,6 +986,39 @@ const Board = () => {
         }
     };
 
+    const handlePlaceTagOnTask = async (task_id, tag) => {
+        try {
+            const response = await axios.post(`/boards/${board_id}/tasks/${task_id}/tags/${tag.tag_id}`,
+                {}, { headers: { Authorization: `Bearer ${token}` } });
+
+            inspectedTask.tags.push(tag);
+
+            inspectedTask.tags.sort((a, b) => {
+                return a.tag_id - b.tag_id;
+            });
+        }
+        catch (e) {
+            console.error(e);
+        }
+    }
+
+    const handleRemoveTagFromTask = async (task_id, tag_id) => {
+        try {
+            const response = await axios.delete(`/boards/${board_id}/tasks/${task_id}/tags/${tag_id}`,
+                { headers: { Authorization: `Bearer ${token}` } });
+
+            const removedTagIndex = inspectedTask.tags.findIndex((tag) => {
+                if (tag.tag_id === tag_id) {
+                    return true;
+                }
+            });
+            inspectedTask.tags.splice(removedTagIndex, 1);
+        }
+        catch (e) {
+            console.error(e);
+        }
+    }
+
     return (
         <>
             {permission === false ? (
@@ -1329,6 +1362,8 @@ const Board = () => {
                     addMember={handleAddMember}
                     deleteMember={handleDeleteMember}
                     tags={inspectedTask.tags}
+                    placeTagOnTask={handlePlaceTagOnTask}
+                    removeTagFromTask={handleRemoveTagFromTask}
                 />
             )}
         </>
