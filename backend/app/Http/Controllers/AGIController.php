@@ -182,7 +182,7 @@ class AGIController extends Controller
 
     public function GenerateCodeReviewOrDocumentation(Request $request, $boardId)
     {
-        //without json stingify it will not work!!!
+        //without json stringify it will not work!!!
         $user = auth()->user();
 
         $response;
