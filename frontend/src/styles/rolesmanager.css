@@ -1,28 +1,3 @@
-.popup {
-    position: relative;
-    margin: auto;
-    background-color: var(--dark-gray);
-    color: var(--light-gray);
-    border-radius: 8px;
-    padding: 20px 20px 80px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    width: 80%;
-    max-width: 800px;
-    height: 800px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: auto;
-}
-
-
-.popup-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
 .close-btn {
     align-self: flex-end;
     border: none;
