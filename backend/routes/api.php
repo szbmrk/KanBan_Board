@@ -175,7 +175,8 @@ Route::get('/AGI/GenerateTask/CraftedPrompt', [ChatGPTController::class, 'Genera
 
 Route::get('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'GetBehaviors'])->middleware('api');
 Route::post('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'StoreBehavior'])->middleware('api');
-Route::delete('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'DestroyBehavior'])->middleware('api');
+Route::put('/boards/{boardId}/Behaviors/{behaviorId}', [AgiBehaviorController::class, 'UpdateBehavior'])->middleware('api');
+Route::delete('/boards/{boardId}/Behaviors/{behaviorId}', [AgiBehaviorController::class, 'DestroyBehavior'])->middleware('api');
 
 
 Route::get('/AGI/taskDocumentation/boards/{boardId}', [AGIAnswersController::class, 'indexTaskDocumentation'])->middleware('api');
