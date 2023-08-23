@@ -138,3 +138,8 @@
 .team-members tr:not(:last-child) {
   margin-bottom: 10px;
 }
+
+.selected {
+  background-color: #6a97ea;
+  color: white;
+}
