@@ -214,10 +214,6 @@ class PromptCraftController extends Controller
         {
             return response()->json(['error' => 'Prompt not found on this board.'], 404);
         }
-        
-/*         if ($craftedPrompts->isEmpty()) {
-            return response()->json(['error' => 'No crafted prompts found for this board.'], 404);
-        } */
 
         $request->headers->set('ChosenAI', $craftedPrompt->craft_with);
         $request->headers->set('TaskPrompt', $craftedPrompt->crafted_prompt_text);

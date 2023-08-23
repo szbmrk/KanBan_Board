@@ -121,6 +121,10 @@ class AgiBehaviorController extends Controller
             return response()->json(['error' => implode(', ', $errorMessages)], 422);
         }
 
+        if($request->input('agi_behavior') == null) {
+            return response()->json(['error' => 'Behavior is required!'], 422);
+        }
+
         
         $agiBehavior = AgiBehavior::find($behaviorId);
         
