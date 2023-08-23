@@ -10,6 +10,14 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
         getUsers();
     }, []);
 
+    function toggleUserSelection(user_id) {
+        if (selectedUsers.includes(user_id)) {
+          setSelectedUsers(selectedUsers.filter(id => id !== user_id));
+        } else {
+          setSelectedUsers([...selectedUsers, user_id]);
+        }
+      }
+
     function handleAddUsers(usersToTeams, teamID) {
         AddUsers(usersToTeams, teamID);
         OnClose();
@@ -29,33 +37,33 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
         }
     }
 
-    function AddUser(user_id) {
-        SetUsersToTeams((prevUsers) => [...prevUsers, user_id]);
-        console.log(user_id);
-    }
+  function handleAddUsers() {
+    AddUsers(selectedUsers, teamID);
+    OnClose();
+  }
 
-    return (
-        <div className='overlay'>
-            <div className='popup'>
-                <div className='popup-content'>
-                    <button className='close-btn' onClick={OnClose}>
-                        Close
-                    </button>
-                    <p>Are you sure you want delete this team?</p>
-                    <table>
-                        <tbody>
-                            {users.map((user) => (
-                                <tr>
-                                    <td onClick={() => AddUser(user.user_id)}>{user.username}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <button onClick={() => handleAddUsers(usersToTeams, teamID)}>Add Users</button>
-                </div>
-            </div>
+  return (
+    <div className="overlay">
+      <div className="popup">
+        <div className="popup-content">
+          <button className="close-btn" onClick={OnClose}>
+            Close
+          </button>
+          <p>Select the users: </p>
+          <table>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.user_id} onClick={() => toggleUserSelection(user.user_id)} className={selectedUsers.includes(user.user_id) ? 'selected' : ''}>
+                  <td>{user.username}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button onClick={handleAddUsers}>Add Users</button>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default AddUser;

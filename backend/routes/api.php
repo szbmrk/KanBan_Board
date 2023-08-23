@@ -141,6 +141,7 @@ Route::get('/boards/{board_id}/tasks/{task_id}/not_assigned_users', [UserTasksCo
 
 Route::get('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'index'])->middleware('api');
 Route::post('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'store'])->middleware('api');
+Route::get('/boards/{boardId}/available-team-member-roles/{teamMemberId}', [TeamMemberRoleController::class, 'getAvailableRoles'])->middleware('api');
 Route::delete('/boards/{boardId}/team-member-roles/{teamMemberRoleId}',[TeamMemberRoleController::class, 'destroy'])->middleware('api');
 
 Route::get('/boards/{boardId}/role-permissions', [RolePermissionController::class, 'index'])->middleware('api');

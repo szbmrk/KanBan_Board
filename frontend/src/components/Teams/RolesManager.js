@@ -36,13 +36,13 @@ export default function RolesManager({ OnClose, team_id, team_member_id, AddRole
 
     async function GetRoles(board_id) {
         try {
-            const response = await axios.get(`/boards/${board_id}/team-member-roles`, {
+            const response = await axios.get(`/boards/${board_id}/available-team-member-roles/${team_member_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
             });
             setBoardRoles(response.data.roles);
-            console.log(response.data.roles);
+            console.log(response.data);
         } catch (error) {
             console.log(error);
         }
