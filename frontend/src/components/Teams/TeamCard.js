@@ -13,6 +13,8 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
     const [rolesIsClicked, setRoles] = useState(false);
     const [teamData, setTeamData] = useState([]);
     const [createdBy, setCreatedBy] = useState('');
+    const [teamMemberId, setTeamMemberId] = useState();
+    const user_id = parseInt(sessionStorage.getItem('user_id'));
 
     useEffect(() => {
         document.title = 'Teams';
@@ -37,13 +39,13 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
     function handleAddButton() {
         setAdd(!addIsClicked);
     }
-    function handleRolesButton() {
+    function handleRolesButton(team_members_id) {
+      setTeamMemberId(team_members_id);
         setRoles(!rolesIsClicked);
     }
 
     const checkPermissonToManageTeam = (team_id) => {
         //TODO Refactor
-        console.log(teamPermissions);
         if (ownPermissions.includes('system_admin')) {
             return true;
         }
@@ -61,7 +63,6 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
 
     const checkPermissonToManageTeamMembers = (team_id) => {
         //TODO Refactor
-        console.log(teamPermissions);
         if (ownPermissions.includes('system_admin')) {
             return true;
         }
@@ -91,14 +92,33 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
                         </div>
                     </div>
                     <div className='teamcard-body'>
-                        <h3>Team Members:</h3>
                         <div className='team-members'>
                             {data.team_members.map((member, index) => (
                                 <>
-                                    <h3 key={index}>{member.user.username}</h3>
+                                    <table>
+                                      <thead>
+                                        <tr>
+                                          <th>Username</th>
+                                          <th>Role</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr>
+                                          <td><h3>{member.user.username}</h3></td>
+                                          <td>
+                                            {member.roles.map((role, index) => (
+                                                <p key={index}>{role.board_id!==null ? role.name + " in "+ role.board.name: role.name} </p>
+                                            )
+                                            )}
+                                            </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
                                     <div className='teamcard-actions'>
-                                        {checkPermissonToManageTeamMembers(data.team_id) &&
+                                        { checkPermissonToManageTeamMembers(data.team_id) &&
                                             <>
+                                            {parseInt(member.user.user_id) !== user_id &&
+                                            (
                                                 <button
                                                     className='delete_button'
                                                     onClick={() =>
@@ -107,7 +127,9 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
                                                 >
                                                     Remove user from team
                                                 </button>
-                                                <button onClick={handleRolesButton}>
+                                            )
+                                                }
+                                                <button onClick={() => handleRolesButton(member.team_members_id)}>
                                                     Manage roles
                                                 </button>
                                             </>
@@ -145,7 +167,7 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
                     {addIsClicked && <AddUser teamID={data.team_id} OnClose={handleAddButton} AddUsers={AddUsers} />}
                     {
                         rolesIsClicked &&
-                        <RolesManager OnClose={handleRolesButton} team_id={data.team_id} />
+                        <RolesManager OnClose={handleRolesButton} team_id={data.team_id} team_member_id={teamMemberId}/>
                     }
                 </div>
             )}

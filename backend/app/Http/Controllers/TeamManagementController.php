@@ -115,7 +115,7 @@ class TeamManagementController extends Controller
             return response()->json(['error' => 'Unauthorized.'], 403);
         }
 
-        $teams = $user->teams()->with(['teamMembers.user.roles.permissions', 'teamMembers.roles.permissions'])->get();
+        $teams = $user->teams()->with(['teamMembers.user', 'teamMembers.roles.permissions', 'teamMembers.roles.board'])->get();
     
         return response()->json(['teams' => $teams]);
     }
