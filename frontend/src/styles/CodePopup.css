@@ -15,7 +15,7 @@
 .code-textarea {
   display: inline-block;
   width: 100%;
-  height: 150px;
+  min-height: 150px;
   padding: 10px;
   margin-bottom: 10px;
   background-color: var(--bg-mostly-black);
