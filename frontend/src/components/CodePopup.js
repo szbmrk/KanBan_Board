@@ -11,14 +11,14 @@ const CodePopup = ({ board_id, onCancel }) => {
     { value: "Documentation", label: "Documentation" },
     { value: "Code review", label: "Code review" },
   ];
-  const [selectedOption, setSelectedOption] = useState(codeOptions[0]);
+  const [selectedOption, setSelectedOption] = useState(codeOptions[0].value);
 
   const aiOptions = [
     { value: "chatgpt", label: "ChatGPT" },
     { value: "llama", label: "Llama" },
     { value: "bard", label: "Bard" },
   ];
-  let [chosenAI, setChosenAI] = useState(aiOptions[0]);
+  let [chosenAI, setChosenAI] = useState(aiOptions[0].value);
 
   const [inputCode, setInputCode] = useState("");
   const [output, setOutput] = useState("");
