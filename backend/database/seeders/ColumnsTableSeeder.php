@@ -178,6 +178,15 @@ class ColumnsTableSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'name' => 'column1 of board id 8',
+                'position' => 0,
+                'board_id' => 8,
+                'is_finished' => false,
+                'task_limit' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
 
         ];
 
