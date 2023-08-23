@@ -160,7 +160,9 @@ Route::get('/AGI/generate-documentation-task/board/{boardId}/task/{taskId}', [AG
 Route::get('/AGI/generate-documentation-board/{boardId}', [AGIController::class, 'GenerateTaskDocumentationPerBoard'])->middleware('api');
 Route::get('/AGI/generate-documentation-column/board/{boardId}/column/{columnId}', [AGIController::class, 'GenerateTaskDocumentationPerColumn'])->middleware('api');
 
-Route::post('/generate-llama-subtasks', [LlamaController::class, 'generateSubtasks']);
+Route::post('/generate-llama-subtasks', [LlamaController::class, 'generateTaskLlama']);
+
+// API kulcs nélküli hívásra, beégetett válasszal
 Route::get('/generate-llama-subtasks2', [LlamaController::class, 'testSubtaskParsing']);
 
 
