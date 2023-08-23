@@ -177,6 +177,7 @@ Route::get('/boards/{boardId}/AGI/crafted-prompts/{craftedPromptId}', [PromptCra
 
 Route::get('/AGI/GenerateTask/CraftedPrompt', [ChatGPTController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
 Route::post('/generate-performance-summary', [ChatGPTController::class, 'generatePerformanceSummary']);
+Route::get('/generate-five-day-summary', [ChatGPTController::class, 'generateFiveDaySummary']);
 
 Route::get('/AGI/answers/boards/{boardId}', [AGIAnswersController::class, 'index'])->middleware('api');
 Route::post('/AGI/answers/boards/{boardId}', [AGIAnswersController::class, 'storePerBoard'])->middleware('api');

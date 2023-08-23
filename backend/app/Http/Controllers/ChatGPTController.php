@@ -345,12 +345,15 @@ class ChatGPTController extends Controller
     {
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-    
+        
         $logs = DB::table('logs')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get();
     
         $logEntries = [];
+        $tasksCreatedCount = 0;
+        $tasksFinishedCount = 0;
+    
         foreach ($logs as $log) {
             $details = json_decode($log->details);
             $logEntry = [
@@ -358,9 +361,16 @@ class ChatGPTController extends Controller
                 'details' => $details,
             ];
             $logEntries[] = $logEntry;
+    
+            if ($log->action == 'CREATED TASK') {
+                $tasksCreatedCount++;
+            }
+            if ($log->action == 'FINISHED TASK') {
+                $tasksFinishedCount++;
+            }
         }
     
-        $introText = "Act as a Statistics Performance Assistance and create a comprehensive view: ";
+        $introText = "Based on the following log entries from a Kanban board, provide a detailed daily summary that can be used for weekly statistical analysis:";
         $encodedLogEntries = json_encode($introText . json_encode($logEntries));
     
         $pythonScriptPath = env('PERFORMANCE_PYTHON_SCRIPT_PATH');
@@ -368,7 +378,62 @@ class ChatGPTController extends Controller
         $command = "python {$pythonScriptPath} " . escapeshellarg($encodedLogEntries) . " " . escapeshellarg($apiKey);
         $response = shell_exec($command);
     
+        DB::table('summary_logs')->insert([
+            'date' => $endDate, 
+            'summary' => $response,
+            'logs' => json_encode($logEntries),
+            'tasks_created_count' => $tasksCreatedCount,
+            'tasks_finished_count' => $tasksFinishedCount
+        ]);
+    
         return response()->json(['response' => $response]);
     }
-    
+
+
+
+    public function generateFiveDaySummary()
+    {
+        // Hétvégi napok kizárása
+        $endDate = Carbon::now();
+        while ($endDate->isWeekend()) {
+            $endDate = $endDate->subDay();
+        }
+
+        $daysCounted = 0;
+        $startDate = $endDate->copy();
+        while ($daysCounted < 4) {
+            $startDate = $startDate->subDay();
+            if (!$startDate->isWeekend()) {
+                $daysCounted++;
+            }
+        }
+
+        // Lekérdezés az adatbázisból az adott idő intervallumban lévő összefoglalókra
+        $summaries = SummaryLog::whereBetween('date', [$startDate, $endDate])->get();
+
+        // Számlálók
+        $totalTasksCreated = 0;
+        $totalTasksFinished = 0;
+        foreach ($summaries as $summary) {
+            $totalTasksCreated += $summary->tasks_created_count;
+            $totalTasksFinished += $summary->tasks_finished_count;
+        }
+
+        // Készítsünk egy promptot az AGI-nak
+        $prompt = "Over the past 5 workdays, {$totalTasksCreated} tasks were created and {$totalTasksFinished} tasks were finished on our Kanban board. Please provide a detailed statistical analysis on productivity and performance.";
+
+        // Python script futtatása
+        $pythonScriptPath = env('PERFORMANCE_PYTHON_SCRIPT_PATH');
+        $apiKey = env('OPENAI_API_KEY');
+        $command = "python {$pythonScriptPath} " . escapeshellarg($prompt) . " " . escapeshellarg($apiKey);
+        $response = shell_exec($command);
+
+        // Válasz visszaadása
+        return response()->json([
+            'prompt' => $prompt,
+            'response' => $response,
+            'totalTasksCreated' => $totalTasksCreated,
+            'totalTasksFinished' => $totalTasksFinished
+        ]);
+    }
 }
