@@ -75,6 +75,7 @@ const Teams = () => {
                 return team;
             });
             setTeams(newTeamData);
+            console.log(response.data.added_members);
         } catch (e) {
             console.log(e.response);
             if (e.response.status === 401 || e.response.status === 500) {
@@ -181,14 +182,8 @@ const Teams = () => {
             const tempData = response.data.teams;
             console.log(response.data.teams);
             setTeams(tempData);
-        } catch (e) {
-            console.log(e.response);
-            if (e.response.status === 401 || e.response.status === 500) {
-                setError('You are not logged in! Redirecting to login page...');
-                setRedirect(true);
-            } else {
-                setError(e.message);
-            }
+        } catch (error) {
+            console.log(error.response);
         }
     };
     return (
