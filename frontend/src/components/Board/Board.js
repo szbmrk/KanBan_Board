@@ -59,6 +59,7 @@ const Board = () => {
     const [isHoveredAI, setIsHoveredAI] = useState(false);
     const [isHoveredClipboard, setIsHoveredClipboard] = useState(false);
     const [isHoveredCode, setIsHoveredCode] = useState(false);
+    const [isHoveredCraft, setIsHoveredCraft] = useState(false);
     const [isHoveredX, setIsHoveredX] = useState(false);
     const [columnIndex, setColumnIndex] = useState(null);
     const [priorities, setPriorities] = useState([]);
@@ -1169,8 +1170,8 @@ const Board = () => {
                             <p className='agi-menu-title'> AI menu </p>
                             <ul className='agi-menu'>
                                 <li
-                                    onMouseEnter={() => setIsHoveredAI(true)}
-                                    onMouseLeave={() => setIsHoveredAI(false)}
+                                    onMouseEnter={() => setIsHoveredCraft(true)}
+                                    onMouseLeave={() => setIsHoveredCraft(false)}
                                     onClick={() => {
                                         handleShowCraftPromptPopup();
                                     }}
@@ -1178,7 +1179,7 @@ const Board = () => {
                                     <span
                                         className='craft-button'
                                         style={{
-                                            color: isHoveredAI ? 'var(--craft)' : '',
+                                            color: isHoveredCraft ? 'var(--craft)' : '',
                                         }}
                                     >
                                         {craftIcon}
