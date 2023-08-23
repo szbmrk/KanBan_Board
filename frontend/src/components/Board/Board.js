@@ -69,7 +69,7 @@ const Board = () => {
     const [craftedPromptsTask, setCraftedPromptsTask] = useState([]);
     const navigate = useNavigate();
     const [hoveredColumnId, setHoveredColumnId] = useState(null);
-    const [isAGIOpen, setAGIIsOpen] = useState(false);
+    const [isAGIOpen, setIsAGIOpen] = useState(false);
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
@@ -969,7 +969,7 @@ const Board = () => {
     };
 
     const toggleAGIDropdown = () => {
-        setAGIIsOpen(!isAGIOpen);
+        setIsAGIOpen(!isAGIOpen);
     };
 
     const handleTransformMouseEnter = () => {
@@ -988,24 +988,27 @@ const Board = () => {
 
     const handlePlaceTagOnTask = async (task_id, tag) => {
         try {
-            const response = await axios.post(`/boards/${board_id}/tasks/${task_id}/tags/${tag.tag_id}`,
-                {}, { headers: { Authorization: `Bearer ${token}` } });
+            const response = await axios.post(
+                `/boards/${board_id}/tasks/${task_id}/tags/${tag.tag_id}`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
 
             inspectedTask.tags.push(tag);
 
             inspectedTask.tags.sort((a, b) => {
                 return a.tag_id - b.tag_id;
             });
-        }
-        catch (e) {
+        } catch (e) {
             console.error(e);
         }
-    }
+    };
 
     const handleRemoveTagFromTask = async (task_id, tag_id) => {
         try {
-            const response = await axios.delete(`/boards/${board_id}/tasks/${task_id}/tags/${tag_id}`,
-                { headers: { Authorization: `Bearer ${token}` } });
+            const response = await axios.delete(`/boards/${board_id}/tasks/${task_id}/tags/${tag_id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
 
             const removedTagIndex = inspectedTask.tags.findIndex((tag) => {
                 if (tag.tag_id === tag_id) {
@@ -1013,11 +1016,10 @@ const Board = () => {
                 }
             });
             inspectedTask.tags.splice(removedTagIndex, 1);
-        }
-        catch (e) {
+        } catch (e) {
             console.error(e);
         }
-    }
+    };
 
     return (
         <>
@@ -1199,7 +1201,7 @@ const Board = () => {
                         </div>
                     )}
                     {isAGIOpen && (
-                        <div className='agi-submenu'>
+                        <div className='agi-submenu' onMouseLeave={() => setIsAGIOpen(false)}>
                             <p className='agi-menu-title'> AI menu </p>
                             <ul className='agi-menu'>
                                 <li
