@@ -38,47 +38,46 @@ const CodePopup = ({ board_id, onCancel }) => {
                 <span className='close-btn' onClick={onCancel}>
                     {closeIcon}
                 </span>
-                <div className='gt-popup-content'></div>
-                <h2>Coding popup</h2>
-                <div className='coding-container'>
-                    <p>Your code:</p>
-                    <pre>
-                        <code
-                            className='code-textarea'
-                            contentEditable='true'
-                            spellCheck='true'
-                            value={inputCode}
-                            onChange={(e) => setInputCode(e.target.value)}
-                        />
-                        {/*<textarea
-                        className='code-textarea'
-                        value={inputCode}
-                        onChange={(e) => setInputCode(e.target.value)}
-    />*/}
-                    </pre>
+                <div className='gt-popup-content'>
+                    <h2>Coding popup</h2>
+                    <div className='coding-container'>
+                        <p>Your code:</p>
+                        <pre>
+                            <code
+                                className='code-textarea'
+                                contentEditable='true'
+                                spellCheck='true'
+                                value={inputCode}
+                                onChange={(e) => setInputCode(e.target.value)}
+                            />
+                        </pre>
+                    </div>
+                    <div className='gt-action-buttons'>
+                        <div className='dropdown-container'>
+                            <p>Which AI do you want to use?</p>
+                            <Dropdown
+                                className='code-dropdown'
+                                options={aiOptions}
+                                value={chosenAI}
+                                onChange={(selectedOption) => setChosenAI(selectedOption)}
+                            />
+                        </div>
+                        <div className='dropdown-container'>
+                            <p>Choose what you would like to do:</p>
+                            <Dropdown
+                                className='code-dropdown'
+                                options={codeOptions}
+                                value={selectedOption}
+                                onChange={(option) => setSelectedOption(option.value)}
+                                placeholder='Select an option'
+                            />
+                        </div>
+                        <button className='generate-button' onClick={handleRunClick}>
+                            Run
+                        </button>
+                    </div>
+                    <textarea className='output-textarea' value={output} disabled />
                 </div>
-                <p>Which AI do you want to use?</p>
-                <Dropdown
-                    className='code-dropdown'
-                    options={aiOptions}
-                    value={chosenAI}
-                    onChange={(selectedOption) => setChosenAI(selectedOption)}
-                />
-
-                <p>Choose what you would like to do:</p>
-                <Dropdown
-                    className='code-dropdown'
-                    options={codeOptions}
-                    value={selectedOption}
-                    onChange={(option) => setSelectedOption(option.value)}
-                    placeholder='Select an option'
-                />
-
-                <button className='run-button' onClick={handleRunClick}>
-                    Run
-                </button>
-
-                <textarea className='output-textarea' value={output} disabled />
             </div>
         </div>
     );
