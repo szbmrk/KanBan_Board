@@ -72,6 +72,7 @@ body {
     right: 0;
     transform: translate(-50%, -50%);
     cursor: pointer;
+    color: var(--light-gray);
 }
 
 .delete-icon:hover {
@@ -99,6 +100,7 @@ body {
     opacity: 1;
     visibility: visible;
     transition: opacity 0.3s ease;
+    z-index: 100000000;
 }
 
 

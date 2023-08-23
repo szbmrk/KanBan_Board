@@ -54,11 +54,10 @@
 
 .edit-board-button {
     position: absolute;
-    bottom: 0;
-    right: 0;
-    padding: 5px 10px;
+    bottom: 5px;
+    right: 5px;
     color: var(--light-gray);
-    font-size: 14px;
+    font-size: 0.9em;
     cursor: pointer;
 }
 
