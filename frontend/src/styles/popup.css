@@ -267,7 +267,7 @@
     color: var(--light-gray);
 }
 
-.add-button {
+.add-icon {
     position: absolute;
     bottom: 10px;
     left: 10px;
@@ -281,7 +281,7 @@
     transition: 0.1s ease;
 }
 
-.add-button:hover {
+.add-icon:hover {
     color: var(--off-white);
 }
 

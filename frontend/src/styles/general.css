@@ -10,7 +10,7 @@
   --important: rgba(255, 0, 0, 0.4);
   --important-light: rgba(255, 0, 0, 0.6);
   --basic-font: "Raleway", sans-serif;
-  --confirm: #359138;
+  --confirm: rgba(0, 230, 0, 0.4);
   --starred: #f5d142;
   --magic: #937bff;
   --attachment-link: #49b6ff;
@@ -64,6 +64,11 @@ body {
   color: var(--light-gray);
   margin: 0 20px 30px;
   border-bottom: 1px solid var(--light-gray);
+}
+
+.trash-icon {
+  cursor: pointer;
+  color: var(--light-gray);
 }
 
 .delete-icon {

@@ -21,7 +21,7 @@ import Subtask from './Subtask';
 import TagDropdown from './TagDropdown';
 import Comment from './Comment';
 import DatePicker from 'react-datepicker';
-import TagEditorPopup from "./TagEditorPopup";
+import TagEditorPopup from './TagEditorPopup';
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const subtaskIcon = <FontAwesomeIcon icon={faListCheck} />;
@@ -56,7 +56,7 @@ const Popup = ({
     addMember,
     deleteMember,
     placeTagOnTask,
-    removeTagFromTask
+    removeTagFromTask,
 }) => {
     const popupRef = useRef(null);
 
@@ -312,8 +312,16 @@ const Popup = ({
                                         <h3>Tags:</h3>
                                     </div>
                                     <div className='tags'>
-                                        <TagDropdown tags={task.tags} allTags={boardTags} taskId={task.task_id} placeTagOnTask={placeTagOnTask} removeTagFromTask={removeTagFromTask}></TagDropdown>
-                                        <span className='addbtn-tag' onClick={() => setShowTagEditorPopup(true)}>{plusIcon}</span>
+                                        <TagDropdown
+                                            tags={task.tags}
+                                            allTags={boardTags}
+                                            taskId={task.task_id}
+                                            placeTagOnTask={placeTagOnTask}
+                                            removeTagFromTask={removeTagFromTask}
+                                        ></TagDropdown>
+                                        <span className='addbtn-tag' onClick={() => setShowTagEditorPopup(true)}>
+                                            {plusIcon}
+                                        </span>
                                     </div>
                                 </>
                             )}
@@ -448,7 +456,7 @@ const Popup = ({
                 >
                     Save
                 </button>
-                <button className='add-button' onClick={handleAddToCard} style={{ zIndex: addToCardIconZIndex }}>
+                <button className='add-icon' onClick={handleAddToCard} style={{ zIndex: addToCardIconZIndex }}>
                     {plusIcon}
                 </button>
                 {showAddToCard && (
@@ -528,12 +536,12 @@ const Popup = ({
                                 ))}
                             </div>
                         </div>
-                    </div>)
-                }
+                    </div>
+                )}
                 {showTagEditorPopup && (
                     <div className='tag-editor-overlay'>
                         <div className='tag-editor-popup'>
-                            <TagEditorPopup onClose={handleCloseTagEditor} onSave={handleSaveTagEditor}/>
+                            <TagEditorPopup onClose={handleCloseTagEditor} onSave={handleSaveTagEditor} />
                         </div>
                     </div>
                 )}
