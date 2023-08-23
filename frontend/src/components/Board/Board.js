@@ -63,7 +63,7 @@ const Board = () => {
     const [isHoveredX, setIsHoveredX] = useState(false);
     const [columnIndex, setColumnIndex] = useState(null);
     const [priorities, setPriorities] = useState([]);
-
+    const [redirect, setRedirect] = useState(false);
     const [craftedPrompts, setCraftedPrompts] = useState([]);
     const [craftedPromptsBoard, setCraftedPromptsBoard] = useState([]);
     const [craftedPromptsTask, setCraftedPromptsTask] = useState([]);
@@ -148,6 +148,12 @@ const Board = () => {
             }
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
             if (e.response.status === 403) setError('No permission');
             else setError(e.message);
             setPermission(false);
@@ -178,6 +184,12 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -198,6 +210,12 @@ const Board = () => {
             );
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -212,6 +230,12 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -238,6 +262,12 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
 
         setShowDeleteColumnConfirmation(false);
@@ -299,6 +329,12 @@ const Board = () => {
                     setBoard({ ...board, columns: newColumnData });
                 } catch (e) {
                     console.error(e);
+                    if (e.response.status === 401 || e.response.status === 500) {
+                        setError('You are not logged in! Redirecting to login page...');
+                        setRedirect(true);
+                    } else {
+                        setError(e.message);
+                    }
                 }
             } else {
                 try {
@@ -318,6 +354,12 @@ const Board = () => {
                     setBoard({ ...board, columns: newColumnData });
                 } catch (e) {
                     console.error(e);
+                    if (e.response.status === 401 || e.response.status === 500) {
+                        setError('You are not logged in! Redirecting to login page...');
+                        setRedirect(true);
+                    } else {
+                        setError(e.message);
+                    }
                 }
             }
         }
@@ -346,6 +388,12 @@ const Board = () => {
         } catch (e) {
             console.log(e.response.status);
             alert(e.response.data.error);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -416,6 +464,12 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
 
             alert(e.response.data.error);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -434,8 +488,14 @@ const Board = () => {
             newTaskData[columnIndex].tasks[taskIndex].title = title;
             newTaskData[columnIndex].tasks[taskIndex].description = description;
             setBoard({ ...board, columns: newTaskData });
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -454,6 +514,12 @@ const Board = () => {
             setBoard({ ...board, columns: newColumnData });
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -482,6 +548,12 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -506,6 +578,12 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -524,8 +602,14 @@ const Board = () => {
             const task = findTaskById(newBoardData[columnIndex].tasks, parent_task_id);
             task.subtasks.push(newSubtask);
             setBoard({ ...board, columns: newBoardData });
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -546,6 +630,12 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -570,8 +660,14 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
 
             handleOpenPreviousTask(parent_task_id, column_id);
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -597,6 +693,12 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -618,6 +720,12 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -636,8 +744,14 @@ const Board = () => {
             const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
             task.comments.push(newComment);
             setBoard({ ...board, columns: newBoardData });
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -794,6 +908,12 @@ const Board = () => {
             console.log(res);
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -829,6 +949,12 @@ const Board = () => {
             console.log(res);
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -869,6 +995,12 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -889,6 +1021,12 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -907,6 +1045,12 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -925,6 +1069,12 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -947,6 +1097,12 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -957,6 +1113,12 @@ const Board = () => {
             });
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -1001,6 +1163,12 @@ const Board = () => {
             });
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -1018,6 +1186,12 @@ const Board = () => {
             inspectedTask.tags.splice(removedTagIndex, 1);
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
