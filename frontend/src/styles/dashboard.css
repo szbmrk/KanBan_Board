@@ -114,13 +114,13 @@
 }
 
 .board-save-button {
-    width: 30%;
+    width: 80px;
     height: 40px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-family: var(--basic-font);
-    font-size: 0.95em;
+    font-size: 1em;
     background-color: var(--light-gray);
     color: var(--dark-gray);
     transition: 0.1s ease;
