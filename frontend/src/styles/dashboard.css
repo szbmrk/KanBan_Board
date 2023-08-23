@@ -31,7 +31,6 @@
     flex: 0 0 calc(33.33% - 20px);
     border: 1px solid var(--dark-gray);
     border-radius: 8px;
-    padding: 10px;
     margin: 10px;
     background-color: var(--dark-gray);
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
