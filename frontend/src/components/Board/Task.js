@@ -301,7 +301,7 @@ export const Task = ({
                             onClick={() => deleteTask(id, task.column_id)}
                         >
                             <span
-                                className='delete-button'
+                                className='delete-task-button'
                                 style={{ color: isHoveredDelete ? 'var(--important)' : '' }}
                             >
                                 {trashIcon}

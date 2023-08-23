@@ -21,12 +21,11 @@ export default function Dashboard() {
     const [ownPermissions, setOwnPermissions] = useState([]);
     const [teamPermissions, setTeamPermissions] = useState([]);
 
-
     const token = sessionStorage.getItem('token');
     const user_id = sessionStorage.getItem('user_id');
 
     useEffect(() => {
-        document.title = 'Dashboard'
+        document.title = 'Dashboard';
         if (user_id) {
             setUserID(user_id);
         }
@@ -208,7 +207,7 @@ export default function Dashboard() {
                 }
             }
         }
-    }
+    };
 
     return (
         <div className='content'>
@@ -234,9 +233,10 @@ export default function Dashboard() {
                                                     <Link to={`/board/${board.board_id}`} className='board-title'>
                                                         <p>{board.name}</p>
                                                     </Link>
-                                                    {checkPermissonToManageBoard(board.board_id, team.team_id) === true &&
+                                                    {checkPermissonToManageBoard(board.board_id, team.team_id) ===
+                                                        true && (
                                                         <span
-                                                            className='delete-button'
+                                                            className='delete-icon'
                                                             style={{
                                                                 visibility:
                                                                     hoveredBoardId === board.board_id
@@ -247,10 +247,13 @@ export default function Dashboard() {
                                                             onClick={() =>
                                                                 deleteBoardFromTeam(team.team_id, board.board_id)
                                                             }
+                                                            data-hover='Delete Board'
                                                         >
                                                             {closeIcon}
-                                                        </span>}
-                                                    {checkPermissonToManageBoard(board.board_id, team.team_id) === true &&
+                                                        </span>
+                                                    )}
+                                                    {checkPermissonToManageBoard(board.board_id, team.team_id) ===
+                                                        true && (
                                                         <span
                                                             className='edit-board-button'
                                                             style={{
@@ -265,7 +268,7 @@ export default function Dashboard() {
                                                         >
                                                             {pencilIcon}
                                                         </span>
-                                                    }
+                                                    )}
                                                 </div>
                                             ))}
                                             <div
