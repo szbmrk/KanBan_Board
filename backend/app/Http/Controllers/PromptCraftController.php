@@ -66,14 +66,13 @@ class PromptCraftController extends Controller
         }
 
         $craftedPrompt = new CraftedPrompt();
+
         if($request->input('agi_behavior') != null) 
         {
             //find agi behaviorid by the act_as_a value
-            $agiBehavior = AgiBehavior::where('act_as_a', $request->input('agi_behavior'))->first();
-
-
-            $agiBehaviors = agibehavior::where('act_as_a', $request->input('agi_behavior'))->get();
+            $agiBehaviors = AgiBehavior::where('act_as_a', $request->input('agi_behavior'))->get();
             $exists = false;
+
             //find if the agi behavior already exists on this board
             foreach($agiBehaviors as $behavior) 
             {
@@ -85,22 +84,15 @@ class PromptCraftController extends Controller
                 }
             }
 
-            if(!$exists && $agiBehavior) 
+            if(!$exists) 
             {
-                if($agiBehavior->board_id != $boardId) 
-                {
-                    $agiBehavior = new AgiBehavior();
-                    $agiBehavior->act_as_a = $request->input('agi_behavior');
-                    $agiBehavior->board_id = $boardId;
-                    $agiBehavior->save();
-                    $craftedPrompt->agi_behavior_id = $agiBehavior->agi_behavior_id;
-                }
-                    
-                
-            }
-            else 
-            {
+
+                $agiBehavior = new AgiBehavior();
+                $agiBehavior->act_as_a = $request->input('agi_behavior');
+                $agiBehavior->board_id = $boardId;
+                $agiBehavior->save();
                 $craftedPrompt->agi_behavior_id = $agiBehavior->agi_behavior_id;
+  
             }
 
         }  
