@@ -31,21 +31,12 @@ class AgiBehaviorController extends Controller
         }
 
         // Get all crafted prompts for this board
-        $craftedPrompts = CraftedPrompt::where('board_id', $boardId)->get();
+        $behaviors = AgiBehavior::where('board_id', $boardId)->get();
     
         // Initialize an empty array to store the agiBehaviors
-        $agiBehaviors = array();
     
-        foreach ($craftedPrompts as $craftedPrompt) {
-            $agiBehavior = AgiBehavior::find($craftedPrompt->agi_behavior_id);
     
-            if ($agiBehavior != null) {
-                // Append each agiBehavior as an object with the "act_as_a" key
-                $agiBehaviors[] = $agiBehavior;
-            }
-        }
-    
-        return response()->json(['agiBehaviors' => $agiBehaviors], 200);
+        return response()->json($behaviors);
     }
 
     public function StoreBehavior(Request $request, $boardId)
