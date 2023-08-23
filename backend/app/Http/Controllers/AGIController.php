@@ -196,8 +196,11 @@ class AGIController extends Controller
             case Str::lower("bard"):
                 $response = BardController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
                 break;
-            default:
+            case Str::lower("chatgpt"):
                 $response = ChatGPTController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
+                break;
+            default:
+                $response = "No AI chosen";
                 break;
         }
         return $response;
