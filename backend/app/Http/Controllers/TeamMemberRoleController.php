@@ -104,7 +104,23 @@ class TeamMemberRoleController extends Controller
         $teamMemberRole->role_id = $roleId;
         $teamMemberRole->save();
 
-        return response()->json(['message' => 'Role assigned successfully']);
+        $newTeamMember=TeamMember::with(["user", "roles.permissions", "roles.board"])->where('team_id', $teamMember->team_id)
+            ->where('user_id', $teamMember->user_id)
+            ->first();
+            
+            foreach ($newTeamMember->roles as &$role) {
+                // Kérdezd le a team_members_role_id-t a megfelelő kritériumok alapján
+                $teamMembersRoleId = TeamMemberRole::where('team_member_id', $newTeamMember->team_members_id)
+                                                   ->where('role_id', $role->role_id)
+                                                   ->value('team_members_role_id');
+    
+                // Ha találtál értéket, adjuk hozzá a szerephez
+                if ($teamMembersRoleId !== null) {
+                    $role->team_members_role_id = $teamMembersRoleId;
+                }
+            }
+
+        return response()->json(['message' => 'Role assigned successfully', 'team_member' => $newTeamMember]);
     }
 
     public function destroy($boardId, $teamMemberRoleId)

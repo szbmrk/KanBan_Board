@@ -1,23 +1,30 @@
+/* Global Styles */
+:root {
+  --dark-gray: #333;
+  --light-gray: #aaa;
+  --bg-dark: #222;
+}
+
+/* Container Styles */
 .teams-container {
   width: 90%;
   margin: 20px auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   gap: 20px;
 }
 
+/* Team Card Styles */
 .teamcard {
   width: 100%;
-  background-color: var(--bg-dark);
+  background-color: rgba(64, 64, 64, 0.692);
+  opacity: 0.9;
   border: 1px solid var(--dark-gray);
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
   gap: 10px;
   overflow: hidden;
 }
@@ -36,11 +43,11 @@
 .teamcard-subheader {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
   gap: 10px;
+  align-items: flex-start;
 }
 
+/* Team Body Styles */
 .teamcard-body {
   width: 100%;
   padding: 20px;
@@ -51,19 +58,8 @@
   text-align: left;
 }
 
-
-.delete_button {
-  background-color: red;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 5px 10px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-/* Styling for the "Manage team" button */
-.manageButton {
+/* Button Styles */
+.button {
   background-color: #6a97ea;
   color: white;
   border: none;
@@ -71,15 +67,81 @@
   padding: 5px 10px;
   cursor: pointer;
   margin-top: 10px;
+  transition: background-color 0.3s;
 }
 
-button#manageButton:hover {
+.button:hover {
   background-color: #547dc7;
 }
 
-/* Styling for the team manager section */
+/* Delete Button Styles */
+.delete_button {
+  background-color: red;
+}
+
+/* Manage Team Button Styles */
+.manageButton {
+  background-color: #6a97ea;
+}
+
+/* Team Manager Section Styles */
 .team-manager {
   border-top: 1px solid #ccc;
   padding-top: 20px;
   margin-top: 20px;
+}
+
+/* Team Members Section Styles */
+.team-members {
+  margin-top: 20px;
+  border-radius: 10px;
+}
+
+/* Table Styles */
+.team-members table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.team-members th,
+.team-members td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid var(--dark-gray);
+}
+
+/* Table Header Styles */
+.team-members th {
+  background-color: var(--dark-gray);
+  color: var(--light-gray);
+}
+
+/* Username Styles */
+.team-members h3 {
+  margin: 0;
+  font-size: 16px;
+  text-align: center;
+}
+
+/* Role Styles */
+.team-members p {
+  margin: 0;
+  color: var(--light-gray);
+}
+
+/* Add Role Button Styles */
+.team-members .manageButton {
+  background-color: #5ab078;
+}
+
+/* Actions Section Styles */
+.teamcard-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Spacing Between Rows */
+.team-members tr:not(:last-child) {
+  margin-bottom: 10px;
 }
