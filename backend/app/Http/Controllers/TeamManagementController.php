@@ -59,10 +59,23 @@ class TeamManagementController extends Controller
             $teamMember->team_id = $team_id;
             $teamMember->user_id = $userId;
             $teamMember->save();
+            $newTeamMember=TeamMember::with(["user", "roles.permissions"])->where('team_id', $team_id)
+            ->where('user_id', $userId)
+            ->first();
             
-            $addedMembers[] = TeamMember::with("user")->where('team_id', $team_id)
-                ->where('user_id', $userId)
-                ->first();
+            foreach ($newTeamMember->roles as &$role) {
+                // Kérdezd le a team_members_role_id-t a megfelelő kritériumok alapján
+                $teamMembersRoleId = TeamMemberRole::where('team_member_id', $newTeamMember->team_members_id)
+                                                   ->where('role_id', $role->role_id)
+                                                   ->value('team_members_role_id');
+    
+                // Ha találtál értéket, adjuk hozzá a szerephez
+                if ($teamMembersRoleId !== null) {
+                    $role->team_members_role_id = $teamMembersRoleId;
+                }
+            }
+
+            $addedMembers[] = $newTeamMember;
         }
     
         if (!empty($addedMembers)) {

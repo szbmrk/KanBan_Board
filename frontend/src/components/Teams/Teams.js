@@ -67,6 +67,8 @@ const Teams = () => {
                 return team;
             });
             setTeams(newTeamData);
+            console.log(response.data.added_members)
+
         } catch (error) {
             console.log(error.response);
         }
@@ -153,6 +155,67 @@ const Teams = () => {
             console.log(error.response);
         }
     };
+
+    const handleDeleteRole = async (role_id, board_id, team_id, user_id) => {
+        const token = sessionStorage.getItem('token');
+        try {
+            const response = await axios.delete(`/boards/${board_id}/team-member-roles/${role_id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            console.log(response);
+            const newTeamData = teams.map((team) => {
+                if (team.team_id === team_id) {
+                    const newTeamMembers = team.team_members.map((member) => {
+                        if (member.user_id === user_id) {
+                            const newRoles = member.roles.filter((role) => role.team_members_role_id !== role_id);
+                            member.roles = newRoles;
+                        }
+                        return member;
+                    });
+                    team.team_members = newTeamMembers;
+                }
+                return team;
+            });
+            setTeams(newTeamData);
+
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
+    async function AddRoleToUser(board_id, team_member_id, role_id) {
+        try {
+            const response = await axios.post(`/boards/${board_id}/team-member-roles`, { team_member_id: team_member_id, role_id: role_id },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+            console.log(response);
+            const newTeamMember = response.data.team_member;
+            const newTeamData = teams.map((team) => {
+                if (team.team_id === newTeamMember.team_id) {
+                    const newTeamMembers = team.team_members.map((member) => {
+                        if (member.user_id === newTeamMember.user_id) {
+                            member.roles = newTeamMember.roles;
+                        }
+                        return member;
+                    });
+                    team.team_members = newTeamMembers;
+                }
+                return team;
+            });
+            setTeams(newTeamData);
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <div className="content">
             <div className='teams-container'>
@@ -172,7 +235,7 @@ const Teams = () => {
                 ) : (
                     <>
                         {teams.map((team, index) => (
-                            <TeamCard key={index} data={team} deleteUserFromTeam={deleteUserFromTeam} ChangeTeamName={ChangeTeamName} AddUsers={AddUsers} DeleteTeam={DeleteTeam} ownPermissions={ownPermissions} teamPermissions={teamPermissions} />
+                            <TeamCard key={index} data={team} deleteUserFromTeam={deleteUserFromTeam} ChangeTeamName={ChangeTeamName} AddUsers={AddUsers} DeleteTeam={DeleteTeam} ownPermissions={ownPermissions} teamPermissions={teamPermissions} handleDeleteRole={handleDeleteRole} AddRoleToUser={AddRoleToUser} />
                         ))}
 
                         <div className='board add-board' onClick={() => addTeam()}>
