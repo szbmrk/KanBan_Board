@@ -1,10 +1,15 @@
 import React from 'react';
 import axios from '../../api/axios';
 import { useEffect, useState } from 'react';
+import '../../styles/popup.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const TeamManager = ({ teamData, onClose, ChangeTeamName, addTeam }) => {
     const [teamName, setTeamName] = useState('');
     const [addedUsers, setAddedUsers] = useState([]);
+
+    const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
     useEffect(() => {
         if (teamData.length !== 0) {
@@ -31,53 +36,47 @@ const TeamManager = ({ teamData, onClose, ChangeTeamName, addTeam }) => {
     return (
         <>
             {teamData.length !== 0 ? (
-                <div className='overlay'>
-                    <div className='popup'>
-                        <div className='popup-content'>
-                            <button className='close-btn' onClick={onClose}>
-                                Close
+                <div className='overlay darken'>
+                    <div className='popup popup-mini'>
+                        <form className='popup-content-form-mini' onSubmit={SubmitTeamName}>
+                            <span className='close-btn' onClick={onClose}>
+                                {closeIcon}
+                            </span>
+                            {teamData.team_id ? <h4>Edit team name:</h4> : <h4>New team name:</h4>}
+                            <input
+                                type='text'
+                                value={teamName}
+                                onChange={handleInputChange}
+                                placeholder='Board name'
+                                className='popup-input-mini'
+                                required
+                            />
+                            <button className='board-save-button' type='submit'>
+                                Save
                             </button>
-                            <form onSubmit={SubmitTeamName}>
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td>Team name:</td>
-                                            <td>
-                                                <input type='text' value={teamName} onChange={handleInputChange} />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <button className='delete-button-popup' type='submit'>
-                                    Apply
-                                </button>
-                            </form>
-                        </div>
+                        </form>
                     </div>
                 </div>
             ) : (
-                <div className='overlay'>
-                    <div className='popup'>
-                        <div className='popup-content'>
-                            <button className='close-btn' onClick={onClose}>
-                                Close
+                <div className='overlay darken'>
+                    <div className='popup popup-mini'>
+                        <form className='popup-content-form-mini' onSubmit={AddTeam}>
+                            <span className='close-btn' onClick={onClose}>
+                                {closeIcon}
+                            </span>
+                            <h4>New team name:</h4>
+                            <input
+                                type='text'
+                                value={teamName}
+                                onChange={handleInputChange}
+                                placeholder='Board name'
+                                className='popup-input-mini'
+                                required
+                            />
+                            <button className='board-save-button' type='submit'>
+                                Save
                             </button>
-                            <form onSubmit={AddTeam}>
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td>Team name:</td>
-                                            <td>
-                                                <input type='text' value={teamName} onChange={handleInputChange} />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <button className='delete-button-popup' type='submit'>
-                                    Apply
-                                </button>
-                            </form>
-                        </div>
+                        </form>
                     </div>
                 </div>
             )}
