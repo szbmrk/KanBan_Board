@@ -1417,7 +1417,7 @@ const Board = () => {
                     )}
                     {showIconContainer && (
                         <div
-                            className='overlay'
+                            className='overlay darken'
                             onClick={() => {
                                 setShowIconContainer(false);
                                 setColumnZIndex(1);
