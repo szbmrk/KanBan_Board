@@ -141,6 +141,7 @@ class LlamaController extends Controller
         
         return LlamaController::parseSubtaskResponse($response);
     }
+    /*
     public static function GenerateTaskDocumentationPerTask($boardId,$taskId)
     {
         $user = auth()->user();
@@ -162,7 +163,7 @@ class LlamaController extends Controller
         }
         
         $prompt = "Generate documentation or a longer description for the task with the following title: {$task->title}, description: {$task->description}.";
-        $path = env('PYTHON_SCRIPT_PATH');
+        $path = env('LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         $cleanData = trim($response);
 
@@ -193,7 +194,7 @@ class LlamaController extends Controller
         }
 
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
-        $path = env('PYTHON_SCRIPT_PATH');
+        $path = env('LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         $cleanData = trim($response);
 
@@ -201,6 +202,7 @@ class LlamaController extends Controller
             'response' => $cleanData
         ];
     }
+    
 
     public static function GenerateTaskDocumentationPerColumn($boardId, $columnId)
     {
@@ -229,62 +231,74 @@ class LlamaController extends Controller
         }
 
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
-        $path = env('PYTHON_SCRIPT_PATH');
+        $path = env('LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         $cleanData = trim($response);
 
         return [
             'response' => $cleanData
         ];
-    }    public static function GenerateCodeReviewOrDocumentation(Request $request, $boardId, $expectedType) 
-    {
-        $user = auth()->user();
-        if(!$user)
-        {
-            return response()->json([
-                'error' => 'Unauthorized!',
-            ]);
-        }
-        $board = Board::where('board_id', $boardId)->first();
-
-        if (!$board) {
-            return response()->json(['error' => 'Board not found.'], 404);
-        }
-
-        $team = $board->team;
-
-        if (!$team->teamMembers->contains('user_id', $user->user_id)) {
-            return response()->json(['error' => 'You are not a member of the team.'], 404);
-        }
-
-        $code = $request->input('code');
-        $promptCodeReview = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''.";
-        $promptDocumentation = "Use only UTF-8 chars! Act as an senior programmer and generate a documentation for the following code: '''$code'''.";
+    }    
+    */
     
-        if ($expectedType === 'Code review') {
-            $prompt = $promptCodeReview;
-        } elseif ($expectedType === 'Documentation') {
-            $prompt = $promptDocumentation;
-        } else {
-            return response()->json([
-                'error' => 'Invalid expected type.',
-            ], 400);
-        }
+
+    public static function GenerateCodeReviewOrDocumentation(Request $request, $boardId, $expectedType) 
+{
+    $user = auth()->user();
+    if (!$user) {
+        return response()->json([
+            'error' => 'Unauthorized!',
+        ]);
+    }
+    $board = Board::where('board_id', $boardId)->first();
+
+    if (!$board) {
+        return response()->json(['error' => 'Board not found.'], 404);
+    }
+
+    $team = $board->team;
+
+    if (!$team->teamMembers->contains('user_id', $user->user_id)) {
+        return response()->json(['error' => 'You are not a member of the team.'], 404);
+    }
+
+    $code = $request->input('code');
+    $promptCodeReview = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''.";
+    $promptDocumentation = "Use only UTF-8 chars! Act as an senior programmer and generate a documentation for the following code: '''$code'''.";
     
-        return LlamaController::CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType);
+    if ($expectedType === 'Code review') {
+        $prompt = $promptCodeReview;
+    } elseif ($expectedType === 'Documentation') {
+        $prompt = $promptDocumentation;
+    } else {
+        return response()->json([
+            'error' => 'Invalid expected type.',
+        ], 400);
     }
     
-    public static function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType) {
+    $response = LlamaController::CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType);
+    
+    return response()->json([
+        'reviewType' => $expectedType,
+        'review' => $response['review'],
+    ]);
+}
 
-        $path = env('LLAMA_PYTHON_SCRIPT_PATH');
-        $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
-        $foundKeyPhrase = strtolower($expectedType) . ':';
-        $review = substr($response, stripos($response, $foundKeyPhrase) + strlen($foundKeyPhrase));
-        $review = trim($review);
-        return response()->json([
-        
-            'reviewType' => $expectedType,
-            'review' => $review,
-            
-            ]);    
-    }}
+public static function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType) 
+{
+    $path = env('LLAMA_PYTHON_SCRIPT_PATH');
+    $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
+    $foundKeyPhrase = strtolower($expectedType) . ':';
+    $review = substr($response, stripos($response, $foundKeyPhrase) + strlen($foundKeyPhrase));
+    $review = trim($review);
+    
+    return [
+        'reviewType' => $expectedType,
+        'review' => $review,
+    ];
+}
+
+
+
+
+}
