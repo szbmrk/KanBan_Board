@@ -1,4 +1,3 @@
-.code-textarea,
 .output-textarea {
   width: 100%;
   height: 150px;
@@ -7,6 +6,24 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   font-family: "Arial", sans-serif;
+}
+
+.coding-container {
+  width: 100%;
+}
+
+.code-textarea {
+  display: inline-block;
+  width: 100%;
+  height: 150px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: var(--bg-mostly-black);
+  border: 1px solid var(--light-gray);
+  border-radius: 5px;
+  color: var(--light-gray);
+  font-family: "Courier New", Courier, monospace;
+  text-align: left;
 }
 
 .output-textarea:disabled {
