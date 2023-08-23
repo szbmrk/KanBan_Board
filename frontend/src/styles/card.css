@@ -116,6 +116,7 @@
 }
 
 .icon-container {
+    width: 400px;
     background-color: transparent;
     border-radius: 5px;
     display: flex;
@@ -124,13 +125,9 @@
     gap: 10px;
 }
 
-.icon-container p {
-    color: var(--light-gray);
-    animation: none;
-    cursor: pointer;
-}
-
 .option {
+    margin-right: auto;
+    height: 40px;
     background-color: var(--bg-dark);
     border: 1px solid var(--dark-gray);
     border-radius: 8px;
@@ -140,12 +137,7 @@
     align-items: center;
     gap: 5px;
     padding: 5px 10px 5px 5px;
-    height: 40px;
     transition: 0.3s ease;
-}
-
-.option span {
-    padding: 5px;
 }
 
 .option:hover {
@@ -153,6 +145,18 @@
     transform: translateX(10px);
     cursor: pointer;
 }
+
+.option p {
+    width: max-content;
+    color: var(--light-gray);
+    animation: none;
+    cursor: pointer;
+}    
+
+.option span {
+    width: 30px;
+    padding: 5px;
+}    
 
 .tags {
     width: 100%;
