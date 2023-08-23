@@ -100,6 +100,7 @@ const TeamCard = ({
         return true;
     };
 
+
     return (
         data.team_members.length === 0 ? (
             <Loader />
@@ -226,6 +227,6 @@ const TeamCard = ({
                 />
             )}
         </div>
-    );
+    ));
 };
 export default TeamCard;

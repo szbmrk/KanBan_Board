@@ -1,41 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from '../../api/axios';
-import { useEffect, useState } from 'react';
 
 const AddUser = ({ teamID, OnClose, AddUsers }) => {
-    const [users, SetUsers] = useState([]);
-    const [usersToTeams, SetUsersToTeams] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
 
-    useEffect(() => {
-        getUsers();
-    }, []);
+  useEffect(() => {
+    getUsers();
+  }, []);
 
-    function toggleUserSelection(user_id) {
-        if (selectedUsers.includes(user_id)) {
-          setSelectedUsers(selectedUsers.filter(id => id !== user_id));
-        } else {
-          setSelectedUsers([...selectedUsers, user_id]);
-        }
-      }
-
-    function handleAddUsers(usersToTeams, teamID) {
-        AddUsers(usersToTeams, teamID);
-        OnClose();
+  async function getUsers() {
+    const token = sessionStorage.getItem('token');
+    try {
+      const response = await axios.get(`team/${teamID}/management/no_members`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUsers(response.data.users);
+    } catch (error) {
+      console.log(error.response);
     }
+  }
 
-    async function getUsers() {
-        const token = sessionStorage.getItem('token');
-        try {
-            const response = await axios.get(`team/${teamID}/management/no_members`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            SetUsers(response.data.users);
-        } catch (error) {
-            console.log(error.response);
-        }
+  function toggleUserSelection(user_id) {
+    if (selectedUsers.includes(user_id)) {
+      setSelectedUsers(selectedUsers.filter(id => id !== user_id));
+    } else {
+      setSelectedUsers([...selectedUsers, user_id]);
     }
+  }
 
   function handleAddUsers() {
     AddUsers(selectedUsers, teamID);
