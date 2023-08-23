@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Team;
 use App\Models\TeamMember;
 use App\Models\User;
+use App\Models\TeamMemberRole;
 
 use Illuminate\Http\Request;
 
@@ -116,8 +117,26 @@ class TeamManagementController extends Controller
         }
 
         $teams = $user->teams()->with(['teamMembers.user', 'teamMembers.roles.permissions', 'teamMembers.roles.board'])->get();
-    
-        return response()->json(['teams' => $teams]);
+
+        foreach ($teams as &$team) {
+            foreach ($team->teamMembers as &$member) {
+                foreach ($member->roles as &$role) {
+                    // Kérdezd le a team_members_role_id-t a megfelelő kritériumok alapján
+                    $teamMembersRoleId = TeamMemberRole::where('team_member_id', $member->team_members_id)
+                                                       ->where('role_id', $role->role_id)
+                                                       ->value('team_members_role_id');
+        
+                    // Ha találtál értéket, adjuk hozzá a szerephez
+                    if ($teamMembersRoleId !== null) {
+                        $role->team_members_role_id = $teamMembersRoleId;
+                    }
+                }
+            }
+        }
+        
+        // Módosított válasz létrehozása és visszaadása
+        $response = ['teams' => $teams];
+        return response()->json($response);
     }
 
     public function showNotTeamMembers($teamId)
