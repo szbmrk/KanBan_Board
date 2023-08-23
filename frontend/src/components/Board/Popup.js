@@ -522,7 +522,7 @@ const Popup = ({
                 )}
             </div>
             {showAddAttachment && (
-                <div className='overlay2'>
+                <div className='overlay darken'>
                     <div className='attachment-popup-mini-attachment'>
                         <form className='attachment-popup-content-form-mini' onSubmit={handleAddAttachment}>
                             <h4>Link:</h4>
@@ -552,7 +552,7 @@ const Popup = ({
                 </div>
             )}
             {showAddMember && (
-                <div className='overlay2'>
+                <div className='overlay darken'>
                     <div className='attachment-popup-mini-attachment'>
                         <form className='attachment-popup-content-form-mini'>
                             <h4>Person:</h4>
