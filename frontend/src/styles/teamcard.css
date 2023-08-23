@@ -1,4 +1,3 @@
-/* Container Styles */
 .teams-container {
   width: 90%;
   margin: 20px auto;
@@ -8,7 +7,6 @@
   gap: 20px;
 }
 
-/* Team Card Styles */
 .teamcard {
   width: 100%;
   background-color: rgba(64, 64, 64, 0.692);
@@ -40,7 +38,6 @@
   align-items: flex-start;
 }
 
-/* Team Body Styles */
 .teamcard-body {
   width: 100%;
   padding: 20px;
@@ -50,6 +47,53 @@
   color: var(--light-gray);
   text-align: left;
 }
+
+.team-members {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.team-member-card {
+  position: relative;
+  width: 25%;
+  max-width: 300px;
+  height: 100%;
+  background-color: var(--dark-gray);
+  border: 1px solid var(--dark-gray);
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 5px;
+}
+
+.team-member-image-container {
+  width: 80px;
+  height: 80px;
+  border: 3px solid var(--dark-gray);
+  border-radius: 50%;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.team-member-image {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+  cursor: pointer;
+}
+
 
 /* Button Styles */
 .button {
@@ -84,11 +128,6 @@
   margin-top: 20px;
 }
 
-/* Team Members Section Styles */
-.team-members {
-  margin-top: 20px;
-  border-radius: 10px;
-}
 
 /* Table Styles */
 .team-members table {
