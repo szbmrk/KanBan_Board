@@ -6,6 +6,7 @@ import AddUser from './AddUser';
 import Loader from '../Loader';
 import RolesManager from './RolesManager';
 import axios from '../../api/axios';
+import { dateFormatOptions } from '../../utils/DateFormat';
 
 const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTeam, ownPermissions, teamPermissions, handleDeleteRole, AddRoleToUser }) => {
     const [manageIsClicked, setManage] = useState(false);
@@ -98,7 +99,7 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
                     <h2>{data.name}</h2>
                     <div className='teamcard-subheader'>
                         <p>Created by: {createdBy}</p>
-                        <p>Created at: {data.created_at}</p>
+                        <p>Created at: {new Date(data.created_at).toLocaleString('en-US', dateFormatOptions)}</p>
                     </div>
                 </div>
                 <div className='teamcard-body'>
@@ -118,25 +119,28 @@ const TeamCard = ({ data, deleteUserFromTeam, ChangeTeamName, AddUsers, DeleteTe
                                             <h3>{member.user.username}</h3>
                                         </td>
                                         <td>
-                                            {member.roles.map((role) => (
-                                                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }} key={role.team_members_role_id}>
-                                                    <p>
-                                                        {role.board_id !== null ? role.name + " in " + role.board.name : role.name}
-                                                    </p>
-                                                    {checkPermissonToManageTeam(data.team_id) && (
-                                                        <div>
-                                                            {checkPermissionToDeleteRoles(role) && (
-                                                                <button
-                                                                    className='delete_button'
-                                                                    onClick={() => handleDeleteRole(role.team_members_role_id, role.board_id, data.team_id, member.user.user_id)}
-                                                                >
-                                                                    Delete role
-                                                                </button>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ))}
+                                            {member.roles.length !== 0 ? (
+                                                member.roles.map((role) => (
+                                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }} key={role.team_members_role_id}>
+                                                        <p>
+                                                            {role.board_id !== null ? role.name + " in " + role.board.name : role.name}
+                                                        </p>
+                                                        {checkPermissonToManageTeam(data.team_id) && (
+                                                            <div>
+                                                                {checkPermissionToDeleteRoles(role) && (
+                                                                    <button
+                                                                        className='delete_button'
+                                                                        onClick={() => handleDeleteRole(role.team_members_role_id, role.board_id, data.team_id, member.user.user_id)}
+                                                                    >
+                                                                        Delete role
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))) : (
+                                                <p>No roles</p>
+                                            )}
                                         </td>
                                         <td>
                                             {checkPermissonToManageTeamMembers(data.team_id) && (
