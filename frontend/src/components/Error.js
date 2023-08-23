@@ -1,14 +1,9 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 export default function Error({ error, redirect }) {
-    return (
-        <>
-            <h1 style={{ textAlign: 'center' }}>{error}</h1>
-            {redirect &&
-                setTimeout(() => {
-                    return <Navigate to='/login' />;
-                }, 2000)}
-        </>
-    );
+    const navigate = useNavigate();
+
+    return <>{redirect && <h1 style={{ textAlign: 'center' }}>{error}</h1>}</>;
 }
