@@ -153,7 +153,7 @@ class AgiBehaviorController extends Controller
         return response()->json(['message' => 'Behavior Updated successfully.'], 200);
     }
 
-    public function DestroyBehavior(Request $request, $boardId)
+    public function DestroyBehavior(Request $request, $boardId, $behaviorId)
     {
         $user = auth()->user();
         if (!$user) {
@@ -184,11 +184,7 @@ class AgiBehaviorController extends Controller
             return response()->json(['error' => implode(', ', $errorMessages)], 422);
         }
         
-        
-
-        //find agi behaviorid by the act_as_a value
-        $agiBehaviorId = $request->input('agi_behavior_id');
-        $agiBehavior = AgiBehavior::find($agiBehaviorId);
+        $agiBehavior = AgiBehavior::find($behaviorId);
         
         if($agiBehavior == null) {
             return response()->json(['error' => 'Behavior does not exist!'], 422);
