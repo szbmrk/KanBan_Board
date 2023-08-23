@@ -8,7 +8,7 @@ def generate_gpt_response(api_key, prompt):
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
-        max_tokens=150
+        max_tokens=500
     )
 
     return response.choices[0].text.strip()

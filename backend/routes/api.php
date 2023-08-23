@@ -185,4 +185,3 @@ Route::post('/AGI/answers/boards/{boardId}/task/{task_id}', [AGIAnswersControlle
 Route::post('/AGI/answers/boards/{boardId}/column/{column_id}', [AGIAnswersController::class, 'storePerColumn'])->middleware('api');
 Route::put('/AGI/answers/boards/{boardId}/task/{task_id}/answer/{answer_id}', [AGIAnswersController::class, 'update'])->middleware('api');
 Route::delete('/AGI/boards/{boardId}/answers/{answerId}', [AGIAnswersController::class, 'destroy'])->middleware('api');
-

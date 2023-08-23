@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use App\Models\Board;
 use Illuminate\Support\Facades\DB;
+use App\Models\SummaryLog;
 
 
 
@@ -389,16 +390,15 @@ class ChatGPTController extends Controller
         return response()->json(['response' => $response]);
     }
 
-
-
     public function generateFiveDaySummary()
     {
-        // Hétvégi napok kizárása
-        $endDate = Carbon::now();
-        while ($endDate->isWeekend()) {
-            $endDate = $endDate->subDay();
+        // A legutolsó bejegyzés dátumának lekérdezése
+        $lastEntry = SummaryLog::orderBy('date', 'desc')->first();
+        if (!$lastEntry) {
+            return response()->json(['error' => 'No summaries found']);
         }
-
+    
+        $endDate = Carbon::parse($lastEntry->date);
         $daysCounted = 0;
         $startDate = $endDate->copy();
         while ($daysCounted < 4) {
@@ -407,21 +407,26 @@ class ChatGPTController extends Controller
                 $daysCounted++;
             }
         }
-
+    
         // Lekérdezés az adatbázisból az adott idő intervallumban lévő összefoglalókra
         $summaries = SummaryLog::whereBetween('date', [$startDate, $endDate])->get();
-
+    
         // Számlálók
         $totalTasksCreated = 0;
         $totalTasksFinished = 0;
+        $promptDetails = "Here are the summaries for the past 5 workdays:\n";
         foreach ($summaries as $summary) {
             $totalTasksCreated += $summary->tasks_created_count;
             $totalTasksFinished += $summary->tasks_finished_count;
+    
+            $logsAsString = is_array($summary->logs) ? json_encode($summary->logs) : $summary->logs;
+            $summaryAsString = is_array($summary->summary) ? json_encode($summary->summary) : $summary->summary;
+            $promptDetails .= "\nOn {$summary->date}: {$summaryAsString} - Logs: {$logsAsString} - Created: {$summary->tasks_created_count} - Finished: {$summary->tasks_finished_count}.";
         }
-
+    
         // Készítsünk egy promptot az AGI-nak
-        $prompt = "Over the past 5 workdays, {$totalTasksCreated} tasks were created and {$totalTasksFinished} tasks were finished on our Kanban board. Please provide a detailed statistical analysis on productivity and performance.";
-
+        $prompt = "Over the past 5 workdays, a total of {$totalTasksCreated} tasks were created and {$totalTasksFinished} tasks were finished on our Kanban board.\n\n{$promptDetails}\n\nGiven these summaries, can you provide a detailed statistical analysis on productivity, performance, and insights on the most efficient day and other relevant statistics?";
+    
         // Python script futtatása
         $pythonScriptPath = env('PERFORMANCE_PYTHON_SCRIPT_PATH');
         $apiKey = env('OPENAI_API_KEY');
@@ -429,11 +434,7 @@ class ChatGPTController extends Controller
         $response = shell_exec($command);
 
         // Válasz visszaadása
-        return response()->json([
-            'prompt' => $prompt,
-            'response' => $response,
-            'totalTasksCreated' => $totalTasksCreated,
-            'totalTasksFinished' => $totalTasksFinished
-        ]);
+        return response()->json(['response' => $response]);
     }
+    
 }
