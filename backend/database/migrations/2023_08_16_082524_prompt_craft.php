@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('crafted_prompt_id')->nullable(false);
             $table->text('crafted_prompt_title')->nullable(false);
             $table->unsignedBigInteger('board_id')->nullable(false);
+            $table->unsignedBigInteger('agi_behavior_id')->nullable(true);
             $table->text('crafted_prompt_text')->nullable(false);
             $table->enum('craft_with', [
                 'CHATGPT', 'LLAMA', 'BARD'
@@ -22,11 +23,18 @@ return new class extends Migration
             $table->enum('action', [
                 'GENERATETASK', 'GENERATESUBTASK', 'GENERATEATTACHMENTLINK'
             ])->nullable(false);
+            $table->unsignedBigInteger('response_counter')->nullable(false);
             $table->unsignedBigInteger('created_by')->nullable(false);
-            $table->timestamps();
+            //add to the timestamp + 2 hours
+
+            $table->timestamp('created_at')->useCurrent()->nullable(false);
+            $table->timestamp('updated_at')->useCurrent()->nullable(false);
 
             // Add the onDelete('cascade') option to both foreign key definitions
             $table->foreign('board_id')->references('board_id')->on('boards')->onDelete('cascade');
+            //instead of cascade, set the agi_behavior_id to null
+            $table->foreign('agi_behavior_id')->references('agi_behavior_id')->on('agi_behaviors')->onDelete('set null');
+            
             $table->foreign('created_by')->references('user_id')->on('users')->onDelete('cascade');
         });
     }

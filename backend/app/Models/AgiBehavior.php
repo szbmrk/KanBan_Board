@@ -7,20 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 use App\Traits\AdjustTimestampsForHungaryTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class FavouriteTask extends Model
+class AgiBehavior extends Model
 {
     use HasFactory;
     use AdjustTimestampsForHungaryTrait;
 
-    protected $primaryKey = 'favourite_id';
+    protected $primaryKey = 'agi_behavior_id'; // Define the primary key field name
 
-    public function user()
-    {
-      return $this->belongsTo(User::class); 
-    }
-  
-    public function task() 
-    {
-      return $this->belongsTo(Task::class);
-    }
+    protected $fillable = [
+        'act_as_a',
+    ];
+
+    // Define any additional model methods or attributes as needed
 }

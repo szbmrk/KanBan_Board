@@ -31,6 +31,7 @@ export const Task = ({
     id,
     index,
     task,
+    column,
     craftedPromptsTask,
     divName,
     favouriteTask,
@@ -56,6 +57,8 @@ export const Task = ({
     });
     const [showIconContainer, setShowIconContainer] = useState(false);
     const [cardZIndex, setCardZIndex] = useState(1);
+    const [cardIndex, setCardIndex] = useState(null);
+    const [columnIndex, setColumnIndex] = useState(null);
 
     const [{ isDragging: dragging }, drag] = useDrag({
         type: ItemTypes.CARD,
@@ -104,7 +107,7 @@ export const Task = ({
         setBouncingStarIcon(regularStarIcon);
     };
 
-    const handleDotsClick = (event) => {
+    const handleDotsClick = (event, cardIndex, columnIndex) => {
         const buttonRect = event.target.getBoundingClientRect();
         const newX = buttonRect.right + 20;
         const newY = buttonRect.top;
@@ -112,6 +115,10 @@ export const Task = ({
         // Set the icon-container's position and show it
         setIconContainerPosition({ x: newX, y: newY });
         setShowIconContainer(!showIconContainer);
+
+        setColumnIndex(columnIndex);
+        setCardIndex(cardIndex);
+
         cardZIndex === 1 ? setCardZIndex(100) : setCardZIndex(1);
     };
 
@@ -136,7 +143,7 @@ export const Task = ({
     };
 
     const handleAI = () => {
-        generateTasks(task);
+        generateTasks(task, column);
     };
 
     const handleAttachmentLinks = () => {
@@ -147,40 +154,36 @@ export const Task = ({
         <>
             <div
                 ref={(node) => drag(drop(node))}
-                className="card"
+                className='card'
                 style={{
                     opacity,
-                    cursor: "grab",
-                    zIndex: cardZIndex,
+                    cursor: 'grab',
+                    zIndex: cardIndex === index ? cardZIndex : () => setCardZIndex(1),
                 }}
                 onMouseEnter={() => handleMouseEnterOnCard(id)}
                 onMouseLeave={handleMouseLeaveOnCard}
             >
-                <div className="task-title">{task.title}</div>
-                <div
-                    className="options"
-                    style={{ visibility: hoveredCardId === id ? "visible" : "hidden" }}
-                >
+                <div className='task-title'>{task.title}</div>
+                <div className='options' style={{ visibility: hoveredCardId === id ? 'visible' : 'hidden' }}>
                     <span
-                        className="dots"
-                        onClick={handleDotsClick}
+                        className='dots'
+                        onClick={(e) => handleDotsClick(e, index, column)}
                         style={{
-                            visibility: hoveredCardId === id ? "visible" : "hidden",
-                            transition: "visibility 0.1s ease",
+                            visibility: hoveredCardId === id ? 'visible' : 'hidden',
+                            transition: 'visibility 0.1s ease',
                         }}
                     >
                         {dotsIcon}
                     </span>
                 </div>
-                <div className="tags">
+                <div className='tags'>
                     {task.tags &&
                         task.tags.map((tag, tagIndex) => (
                             <Tag
                                 key={tagIndex}
                                 name={tag.name}
                                 color={tag.color}
-                                extraClassName={`tag-on-board ${activeTags.includes(task.tags) ? "clicked" : ""
-                                    }`}
+                                extraClassName={`tag-on-board ${activeTags.includes(task.tags) ? 'clicked' : ''}`}
                                 enableClickBehavior={true}
                                 onClick={() => handleTagClick(task.tags)}
                             />
@@ -189,30 +192,30 @@ export const Task = ({
             </div>
             {showIconContainer && (
                 <div
-                    className="overlay"
+                    className='overlay'
                     onClick={() => {
                         setShowIconContainer(false);
                         setCardZIndex(1);
                     }}
                 >
                     <div
-                        className="icon-container"
+                        className='icon-container'
                         style={{
-                            position: "fixed",
-                            left: iconContainerPosition.x + "px",
-                            top: iconContainerPosition.y + "px",
+                            position: 'fixed',
+                            left: iconContainerPosition.x + 'px',
+                            top: iconContainerPosition.y + 'px',
                         }}
                     >
                         <div
-                            className="option"
+                            className='option'
                             onMouseEnter={() => setIsHoveredEdit(true)}
                             onMouseLeave={() => setIsHoveredEdit(false)}
                             onClick={() => setTaskAsInspectedTask(task)}
                         >
                             <span
-                                className="edit-button"
+                                className='edit-button'
                                 style={{
-                                    animation: isHoveredEdit ? "rotate 0.5s" : "none",
+                                    animation: isHoveredEdit ? 'rotate 0.5s' : 'none',
                                 }}
                             >
                                 {pencilIcon}
@@ -220,15 +223,15 @@ export const Task = ({
                             <p>Edit</p>
                         </div>
                         <div
-                            className="option"
+                            className='option'
                             onMouseEnter={() => setIsHoveredAI(true)}
                             onMouseLeave={() => setIsHoveredAI(false)}
                             onClick={() => handleAI()}
                         >
                             <span
-                                className="ai-button"
+                                className='ai-button'
                                 style={{
-                                    color: isHoveredAI ? "var(--magic)" : "",
+                                    color: isHoveredAI ? 'var(--magic)' : '',
                                 }}
                             >
                                 {aiIcon}
@@ -238,17 +241,15 @@ export const Task = ({
                         {craftedPromptsTask.map((craftedPrompt, index) => (
                             <div
                                 key={index}
-                                className="option"
+                                className='option'
                                 onMouseEnter={() => setIsHoveredAI(true)}
                                 onMouseLeave={() => setIsHoveredAI(false)}
-                                onClick={() =>
-                                    HandleCraftedPromptTaskClick(craftedPrompt, task)
-                                }
+                                onClick={() => HandleCraftedPromptTaskClick(craftedPrompt, task, column)}
                             >
                                 <span
-                                    className="ai-button"
+                                    className='ai-button'
                                     style={{
-                                        color: isHoveredAI ? "var(--magic)" : "",
+                                        color: isHoveredAI ? 'var(--magic)' : '',
                                     }}
                                 >
                                     {aiIcon}
@@ -258,15 +259,15 @@ export const Task = ({
                         ))}
                         {task.is_favourite ? (
                             <div
-                                className="option"
+                                className='option'
                                 onMouseEnter={() => setIsHoveredFavorite(true)}
                                 onMouseLeave={() => setIsHoveredFavorite(false)}
                                 onClick={() => unFavouriteTask(id, task.column_id)}
                             >
                                 <span
-                                    className="favourite-button solid-icon"
+                                    className='favourite-button solid-icon'
                                     style={{
-                                        color: isHoveredFavorite ? "var(--light-gray)" : "",
+                                        color: isHoveredFavorite ? 'var(--light-gray)' : '',
                                     }}
                                 >
                                     {solidStarIcon}
@@ -275,36 +276,33 @@ export const Task = ({
                             </div>
                         ) : (
                             <div
-                                className="option"
+                                className='option'
                                 onMouseEnter={() => setIsHoveredFavorite(true)}
                                 onMouseLeave={() => setIsHoveredFavorite(false)}
                                 onClick={() => favouriteTask(id, task.column_id)}
                             >
                                 <span
-                                    className="favourite-button regular-icon"
+                                    className='favourite-button regular-icon'
                                     onMouseEnter={handleMouseEnterOnStarIcon}
                                     onMouseLeave={handleMouseLeaveOnStarIcon}
-                                    style={{ color: isHoveredFavorite ? "var(--starred)" : "" }}
+                                    style={{ color: isHoveredFavorite ? 'var(--starred)' : '' }}
                                 >
                                     {bouncingStarIcon}
                                 </span>
-                                <p
-                                    onMouseEnter={handleMouseEnterOnStarIcon}
-                                    onMouseLeave={handleMouseLeaveOnStarIcon}
-                                >
+                                <p onMouseEnter={handleMouseEnterOnStarIcon} onMouseLeave={handleMouseLeaveOnStarIcon}>
                                     Add to Favourites
                                 </p>
                             </div>
                         )}
                         <div
-                            className="option"
+                            className='option'
                             onMouseEnter={() => setIsHoveredDelete(true)}
                             onMouseLeave={() => setIsHoveredDelete(false)}
                             onClick={() => deleteTask(id, task.column_id)}
                         >
                             <span
-                                className="delete-button"
-                                style={{ color: isHoveredDelete ? "var(--important)" : "" }}
+                                className='delete-task-button'
+                                style={{ color: isHoveredDelete ? 'var(--important)' : '' }}
                             >
                                 {trashIcon}
                             </span>

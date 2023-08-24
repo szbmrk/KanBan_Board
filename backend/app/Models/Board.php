@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\AgiBehavior;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\AdjustTimestampsForHungaryTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Board extends Model
 {
     use HasFactory;
+    use AdjustTimestampsForHungaryTrait;
 
     protected $primaryKey = 'board_id';
 
@@ -15,6 +19,7 @@ class Board extends Model
         'name',
         'team_id',
     ];
+
 
     // Relationship with the Column model
     public function columns()
@@ -51,7 +56,6 @@ class Board extends Model
     {
         return $this->hasManyThrough(TeamMember::class, Team::class);
     }
-
     public function agiAnswers()
     {
         return $this->hasMany(AGIAnswers::class, 'board_id');

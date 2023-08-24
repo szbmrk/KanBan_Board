@@ -15,6 +15,7 @@ use App\Http\Controllers\LlamaController;
 use App\Http\Controllers\ChatGPTController;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 
 class AGIController extends Controller
@@ -113,7 +114,6 @@ class AGIController extends Controller
 
         return $response;
     }
-
     public function GenerateTaskDocumentationPerTask(Request $request, $boardId, $taskId)
     {
         $user = auth()->user();
@@ -130,6 +130,9 @@ class AGIController extends Controller
             default:
                 $response = ChatGPTController::GenerateTaskDocumentationPerTask($boardId, $taskId);
                 break;
+
+
+
         }
 
         return $response;
@@ -176,5 +179,31 @@ class AGIController extends Controller
 
         return $response;
     }
+
+    public function GenerateCodeReviewOrDocumentation(Request $request, $boardId)
+    {
+        //without json stringify it will not work!!!
+        $user = auth()->user();
+
+        $response;
+        $chosenType = $request->header('ChosenType');
+        
+        switch($request->header('ChosenAI')) {
+            case Str::lower("llama"):
+                $response = LlamaController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
+                break;
+            case Str::lower("bard"):
+                $response = BardController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
+                break;
+            case Str::lower("chatgpt"):
+                $response = ChatGPTController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
+                break;
+            default:
+                $response = "No AI chosen";
+                break;
+        }
+        return $response;
+    }
+
 
 }

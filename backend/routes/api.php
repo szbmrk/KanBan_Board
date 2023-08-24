@@ -1,40 +1,36 @@
 <?php
+use App\Models\Feedback;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AGIController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\BardController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BoardController;
+use App\Http\Controllers\LlamaController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\MentionController;
 use App\Http\Controllers\TaskTagController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\PriorityController;
+
 use App\Http\Controllers\DashboardController;
+
+use App\Http\Controllers\UserTasksController;
 use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\AgiBehaviorController;
 use App\Http\Controllers\PromptCraftController;
 use App\Http\Controllers\TeamMemberRoleController;
-use App\Http\Controllers\NotificationController;
 
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TeamManagementController;
-use App\Http\Controllers\UserTasksController;
-use App\Http\Controllers\BardController;
 use App\Http\Controllers\ChatGPTController;
 use App\Http\Controllers\AGIAnswersController;
-
-/*
-|--------------------------------------------------------------------------
-
 use App\Http\Controllers\FavouriteTaskController;
-use App\Http\Controllers\TeamManagementController;
-use App\Http\Controllers\LlamaController;
-use App\Models\Feedback;
-use App\Http\Controllers\UserTasksController;
-use App\Http\Controllers\TeamMemberRoleController;
 use App\Http\Controllers\RolePermissionController;
 
 /*
@@ -147,6 +143,7 @@ Route::get('/boards/{board_id}/tasks/{task_id}/not_assigned_users', [UserTasksCo
 
 Route::get('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'index'])->middleware('api');
 Route::post('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'store'])->middleware('api');
+Route::get('/boards/{boardId}/available-team-member-roles/{teamMemberId}', [TeamMemberRoleController::class, 'getAvailableRoles'])->middleware('api');
 Route::delete('/boards/{boardId}/team-member-roles/{teamMemberRoleId}',[TeamMemberRoleController::class, 'destroy'])->middleware('api');
 
 Route::get('/boards/{boardId}/role-permissions', [RolePermissionController::class, 'index'])->middleware('api');
@@ -157,6 +154,7 @@ Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api
 Route::get('/AGI/GenerateTask', [AGIController::class, 'GenerateTask'])->middleware('api');
 Route::get('/AGI/GenerateSubtask', [AGIController::class, 'GenerateSubtask'])->middleware('api');
 Route::get('/AGI/GenerateAttachmentLink', [AGIController::class, 'GenerateAttachmentLink'])->middleware('api');
+Route::get('/boards/{boardId}/AGI/GenerateCodeReviewOrDocumentation', [AGIController::class, 'GenerateCodeReviewOrDocumentation'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_code', [AGIController::class, 'generateCode'])->middleware('api');
 Route::get('/boards/{boardId}/tasks/{taskId}/generate_priority', [AGIController::class, 'generatePriority'])->middleware('api');
 Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::class, 'generatePrioritiesForColumn'])->middleware('api');
@@ -164,7 +162,9 @@ Route::get('/AGI/generate-documentation-task/board/{boardId}/task/{taskId}', [AG
 Route::get('/AGI/generate-documentation-board/{boardId}', [AGIController::class, 'GenerateTaskDocumentationPerBoard'])->middleware('api');
 Route::get('/AGI/generate-documentation-column/board/{boardId}/column/{columnId}', [AGIController::class, 'GenerateTaskDocumentationPerColumn'])->middleware('api');
 
-Route::post('/generate-llama-subtasks', [LlamaController::class, 'generateSubtasks']);
+Route::post('/generate-llama-subtasks', [LlamaController::class, 'generateTaskLlama']);
+
+// API kulcs nélküli hívásra, beégetett válasszal
 Route::get('/generate-llama-subtasks2', [LlamaController::class, 'testSubtaskParsing']);
 
 
@@ -179,9 +179,20 @@ Route::get('/AGI/GenerateTask/CraftedPrompt', [ChatGPTController::class, 'Genera
 Route::post('/generate-performance-summary', [ChatGPTController::class, 'generatePerformanceSummary']);
 Route::get('/generate-five-day-summary', [ChatGPTController::class, 'generateFiveDaySummary']);
 
-Route::get('/AGI/answers/boards/{boardId}', [AGIAnswersController::class, 'index'])->middleware('api');
-Route::post('/AGI/answers/boards/{boardId}', [AGIAnswersController::class, 'storePerBoard'])->middleware('api');
-Route::post('/AGI/answers/boards/{boardId}/task/{task_id}', [AGIAnswersController::class, 'storePerTask'])->middleware('api');
-Route::post('/AGI/answers/boards/{boardId}/column/{column_id}', [AGIAnswersController::class, 'storePerColumn'])->middleware('api');
-Route::put('/AGI/answers/boards/{boardId}/task/{task_id}/answer/{answer_id}', [AGIAnswersController::class, 'update'])->middleware('api');
-Route::delete('/AGI/boards/{boardId}/answers/{answerId}', [AGIAnswersController::class, 'destroy'])->middleware('api');
+Route::get('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'GetBehaviors'])->middleware('api');
+Route::post('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'StoreBehavior'])->middleware('api');
+Route::put('/boards/{boardId}/Behaviors/{behaviorId}', [AgiBehaviorController::class, 'UpdateBehavior'])->middleware('api');
+Route::delete('/boards/{boardId}/Behaviors/{behaviorId}', [AgiBehaviorController::class, 'DestroyBehavior'])->middleware('api');
+
+
+Route::get('/AGI/taskDocumentation/boards/{boardId}', [AGIAnswersController::class, 'indexTaskDocumentation'])->middleware('api');
+Route::post('/AGI/taskDocumentation/boards/{boardId}', [AGIAnswersController::class, 'storePerBoard'])->middleware('api');
+Route::post('/AGI/taskDocumentation/boards/{boardId}/task/{task_id}', [AGIAnswersController::class, 'storePerTask'])->middleware('api');
+Route::post('/AGI/taskDocumentation/boards/{boardId}/column/{column_id}', [AGIAnswersController::class, 'storePerColumn'])->middleware('api');
+Route::put('/AGI/taskDocumentation/boards/{boardId}/agiAnswer/{agiAnswerId}', [AGIAnswersController::class, 'update'])->middleware('api');
+Route::delete('/AGI/boards/{boardId}/taskDocumentation/agiAnswer/{agiAnswerId}', [AGIAnswersController::class, 'destroy'])->middleware('api');
+Route::get('/AGI/CodeReviewOrDocumentation/boards/{boardId}', [AGIAnswersController::class, 'indexCodeReviewOrDocumentation'])->middleware('api');
+Route::post('/AGI/CodeReviewOrDocumentation/boards/{boardId}', [AGIAnswersController::class, 'storeCodeReviewOrDocumentation'])->middleware('api');
+Route::put('/AGI/CodeReviewOrDocumentation/boards/{boardId}/agiAnswer/{agiAnswerId}', [AGIAnswersController::class, 'updateCodeReviewOrDocumentation'])->middleware('api');
+Route::delete('/AGI/CodeReviewOrDocumentation/boards/{boardId}/agiAnswer/{agiAnswerId}', [AGIAnswersController::class, 'destroyCodeReviewOrDocumentation'])->middleware('api');
+

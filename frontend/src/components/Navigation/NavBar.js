@@ -62,7 +62,7 @@ const Navbar = () => {
                 </div>
             </div>
             {isOpen && (
-                <div className='profile-submenu'>
+                <div className='profile-submenu' onMouseLeave={() => setIsOpen(false)}>
                     <p className='profile-menu-title'> Profile </p>
                     <ul className='profile-menu'>
                         <li>

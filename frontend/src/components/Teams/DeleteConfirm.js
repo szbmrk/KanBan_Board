@@ -1,36 +1,30 @@
-import React from 'react'
+import React from 'react';
+import '../../styles/popup.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
+
+const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
 const DeleteConfirm = ({ teamID, OnClose, DeleteTeam }) => {
+    function DeleteTeamConfirm(teamID) {
+        DeleteTeam(teamID);
+        OnClose();
+    }
 
-  function DeleteTeamConfirm(teamID) {
-    DeleteTeam(teamID);
-    OnClose();
-  }
-
-  return (
-    <div className="overlay">
-      <div className='popup'>
-        <div className="popup-content">
-          <button className="close-btn" onClick={OnClose}>
-            Close
-          </button>
-          <p>Are you sure you want delete this team?</p>
-          <table>
-            <tbody>
-              <tr>
-                <td>
-                  <button onClick={OnClose}>Cancel</button>
-                </td>
-                <td>
-                  <button className='delete-button-popup' onClick={() => DeleteTeamConfirm(teamID)}>Delete</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+    return (
+        <div className='overlay'>
+            <div className='popup popup-mini'>
+                <span className='close-btn' onClick={OnClose}>
+                    {closeIcon}
+                </span>
+                <p className='confirmation-text'>Are you sure you want delete this team?</p>
+                <div className='button-container'>
+                    <button onClick={OnClose}>Cancel</button>
+                    <button onClick={() => DeleteTeamConfirm(teamID)}>Delete</button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  )
-}
+    );
+};
 
 export default DeleteConfirm;

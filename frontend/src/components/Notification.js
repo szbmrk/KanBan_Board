@@ -4,10 +4,13 @@ import '../styles/notification.css';
 import Loader from './Loader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import Error from './Error';
 
 export default function Notification() {
     const [notifications, setNotifications] = useState([]);
     const [isRead, setIsRead] = useState(false);
+    const [redirect, setRedirect] = useState(false);
+    const [error, setError] = useState(false);
     const token = sessionStorage.getItem('token');
     const userId = sessionStorage.getItem('user_id');
 
@@ -43,8 +46,14 @@ export default function Notification() {
                             },
                         }
                     );
-                } catch (err) {
-                    console.log(err);
+                } catch (e) {
+                    console.log(e);
+                    if (e.response.status === 401 || e.response.status === 500) {
+                        setError('You are not logged in! Redirecting to login page...');
+                        setRedirect(true);
+                    } else {
+                        setError(e.message);
+                    }
                 }
             }
         });
@@ -74,8 +83,14 @@ export default function Notification() {
                 return item;
             });
             setNotifications(newNotifications);
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -98,7 +113,11 @@ export default function Notification() {
     return (
         <div className='content'>
             {notifications.length === 0 ? (
-                <Loader />
+                error ? (
+                    <Error error={error} redirect={redirect} />
+                ) : (
+                    <Loader />
+                )
             ) : (
                 <>
                     <h1>Notifications</h1>

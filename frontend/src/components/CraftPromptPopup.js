@@ -7,8 +7,46 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
+import BasicAutocomplete from "./BasicAutocomplete";
 
 const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
+  useEffect(() => {
+    // This code will run when the component is mounted
+    console.log("Component mounted");
+
+    // You can place any initialization logic or side effects here
+
+    // For example, fetching data from an API
+    fetchBehaviours();
+  }, []);
+
+  const fetchBehaviours = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+
+      console.log("selectedOption");
+      console.log("board_id");
+      console.log(board_id);
+
+      const res = await axios.get(`/boards/${board_id}/Behaviors `, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log(res);
+      setBehaviourOptions(formatBehaviourToOptions(res.data));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const formatBehaviourToOptions = (behaviours) => {
+    return behaviours.map((behaviour) => behaviour.act_as_a);
+  };
+
+  const [behaviourOptions, setBehaviourOptions] = useState([]);
   const promptInputRef = useRef(null);
   const titleInputRef = useRef(null);
   const popupRef = useRef(null);
@@ -24,19 +62,40 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
     { value: "GENERATEATTACHMENTLINK", label: "Generate Attachment Link" },
   ];
   let [chosenAction, setChosenAction] = useState(actionOptions[0]);
+  const counterOptions = [
+    { value: "1", label: "1" },
+    { value: "2", label: "2" },
+    { value: "3", label: "3" },
+    { value: "4", label: "4" },
+    { value: "5", label: "5" },
+    { value: "6", label: "6" },
+    { value: "7", label: "7" },
+    { value: "8", label: "8" },
+    { value: "9", label: "9" },
+    { value: "10", label: "10" },
+  ];
+  let [taskCounter, setTaskCounter] = useState(counterOptions[0]);
+  let [chosenBehaviour, setChosenBehaviour] = useState("");
 
   const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
-  const SavePrompt = async (title, crafted_prompt_text, ai, action) => {
+  const SavePrompt = async (
+    title,
+    crafted_prompt_text,
+    ai,
+    action,
+    counter
+  ) => {
+    console.log("chosenBehaviour");
+    console.log(chosenBehaviour);
     try {
       const token = sessionStorage.getItem("token");
-
       console.log(board_id);
       console.log(crafted_prompt_text);
       console.log(ai);
       console.log(action);
+      console.log(counter);
       console.log(token);
-
       const res = await axios.post(
         `/boards/${board_id}/AGI/crafted-prompts`,
         {
@@ -44,6 +103,8 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
           crafted_prompt_text: `${crafted_prompt_text}`,
           craft_with: `${ai}`,
           action: `${action}`,
+          agi_behavior: `${chosenBehaviour ? chosenBehaviour : null}`,
+          response_counter: `${counter}`,
         },
         {
           headers: {
@@ -51,7 +112,6 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
           },
         }
       );
-
       if (res) {
         reloadCraftedPrompts();
       }
@@ -83,6 +143,7 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
         <span className="close-btn" onClick={onCancel}>
           {closeIcon}
         </span>
+        <h2>Craft Prompt Popup</h2>
         <div className="gt-popup-content">
           <div className="gt-input-container">
             <div className="gt-input-title">
@@ -118,6 +179,24 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
                   onChange={(selectedOption) => setChosenAI(selectedOption)}
                 />
               </div>
+              <div className="dropdown-container">
+                <p>AI should act as a...:</p>
+                <BasicAutocomplete
+                  placeholder={"Type in a behaviour"}
+                  setValue={chosenBehaviour}
+                  setSelectedValue={setChosenBehaviour}
+                  behaviourOptions={behaviourOptions}
+                  setBehaviourOptions={setBehaviourOptions}
+                />
+              </div>
+              <div className="dropdown-container">
+                <p>Choose the number of element(s):</p>
+                <Dropdown
+                  options={counterOptions}
+                  value={taskCounter}
+                  onChange={(selectedOption) => setTaskCounter(selectedOption)}
+                />
+              </div>
               <button
                 className="generate-button"
                 onClick={() =>
@@ -125,7 +204,8 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
                     titleInputRef.current.value,
                     promptInputRef.current.value,
                     chosenAI.value,
-                    chosenAction.value
+                    chosenAction.value,
+                    taskCounter.value
                   )
                 }
               >

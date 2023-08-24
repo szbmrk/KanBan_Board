@@ -3,7 +3,6 @@
   margin: 20px auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   gap: 20px;
 }
@@ -16,8 +15,6 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
   gap: 10px;
   overflow: hidden;
 }
@@ -28,17 +25,24 @@
   background-color: var(--dark-gray);
   border-bottom: 1px solid var(--dark-gray);
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   color: var(--light-gray);
+  gap: 20px;
+}
+
+.dots {
+  align-self: center;
+  cursor: pointer;
 }
 
 .teamcard-subheader {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
   gap: 10px;
+  align-items: flex-start;
+  margin-left: auto;
+  float: right;
 }
 
 .teamcard-body {
@@ -51,35 +55,261 @@
   text-align: left;
 }
 
+.team-members {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+}
 
-.delete_button {
-  background-color: red;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 5px 10px;
+.team-member-card {
+  position: relative;
+  width: 33%;
+  max-width: 300px;
+  height: 100%;
+  background-color: var(--dark-gray);
+  border: 1px solid var(--dark-gray);
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 5px;
+  padding: 20px;
+}
+
+.team-member-image-container {
+  width: 100px;
+  height: 100px;
+  border: 3px solid var(--dark-gray);
+  border-radius: 50%;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.team-member-image {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
   cursor: pointer;
-  margin-top: 10px;
 }
 
-/* Styling for the "Manage team" button */
-.manageButton {
-  background-color: #6a97ea;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 5px 10px;
+.team-member-card-body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 30px;
+}
+
+.team-member-card-body-data {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.data {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.data p {
+  font-size: 0.9em;
+}
+
+.data p:nth-child(1) {
+  width: 50%;
+  text-align: left;
+}
+
+.team-member-card-body-roles-container,
+.team-member-card-body-actions-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.team-member-card-body-roles-container>p,
+.team-member-card-body-actions-container>p {
+  font-size: 1.5em;
+  text-align: left;
+}
+
+.team-member-card-body-roles {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.team-member-card-body-roles p {
+  margin-left: 20px!important;
+}
+
+.role {
+  width: 100%;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.role li {
+  font-size: 0.9em;
+  text-align: left;
+  list-style-type: disc;
+  color: var(--light-gray);
+}
+
+.teamcard-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.add-user-button {
+  color: var(--light-gray);
+}
+
+.trash-icon {
+  font-size: 0.9em;
+  position: relative;
+}
+
+.trash-icon:hover {
+  color: var(--important);
+}
+
+.trash-icon::before {
+  content: attr(data-hover);
+  position: absolute;
+  top: 0;
+  left: 20px;
+  padding: 5px;
+  width: max-content;
+  font-family: var(--basic-font);
+  font-size: 0.8em;
+  color: var(--light-gray);
+  background-color: var(--scrollbar-hover);
+  transition: opacity 0.3s ease;
+  border-radius: 5px;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.trash-icon:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease;
+  z-index: 100000000;
+}
+
+
+.delete-button {
+  max-width: 50% !important;
+  margin-top: 0 !important;
+  order: 2;
+  flex: 1;
+}
+
+.add-button {
+  max-width: 50%;
+  padding: 10px 0;
+  border: 1px solid var(--confirm);
+  border-radius: 5px;
+  background-color: transparent;
+  color: var(--confirm);
+  transition: all 0.3s ease;
+  order: 1;
   cursor: pointer;
-  margin-top: 10px;
+  flex: 1;
 }
 
-button#manageButton:hover {
-  background-color: #547dc7;
+.add-button:hover {
+  background-color: var(--confirm);
+  color: var(--light-gray);
 }
 
-/* Styling for the team manager section */
+/* Team Manager Section Styles */
 .team-manager {
   border-top: 1px solid #ccc;
   padding-top: 20px;
   margin-top: 20px;
+}
+
+
+/* Table Styles */
+.team-members table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.team-members th,
+.team-members td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid var(--dark-gray);
+}
+
+/* Table Header Styles */
+.team-members th {
+  background-color: var(--dark-gray);
+  color: var(--light-gray);
+}
+
+/* Username Styles */
+.team-members h3 {
+  margin: 0;
+  font-size: 16px;
+  text-align: center;
+}
+
+/* Role Styles */
+.team-members p {
+  margin: 0;
+  color: var(--light-gray);
+}
+
+/* Add Role Button Styles */
+.team-members .manageButton {
+  background-color: #5ab078;
+}
+
+/* Actions Section Styles */
+
+/* Spacing Between Rows */
+.team-members tr:not(:last-child) {
+  margin-bottom: 10px;
+}
+
+.selected {
+  background-color: #6a97ea;
+  color: white;
 }

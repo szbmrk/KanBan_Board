@@ -26,6 +26,8 @@ use Database\Seeders\TeamMembersTableSeeder;
 use Database\Seeders\NotificationsTableSeeder;
 use Database\Seeders\FavouriteTasksTableSeeder;
 use Database\Seeders\TeamMembersRoleTableSeeder;
+use Database\Seeders\AgiBehaviorTableSeeder;
+use Database\Seeders\PromptCraftTableSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -55,7 +57,9 @@ class DatabaseSeeder extends Seeder
             AttachmentsTableSeeder::class,
             LogsTableSeeder::class,
             PermissionsTableSeeder::class,
-            PermissionRoleTableSeeder::class, 
+            PermissionRoleTableSeeder::class,
+            AgiBehaviorTableSeeder::class, 
+            PromptCraftTableSeeder::class,
         ]);
     }
 }
