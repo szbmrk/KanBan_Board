@@ -91,14 +91,12 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
     return;
     try {
       const token = sessionStorage.getItem("token");
-
       console.log(board_id);
       console.log(crafted_prompt_text);
       console.log(ai);
       console.log(action);
       console.log(counter);
       console.log(token);
-
       const res = await axios.post(
         `/boards/${board_id}/AGI/crafted-prompts`,
         {
@@ -115,7 +113,6 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
           },
         }
       );
-
       if (res) {
         reloadCraftedPrompts();
       }
@@ -147,6 +144,7 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
         <span className="close-btn" onClick={onCancel}>
           {closeIcon}
         </span>
+        <h2>Craft Prompt Popup</h2>
         <div className="gt-popup-content">
           <div className="gt-input-container">
             <div className="gt-input-title">
@@ -207,8 +205,7 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
                     titleInputRef.current.value,
                     promptInputRef.current.value,
                     chosenAI.value,
-                    chosenAction.value,
-                    taskCounter.value
+                    chosenAction.value
                   )
                 }
               >

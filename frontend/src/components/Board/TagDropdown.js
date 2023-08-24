@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import Select from 'react-select';
+import {components} from "react-select";
 import TagDropdownItem from "./TagDropdownItem";
 
-const TagDropdown = ({tags, allTags}) => {
+const TagDropdown = ({tags, allTags, taskId, placeTagOnTask, removeTagFromTask}) => {
     const [selectedTags, setSelectedTags] = useState([]);
     const [options, setOptions] = useState([]);
 
@@ -33,7 +34,10 @@ const TagDropdown = ({tags, allTags}) => {
         }),
         multiValueRemove: (base) => ({
             ...base,
-            color: 'white'
+            color: 'white',
+            fontWeight: 'bold',
+            fontSize: 'small',
+            marginRight: '4px'
         }),
         indicatorSeparator: (base) => ({
             ...base,
@@ -53,6 +57,7 @@ const TagDropdown = ({tags, allTags}) => {
 
     useEffect(() => {
         const tagsAsOptions = allTags.map(option => ({
+            tagId: option.tag_id,
             value: option.name,
             label: option.name,
             color: option.color
@@ -60,6 +65,7 @@ const TagDropdown = ({tags, allTags}) => {
         setOptions(tagsAsOptions);
 
         const selectedTagsArray = tags.map(tag => ({
+            tagId: tag.tag_id,
             value: tag.name,
             label: tag.name,
             color: tag.color
@@ -81,8 +87,15 @@ const TagDropdown = ({tags, allTags}) => {
 
         if (index !== -1) {
             updatedSelectedTags.splice(index, 1); // Remove the tag
+            removeTagFromTask(taskId, item.tagId);
         } else {
             updatedSelectedTags.push(item); // Add the tag
+            const selectedTag = allTags.find((tag) => {
+                if (tag.tag_id === item.tagId) {
+                    return true;
+                }
+            });
+            placeTagOnTask(taskId, selectedTag);
         }
 
         // Reorder the selected tags based on the options array
@@ -120,6 +133,10 @@ const TagDropdown = ({tags, allTags}) => {
         setInputValue('');
     };
 
+    const handleMultiValueRemove = (item) => {
+        handleTagToggle(item);
+    }
+
     const customComponents = {
         Option: (props) => (
             <TagDropdownItem
@@ -130,7 +147,14 @@ const TagDropdown = ({tags, allTags}) => {
                 selectedTags={selectedTags}
             />
         ),
-        ClearIndicator
+        ClearIndicator,
+        MultiValueRemove: (props) => {
+            return (
+                <components.MultiValueRemove {...props}>
+                    <div onClick={() => handleMultiValueRemove(props.data)}>x</div>
+                </components.MultiValueRemove>
+            )
+        }
     };
 
     return (

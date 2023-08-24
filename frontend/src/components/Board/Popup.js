@@ -21,8 +21,7 @@ import Subtask from './Subtask';
 import TagDropdown from './TagDropdown';
 import Comment from './Comment';
 import DatePicker from 'react-datepicker';
-import { set } from 'lodash';
-import { text } from '@fortawesome/fontawesome-svg-core';
+import TagEditorPopup from './TagEditorPopup';
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const subtaskIcon = <FontAwesomeIcon icon={faListCheck} />;
@@ -56,7 +55,8 @@ const Popup = ({
     deleteAttachment,
     addMember,
     deleteMember,
-    tags,
+    placeTagOnTask,
+    removeTagFromTask,
 }) => {
     const popupRef = useRef(null);
 
@@ -79,6 +79,8 @@ const Popup = ({
     const [newMember, setNewMember] = useState(null);
 
     const token = sessionStorage.getItem('token');
+
+    const [showTagEditorPopup, setShowTagEditorPopup] = useState(false);
 
     const validateLink = (inputLink) => {
         const urlPattern = /^(http|https):\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/;
@@ -251,6 +253,14 @@ const Popup = ({
         }
     };
 
+    const handleCloseTagEditor = () => {
+        setShowTagEditorPopup(false);
+    };
+
+    const handleSaveTagEditor = () => {
+        // setShowTagEditorPopup(false);
+    };
+
     return (
         <div className='overlay'>
             <div className='popup' ref={popupRef}>
@@ -295,15 +305,23 @@ const Popup = ({
                 <div className='lower-part'>
                     <div className='popup-content'>
                         <div className='tags-container'>
-                            {task.tags && task.tags.length > 0 && (
+                            {task.tags && (
                                 <>
                                     <div className='subtitle'>
                                         <span className='icon'>{tagsIcon}</span>
                                         <h3>Tags:</h3>
                                     </div>
                                     <div className='tags'>
-                                        <TagDropdown tags={task.tags} allTags={boardTags}></TagDropdown>
-                                        <span className='addbtn-tag'>{plusIcon}</span>
+                                        <TagDropdown
+                                            tags={task.tags}
+                                            allTags={boardTags}
+                                            taskId={task.task_id}
+                                            placeTagOnTask={placeTagOnTask}
+                                            removeTagFromTask={removeTagFromTask}
+                                        ></TagDropdown>
+                                        <span className='addbtn-tag' onClick={() => setShowTagEditorPopup(true)}>
+                                            {plusIcon}
+                                        </span>
                                     </div>
                                 </>
                             )}
@@ -438,7 +456,7 @@ const Popup = ({
                 >
                     Save
                 </button>
-                <button className='add-button' onClick={handleAddToCard} style={{ zIndex: addToCardIconZIndex }}>
+                <button className='add-icon' onClick={handleAddToCard} style={{ zIndex: addToCardIconZIndex }}>
                     {plusIcon}
                 </button>
                 {showAddToCard && (
@@ -520,9 +538,16 @@ const Popup = ({
                         </div>
                     </div>
                 )}
+                {showTagEditorPopup && (
+                    <div className='tag-editor-overlay'>
+                        <div className='tag-editor-popup'>
+                            <TagEditorPopup onClose={handleCloseTagEditor} onSave={handleSaveTagEditor} />
+                        </div>
+                    </div>
+                )}
             </div>
             {showAddAttachment && (
-                <div className='overlay2'>
+                <div className='overlay darken'>
                     <div className='attachment-popup-mini-attachment'>
                         <form className='attachment-popup-content-form-mini' onSubmit={handleAddAttachment}>
                             <h4>Link:</h4>
@@ -552,7 +577,7 @@ const Popup = ({
                 </div>
             )}
             {showAddMember && (
-                <div className='overlay2'>
+                <div className='overlay darken'>
                     <div className='attachment-popup-mini-attachment'>
                         <form className='attachment-popup-content-form-mini'>
                             <h4>Person:</h4>

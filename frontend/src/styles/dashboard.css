@@ -31,7 +31,6 @@
     flex: 0 0 calc(33.33% - 20px);
     border: 1px solid var(--dark-gray);
     border-radius: 8px;
-    padding: 10px;
     margin: 10px;
     background-color: var(--dark-gray);
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
@@ -54,11 +53,10 @@
 
 .edit-board-button {
     position: absolute;
-    bottom: 0;
-    right: 0;
-    padding: 5px 10px;
+    bottom: 5px;
+    right: 5px;
     color: var(--light-gray);
-    font-size: 14px;
+    font-size: 0.9em;
     cursor: pointer;
 }
 
@@ -116,13 +114,13 @@
 }
 
 .board-save-button {
-    width: 25%;
-    height: 25px;
+    width: 80px;
+    height: 40px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-family: var(--basic-font);
-    font-size: 0.95em;
+    font-size: 1em;
     background-color: var(--light-gray);
     color: var(--dark-gray);
     transition: 0.1s ease;

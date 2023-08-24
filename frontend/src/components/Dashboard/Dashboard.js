@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import '../../styles/dashboard.css';
 import axios from '../../api/axios';
-import { Link } from 'react-router-dom';
+import { Link, RedirectFunction } from 'react-router-dom';
 import Loader from '../Loader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faPencil, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { SetRoles } from '../../roles/Roles';
+import Error from '../Error';
 
 const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
@@ -20,13 +21,14 @@ export default function Dashboard() {
     const [hoveredBoardId, setHoveredBoardId] = useState(null);
     const [ownPermissions, setOwnPermissions] = useState([]);
     const [teamPermissions, setTeamPermissions] = useState([]);
-
+    const [error, setError] = useState(false);
+    const [redirect, setRedirect] = useState(false);
 
     const token = sessionStorage.getItem('token');
     const user_id = sessionStorage.getItem('user_id');
 
     useEffect(() => {
-        document.title = 'Dashboard'
+        document.title = 'Dashboard';
         if (user_id) {
             setUserID(user_id);
         }
@@ -54,6 +56,12 @@ export default function Dashboard() {
             ResetRoles();
         } catch (e) {
             console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -92,8 +100,14 @@ export default function Dashboard() {
                 });
             });
             ResetRoles();
-        } catch (error) {
-            console.error(error);
+        } catch (e) {
+            console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -118,8 +132,14 @@ export default function Dashboard() {
                     return team;
                 });
             });
-        } catch (error) {
-            console.error(error);
+        } catch (e) {
+            console.error(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -157,8 +177,11 @@ export default function Dashboard() {
                     return team;
                 });
             });
-        } catch (error) {
-            console.error(error);
+        } catch (e) {
+            console.error(e);
+            e.response.status === 401 || e.response.status === 500
+                ? setError('You are not logged in! Redirecting to login page...')
+                : setError(e.message);
         }
     };
 
@@ -208,12 +231,16 @@ export default function Dashboard() {
                 }
             }
         }
-    }
+    };
 
     return (
         <div className='content'>
             {teams.length === 0 ? (
-                <Loader />
+                error ? (
+                    <Error error={error} redirect={redirect}></Error>
+                ) : (
+                    <Loader />
+                )
             ) : (
                 <>
                     <h1 className='header'>Dashboard</h1>
@@ -234,9 +261,10 @@ export default function Dashboard() {
                                                     <Link to={`/board/${board.board_id}`} className='board-title'>
                                                         <p>{board.name}</p>
                                                     </Link>
-                                                    {checkPermissonToManageBoard(board.board_id, team.team_id) === true &&
+                                                    {checkPermissonToManageBoard(board.board_id, team.team_id) ===
+                                                        true && (
                                                         <span
-                                                            className='delete-button'
+                                                            className='delete-icon'
                                                             style={{
                                                                 visibility:
                                                                     hoveredBoardId === board.board_id
@@ -247,10 +275,13 @@ export default function Dashboard() {
                                                             onClick={() =>
                                                                 deleteBoardFromTeam(team.team_id, board.board_id)
                                                             }
+                                                            data-hover='Delete Board'
                                                         >
                                                             {closeIcon}
-                                                        </span>}
-                                                    {checkPermissonToManageBoard(board.board_id, team.team_id) === true &&
+                                                        </span>
+                                                    )}
+                                                    {checkPermissonToManageBoard(board.board_id, team.team_id) ===
+                                                        true && (
                                                         <span
                                                             className='edit-board-button'
                                                             style={{
@@ -265,7 +296,7 @@ export default function Dashboard() {
                                                         >
                                                             {pencilIcon}
                                                         </span>
-                                                    }
+                                                    )}
                                                 </div>
                                             ))}
                                             <div

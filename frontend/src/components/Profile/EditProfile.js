@@ -3,6 +3,7 @@ import axios from '../../api/axios';
 import '../../styles/editprofile.css';
 import DeleteConfirm from './DeleteProfileConfirm';
 import Loader from '../Loader';
+import Error from '../Error';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
@@ -23,7 +24,8 @@ export default function EditProfile() {
         confirmPassword: '',
         oldPassword: '',
     });
-    const [error, setError] = useState('');
+    const [error, setError] = useState(false);
+    const [redirect, setRedirect] = useState(false);
     const [deleteIsClicked, setDelete] = useState(false);
     const [profileImageUrl, setProfileImageUrl] = useState(
         'https://www.pngitem.com/pimgs/m/30-307416_profile-icon-png-image-free-download-searchpng-employee.png'
@@ -36,8 +38,14 @@ export default function EditProfile() {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setFormData({ username: response.data[0].username, email: response.data[0].email });
-        } catch (err) {
-            console.log(err);
+        } catch (e) {
+            console.log(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
         }
     };
 
@@ -71,8 +79,14 @@ export default function EditProfile() {
                     }
                 );
                 console.log(response);
-            } catch (err) {
-                console.log(err);
+            } catch (e) {
+                console.log(e);
+                if (e.response.status === 401 || e.response.status === 500) {
+                    setError('You are not logged in! Redirecting to login page...');
+                    setRedirect(true);
+                } else {
+                    setError(e.message);
+                }
             }
         else if (formData.newPassword !== formData.confirmPassword) {
             setDisplay('block');
@@ -118,7 +132,11 @@ export default function EditProfile() {
     return (
         <div className='content'>
             {formData.username === '' ? (
-                <Loader />
+                error ? (
+                    <Error error={error} redirect={redirect} />
+                ) : (
+                    <Loader />
+                )
             ) : (
                 <div>
                     <h1>Edit your profile</h1>

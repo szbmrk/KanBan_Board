@@ -16,6 +16,18 @@ const ProtectedRoute = ({ children }) => {
         }
     }, []);
 
+    useEffect(() => {
+        const token = sessionStorage.getItem('token');
+        const username = sessionStorage.getItem('username');
+        const email = sessionStorage.getItem('email');
+        if (!token || !username || !email) {
+            setTimeout(() => {
+                authCtx.onLogout();
+                navigate('/login');
+            }, 2000);
+        }
+    }, [sessionStorage.getItem('token')]);
+
     return children;
 };
 

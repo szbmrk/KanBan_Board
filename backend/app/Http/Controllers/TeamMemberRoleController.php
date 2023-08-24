@@ -40,6 +40,48 @@ class TeamMemberRoleController extends Controller
         return response()->json(['roles' => $allRoles]);
     }
 
+    public function getAvailableRoles($boardId, $teamMemberId)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $board = Board::find($boardId);
+
+        if (!$board) {
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+
+        // Assuming you have a TeamMember model, replace it with your actual model
+        $teamMember = TeamMember::find($teamMemberId);
+
+        if (!$teamMember) {
+            return response()->json(['error' => 'Team member not found'], 404);
+        }
+
+        $rolesOnBoard = $user->getRoles($boardId);
+        $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function($role) {
+            return in_array('team_member_role_management', $role->permissions->pluck('name')->toArray());
+        });
+
+        if (!$hasRoleManagementPermission) {
+            return response()->json(['error' => 'You don\'t have permission to manage team member roles on this board.'], 403);
+        }
+
+        $allRoles = Role::where('board_id', $boardId)->get();
+
+        // Assuming you have a function to get roles assigned to the team member
+        $rolesAssignedToMember = $teamMember->roles->pluck('role_id')->toArray();
+
+        $availableRoles = $allRoles->reject(function ($role) use ($rolesAssignedToMember) {
+            return in_array($role->role_id, $rolesAssignedToMember);
+        });
+
+        return response()->json(['roles' => $availableRoles]);
+    }
+
     public function store(Request $request, $boardId)
     {
         $user = auth()->user();
@@ -104,7 +146,23 @@ class TeamMemberRoleController extends Controller
         $teamMemberRole->role_id = $roleId;
         $teamMemberRole->save();
 
-        return response()->json(['message' => 'Role assigned successfully']);
+        $newTeamMember=TeamMember::with(["user", "roles.permissions", "roles.board"])->where('team_id', $teamMember->team_id)
+            ->where('user_id', $teamMember->user_id)
+            ->first();
+            
+            foreach ($newTeamMember->roles as &$role) {
+                // Kérdezd le a team_members_role_id-t a megfelelő kritériumok alapján
+                $teamMembersRoleId = TeamMemberRole::where('team_member_id', $newTeamMember->team_members_id)
+                                                   ->where('role_id', $role->role_id)
+                                                   ->value('team_members_role_id');
+    
+                // Ha találtál értéket, adjuk hozzá a szerephez
+                if ($teamMembersRoleId !== null) {
+                    $role->team_members_role_id = $teamMembersRoleId;
+                }
+            }
+
+        return response()->json(['message' => 'Role assigned successfully', 'team_member' => $newTeamMember]);
     }
 
     public function destroy($boardId, $teamMemberRoleId)
