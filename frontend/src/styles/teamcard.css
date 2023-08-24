@@ -9,8 +9,7 @@
 
 .teamcard {
   width: 100%;
-  background-color: rgba(64, 64, 64, 0.692);
-  opacity: 0.9;
+  background-color: var(--bg-dark);
   border: 1px solid var(--dark-gray);
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
