@@ -356,38 +356,6 @@ class ChatGPTController extends Controller
         }
         $board = Board::where('board_id', $boardId)->first();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
         if (!$board) {
             return response()->json(['error' => 'Board not found.'], 404);
         }
@@ -403,8 +371,6 @@ class ChatGPTController extends Controller
         $promptDocumentation = "Use only UTF-8 chars! Act as an senior programmer and generate a documentation for the following code: '''$code'''.";
     
 
-
-}
         if ($expectedType === 'Code review') {
             $prompt = $promptCodeReview;
         } elseif ($expectedType === 'Documentation') {
@@ -472,10 +438,6 @@ class ChatGPTController extends Controller
         $responseSummary = "\n\nSummary for the week: Total tasks created: {$tasksCreatedCount}. Total tasks finished: {$tasksFinishedCount}.";
         $response .= $responseSummary;
         
-
-    
-
-
         DB::table('summary_logs')->insert([
             'start_date' => $startDate,
             'end_date' => $endDate,
