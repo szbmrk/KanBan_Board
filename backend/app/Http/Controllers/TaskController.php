@@ -19,6 +19,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Priority;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\LogRequest;
 
 class TaskController extends Controller
 {
@@ -92,7 +93,7 @@ class TaskController extends Controller
 
         $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task->task_id);
 
-        //LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Task created successfully!", $teamId, $board_id, $task->task_id);
+        LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Task created successfully!", $teamId, $board_id, $task->task_id);
         return response()->json(['message' => 'Task created successfully', 'task' => $taskWithSubtasksAndTags]);
     }
 
@@ -100,6 +101,7 @@ class TaskController extends Controller
     {
         $user = auth()->user();
         $board = Board::find($board_id);
+        $teamId = $board->team->team_id;
 
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
@@ -123,17 +125,19 @@ class TaskController extends Controller
             'completed' => 'nullable|boolean',
         ]);
 
+        $originalCompletedStatus = $task->completed;
+
         if ($request->input('title')) {
-        $task->title = $request->input('title');
+            $task->title = $request->input('title');
         }
         if ($request->input('description')) {
-        $task->description = $request->input('description');
+            $task->description = $request->input('description');
         }
         if ($request->input('due_date')) {
-        $task->due_date = $request->input('due_date');
+            $task->due_date = $request->input('due_date');
         }
         if ($request->input('priority_id')) {
-        $task->priority_id = $request->input('priority_id');
+            $task->priority_id = $request->input('priority_id');
         }
         if ($request->has('completed')) { 
             $task->completed = $request->input('completed'); 
@@ -141,9 +145,17 @@ class TaskController extends Controller
 
         $task->save();
 
+        if ($task->completed != $originalCompletedStatus && $task->completed == 1) {
+            LogRequest::instance()->logAction('FINISHED TASK', $user->user_id, "Task finished successfully!", $teamId, $board_id, $task->task_id);
+        } elseif ($task->completed != $originalCompletedStatus && $task->completed == 0) {
+            LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "Task status changed to not completed!", $teamId, $board_id, $task->task_id);
+        } else {
+            LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "Task updated successfully!", $teamId, $board_id, $task->task_id);
+        }
+
         $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task_id);
 
-        return response()->json(['message' => 'Task updated successfully', 'task' => $taskWithSubtasksAndTags]);
+        return response()->json(['message' => 'Task updated successfully', 'task' => $taskWithSubtasksAndTags]);    
     }
 
     public function taskDestroy(Request $request, $board_id, $task_id)
