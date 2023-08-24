@@ -111,11 +111,11 @@
 }
 
 .dropdown-numbers .Dropdown-control {
-width: max-content;
+  width: max-content;
 }
 
-.dropdown-AGI  .Dropdown-control {
-width: 100px;
+.dropdown-AGI .Dropdown-control {
+  width: 100px;
 }
 
 .Dropdown-root .Dropdown-menu {

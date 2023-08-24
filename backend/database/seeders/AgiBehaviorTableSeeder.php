@@ -15,12 +15,17 @@ class AgiBehaviorTableSeeder extends Seeder
         $data = [
             [
                 'act_as_a' => 'Frontend developer',
+                'board_id' => '1'
             ],
             [
                 'act_as_a' => 'Backend developer',
+                'board_id' => '1'
+
             ],
             [
                 'act_as_a' => 'Code reviewer',
+                'board_id' => '2'
+
             ],
             // Add more sample data as needed
         ];

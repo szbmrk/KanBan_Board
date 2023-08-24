@@ -8,29 +8,57 @@ import '../styles/CodePopup.css';
 import hljs from 'highlight.js';
 
 const CodePopup = ({ board_id, onCancel }) => {
-    const codeOptions = [
-        { value: 'Documentation', label: 'Documentation' },
-        { value: 'Code review', label: 'Code review' },
-    ];
-    const [selectedOption, setSelectedOption] = useState(codeOptions[0]);
+  const codeOptions = [
+    { value: "Documentation", label: "Documentation" },
+    { value: "Code review", label: "Code review" },
+  ];
+  const [selectedOption, setSelectedOption] = useState(codeOptions[0].value);
 
-    const aiOptions = [
-        { value: 'chatgpt', label: 'ChatGPT' },
-        { value: 'llama', label: 'Llama' },
-        { value: 'bard', label: 'Bard' },
-    ];
-    let [chosenAI, setChosenAI] = useState(aiOptions[0]);
+  const aiOptions = [
+    { value: "chatgpt", label: "ChatGPT" },
+    { value: "llama", label: "Llama" },
+    { value: "bard", label: "Bard" },
+  ];
+  let [chosenAI, setChosenAI] = useState(aiOptions[0].value);
 
     const [inputCode, setInputCode] = useState('');
     const [output, setOutput] = useState('');
 
     const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
-    const handleRunClick = () => {};
+  const handleRunClick = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+      console.log("selectedOption");
+      console.log(selectedOption);
+      console.log(inputCode);
+      const res = await axios.get(
+        `/boards/${board_id}/AGI/GenerateCodeReviewOrDocumentation`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            ChosenType: `${selectedOption}`,
+            ChosenAI: `${chosenAI}`,
+            "Content-Type": "application/json",
+          },
+          params: {
+            code: inputCode,
+          },
+        }
+      );
+
+      console.log(res);
+      console.log(res.data.review);
+      setOutput(res.data.review);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
     useEffect(() => {
         hljs.highlightAll();
     });
+
 
     return (
         <div className='overlay'>

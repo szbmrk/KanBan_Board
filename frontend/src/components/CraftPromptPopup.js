@@ -1,135 +1,222 @@
-import React, { useState, useRef, useEffect } from 'react';
-import 'react-datepicker/dist/react-datepicker.css';
-import axios from '../api/axios';
-import '../styles/popup.css';
-import '../styles/GenerateTaskWithAGIPopup.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import Dropdown from 'react-dropdown';
-import 'react-dropdown/style.css';
+import React, { useState, useRef, useEffect } from "react";
+import "react-datepicker/dist/react-datepicker.css";
+import axios from "../api/axios";
+import "../styles/popup.css";
+import "../styles/GenerateTaskWithAGIPopup.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import Dropdown from "react-dropdown";
+import "react-dropdown/style.css";
+import BasicAutocomplete from "./BasicAutocomplete";
 
 const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
-    const promptInputRef = useRef(null);
-    const titleInputRef = useRef(null);
-    const popupRef = useRef(null);
-    const aiOptions = [
-        { value: 'CHATGPT', label: 'ChatGPT' },
-        { value: 'LLAMA', label: 'Llama' },
-        { value: 'BARD', label: 'Bard' },
-    ];
-    let [chosenAI, setChosenAI] = useState(aiOptions[0]);
-    const actionOptions = [
-        { value: 'GENERATETASK', label: 'Generate Task' },
-        { value: 'GENERATESUBTASK', label: 'Generate Subtask' },
-        { value: 'GENERATEATTACHMENTLINK', label: 'Generate Attachment Link' },
-    ];
-    let [chosenAction, setChosenAction] = useState(actionOptions[0]);
+  useEffect(() => {
+    // This code will run when the component is mounted
+    console.log("Component mounted");
 
-    const closeIcon = <FontAwesomeIcon icon={faXmark} />;
+    // You can place any initialization logic or side effects here
 
-    const SavePrompt = async (title, crafted_prompt_text, ai, action) => {
-        try {
-            const token = sessionStorage.getItem('token');
+    // For example, fetching data from an API
+    fetchBehaviours();
+  }, []);
 
-            console.log(board_id);
-            console.log(crafted_prompt_text);
-            console.log(ai);
-            console.log(action);
-            console.log(token);
+  const fetchBehaviours = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
 
-            const res = await axios.post(
-                `/boards/${board_id}/AGI/crafted-prompts`,
-                {
-                    crafted_prompt_title: `${title}`,
-                    crafted_prompt_text: `${crafted_prompt_text}`,
-                    craft_with: `${ai}`,
-                    action: `${action}`,
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+      console.log("selectedOption");
+      console.log("board_id");
+      console.log(board_id);
 
-            if (res) {
-                reloadCraftedPrompts();
-            }
+      const res = await axios.get(`/boards/${board_id}/Behaviors `, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-            console.log(res);
-            console.log(res.data);
-        } catch (e) {
-            console.error(e);
+      console.log(res);
+      setBehaviourOptions(formatBehaviourToOptions(res.data));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const formatBehaviourToOptions = (behaviours) => {
+    return behaviours.map((behaviour) => behaviour.act_as_a);
+  };
+
+  const [behaviourOptions, setBehaviourOptions] = useState([]);
+  const promptInputRef = useRef(null);
+  const titleInputRef = useRef(null);
+  const popupRef = useRef(null);
+  const aiOptions = [
+    { value: "CHATGPT", label: "ChatGPT" },
+    { value: "LLAMA", label: "Llama" },
+    { value: "BARD", label: "Bard" },
+  ];
+  let [chosenAI, setChosenAI] = useState(aiOptions[0]);
+  const actionOptions = [
+    { value: "GENERATETASK", label: "Generate Task" },
+    { value: "GENERATESUBTASK", label: "Generate Subtask" },
+    { value: "GENERATEATTACHMENTLINK", label: "Generate Attachment Link" },
+  ];
+  let [chosenAction, setChosenAction] = useState(actionOptions[0]);
+  const counterOptions = [
+    { value: "1", label: "1" },
+    { value: "2", label: "2" },
+    { value: "3", label: "3" },
+    { value: "4", label: "4" },
+    { value: "5", label: "5" },
+    { value: "6", label: "6" },
+    { value: "7", label: "7" },
+    { value: "8", label: "8" },
+    { value: "9", label: "9" },
+    { value: "10", label: "10" },
+  ];
+  let [taskCounter, setTaskCounter] = useState(counterOptions[0]);
+  let [chosenBehaviour, setChosenBehaviour] = useState("");
+
+  const closeIcon = <FontAwesomeIcon icon={faXmark} />;
+
+  const SavePrompt = async (
+    title,
+    crafted_prompt_text,
+    ai,
+    action,
+    counter
+  ) => {
+    console.log("chosenBehaviour");
+    console.log(chosenBehaviour);
+    return;
+    try {
+      const token = sessionStorage.getItem("token");
+      console.log(board_id);
+      console.log(crafted_prompt_text);
+      console.log(ai);
+      console.log(action);
+      console.log(counter);
+      console.log(token);
+      const res = await axios.post(
+        `/boards/${board_id}/AGI/crafted-prompts`,
+        {
+          crafted_prompt_title: `${title}`,
+          crafted_prompt_text: `${crafted_prompt_text}`,
+          craft_with: `${ai}`,
+          action: `${action}`,
+          response_counter: `${counter}`,
+          agi_behavior: `${chosenBehaviour ? chosenBehaviour : null}`,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
+      );
+      if (res) {
+        reloadCraftedPrompts();
+      }
+
+      console.log(res);
+      console.log(res.data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        onCancel();
+      }
     };
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (popupRef.current && !popupRef.current.contains(event.target)) {
-                onCancel();
-            }
-        };
+    document.addEventListener("mousedown", handleClickOutside);
 
-        document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onCancel]);
 
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [onCancel]);
-
-    return (
-        <div className='overlay'>
-            <div className='popup agi-popup'>
-                <span className='close-btn' onClick={onCancel}>
-                    {closeIcon}
-                </span>
-                <h2>Craft Prompt Popup</h2>
-                <div className='gt-popup-content'>
-                    <div className='gt-input-container'>
-                        <div className='gt-input-title'>
-                            <p>Give this prompt a title:</p>
-                            <input type='text' placeholder='Enter the title of this prompt' ref={titleInputRef} />
-                        </div>
-                        <div className='gt-input-prompt'>
-                            <p>Enter your own prompt:</p>
-                            <input type='text' placeholder='Enter your own prompt' ref={promptInputRef} />
-                        </div>
-                        <div className='gt-action-buttons'>
-                            <div className='dropdown-container'>
-                                <p>Choose an action for the prompt:</p>
-                                <Dropdown
-                                    options={actionOptions}
-                                    value={chosenAction}
-                                    onChange={(selectedOption) => setChosenAction(selectedOption)}
-                                />
-                            </div>
-                            <div className='dropdown-container'>
-                                <p>Choose an AI you want to fulfill your prompt with:</p>
-                                <Dropdown
-                                    options={aiOptions}
-                                    value={chosenAI}
-                                    onChange={(selectedOption) => setChosenAI(selectedOption)}
-                                />
-                            </div>
-                            <button
-                                className='generate-button'
-                                onClick={() =>
-                                    SavePrompt(
-                                        titleInputRef.current.value,
-                                        promptInputRef.current.value,
-                                        chosenAI.value,
-                                        chosenAction.value
-                                    )
-                                }
-                            >
-                                Send prompt
-                            </button>
-                        </div>
-                    </div>
-                </div>
+  return (
+    <div className="overlay">
+      <div className="popup agi-popup">
+        <span className="close-btn" onClick={onCancel}>
+          {closeIcon}
+        </span>
+        <h2>Craft Prompt Popup</h2>
+        <div className="gt-popup-content">
+          <div className="gt-input-container">
+            <div className="gt-input-title">
+              <p>Give this prompt a title:</p>
+              <input
+                type="text"
+                placeholder="Enter the title of this prompt"
+                ref={titleInputRef}
+              />
             </div>
+            <div className="gt-input-prompt">
+              <p>Enter your own prompt:</p>
+              <input
+                type="text"
+                placeholder="Enter your own prompt"
+                ref={promptInputRef}
+              />
+            </div>
+            <div className="gt-action-buttons">
+              <div className="dropdown-container">
+                <p>Choose an action for the prompt:</p>
+                <Dropdown
+                  options={actionOptions}
+                  value={chosenAction}
+                  onChange={(selectedOption) => setChosenAction(selectedOption)}
+                />
+              </div>
+              <div className="dropdown-container">
+                <p>Choose an AI you want to fulfill your prompt with:</p>
+                <Dropdown
+                  options={aiOptions}
+                  value={chosenAI}
+                  onChange={(selectedOption) => setChosenAI(selectedOption)}
+                />
+              </div>
+              <div className="dropdown-container">
+                <p>AI should act as a...:</p>
+                <BasicAutocomplete
+                  placeholder={"Type in a behaviour"}
+                  setValue={chosenBehaviour}
+                  setSelectedValue={setChosenBehaviour}
+                  behaviourOptions={behaviourOptions}
+                  setBehaviourOptions={setBehaviourOptions}
+                />
+              </div>
+              <div className="dropdown-container">
+                <p>Choose the number of element(s):</p>
+                <Dropdown
+                  options={counterOptions}
+                  value={taskCounter}
+                  onChange={(selectedOption) => setTaskCounter(selectedOption)}
+                />
+              </div>
+              <button
+                className="generate-button"
+                onClick={() =>
+                  SavePrompt(
+                    titleInputRef.current.value,
+                    promptInputRef.current.value,
+                    chosenAI.value,
+                    chosenAction.value
+                  )
+                }
+              >
+                Send prompt
+              </button>
+            </div>
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default CraftPromptPopup;
