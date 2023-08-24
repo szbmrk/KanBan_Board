@@ -1155,17 +1155,18 @@ const Board = () => {
 
     const handlePlaceTagOnTask = async (task_id, tag) => {
         try {
-            const response = await axios.post(
+            await axios.post(
                 `/boards/${board_id}/tasks/${task_id}/tags/${tag.tag_id}`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            inspectedTask.tags.push(tag);
+            const updatedBoard = { ...board };
+            const updatedTask = updatedBoard.columns.flatMap(column => column.tasks).find(task => task.task_id === task_id);
+            updatedTask.tags.push(tag);
+            updatedTask.tags.sort((a, b) => a.tag_id - b.tag_id);
 
-            inspectedTask.tags.sort((a, b) => {
-                return a.tag_id - b.tag_id;
-            });
+            setBoard(updatedBoard);
         } catch (e) {
             console.error(e);
             if (e.response.status === 401 || e.response.status === 500) {
@@ -1179,16 +1180,18 @@ const Board = () => {
 
     const handleRemoveTagFromTask = async (task_id, tag_id) => {
         try {
-            const response = await axios.delete(`/boards/${board_id}/tasks/${task_id}/tags/${tag_id}`, {
+            await axios.delete(`/boards/${board_id}/tasks/${task_id}/tags/${tag_id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            const removedTagIndex = inspectedTask.tags.findIndex((tag) => {
-                if (tag.tag_id === tag_id) {
-                    return true;
-                }
-            });
-            inspectedTask.tags.splice(removedTagIndex, 1);
+            const updatedBoard = { ...board };
+            const updatedTask = updatedBoard.columns.flatMap(column => column.tasks).find(task => task.task_id === task_id);
+            const removedTagIndex = updatedTask.tags.findIndex(tag => tag.tag_id === tag_id);
+            if (removedTagIndex !== -1) {
+                updatedTask.tags.splice(removedTagIndex, 1);
+            }
+
+            setBoard(updatedBoard);
         } catch (e) {
             console.error(e);
             if (e.response.status === 401 || e.response.status === 500) {
@@ -1199,6 +1202,19 @@ const Board = () => {
             }
         }
     };
+
+    const handleBoardTagDeletion = async (tag_id) => {
+
+        const updatedBoard = { ...board };
+        for (const column of updatedBoard.columns) {
+            for (const task of column.tasks) {
+                const removedTagIndex = task.tags.findIndex(tag => tag.tag_id === tag_id);
+                if (removedTagIndex !== -1) {
+                    task.tags.splice(removedTagIndex, 1);
+                }
+            }
+        }
+    }
 
     return (
         <>
@@ -1551,6 +1567,7 @@ const Board = () => {
                     tags={inspectedTask.tags}
                     placeTagOnTask={handlePlaceTagOnTask}
                     removeTagFromTask={handleRemoveTagFromTask}
+                    handleBoardTagDeletion={handleBoardTagDeletion}
                 />
             )}
         </>

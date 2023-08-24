@@ -3,7 +3,7 @@ import Select from 'react-select';
 import {components} from "react-select";
 import TagDropdownItem from "./TagDropdownItem";
 
-const TagDropdown = ({tags, allTags, taskId, placeTagOnTask, removeTagFromTask}) => {
+const TagDropdown = ({tags, allTags, taskId, placeTagOnTask, removeTagFromTask, tagEditHandler, tagDeleteHandler}) => {
     const [selectedTags, setSelectedTags] = useState([]);
     const [options, setOptions] = useState([]);
 
@@ -111,13 +111,11 @@ const TagDropdown = ({tags, allTags, taskId, placeTagOnTask, removeTagFromTask})
     }
 
     const handleEdit = (item) => {
-        // Handle edit logic
-        console.log('edit');
+        tagEditHandler(item);
     };
 
     const handleDelete = (item) => {
-        // Handle delete logic
-        console.log('delete');
+        tagDeleteHandler(item);
     };
 
     const ClearIndicator = () => {
