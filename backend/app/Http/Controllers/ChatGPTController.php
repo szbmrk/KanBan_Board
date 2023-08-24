@@ -409,8 +409,13 @@ class ChatGPTController extends Controller
         if ($boardId) {
             $logsQuery->where('board_id', $boardId);
         }
+
         $logs = $logsQuery->get();
-    
+
+        if (!$logs->count()) {
+            return response()->json(['error' => 'No logs found for the specified board_id and date range']);
+        }
+
         $logEntries = [];
         $tasksCreatedCount = 0;
         $tasksFinishedCount = 0;
@@ -429,7 +434,7 @@ class ChatGPTController extends Controller
         }
     
         $formattedLogs = implode("; ", $logEntries);
-        $prompt = "Based on the following log entries in a Kanban table: {$formattedLogs}, create a performance review by day and point out the most and least productive days.";
+        $prompt = "Based on the following log entries in a Kanban table: {$formattedLogs}, create a performance review by day and point out the most and least productive days of the week.";
     
         $pythonScriptPath = env('PERFORMANCE_PYTHON_SCRIPT_PATH');
         $apiKey = env('OPENAI_API_KEY');
@@ -448,10 +453,6 @@ class ChatGPTController extends Controller
             'updated_at' => now()
         ]);
 
-        return response()->json([
-            'prompt' => $prompt,
-            'response' => $response
-        ]);
+        return response()->json(['response' => $response]);
     }     
-    
 }
