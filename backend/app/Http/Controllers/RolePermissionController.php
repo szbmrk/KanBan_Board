@@ -38,6 +38,19 @@ class RolePermissionController extends Controller
         return response()->json(['roles' => $roles]);
     }
 
+    public function getAllPermissions()
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $permissions = Permission::all();
+
+        return response()->json(['permissions' => $permissions]);
+    }
+
     public function store(Request $request, $boardId, $roleId)
     {
         $user = auth()->user();

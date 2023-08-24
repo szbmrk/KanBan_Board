@@ -93,7 +93,7 @@ class RoleController extends Controller
         $role->board_id = $boardId;
         $role->save();
     
-        return response()->json(['message' => 'Role created successfully'], 201);
+        return response()->json(['message' => 'Role created successfully', 'role' => $role], 201);
     }    
     
     public function update(Request $request, $boardId, $roleId)
