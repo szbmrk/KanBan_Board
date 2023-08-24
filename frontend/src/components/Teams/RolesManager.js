@@ -81,21 +81,21 @@ export default function RolesManager({ OnClose, team_id, team_member_id, AddRole
                             <option value={board.board_id}>{board.name}</option>
                         ))}
                     </select>
+                    {boardIsSelected &&
+                        (
+                            <div>
+                                <p>Select role:</p>
+                                <select onChange={RoleSelection}>
+                                    <option value="-1" inactive >Select role</option>
+                                    {boardRoles.length > 0 && boardRoles.map((role) => (
+                                        <option value={role.role_id}>{role.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )
+                    }
+                    <button onClick={handleAddRolesToUser}>Add role to user</button>
                 </div>
-                {boardIsSelected && (
-                    <div className='selector-container'>
-                        <p>Select role:</p>
-                        <select onChange={RoleSelection}>
-                            <option value='-1'>Select role</option>
-                            {boardRoles.map((role) => (
-                                <option value={role.role_id}>{role.name}</option>
-                            ))}
-                        </select>
-                    </div>
-                )}
-                <button className='add-button' onClick={handleAddRolesToUser}>
-                    Add role to user
-                </button>
             </div>
         </div>
     );

@@ -12,7 +12,7 @@ import {
     faListCheck,
 } from '@fortawesome/free-solid-svg-icons';
 
-import { dateFormatOptions } from '../../utils/DateFormat';
+import { formatDate } from '../../utils/DateFormat';
 import { Link } from 'react-router-dom';
 
 const tagsIcon = <FontAwesomeIcon icon={faTags} />;
@@ -92,17 +92,16 @@ const TaskCard = ({ task }) => {
                         <div class='previous-comments' style={{ width: '90%' }}>
                             {task.comments.map((comment, index) => (
                                 <div
-                                    className={`comment ${
-                                        sessionStorage.getItem('username') === comment.user.username
-                                            ? 'own-comment'
-                                            : 'other-comment'
-                                    }`}
+                                    className={`comment ${sessionStorage.getItem('username') === comment.user.username
+                                        ? 'own-comment'
+                                        : 'other-comment'
+                                        }`}
                                     key={index}
                                 >
                                     <div class='comment-header'>
                                         <span className='username'>{comment.user.username}</span>
                                         <span className='date'>
-                                            {new Date(comment.created_at).toLocaleString('en-US', dateFormatOptions)}
+                                            {formatDate(comment.created_at)}
                                         </span>
                                     </div>
                                     <div className='comment-text'>{comment.text}</div>

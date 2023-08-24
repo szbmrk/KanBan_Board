@@ -181,7 +181,7 @@ const Popup = ({
         const nextWeek = new Date();
         console.log(nextWeek);
         nextWeek.setDate(nextWeek.getDate() + 7);
-        nextWeek.setHours(nextWeek.getHours() + 2);
+        nextWeek.setHours(nextWeek.getHours() + 2); // kell a két óra mivel a new Date alapból 2 órával kevesebbet ad vissza
         nextWeek.setMinutes(0);
         nextWeek.setSeconds(0);
         nextWeek.setMilliseconds(0);
@@ -198,7 +198,7 @@ const Popup = ({
         if (newDeadlineDate !== null) {
             const newDeadLine = new Date(newDeadlineDate);
             newDeadLine.setHours(0);
-            newDeadLine.setHours(newDeadLine.getHours() + 2);
+            newDeadLine.setHours(newDeadLine.getHours() + 2); // kell a két óra mivel a new Date alapból 2 órával kevesebbet ad vissza
             newDeadLine.setMinutes(0);
             newDeadLine.setSeconds(0);
             newDeadLine.setMilliseconds(0);
