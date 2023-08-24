@@ -44,6 +44,14 @@ class UserTasksTableSeeder extends Seeder
                 'user_id' => 1, 
                 'task_id' => 6, 
             ],
+            [
+                'user_id' => 10, 
+                'task_id' => 11, 
+            ],
+            [
+                'user_id' => 10, 
+                'task_id' => 12, 
+            ],
             
 
 

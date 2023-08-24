@@ -97,6 +97,7 @@ Route::put('/boards/{boardId}/columns/{columnId}/tasks/update-with-subtasks', [T
 Route::post('/boards/{boardId}/columns/{columnId}/tasks/{taskId}/SubtasksToExistingTask', [TaskController::class, 'addSubtasksToExistingTask'])->middleware('api');
 Route::put('/boards/{boardId}/columns/{columnId}/tasks/{taskId}/SubtasksToExistingTask', [TaskController::class, 'updateExistingTask'])->middleware('api');
 Route::delete('/boards/{boardId}/columns/{columnId}/tasks/{taskId}/SubtasksToExistingTask', [TaskController::class, 'deleteExistingTaskWithItsSubtasks'])->middleware('api');
+Route::get('/board/{board_id}/task-completion-rate', [TaskController::class, 'boardTaskCompletionRate'])->middleware('api');
 
 Route::get('/tasks/{task_id}/comments', [CommentController::class, 'index'])->middleware('api');
 Route::post('/tasks/{task_id}/comments', [CommentController::class, 'commentStore'])->middleware('api');
@@ -175,6 +176,8 @@ Route::delete('/boards/{boardId}/crafted_prompts/{craftedPromptId}', [PromptCraf
 Route::get('/boards/{boardId}/AGI/crafted-prompts/{craftedPromptId}', [PromptCraftController::class, 'usePrompts'])->middleware('api');
 
 Route::get('/AGI/GenerateTask/CraftedPrompt', [ChatGPTController::class, 'GenerateTaskCraftedPrompt'])->middleware('api');
+Route::post('/generate-performance-summary', [ChatGPTController::class, 'generatePerformanceSummary']);
+Route::get('/generate-five-day-summary', [ChatGPTController::class, 'generateFiveDaySummary']);
 
 Route::get('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'GetBehaviors'])->middleware('api');
 Route::post('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'StoreBehavior'])->middleware('api');
