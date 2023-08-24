@@ -188,7 +188,6 @@ class AGIController extends Controller
         $response;
         $chosenType = $request->header('ChosenType');
         
-            
         switch($request->header('ChosenAI')) {
             case Str::lower("llama"):
                 $response = LlamaController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
