@@ -6,7 +6,7 @@ import AddUser from './AddUser';
 import Loader from '../Loader';
 import RolesManager from './RolesManager';
 import axios from '../../api/axios';
-import { dateFormatOptions } from '../../utils/DateFormat';
+import { formatDate } from '../../utils/DateFormat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faEllipsis, faPencil, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 
@@ -111,7 +111,6 @@ const TeamCard = ({
     };
 
     const checkPermissionToDeleteRoles = (role) => {
-        console.log(role);
         for (let i = 0; i < role.permissions.length; i++) {
             if (role.permissions[i].name === 'team_member_management' || role.permissions[i].name === 'system_admin') {
                 return false;
@@ -169,7 +168,7 @@ const TeamCard = ({
                 </span>
                 <div className='teamcard-subheader'>
                     <p>Created by: {createdBy}</p>
-                    <p>Created at: {new Date(data.created_at).toLocaleString('en-US', dateFormatOptions)}</p>
+                    <p>Created at: {formatDate(data.created_at)}</p>
                 </div>
             </div>
             <div className='teamcard-body'>
@@ -341,7 +340,7 @@ const TeamCard = ({
                                         >
                                             {trashIcon}
                                         </span>
-                                        <p>Delete</p>
+                                        <p>Delete Team</p>
                                     </>
                                 )}
                             </div>

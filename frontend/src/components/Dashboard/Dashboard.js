@@ -235,11 +235,11 @@ export default function Dashboard() {
 
     return (
         <div className='content'>
-            {teams.length === 0 ? (
+            {teams.length === 0 || teamPermissions.length === 0 ? (
                 error ? (
                     <Error error={error} redirect={redirect}></Error>
                 ) : (
-                    <Loader />
+                    <Loader data_to_load={teams} text_if_cant_load={"You don't have any teams yet!"} />
                 )
             ) : (
                 <>
@@ -263,40 +263,40 @@ export default function Dashboard() {
                                                     </Link>
                                                     {checkPermissonToManageBoard(board.board_id, team.team_id) ===
                                                         true && (
-                                                        <span
-                                                            className='delete-icon'
-                                                            style={{
-                                                                visibility:
-                                                                    hoveredBoardId === board.board_id
-                                                                        ? 'visible'
-                                                                        : 'hidden',
-                                                                transition: 'visibility 0.1s ease',
-                                                            }}
-                                                            onClick={() =>
-                                                                deleteBoardFromTeam(team.team_id, board.board_id)
-                                                            }
-                                                            data-hover='Delete Board'
-                                                        >
-                                                            {closeIcon}
-                                                        </span>
-                                                    )}
+                                                            <span
+                                                                className='delete-icon'
+                                                                style={{
+                                                                    visibility:
+                                                                        hoveredBoardId === board.board_id
+                                                                            ? 'visible'
+                                                                            : 'hidden',
+                                                                    transition: 'visibility 0.1s ease',
+                                                                }}
+                                                                onClick={() =>
+                                                                    deleteBoardFromTeam(team.team_id, board.board_id)
+                                                                }
+                                                                data-hover='Delete Board'
+                                                            >
+                                                                {closeIcon}
+                                                            </span>
+                                                        )}
                                                     {checkPermissonToManageBoard(board.board_id, team.team_id) ===
                                                         true && (
-                                                        <span
-                                                            className='edit-board-button'
-                                                            style={{
-                                                                display:
-                                                                    hoveredBoardId === board.board_id
-                                                                        ? 'block'
-                                                                        : 'none',
-                                                            }}
-                                                            onClick={() =>
-                                                                openAddBoardPopup(team.team_id, board.board_id)
-                                                            }
-                                                        >
-                                                            {pencilIcon}
-                                                        </span>
-                                                    )}
+                                                            <span
+                                                                className='edit-board-button'
+                                                                style={{
+                                                                    display:
+                                                                        hoveredBoardId === board.board_id
+                                                                            ? 'block'
+                                                                            : 'none',
+                                                                }}
+                                                                onClick={() =>
+                                                                    openAddBoardPopup(team.team_id, board.board_id)
+                                                                }
+                                                            >
+                                                                {pencilIcon}
+                                                            </span>
+                                                        )}
                                                 </div>
                                             ))}
                                             <div
