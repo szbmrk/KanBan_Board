@@ -106,7 +106,8 @@
   color: var(--important);
 }
 
-.ai-button {
+.ai-button,
+.ai-button-on-title-bar {
   color: var(--light-gray);
   padding: 5px;
   cursor: pointer;

@@ -57,6 +57,7 @@ const Board = () => {
     const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
     const [showCodePopup, setShowCodePopup] = useState(false);
     const [isHoveredAI, setIsHoveredAI] = useState(false);
+    const [isHoveredAITitleBar, setIsHoveredAITitleBar] = useState(false);
     const [isHoveredClipboard, setIsHoveredClipboard] = useState(false);
     const [isHoveredCode, setIsHoveredCode] = useState(false);
     const [isHoveredCraft, setIsHoveredCraft] = useState(false);
@@ -874,6 +875,7 @@ const Board = () => {
     const openCodePopup = () => {
         setShowCodePopup(true);
         setIsAGIOpen(false);
+        setIsHoveredCode(false);
     };
 
     const handleCodeCancel = () => {
@@ -1082,6 +1084,7 @@ const Board = () => {
     const handleShowCraftPromptPopup = () => {
         setShowCraftPromptPopup(true);
         setIsAGIOpen(false);
+        setIsHoveredCraft(false);
     };
 
     const handleAddMember = async (task_id, column_id, member_id) => {
@@ -1221,13 +1224,15 @@ const Board = () => {
                                     <ul>
                                         <li>
                                             <span
-                                                className='ai-button'
-                                                onMouseEnter={() => setIsHoveredAI(true)}
-                                                onMouseLeave={() => setIsHoveredAI(false)}
+                                                className='ai-button-on-title-bar'
+                                                onMouseEnter={() => setIsHoveredAITitleBar(true)}
+                                                onMouseLeave={() => setIsHoveredAITitleBar(false)}
                                                 onClick={toggleAGIDropdown}
                                                 style={{
                                                     color:
-                                                        isHoveredAI || isAGIOpen ? 'var(--magic)' : 'var(--dark-gray)',
+                                                        isHoveredAITitleBar || isAGIOpen
+                                                            ? 'var(--magic)'
+                                                            : 'var(--dark-gray)',
                                                 }}
                                             >
                                                 {aiIcon}
