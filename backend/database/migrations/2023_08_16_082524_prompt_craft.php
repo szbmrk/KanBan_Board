@@ -25,7 +25,10 @@ return new class extends Migration
             ])->nullable(false);
             $table->unsignedBigInteger('response_counter')->nullable(false);
             $table->unsignedBigInteger('created_by')->nullable(false);
-            $table->timestamps();
+            //add to the timestamp + 2 hours
+
+            $table->timestamp('created_at')->useCurrent()->nullable(false);
+            $table->timestamp('updated_at')->useCurrent()->nullable(false);
 
             // Add the onDelete('cascade') option to both foreign key definitions
             $table->foreign('board_id')->references('board_id')->on('boards')->onDelete('cascade');

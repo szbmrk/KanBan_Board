@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Board;
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use App\Traits\AdjustTimestampsForHungaryTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AGIAnswers extends Model
 {
     use HasFactory;
+    use AdjustTimestampsForHungaryTrait;
 
     protected $table = 'agi_answers';
     protected $primaryKey = 'agi_answer_id';
@@ -23,6 +26,7 @@ class AGIAnswers extends Model
         'column_id',
         'user_id',
     ];
+    
 
     public function user()
     {

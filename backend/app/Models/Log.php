@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\AdjustTimestampsForHungaryTrait;
 
 class Log extends Model
 {
+    use AdjustTimestampsForHungaryTrait;
+    
     protected $primaryKey = 'log_id';
     protected $fillable = ['action', 'user_id', 'details', 'task_id', 'board_id', 'team_id', 'created_at'];
     protected $casts = ['details' => 'array'];

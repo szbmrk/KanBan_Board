@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Column extends Model
 {
     use HasFactory;
+    use AdjustTimestampsForHungaryTrait;
 
     protected $primaryKey = 'column_id';
 
@@ -18,6 +20,7 @@ class Column extends Model
         'is_finished',
         'task_limit',
     ];
+
 
     // Relationship with the Board model
     public function board()
