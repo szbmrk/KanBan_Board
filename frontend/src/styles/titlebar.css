@@ -9,7 +9,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 40px;
-    background-color: var(--bg-dark);
+    background-color: var(--notification-type);
 }
 
 .title-name {
