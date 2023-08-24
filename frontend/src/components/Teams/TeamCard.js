@@ -246,31 +246,30 @@ const TeamCard = ({
                                             <p>No roles</p>
                                         )}
                                     </div>
-                                    <div className='team-member-card-body-actions-container'>
-                                        <p>Actions:</p>
-                                        {checkPermissonToManageTeamMembers(data.team_id) && (
-                                            <div className='teamcard-actions'>
-                                                {parseInt(member.user.user_id) !== user_id && (
-                                                    <button
-                                                        className='delete-button'
-                                                        onClick={() =>
-                                                            deleteUserFromTeam(data.team_id, member.user.user_id)
-                                                        }
-                                                    >
-                                                        Remove user
-                                                    </button>
-                                                )}
-                                                {checkPermissonToManageTeam(data.team_id) && (
-                                                    <button
-                                                        className='add-button'
-                                                        onClick={() => handleRolesButton(member.team_members_id)}
-                                                    >
-                                                        Add role
-                                                    </button>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
+                                </div>
+                                <div className='team-member-card-body-actions-container'>
+                                    {checkPermissonToManageTeamMembers(data.team_id) && (
+                                        <div className='teamcard-actions'>
+                                            {parseInt(member.user.user_id) !== user_id && (
+                                                <button
+                                                    className='delete-button'
+                                                    onClick={() =>
+                                                        deleteUserFromTeam(data.team_id, member.user.user_id)
+                                                    }
+                                                >
+                                                    Remove user
+                                                </button>
+                                            )}
+                                            {checkPermissonToManageTeam(data.team_id) && (
+                                                <button
+                                                    className='add-button'
+                                                    onClick={() => handleRolesButton(member.team_members_id)}
+                                                >
+                                                    Add role
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
