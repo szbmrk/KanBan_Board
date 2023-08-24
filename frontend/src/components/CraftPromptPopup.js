@@ -88,7 +88,6 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
   ) => {
     console.log("chosenBehaviour");
     console.log(chosenBehaviour);
-    return;
     try {
       const token = sessionStorage.getItem("token");
       console.log(board_id);
@@ -104,8 +103,8 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
           crafted_prompt_text: `${crafted_prompt_text}`,
           craft_with: `${ai}`,
           action: `${action}`,
-          response_counter: `${counter}`,
           agi_behavior: `${chosenBehaviour ? chosenBehaviour : null}`,
+          response_counter: `${counter}`,
         },
         {
           headers: {
@@ -205,7 +204,8 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
                     titleInputRef.current.value,
                     promptInputRef.current.value,
                     chosenAI.value,
-                    chosenAction.value
+                    chosenAction.value,
+                    taskCounter.value
                   )
                 }
               >
