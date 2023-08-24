@@ -303,7 +303,7 @@ class BardController extends Controller
 
         $code = $request->input('code');
         $promptCodeReview = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''. Do NOT send back any code!";
-        $promptDocumentation = "Use only UTF-8 chars! Act as an senior programmer and generate a documentation for the following code: '''$code'''. Do NOT send back any code!";
+        $promptDocumentation = "Use only UTF-8 chars! Act as an senior programmer and generate a documentation for the following code: '$code'. Do NOT send back any code!";
     
         if ($expectedType === 'Code review') {
             $prompt = $promptCodeReview;
@@ -315,41 +315,42 @@ class BardController extends Controller
             ], 400);
         }
     
-        return BardController::CallPythonAndFormatCodeReviewOrDocResponse($prompt);
+        return BardController::CallPythonAndFormatCodeReviewOrDocResponse($prompt, $expectedType);
     }
     
-    public static function parseCodeReviewOrDocResponse($response)
+    public static function parseCodeReviewResponse($response, $expectedType)
     {
-        preg_match_all('/\{\s*"expectedType":\s*"(.*?)",\s*"review":\s*"(.*?)"\s*\}/s', $response, $matches, PREG_SET_ORDER);
-        $parsedData = [];
+        preg_match('/Code review:(.*)/s', $response, $matches);
 
-        foreach ($matches as $match) {
-            $expectedType = trim($match[1]);
-            $review = trim($match[2]);
-            
-
-            $parsedData[] = [
+        if (isset($matches[1])) {
+            $review = trim($matches[1]);
+            $review = str_replace("\n", '', $review);
+            $review = str_replace("*", '', $review);
+    
+            return [
                 "expectedType" => $expectedType,
-                "review" => $review
-                
+                "review" => $review,
             ];
         }
 
-        return $parsedData;
+        return null;
     }
 
-    public static function CallPythonAndFormatCodeReviewOrDocResponse($prompt)
+    public static function CallPythonAndFormatCodeReviewOrDocResponse($prompt, $expectedType)
     {
-        $pythonScriptPath = env('BARD_PYTHON_SCRIPT_PATH'); // Path to your Python script
+        $pythonScriptPath = env('BARD_PYTHON_SCRIPT_PATH_CODE_REVIEW_AND_DOCUMENTATION'); // Path to your Python script
         $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
         $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
-        $command = "python {$pythonScriptPath} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+        $command = "python {$pythonScriptPath} \"{$prompt}\"";
+
                 
         try {
-            $answer = shell_exec($command);  
-            dd($answer);
-            $parsedData = BardController::parseCodeReviewOrDocResponse($answer);
-            return response()->json($parsedData);
+            $answer = shell_exec($command); 
+            if($expectedType === 'Code review') 
+                $parsedData = BardController::parseCodeReviewResponse($answer, $expectedType);
+            if($expectedType === 'Documentation') 
+                $parsedData = BardController::parseDocResponse($answer);
+            return $parsedData;
         } catch (\Exception $e) {
             \Log::error('Error executing shell command: ' . $e->getMessage());
 
