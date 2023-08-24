@@ -301,9 +301,11 @@ class BardController extends Controller
             return response()->json(['error' => 'You are not a member of the team.'], 404);
         }
 
-        $code = $request->input('code');
+        //get the code from the request body
+
+        $code = $request->input('code');        
         $promptCodeReview = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''. Do NOT send back any code!";
-        $promptDocumentation = "Use only UTF-8 chars! Act as an senior programmer and generate a documentation for the following code: '$code'. Do NOT send back any code!";
+        $promptDocumentation = "Use only UTF-8 chars! In your response use 'Documentation:'! Act as an senior programmer and generate a documentation for the following code: '$code'. Do NOT send back any code!";
     
         if ($expectedType === 'Code review') {
             $prompt = $promptCodeReview;
@@ -336,6 +338,25 @@ class BardController extends Controller
         return null;
     }
 
+    public static function parseDocResponse($response, $expectedType)
+    {
+
+        preg_match('/Documentation:(.*)/s', $response, $matches);
+
+        if (isset($matches[1])) {
+            $review = trim($matches[1]);
+            $review = str_replace("\n", '', $review);
+            $review = str_replace("*", '', $review);
+    
+            return [
+                "expectedType" => $expectedType,
+                "review" => $review,
+            ];
+        }
+
+        return null;
+    }
+
     public static function CallPythonAndFormatCodeReviewOrDocResponse($prompt, $expectedType)
     {
         $pythonScriptPath = env('BARD_PYTHON_SCRIPT_PATH_CODE_REVIEW_AND_DOCUMENTATION'); // Path to your Python script
@@ -349,7 +370,7 @@ class BardController extends Controller
             if($expectedType === 'Code review') 
                 $parsedData = BardController::parseCodeReviewResponse($answer, $expectedType);
             if($expectedType === 'Documentation') 
-                $parsedData = BardController::parseDocResponse($answer);
+                $parsedData = BardController::parseDocResponse($answer, $expectedType);
             return $parsedData;
         } catch (\Exception $e) {
             \Log::error('Error executing shell command: ' . $e->getMessage());
