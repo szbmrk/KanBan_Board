@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\AdjustTimestampsForHungaryTrait;
 
 class TeamMember extends Model
 {
+    use AdjustTimestampsForHungaryTrait;
+    
     protected $primaryKey = 'team_members_id';
 
     protected $fillable = [
