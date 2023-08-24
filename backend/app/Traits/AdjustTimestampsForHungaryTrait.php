@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Support\Carbon;
+use app\Models;
 
 trait AdjustTimestampsForHungaryTrait
 {
