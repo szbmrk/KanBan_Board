@@ -1204,7 +1204,7 @@ const Board = () => {
         <>
             {permission === false ? (
                 error ? (
-                    <Error error={error}></Error>
+                    <Error error={error} redirect={redirect}></Error>
                 ) : (
                     <div className='content'>
                         <Loader />
