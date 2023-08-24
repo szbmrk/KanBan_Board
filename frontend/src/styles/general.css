@@ -19,6 +19,7 @@
   --bg-light: rgba(var(--light-grayRGB), 0.5);
   --bg-mostly-black: #1f1f1f;
   --notification-type: #7a7a7a;
+  --title-bar: rgba(112, 104, 106, 0.3);
   --code: #ff8c00;
   --craft: #5bffc8;
   --light-blue: #00bfff;
