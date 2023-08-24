@@ -152,10 +152,9 @@
   cursor: pointer;
   transition: 0.4s ease;
   align-self: flex-end;
-  grid-row: 1 / span 3;
+  grid-row: 1 / span 12;
   grid-column: 2;
   justify-self: center;
-  align-self: center;
 }
 
 .generate-button:hover {
