@@ -1,59 +1,143 @@
-table {
-    color: black;
-    background-color: var(--bg-dark);
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-    overflow-y: auto;
-    overflow-x: auto;
+/* Reset some default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Set up basic styling */
+body {
+    font-family: var(--basic-font);
+    background-color: var(--bg-mostly-black);
+    color: var(--light-gray);
+}
+
+.content {
+    padding: 20px;
+}
+
+/* Loader */
+.loader {
+    border: 5px solid var(--light-gray);
+    border-top: 5px solid var(--dark-gray);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Permission table */
+.permission-table {
     width: 100%;
     border-collapse: collapse;
-    border: 1px solid #ddd;
-    width: auto;
+    margin-top: 20px;
 }
 
-.permission {
-    font-weight: bold;
-}
-
-th,
-td {
+.permission-table th {
+    background-color: var(--bg-dark);
+    color: var(--light-gray);
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--dark-gray);
+}
+
+.permission-table th,
+.permission-table td {
+    border: 1px solid var(--dark-gray);
+    padding: 10px;
     text-align: center;
-    width: fit-content;
 }
 
-th {
-    background-color: #f2f2f2;
+.permission-table td {
+    background-color: var(--bg-mostly-black);
 }
 
-/* Styling for the checkbox column */
-td input[type="checkbox"] {
-    margin-right: 5px;
+.role-header {
+    background-color: var(--bg-dark);
 }
 
-/* Styling for permission description */
-.description {
-    font-size: 12px;
-    color: #888;
-}
-
-/* Styling for the submit button */
-.submit-btn[type="submit"] {
-    margin-top: 10px;
-    padding: 5px 10px;
-    background-color: #007bff;
-    color: #fff;
+.delete-role {
+    background-color: var(--important);
     border: none;
-    border-radius: 5px;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
     cursor: pointer;
 }
 
-.submit-btn[type="submit"]:hover {
-    background-color: #0056b3;
+/* Role input and button */
+.add-role {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
 }
 
-p {
+.role-input {
+    padding: 8px;
+    border: 1px solid var(--dark-gray);
+    border-radius: 4px;
+    width: 200px;
+}
+
+.add-role-button {
+    background-color: var(--button);
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-role-button:hover {
+    background-color: var(--important-light);
+}
+
+/* Checkbox styling */
+input[type="checkbox"] {
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border: 1px solid var(--dark-gray);
+    border-radius: 3px;
+    background-color: white;
+    cursor: pointer;
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--confirm);
+}
+
+/* Styling for permission names */
+.permission-name {
+    font-weight: bold;
+}
+
+/* Styling for role names */
+.role-permission {
     text-align: center;
 }
+
+.role-permission input[type="checkbox"] {
+    margin: 0 auto;
+    display: block;
+}
+
+.role-header-div {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Add your additional styles here */

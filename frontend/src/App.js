@@ -10,9 +10,10 @@ import Navbar from './components/Navigation/NavBar';
 import AssignedTasks from './components/AssignedTasks/AssignedTasks';
 import Teams from './components/Teams/Teams';
 import Board from './components/Board/Board';
-import Permissiontable from './components/Permissions/Permissiontable';
+import ManageBoardPermissions from './components/Permissions/ManageBoardPermissions';
 import EditProfile from './components/Profile/EditProfile';
 import Notification from './components/Notification';
+import PermissionTable from './components/Permissions/PermissionTable';
 
 
 const App = () => {
@@ -57,7 +58,13 @@ const App = () => {
                         <ProtectedRoute>
                             <Navbar />
                             <Sidebar />
-                            <Permissiontable />
+                            <ManageBoardPermissions />
+                        </ProtectedRoute>} />
+                    <Route exact path="/permissions/:board_id" element={
+                        <ProtectedRoute>
+                            <Navbar />
+                            <Sidebar />
+                            <PermissionTable />
                         </ProtectedRoute>} />
                     <Route exact path="/profile" element={
                         <ProtectedRoute>

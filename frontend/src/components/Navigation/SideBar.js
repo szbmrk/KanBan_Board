@@ -1,5 +1,5 @@
 // Sidebar component that using among the application
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/sidebar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,8 +10,21 @@ const homeIcon = <FontAwesomeIcon icon={faHome} />;
 const tableIcon = <FontAwesomeIcon icon={faTable} />;
 const AssignedTasksIcon = <FontAwesomeIcon icon={faListCheck} />;
 const PeopleGroup = <FontAwesomeIcon icon={faPeopleGroup} />;
+const permissions = JSON.parse(sessionStorage.getItem('permissions'));
 const Sidebar = () => {
     const { isLoggedIn, onLogout } = React.useContext(AuthContext);
+    useEffect(() => {
+        console.log(permissions);
+    }, []);
+
+    function checkIfAdmin() {
+        console.log(permissions.general_role);
+        if (permissions && permissions.general_role.includes('system_admin')) {
+            return true;
+        }
+        return false;
+    }
+
     return (
         <div className='sidebar'>
             <div className='sidebar-menu col-2 col-s-2'>
@@ -36,13 +49,14 @@ const Sidebar = () => {
                             <span>Teams</span>
                         </Link>
                     </li>
-
-                    <li>
-                        <Link to='/permissiontable'>
-                            {tableIcon}
-                            <span>Permission table</span>
-                        </Link>
-                    </li>
+                    {checkIfAdmin() &&
+                        <li>
+                            <Link to='/permissiontable'>
+                                {tableIcon}
+                                <span>Permission table</span>
+                            </Link>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>

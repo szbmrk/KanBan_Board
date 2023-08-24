@@ -82,8 +82,8 @@ export default function RolesManager({ OnClose, team_id, team_member_id, AddRole
                             <div>
                                 <p>Select role:</p>
                                 <select onChange={RoleSelection}>
-                                    <option value="-1" >Select role</option>
-                                    {boardRoles.map((role) => (
+                                    <option value="-1" inactive >Select role</option>
+                                    {boardRoles.length > 0 && boardRoles.map((role) => (
                                         <option value={role.role_id}>{role.name}</option>
                                     ))}
                                 </select>

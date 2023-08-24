@@ -147,6 +147,7 @@ Route::delete('/boards/{boardId}/team-member-roles/{teamMemberRoleId}',[TeamMemb
 Route::get('/boards/{boardId}/role-permissions', [RolePermissionController::class, 'index'])->middleware('api');
 Route::post('/boards/{boardId}/roles/{roleId}/permissions', [RolePermissionController::class, 'store'])->middleware('api');
 Route::delete('/boards/{boardId}/roles/{roleId}/permissions/{permissionId}', [RolePermissionController::class, 'destroy'])->middleware('api');
+Route::get('/all-permissions', [RolePermissionController::class, 'getAllPermissions'])->middleware('api');
 
 Route::get('/priorities', [PriorityController::class, 'index'])->middleware('api');
 Route::get('/AGI/GenerateTask', [AGIController::class, 'GenerateTask'])->middleware('api');
