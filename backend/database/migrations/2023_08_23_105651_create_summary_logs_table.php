@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('summary_logs', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->text('summary');
-            $table->json('logs');
             $table->integer('tasks_created_count');
             $table->integer('tasks_finished_count');
             $table->timestamps();

@@ -348,21 +348,21 @@ class ChatGPTController extends Controller
     {
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-        
-        $logs = DB::table('logs')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->get();
+        $boardId = $request->input('board_id'); 
+    
+        $logsQuery = DB::table('logs')->select('action', 'details', 'created_at')->whereBetween('created_at', [$startDate, $endDate]);
+        if ($boardId) {
+            $logsQuery->where('board_id', $boardId);
+        }
+        $logs = $logsQuery->get();
     
         $logEntries = [];
         $tasksCreatedCount = 0;
         $tasksFinishedCount = 0;
     
         foreach ($logs as $log) {
-            $details = json_decode($log->details);
-            $logEntry = [
-                'action' => $log->action,
-                'details' => $details,
-            ];
+            $detailText = $log->details;
+            $logEntry = "On {$log->created_at}, {$log->action}, {$detailText}";
             $logEntries[] = $logEntry;
     
             if ($log->action == 'CREATED TASK') {
@@ -373,78 +373,31 @@ class ChatGPTController extends Controller
             }
         }
     
-        $introText = "Based on the following log entries from a Kanban board, provide a detailed daily summary that can be used for weekly statistical analysis:";
-        $encodedLogEntries = json_encode($introText . json_encode($logEntries));
+        $formattedLogs = implode("; ", $logEntries);
+        $prompt = "Based on the following log entries in a Kanban table: {$formattedLogs}, create a performance review by day and point out the most and least productive days.";
     
-        $pythonScriptPath = env('PERFORMANCE_PYTHON_SCRIPT_PATH');
-        $apiKey = env('OPENAI_API_KEY');
-        $command = "python {$pythonScriptPath} " . escapeshellarg($encodedLogEntries) . " " . escapeshellarg($apiKey);
-        $response = shell_exec($command);
-    
-        DB::table('summary_logs')->insert([
-            'date' => $endDate, 
-            'summary' => $response,
-            'logs' => json_encode($logEntries),
-            'tasks_created_count' => $tasksCreatedCount,
-            'tasks_finished_count' => $tasksFinishedCount
-        ]);
-    
-        return response()->json(['response' => $response]);
-    }
-
-    public function generateFiveDaySummary()
-    {
-        // A legutolsó bejegyzés dátumának lekérdezése
-        $lastEntry = SummaryLog::orderBy('date', 'desc')->first();
-        if (!$lastEntry) {
-            return response()->json(['error' => 'No summaries found']);
-        }
-    
-        $endDate = Carbon::parse($lastEntry->date);
-        $daysCounted = 0;
-        $startDate = $endDate->copy();
-        while ($daysCounted < 4) {
-            $startDate = $startDate->subDay();
-            if (!$startDate->isWeekend()) {
-                $daysCounted++;
-            }
-        }
-    
-        // Lekérdezés az adatbázisból az adott idő intervallumban lévő összefoglalókra
-        $summaries = SummaryLog::whereBetween('date', [$startDate, $endDate])->get();
-    
-        // Számlálók
-        $totalTasksCreated = 0;
-        $totalTasksFinished = 0;
-        $dates = [];
-        $tasksCreated = [];
-        $tasksFinished = [];
-    
-        foreach ($summaries as $summary) {
-            $totalTasksCreated += $summary->tasks_created_count;
-            $totalTasksFinished += $summary->tasks_finished_count;
-            
-            $dates[] = $summary->date;
-            $tasksCreated[] = $summary->tasks_created_count;
-            $tasksFinished[] = $summary->tasks_finished_count;
-        }
-    
-        $prompt = "In 5 days: Created: {$totalTasksCreated}. Finished: {$totalTasksFinished}. ";
-        for ($i = 0; $i < 5; $i++) {
-            $prompt .= "{$dates[$i]} - C: {$tasksCreated[$i]}, F: {$tasksFinished[$i]}. ";
-        }
-
-        // Python script futtatása
         $pythonScriptPath = env('PERFORMANCE_PYTHON_SCRIPT_PATH');
         $apiKey = env('OPENAI_API_KEY');
         $command = "python {$pythonScriptPath} " . escapeshellarg($prompt) . " " . escapeshellarg($apiKey);
         $response = shell_exec($command);
-    
-        // Válasz visszaadása
+        $responseSummary = "\n\nSummary for the week: Total tasks created: {$tasksCreatedCount}. Total tasks finished: {$tasksFinishedCount}.";
+        $response .= $responseSummary;
+        
+
+        DB::table('summary_logs')->insert([
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'summary' => $response,
+            'tasks_created_count' => $tasksCreatedCount,
+            'tasks_finished_count' => $tasksFinishedCount,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
         return response()->json([
             'prompt' => $prompt,
             'response' => $response
-        ]);        
-    }
-    
+        ]);
+    }     
+   
 }
