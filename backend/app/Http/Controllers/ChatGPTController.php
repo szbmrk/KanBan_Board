@@ -15,6 +15,11 @@ use App\Http\Controllers\LlamaController;
 use App\Models\Board;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use App\Models\SummaryLog;
+use Illuminate\Support\Facades\Log;
+
+
 
 
 class ChatGPTController extends Controller
@@ -365,6 +370,7 @@ class ChatGPTController extends Controller
         $promptCodeReview = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''.";
         $promptDocumentation = "Use only UTF-8 chars! Act as an senior programmer and generate a documentation for the following code: '''$code'''.";
     
+
         if ($expectedType === 'Code review') {
             $prompt = $promptCodeReview;
         } elseif ($expectedType === 'Documentation') {
@@ -392,5 +398,60 @@ class ChatGPTController extends Controller
             
             ]);    
     }
+
+    public function generatePerformanceSummary(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $boardId = $request->input('board_id'); 
+    
+        $logsQuery = DB::table('logs')->select('action', 'details', 'created_at')->whereBetween('created_at', [$startDate, $endDate]);
+        if ($boardId) {
+            $logsQuery->where('board_id', $boardId);
+        }
+        $logs = $logsQuery->get();
+    
+        $logEntries = [];
+        $tasksCreatedCount = 0;
+        $tasksFinishedCount = 0;
+    
+        foreach ($logs as $log) {
+            $detailText = $log->details;
+            $logEntry = "On {$log->created_at}, {$log->action}, {$detailText}";
+            $logEntries[] = $logEntry;
+    
+            if ($log->action == 'CREATED TASK') {
+                $tasksCreatedCount++;
+            }
+            if ($log->action == 'FINISHED TASK') {
+                $tasksFinishedCount++;
+            }
+        }
+    
+        $formattedLogs = implode("; ", $logEntries);
+        $prompt = "Based on the following log entries in a Kanban table: {$formattedLogs}, create a performance review by day and point out the most and least productive days.";
+    
+        $pythonScriptPath = env('PERFORMANCE_PYTHON_SCRIPT_PATH');
+        $apiKey = env('OPENAI_API_KEY');
+        $command = "python {$pythonScriptPath} " . escapeshellarg($prompt) . " " . escapeshellarg($apiKey);
+        $response = shell_exec($command);
+        $responseSummary = "\n\nSummary for the week: Total tasks created: {$tasksCreatedCount}. Total tasks finished: {$tasksFinishedCount}.";
+        $response .= $responseSummary;
+        
+        DB::table('summary_logs')->insert([
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'summary' => $response,
+            'tasks_created_count' => $tasksCreatedCount,
+            'tasks_finished_count' => $tasksFinishedCount,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        return response()->json([
+            'prompt' => $prompt,
+            'response' => $response
+        ]);
+    }     
     
 }

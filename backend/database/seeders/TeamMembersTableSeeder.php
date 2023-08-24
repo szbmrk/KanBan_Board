@@ -76,7 +76,16 @@ class TeamMembersTableSeeder extends Seeder
                 'user_id' => 9, 
                 'created_at' => now(),
             ],
-            
+            [
+                'team_id' => null,
+                'user_id' => 10, 
+                'created_at' => now(),
+            ],
+            [
+                'team_id' => 5,
+                'user_id' => 10, 
+                'created_at' => now(),
+            ],            
 
         ];
 

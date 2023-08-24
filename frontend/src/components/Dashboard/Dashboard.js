@@ -235,7 +235,7 @@ export default function Dashboard() {
 
     return (
         <div className='content'>
-            {teams.length === 0 || teamPermissions.length === 0 ? (
+            {teams.length === 0 ? (
                 error ? (
                     <Error error={error} redirect={redirect}></Error>
                 ) : (

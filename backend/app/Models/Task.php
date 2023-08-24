@@ -22,6 +22,7 @@ class Task extends Model
         'project_id',
         'priority_id',
         'parent_task_id',
+        'completed',
         'position',
     ];
 

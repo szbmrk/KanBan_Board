@@ -73,6 +73,7 @@ export default function Permissiontable() {
             const newRole = response.data.role;
             newRole.permissions = [];
             setRoles([...roles, newRole]);
+            setNewRoleName('');
         } catch (error) {
             console.log(error.response);
         }
