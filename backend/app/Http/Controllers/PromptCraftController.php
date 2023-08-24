@@ -6,6 +6,7 @@ use App\Models\Board;
 use App\Models\AgiBehavior;
 use Illuminate\Http\Request;
 use App\Models\CraftedPrompt;
+use Illuminate\Support\Carbon;
 use App\Http\Controllers\AGIController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\ChatGPTController;
@@ -70,6 +71,7 @@ class PromptCraftController extends Controller
         $craftedPrompt->agi_behavior_id = PromptCraftController::CheckAndGenerateAlreadyExistingBehavior($request,
                                                                             $request->input('agi_behavior'),
                                                                             $boardId);
+                                                                            
 
         $craftedPrompt->crafted_prompt_title = $request->input('crafted_prompt_title');
         $craftedPrompt->crafted_prompt_text = $request->input('crafted_prompt_text');

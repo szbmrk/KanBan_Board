@@ -276,7 +276,7 @@ class AGIAnswersController extends Controller
         if ($answers->isEmpty()) {
             return response()->json(['error' => 'No answers found.'], 404);
         }
-        return response()->json(['answers' => $answers], 200);
+        return response()->json($answers, 200);
     }
 
     public function storeCodeReviewOrDocumentation(Request $request, $boardId)
