@@ -2,23 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\AdjustTimestampsForHungaryTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Tag extends Model
 {
     use HasFactory;
+    use AdjustTimestampsForHungaryTrait;
+
     protected $primaryKey = 'tag_id';
     protected $fillable = ['name', 'color', 'board_id', 'created_by'];
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::deleting(function ($tag) {
-            $tag->tasks()->detach();
-        });
-    }
 
     public function tasks()
     {

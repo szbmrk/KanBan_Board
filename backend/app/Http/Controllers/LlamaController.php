@@ -141,6 +141,7 @@ class LlamaController extends Controller
         
         return LlamaController::parseSubtaskResponse($response);
     }
+    /*
     public static function GenerateTaskDocumentationPerTask($boardId,$taskId)
     {
         $user = auth()->user();
@@ -162,7 +163,7 @@ class LlamaController extends Controller
         }
         
         $prompt = "Generate documentation or a longer description for the task with the following title: {$task->title}, description: {$task->description}.";
-        $path = env('PYTHON_SCRIPT_PATH');
+        $path = env('LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         $cleanData = trim($response);
 
@@ -193,7 +194,7 @@ class LlamaController extends Controller
         }
 
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
-        $path = env('PYTHON_SCRIPT_PATH');
+        $path = env('LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         $cleanData = trim($response);
 
@@ -201,6 +202,7 @@ class LlamaController extends Controller
             'response' => $cleanData
         ];
     }
+    
 
     public static function GenerateTaskDocumentationPerColumn($boardId, $columnId)
     {
@@ -229,18 +231,22 @@ class LlamaController extends Controller
         }
 
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
-        $path = env('PYTHON_SCRIPT_PATH');
+        $path = env('LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         $cleanData = trim($response);
 
         return [
             'response' => $cleanData
         ];
-    }    public static function GenerateCodeReviewOrDocumentation(Request $request, $boardId, $expectedType) 
+    }    
+    */
+    
+
+
+    public static function GenerateCodeReviewOrDocumentation(Request $request, $boardId, $expectedType) 
     {
         $user = auth()->user();
-        if(!$user)
-        {
+        if (!$user) {
             return response()->json([
                 'error' => 'Unauthorized!',
             ]);
@@ -260,7 +266,7 @@ class LlamaController extends Controller
         $code = $request->input('code');
         $promptCodeReview = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''.";
         $promptDocumentation = "Use only UTF-8 chars! Act as an senior programmer and generate a documentation for the following code: '''$code'''.";
-    
+        
         if ($expectedType === 'Code review') {
             $prompt = $promptCodeReview;
         } elseif ($expectedType === 'Documentation') {
@@ -270,21 +276,47 @@ class LlamaController extends Controller
                 'error' => 'Invalid expected type.',
             ], 400);
         }
-    
-        return LlamaController::CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType);
+        
+        $response = Self::CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType);
+        
+        return response()->json([
+            'reviewType' => $expectedType,
+            'review' => $response['review'],
+        ]);
     }
-    
-    public static function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType) {
 
+    public static function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType) 
+    {
         $path = env('LLAMA_PYTHON_SCRIPT_PATH');
-        $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
+        $response = self::GenerateApiResponse($prompt, $path);
         $foundKeyPhrase = strtolower($expectedType) . ':';
         $review = substr($response, stripos($response, $foundKeyPhrase) + strlen($foundKeyPhrase));
         $review = trim($review);
-        return response()->json([
         
+        return [
             'reviewType' => $expectedType,
             'review' => $review,
-            
-            ]);    
-    }}
+        ];
+    }
+    public static function GenerateApiResponse($prompt, $path)
+    {
+        try
+        {
+            $command = "python $path '$prompt'";
+            $response = shell_exec($command);
+            return $response;
+        }
+        catch(\Exception $e)
+        {
+            return response()->json(['error' => $e->getMessage()]);
+        }
+        
+    }
+
+
+    
+
+
+
+
+}

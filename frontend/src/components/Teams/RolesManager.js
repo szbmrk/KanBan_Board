@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import axios from '../../api/axios';
 import '../../styles/rolesmanager.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
+const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
 export default function RolesManager({ OnClose, team_id, team_member_id, AddRoleToUser }) {
     const token = sessionStorage.getItem('token');
@@ -27,7 +30,6 @@ export default function RolesManager({ OnClose, team_id, team_member_id, AddRole
                     setBoardsForTeam(response.data.teams[i].boards);
                     break;
                 }
-
             }
         } catch (e) {
             console.error(e);
@@ -39,7 +41,7 @@ export default function RolesManager({ OnClose, team_id, team_member_id, AddRole
             const response = await axios.get(`/boards/${board_id}/available-team-member-roles/${team_member_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                }
+                },
             });
             setBoardRoles(response.data.roles);
             console.log(response.data);
@@ -64,15 +66,17 @@ export default function RolesManager({ OnClose, team_id, team_member_id, AddRole
     }
 
     return (
-        <div className="overlay">
-            <div className='popup'>
-                <div className="popup-content">
-                    <button className="close-btn" onClick={OnClose}>
-                        Close
-                    </button>
+        <div className='overlay'>
+            <div className='popup popup-mini'>
+                <span className='close-btn' onClick={OnClose}>
+                    {closeIcon}
+                </span>
+                <div className='selector-container'>
                     <p>Select board:</p>
                     <select onChange={handleChange}>
-                        <option value="-1" inactive >Select board</option>
+                        <option value='-1' inactive>
+                            Select board
+                        </option>
                         {boardsForTeam.map((board) => (
                             <option value={board.board_id}>{board.name}</option>
                         ))}
@@ -94,5 +98,5 @@ export default function RolesManager({ OnClose, team_id, team_member_id, AddRole
                 </div>
             </div>
         </div>
-    )
+    );
 }

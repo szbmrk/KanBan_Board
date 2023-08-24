@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\AdjustTimestampsForHungaryTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class UserTask extends Model
 {
+    use AdjustTimestampsForHungaryTrait;
 
     protected $fillable = ['user_id', 'task_id'];
     protected $table = 'user_tasks';

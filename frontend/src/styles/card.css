@@ -167,7 +167,6 @@
     align-items: flex-end;
     overflow: visible;
     gap: 6px;
-    z-index: 1;
 }
 
 .tags-container {

@@ -2,16 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\AdjustTimestampsForHungaryTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Feedback extends Model
 {
     use HasFactory;
+    use AdjustTimestampsForHungaryTrait;
 
     protected $table = 'feedbacks';
 
     protected $primaryKey = 'feedback_id';
+
 
     public function task()
     {

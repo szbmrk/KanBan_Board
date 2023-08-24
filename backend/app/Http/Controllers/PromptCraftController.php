@@ -6,6 +6,7 @@ use App\Models\Board;
 use App\Models\AgiBehavior;
 use Illuminate\Http\Request;
 use App\Models\CraftedPrompt;
+use Illuminate\Support\Carbon;
 use App\Http\Controllers\AGIController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\ChatGPTController;
@@ -58,6 +59,7 @@ class PromptCraftController extends Controller
             'crafted_prompt_text' => 'required|string',
             'craft_with' => 'required|in:CHATGPT,LLAMA,BARD', 
             'action' => 'required|in:GENERATETASK,GENERATESUBTASK,GENERATEATTACHMENTLINK', 
+            'response_counter' => 'required|integer',
             ]);
         }
         catch (ValidationException) 
@@ -66,30 +68,17 @@ class PromptCraftController extends Controller
         }
 
         $craftedPrompt = new CraftedPrompt();
-        if($request->input('agi_behavior') != null) 
-        {
-            //find agi behaviorid by the act_as_a value
-            $agiBehavior = AgiBehavior::where('act_as_a', $request->input('agi_behavior'))->first();
- 
+        $craftedPrompt->agi_behavior_id = PromptCraftController::CheckAndGenerateAlreadyExistingBehavior($request,
+                                                                            $request->input('agi_behavior'),
+                                                                            $boardId);
+                                                                            
 
-            if (!$agiBehavior) {
-                $agiBehavior = new AgiBehavior();
-                $agiBehavior->act_as_a = $request->input('agi_behavior');
-                $agiBehavior->save();
-                $craftedPrompt->agi_behavior_id = $agiBehavior->agi_behavior_id;
-            } 
-        }
-        else 
-        {
-            $craftedPrompt->agi_behavior_id = null;
-        }
-
-        
         $craftedPrompt->crafted_prompt_title = $request->input('crafted_prompt_title');
         $craftedPrompt->crafted_prompt_text = $request->input('crafted_prompt_text');
         $craftedPrompt->craft_with = $request->input('craft_with');
         $craftedPrompt->action = $request->input('action');
         $craftedPrompt->board_id = $boardId;
+        $craftedPrompt->response_counter = $request->input('response_counter');
         $craftedPrompt->created_by = $user->user_id;
         $craftedPrompt->save();
 
@@ -118,6 +107,7 @@ class PromptCraftController extends Controller
             'crafted_prompt_text' => 'string',
             'craft_with' => 'in:CHATGPT,LLAMA,BARD',
             'action' => 'in:GENERATETASK,GENERATESUBTASK,GENERATEATTACHMENTLINK',
+            'response_counter' => 'integer',
 
         ]);
 
@@ -138,6 +128,10 @@ class PromptCraftController extends Controller
                 if ($validator->errors()->has('action')) {
                     $errorMessages[] = $validator->errors()->first('action');
                 }
+
+                if ($validator->errors()->has('response_counter')) {
+                    $errorMessages[] = $validator->errors()->first('response_counter');
+                }
             }
             
             return response()->json(['error' => implode(', ', $errorMessages)], 422);
@@ -147,6 +141,11 @@ class PromptCraftController extends Controller
 
         if (!$prompt) {
             return response()->json(['error' => 'Prompt not found.'], 404);
+        }
+
+        if($prompt->board_id != $boardId) 
+        {
+            return response()->json(['error' => 'Prompt not found on this board.'], 404);
         }
 
         if ($request->has('crafted_prompt_text')) {
@@ -159,25 +158,17 @@ class PromptCraftController extends Controller
 
         if ($request->has('action')) {
             $prompt->action = $request->input('action');
-        }
+        } 
 
-        if($request->input('agi_behavior') != null) 
-        {
-            
+        if ($request->has('response_counter')) {
+            $prompt->response_counter = $request->input('response_counter');
+        } 
+
         
-            //find agi behaviorid by the act_as_a value
-            $agiBehavior = AgiBehavior::where('act_as_a', $request->input('agi_behavior'))->first();
+        $prompt->agi_behavior_id = PromptCraftController::CheckAndGenerateAlreadyExistingBehavior($request,
+                                                                            $request->input('agi_behavior'),
+                                                                            $boardId);
         
- 
-
-            if (!$agiBehavior) {
-                $agiBehavior = new AgiBehavior();
-                $agiBehavior->act_as_a = $request->input('agi_behavior');
-                $agiBehavior->save();
-                $prompt->agi_behavior_id = $agiBehavior->agi_behavior_id;
-            }
-        }
-
         
         $prompt->save();
 
@@ -232,10 +223,11 @@ class PromptCraftController extends Controller
         }
 
         $craftedPrompt = CraftedPrompt::where('crafted_prompt_id', $craftedPromptId)->get()->first();
-        
-/*         if ($craftedPrompts->isEmpty()) {
-            return response()->json(['error' => 'No crafted prompts found for this board.'], 404);
-        } */
+
+        if($craftedPrompt->crafted_prompt_id != $boardId) 
+        {
+            return response()->json(['error' => 'Prompt not found on this board.'], 404);
+        }
 
         $request->headers->set('ChosenAI', $craftedPrompt->craft_with);
         $request->headers->set('TaskPrompt', $craftedPrompt->crafted_prompt_text);
@@ -255,6 +247,43 @@ class PromptCraftController extends Controller
         }
 
         return $response;
+    }
+
+
+    public static function CheckAndGenerateAlreadyExistingBehavior($request, $agiBehavior, $boardId) 
+    {
+        if($agiBehavior != null)
+        {
+            $agiBehaviors = AgiBehavior::where('act_as_a', $request->input('agi_behavior'))->get();
+            $exists = false;
+        
+            foreach($agiBehaviors as $behavior) 
+            {
+                if($behavior->board_id == $boardId) 
+                {
+                    $agi_behavior_id = $behavior->agi_behavior_id;
+                    $exists = true;
+                    break;
+                }
+            }
+    
+            if(!$exists) 
+            {
+                $agiBehavior = new AgiBehavior();
+                $agiBehavior->act_as_a = $request->input('agi_behavior');
+                $agiBehavior->board_id = $boardId;
+                $agiBehavior->save();
+                $agi_behavior_id = $agiBehavior->agi_behavior_id;
+            }
+        
+        }  
+        else 
+        {
+            $agi_behavior_id = null;
+        }
+
+        return $agi_behavior_id;
+
     }
 }
 
