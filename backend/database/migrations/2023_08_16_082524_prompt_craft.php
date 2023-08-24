@@ -23,6 +23,7 @@ return new class extends Migration
             $table->enum('action', [
                 'GENERATETASK', 'GENERATESUBTASK', 'GENERATEATTACHMENTLINK'
             ])->nullable(false);
+            $table->unsignedBigInteger('response_counter')->nullable(false);
             $table->unsignedBigInteger('created_by')->nullable(false);
             $table->timestamps();
 
