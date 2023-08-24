@@ -18,6 +18,7 @@ class CraftedPrompt extends Model
         'crafted_prompt_text',
         'craft_with',
         'action',
+        'response_counter',
         'created_by',
     ];
 

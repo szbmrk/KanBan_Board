@@ -58,6 +58,7 @@ class PromptCraftController extends Controller
             'crafted_prompt_text' => 'required|string',
             'craft_with' => 'required|in:CHATGPT,LLAMA,BARD', 
             'action' => 'required|in:GENERATETASK,GENERATESUBTASK,GENERATEATTACHMENTLINK', 
+            'response_counter' => 'required|integer',
             ]);
         }
         catch (ValidationException) 
@@ -75,6 +76,7 @@ class PromptCraftController extends Controller
         $craftedPrompt->craft_with = $request->input('craft_with');
         $craftedPrompt->action = $request->input('action');
         $craftedPrompt->board_id = $boardId;
+        $craftedPrompt->response_counter = $request->input('response_counter');
         $craftedPrompt->created_by = $user->user_id;
         $craftedPrompt->save();
 
@@ -103,6 +105,7 @@ class PromptCraftController extends Controller
             'crafted_prompt_text' => 'string',
             'craft_with' => 'in:CHATGPT,LLAMA,BARD',
             'action' => 'in:GENERATETASK,GENERATESUBTASK,GENERATEATTACHMENTLINK',
+            'response_counter' => 'integer',
 
         ]);
 
@@ -122,6 +125,10 @@ class PromptCraftController extends Controller
                 
                 if ($validator->errors()->has('action')) {
                     $errorMessages[] = $validator->errors()->first('action');
+                }
+
+                if ($validator->errors()->has('response_counter')) {
+                    $errorMessages[] = $validator->errors()->first('response_counter');
                 }
             }
             
@@ -150,6 +157,11 @@ class PromptCraftController extends Controller
         if ($request->has('action')) {
             $prompt->action = $request->input('action');
         } 
+
+        if ($request->has('response_counter')) {
+            $prompt->response_counter = $request->input('response_counter');
+        } 
+
         
         $prompt->agi_behavior_id = PromptCraftController::CheckAndGenerateAlreadyExistingBehavior($request,
                                                                             $request->input('agi_behavior'),
