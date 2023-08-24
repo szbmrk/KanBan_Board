@@ -241,7 +241,7 @@
 
 .add-button {
   max-width: 50%;
-  padding: 10px 0;
+  padding: 10px;
   border: 1px solid var(--confirm);
   border-radius: 5px;
   background-color: transparent;
@@ -257,32 +257,6 @@
   color: var(--light-gray);
 }
 
-/* Team Manager Section Styles */
-.team-manager {
-  border-top: 1px solid #ccc;
-  padding-top: 20px;
-  margin-top: 20px;
-}
-
-
-/* Table Styles */
-.team-members table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.team-members th,
-.team-members td {
-  padding: 10px;
-  text-align: center;
-  border-bottom: 1px solid var(--dark-gray);
-}
-
-/* Table Header Styles */
-.team-members th {
-  background-color: var(--dark-gray);
-  color: var(--light-gray);
-}
 
 /* Username Styles */
 .team-members h3 {
@@ -302,14 +276,31 @@
   background-color: #5ab078;
 }
 
-/* Actions Section Styles */
+.user-select {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
 
-/* Spacing Between Rows */
-.team-members tr:not(:last-child) {
-  margin-bottom: 10px;
+}
+
+.user-select div {
+  width: 25%;
+  border: 1px solid var(--light-gray);
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: box-shadow 0.1s ease;
+  transition: transform 0.005s ease;
 }
 
 .selected {
-  background-color: #6a97ea;
-  color: white;
+  border: 1px solid var(--light-blue) !important;
+  color: var(--light-blue);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.1) !important;
+  transform: translate(0, 1px);
 }

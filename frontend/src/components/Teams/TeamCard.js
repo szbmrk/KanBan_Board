@@ -341,7 +341,7 @@ const TeamCard = ({
                                         >
                                             {trashIcon}
                                         </span>
-                                        <p>Delete</p>
+                                        <p>Delete Team</p>
                                     </>
                                 )}
                             </div>
