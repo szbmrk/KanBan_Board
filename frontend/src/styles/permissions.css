@@ -105,7 +105,7 @@ body {
 }
 
 /* Checkbox styling */
-input[type="checkbox"] {
+.permission-checkbox [type="checkbox"] {
     appearance: none;
     width: 15px;
     height: 15px;
@@ -115,7 +115,7 @@ input[type="checkbox"] {
     cursor: pointer;
 }
 
-input[type="checkbox"]:checked {
+.permission-checkbox [type="checkbox"]:checked {
     background-color: var(--confirm);
 }
 

@@ -249,11 +249,11 @@ const Teams = () => {
 
     return (
         <div className='content'>
-            {teams.length === undefined ? (
+            {teams.length === 0 ? (
                 error ? (
                     <Error error={error} redirect={redirect} />
                 ) : (
-                    <Loader />
+                    <Loader data_to_load={teams} text_if_cant_load={"No teams yet!"} />
                 )
             ) : (
                 <div className='teams-container'>

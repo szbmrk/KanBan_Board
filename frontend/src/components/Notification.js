@@ -116,7 +116,7 @@ export default function Notification() {
                 error ? (
                     <Error error={error} redirect={redirect} />
                 ) : (
-                    <Loader />
+                    <Loader data_to_load={notifications} text_if_cant_load={"No notifications yet!"} />
                 )
             ) : (
                 <>

@@ -134,9 +134,9 @@ export default function Permissiontable() {
                                         {roles.map((role) => (
                                             <td key={role.role_id} className='role-permission'>
                                                 {checkIfPermissionIsSet(role.role_id, permission.id) ? (
-                                                    <input type="checkbox" id={role.role_id} value={permission.id} name={permission.name} checked />
+                                                    <input className='permission-checkbox' type="checkbox" id={role.role_id} value={permission.id} name={permission.name} checked />
                                                 ) : (
-                                                    <input type="checkbox" id={permission.id} value={permission.id} name={permission.name} />
+                                                    <input className='permission-checkbox' type="checkbox" id={permission.id} value={permission.id} name={permission.name} />
                                                 )}
                                             </td>
                                         ))}

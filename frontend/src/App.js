@@ -13,7 +13,7 @@ import Board from './components/Board/Board';
 import ManageBoardPermissions from './components/Permissions/ManageBoardPermissions';
 import EditProfile from './components/Profile/EditProfile';
 import Notification from './components/Notification';
-import PermissionTable from './components/Permissions/PermissionTable';
+import Permissiontable from './components/Permissions/Permissiontable';
 
 
 const App = () => {
@@ -64,7 +64,7 @@ const App = () => {
                         <ProtectedRoute>
                             <Navbar />
                             <Sidebar />
-                            <PermissionTable />
+                            <Permissiontable />
                         </ProtectedRoute>} />
                     <Route exact path="/profile" element={
                         <ProtectedRoute>

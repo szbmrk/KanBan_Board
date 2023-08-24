@@ -8,7 +8,7 @@ import Error from '../Error';
 
 export default function ManageBoardPermissions() {
     const [userID, setUserID] = useState(null);
-    const [teams, setTeams] = useState([]);
+    const [teams, setTeams] = useState(null);
     const [ownPermissions, setOwnPermissions] = useState([]);
     const [teamPermissions, setTeamPermissions] = useState([]);
     const [error, setError] = useState(false);
@@ -74,11 +74,11 @@ export default function ManageBoardPermissions() {
 
     return (
         <div className='content'>
-            {teams.length === 0 ? (
+            {teams === null ? (
                 error ? (
                     <Error error={error} redirect={redirect}></Error>
                 ) : (
-                    <Loader />
+                    <Loader data_to_load={teams} text_if_cant_load={"No boards found to manage!"} />
                 )
             ) : (
                 <>

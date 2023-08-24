@@ -17,13 +17,6 @@ const Sidebar = () => {
         console.log(permissions);
     }, []);
 
-    function checkIfAdmin() {
-        console.log(permissions.general_role);
-        if (permissions && permissions.general_role.includes('system_admin')) {
-            return true;
-        }
-        return false;
-    }
 
     return (
         <div className='sidebar'>
@@ -49,14 +42,14 @@ const Sidebar = () => {
                             <span>Teams</span>
                         </Link>
                     </li>
-                    {checkIfAdmin() &&
-                        <li>
-                            <Link to='/permissiontable'>
-                                {tableIcon}
-                                <span>Permission table</span>
-                            </Link>
-                        </li>
-                    }
+
+                    <li>
+                        <Link to='/permissiontable'>
+                            {tableIcon}
+                            <span>Permission table</span>
+                        </Link>
+                    </li>
+
                 </ul>
             </div>
         </div>

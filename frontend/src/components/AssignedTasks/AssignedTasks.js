@@ -54,7 +54,7 @@ const AssignedTasks = () => {
                 error ? (
                     <Error error={error} redirect={redirect} />
                 ) : (
-                    <Loader />
+                    <Loader data_to_load={tasks} text_if_cant_load={"No assigned task yet!"} />
                 )
             ) : (
                 <div className='scrollable-container'>
