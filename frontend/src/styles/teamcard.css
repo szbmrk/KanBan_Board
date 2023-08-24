@@ -80,6 +80,7 @@
   align-items: center;
   gap: 5px;
   padding: 20px;
+  color: var(--light-gray);
 }
 
 .team-member-image-container {
@@ -257,25 +258,6 @@
   color: var(--light-gray);
 }
 
-
-/* Username Styles */
-.team-members h3 {
-  margin: 0;
-  font-size: 16px;
-  text-align: center;
-}
-
-/* Role Styles */
-.team-members p {
-  margin: 0;
-  color: var(--light-gray);
-}
-
-/* Add Role Button Styles */
-.team-members .manageButton {
-  background-color: #5ab078;
-}
-
 .user-select {
   width: 100%;
   display: flex;
@@ -303,4 +285,15 @@
   color: var(--light-blue);
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.1) !important;
   transform: translate(0, 1px);
+}
+
+.selector-container {
+  width: 80%;
+}
+
+.selector-container select {
+  background-color: var(--dark-gray);
+  color: var(--light-gray);
+  border: 1px solid var(--light-gray);
+  outline: none;
 }
