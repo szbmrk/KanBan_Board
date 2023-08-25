@@ -60,6 +60,11 @@ class PermissionsTableSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now()
             ],
+            [
+                'name' => 'task_management',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
         ];
 
             DB::table('permissions')->insert($permissions);
