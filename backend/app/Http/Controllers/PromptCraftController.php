@@ -11,6 +11,7 @@ use App\Http\Controllers\AGIController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\ChatGPTController;
 use Illuminate\Validation\ValidationException;
+use App\Http\Controllers\PromptCraftController;
 
 class PromptCraftController extends Controller
 {
@@ -224,15 +225,21 @@ class PromptCraftController extends Controller
 
         $craftedPrompt = CraftedPrompt::where('crafted_prompt_id', $craftedPromptId)->get()->first();
 
-        if($craftedPrompt->crafted_prompt_id != $boardId) 
+        if($craftedPrompt == null) 
+        {
+            return response()->json(['error' => 'Prompt not found.'], 404);
+        }
+
+        if($craftedPrompt->board_id != $boardId) 
         {
             return response()->json(['error' => 'Prompt not found on this board.'], 404);
         }
 
         $request->headers->set('ChosenAI', $craftedPrompt->craft_with);
         $request->headers->set('TaskPrompt', $craftedPrompt->crafted_prompt_text);
-        $request->headers->set('TaskCounter', "2");
+        $request->headers->set('TaskCounter', $craftedPrompt->response_counter);
         //$request->headers->set('PrecraftedPrompt', $craftedPrompt->crafted_prompt_text);
+
 
         switch ($craftedPrompt->action) {
             case "GENERATESUBTASK":
@@ -242,7 +249,7 @@ class PromptCraftController extends Controller
                 $response = AGIController::GenerateAttachmentLink($request);
                 break;
             default:
-                $response = AGIController::GenerateTask($request);
+                $response = ChatGPTController::GenerateCraftedTaskChatGPT($request, $craftedPrompt);
                 break;
         }
 

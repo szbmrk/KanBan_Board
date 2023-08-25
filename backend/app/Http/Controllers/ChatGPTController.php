@@ -4,22 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Tag;
 use App\Models\Task;
+use App\Models\Board;
 use App\Models\Column;
 use App\Models\TaskTag;
 use App\Models\Priority;
+use App\Models\AGIAnswers;
+use App\Models\SummaryLog;
+use App\Models\AgiBehavior;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Helpers\ExecutePythonScript;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\LlamaController;
-use App\Models\Board;
-use Illuminate\Support\Str;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
-use App\Models\SummaryLog;
-use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\ChatGPTController;
 use Illuminate\Validation\ValidationException;
-use App\Models\AGIAnswers;
 
 
 
@@ -31,7 +33,7 @@ class ChatGPTController extends Controller
         $taskPrompt = $request->header('TaskPrompt'); // Correct the header key spelling
         $taskCounter = $request->header('TaskCounter');
         $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
-    
+
         // Construct the prompt for the current iteration
         $prompt = "Generate $taskCounter kanban tickets in JSON structure in a list with title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list) attributes for this ticket: '$taskPrompt'";
     
@@ -97,8 +99,7 @@ class ChatGPTController extends Controller
     public static function CallPythonAndFormatResponse($prompt) {
         $path = env('PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
-
-
+        
         $cleanData = trim($response);
         $cleanData = str_replace("'", "\"", $response);
         $formattedResponse = json_decode($cleanData, true);
@@ -237,15 +238,24 @@ class ChatGPTController extends Controller
         ]);
     }
 
-    public static function GenerateCraftedTaskChatGPT(Request $request)
+    public static function GenerateCraftedTaskChatGPT($request, $craftedPrompt)
     {
-        $taskPrompt = $request->header('TaskPrompt'); // Correct the header key spelling
-        $taskCounter = $request->header('TaskCounter');
+        $taskPrompt = $craftedPrompt->crafted_prompt_text; // Correct the header key spelling
+        $taskCounter = $craftedPrompt->response_counter;
         $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
+        $behavior = AgiBehavior::find($craftedPrompt->agi_behavior_id);
+        
+        if(!$behavior){
+            $behavior = "";
+        } else {
+            $behavior = $behavior->act_as_a;
+        }
 
-        $prompt = "Generate $taskCounter task kanban board tickets. JSON structure in a list. title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list). '$taskPrompt'. Act as i said.";
 
-        return ChatGPTController::CallPythonAndFormatResponse($prompt);
+        $prompt = "Generate $taskCounter task kanban board tickets. JSON structure in a list. title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list). Act as $behavior! This is the ticket instruction: '$taskPrompt'. Act as i said.";
+        $answer = ChatGPTController::CallPythonAndFormatResponse($prompt);
+
+        return $answer;
 
     }
 
@@ -394,7 +404,6 @@ class ChatGPTController extends Controller
         
         $user = auth()->user();
         $board = Board::where('board_id', $boardId)->first();
-        $chosenAI = request()->header('ChosenAI');
     
         $agiAnswer = AGIAnswers::where('board_id', $board->board_id)
                                ->where('user_id', $user->user_id)
@@ -409,8 +418,7 @@ class ChatGPTController extends Controller
         } else {
             
             $agiAnswer = new AGIAnswers([
-                'chosenAI' => $chosenAI,
-                'codeReviewOrDocumentationType' => $expectedType,
+                    'codeReviewOrDocumentationType' => $expectedType,
                 'codeReviewOrDocumentation' => $review,
                 'codeReviewOrDocumentationText' => $code,
                 'board_id' => $board->board_id,
