@@ -258,6 +258,21 @@ class ChatGPTController extends Controller
 
     }
 
+    public static function GenerateCraftedAttachmentinkChatGPT($request, $craftedPrompt)
+    {
+        $user = auth()->user();
+        $taskPrompt = $craftedPrompt->crafted_prompt_text; 
+        $taskCounter = $craftedPrompt->response_counter;
+
+        // Prepare the prompt to be sent to the Python script
+        $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
+        // Construct the Python command with the required arguments and path to the script
+
+        return ChatGPTController::CallPythonAndFormatResponse($prompt);
+
+    }
+
+
     public static function GenerateTaskDocumentationPerTask($boardId,$taskId)
     {
         $user = auth()->user();

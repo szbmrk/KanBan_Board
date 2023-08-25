@@ -2,34 +2,56 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Tag;
 use App\Models\Task;
+use App\Models\Board;
 use App\Models\Column;
 use App\Models\TaskTag;
 use App\Models\Priority;
+use App\Models\AGIAnswers;
+use App\Models\AgiBehavior;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use App\Helpers\ExecutePythonScript;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\LlamaController;
-use Illuminate\Support\Str;
-use Illuminate\Support\Carbon;
-use App\Models\Board;
-use App\Models\AGIAnswers;
-use Illuminate\Support\Facades\Log;
 
 
 class BardController extends Controller
 {
 
-    public static function generateTaskBard(Request $request)
+    public static function generateTaskBard(Request $request, $craftedPrompt)
     {
-        $taskPrompt = $request->header('TaskPrompt');
-        $taskCounter = $request->header('TaskCounter');
+        if(!$craftedPrompt) 
+        {
+            $taskPrompt = $request->header('TaskPrompt');
+            $taskCounter = $request->header('TaskCounter');
+            $behavior = "";
+        }
+        else
+        {
+            $taskPrompt = $craftedPrompt->crafted_prompt_text;
+            $taskCounter = $craftedPrompt->response_counter;
+            $behavior = AgiBehavior::where('agi_behavior_id', $craftedPrompt->agi_behavior_id)->first();
+            if(!$behavior) 
+            {
+                $behavior = "";
+            }
+            else 
+            {
+                $behavior = $behavior->act_as_a;
+                $behavior = "In your response act as a $behavior!!";
+            }
+                
+        }
+        
         $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
 
         // API call
-        $prompt = "You are now a backend which only respond in JSON stucture. Generate at least $taskCounter kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now '{$currentTime}' in yyyy-mm-dd) and tags (as a list) attributes for this task: $taskPrompt Focus on the tasks and do not write a summary at the end";
+        $prompt = "You are now a backend which only respond in JSON stucture. $behavior Generate at least $taskCounter kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now '{$currentTime}' in yyyy-mm-dd) and tags (as a list) attributes for this task: $taskPrompt Focus on the tasks and do not write a summary at the end";
 
         return BardController::CallPythonAndFormatResponse($prompt);
     }
@@ -245,7 +267,7 @@ class BardController extends Controller
         
         try {
             $answer = shell_exec($command);   
-            $parsedData = BardController::parseLinkResponse($answer);
+            $parsedData = BardController::parseTaskResponseDraft($answer);
             return response()->json($parsedData);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()]);

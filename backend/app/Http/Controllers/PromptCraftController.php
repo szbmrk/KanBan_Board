@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\CraftedPrompt;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\AGIController;
+use App\Http\Controllers\BardController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\ChatGPTController;
 use Illuminate\Validation\ValidationException;
@@ -240,17 +241,35 @@ class PromptCraftController extends Controller
         $request->headers->set('TaskCounter', $craftedPrompt->response_counter);
         //$request->headers->set('PrecraftedPrompt', $craftedPrompt->crafted_prompt_text);
 
+        if($craftedPrompt->craft_with == "CHATGPT") 
+        {
+            switch ($craftedPrompt->action) {
+                case "GENERATESUBTASK":
+                    //ez azért ugyanaz mint a GenerateCraftedTaskChatGPT, mert nincs kiválasztva a frontenden, hogy mi az a taszk amihez a subtaskok kellenek
+                    $response = ChatGPTController::GenerateCraftedTaskChatGPT($request, $craftedPrompt);
+                    break;
+                case "GENERATEATTACHMENTLINK":
+                    $response = ChatGPTController::GenerateCraftedAttachmentinkChatGPT($request, $craftedPrompt);
+                    break;
+                default:
+                    $response = ChatGPTController::GenerateCraftedTaskChatGPT($request, $craftedPrompt);
+                    break;
+            }
+        }
+        else if($craftedPrompt->craft_with == "BARD") 
+        {
+            switch ($craftedPrompt->action) {
+                case "GENERATESUBTASK":
+                    $response = BardController::GenerateCraftedTaskChatGPT($request, $craftedPrompt);
+                    break;
+                case "GENERATEATTACHMENTLINK":
+                    $response = BardController::GenerateCraftedAttachmentinkChatGPT($request, $craftedPrompt);
+                    break;
+                default:
+                    $response = BardController::generateTaskBard($request, $craftedPrompt);
+                    break;
+            }
 
-        switch ($craftedPrompt->action) {
-            case "GENERATESUBTASK":
-                $response = AGIController::GenerateSubtask($request);
-                break;
-            case "GENERATEATTACHMENTLINK":
-                $response = AGIController::GenerateAttachmentLink($request);
-                break;
-            default:
-                $response = ChatGPTController::GenerateCraftedTaskChatGPT($request, $craftedPrompt);
-                break;
         }
 
         return $response;

@@ -37,7 +37,8 @@ class AGIController extends Controller
                     $response = BardController::generateTaskDraftBard($request);
                     break;
                 }
-                $response = BardController::generateTaskBard($request);
+                $craftedPrompt = null;
+                $response = BardController::generateTaskBard($request, $craftedPrompt);
                 break;
             default:
                 if($request->header('Draft') == true)
