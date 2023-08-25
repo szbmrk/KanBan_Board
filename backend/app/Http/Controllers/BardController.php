@@ -15,6 +15,9 @@ use App\Http\Controllers\LlamaController;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use App\Models\Board;
+use App\Models\AGIAnswers;
+use Illuminate\Support\Facades\Log;
+
 
 class BardController extends Controller
 {
@@ -317,7 +320,7 @@ class BardController extends Controller
             ], 400);
         }
     
-        return BardController::CallPythonAndFormatCodeReviewOrDocResponse($prompt, $expectedType);
+        return BardController::CallPythonAndFormatCodeReviewOrDocResponse($prompt, $boardId, $expectedType, $code);
     }
     
     public static function parseCodeReviewResponse($response, $expectedType)
@@ -357,7 +360,7 @@ class BardController extends Controller
         return null;
     }
 
-    public static function CallPythonAndFormatCodeReviewOrDocResponse($prompt, $expectedType)
+    public static function CallPythonAndFormatCodeReviewOrDocResponse($prompt,$boardId, $expectedType, $code)
     {
         $pythonScriptPath = env('BARD_PYTHON_SCRIPT_PATH_CODE_REVIEW_AND_DOCUMENTATION'); // Path to your Python script
         $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
@@ -371,9 +374,22 @@ class BardController extends Controller
                 $parsedData = BardController::parseCodeReviewResponse($answer, $expectedType);
             if($expectedType === 'Documentation') 
                 $parsedData = BardController::parseDocResponse($answer, $expectedType);
+
+                $user = auth()->user();
+                $board = Board::where('board_id', $boardId)->first();
+            
+                $agiAnswer = new AGIAnswers([
+                    'codeReviewOrDocumentationType' => $expectedType,
+                    'codeReviewOrDocumentation' => $answer,
+                    'codeReviewOrDocumentationText' => $code,
+                    'board_id' => $board->board_id,
+                    'user_id' => $user->user_id,
+                ]);
+            
+                $agiAnswer->save();
             return $parsedData;
         } catch (\Exception $e) {
-            \Log::error('Error executing shell command: ' . $e->getMessage());
+            Log::error('Error executing shell command: ' . $e->getMessage());
 
             return response()->json(['error' => $e->getMessage()]);
         }
