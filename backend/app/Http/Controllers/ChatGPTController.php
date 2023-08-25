@@ -20,7 +20,6 @@ use App\Helpers\ExecutePythonScript;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\LlamaController;
-use App\Http\Controllers\ChatGPTController;
 use Illuminate\Validation\ValidationException;
 
 
@@ -391,7 +390,7 @@ class ChatGPTController extends Controller
             ], 400);
         }
     
-        return ChatGPTController::CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $boardId, $expectedType, $code);
+        return Self::CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $boardId, $expectedType, $code);
     }
     
 
@@ -404,29 +403,40 @@ class ChatGPTController extends Controller
         
         $user = auth()->user();
         $board = Board::where('board_id', $boardId)->first();
-    
-        $agiAnswer = AGIAnswers::where('board_id', $board->board_id)
-                               ->where('user_id', $user->user_id)
-                               ->first();
-    
-        if ($agiAnswer) {
-            $agiAnswer->chosenAI = $chosenAI;
-            $agiAnswer->codeReviewOrDocumentationType = $expectedType;
-            $agiAnswer->codeReviewOrDocumentation = $review;
-            $agiAnswer->codeReviewOrDocumentationText = $code;
-            $agiAnswer->save();
+        $chosenAI = request()->header('ChosenAI');
+        $agiAnswerId = request()->header('agi_answer_id');
+        
+        if (!empty($agiAnswerId)) {
+            $agiAnswer = AGIAnswers::where('board_id', $board->board_id)
+                                   ->where('user_id', $user->user_id)
+                                   ->where('agi_answer_id', $agiAnswerId)
+                                   ->first();
+        
+            if ($agiAnswer) {
+                $agiAnswer->chosenAI = $chosenAI;
+                $agiAnswer->codeReviewOrDocumentationType = $expectedType;
+                $agiAnswer->codeReviewOrDocumentation = $review;
+                $agiAnswer->codeReviewOrDocumentationText = $code;
+        
+                $agiAnswer->save();
+            } else {
+                return response()->json([
+                    'error' => 'AGI answer not found.',
+                ], 404);
+            }
         } else {
-            
             $agiAnswer = new AGIAnswers([
-                    'codeReviewOrDocumentationType' => $expectedType,
+                'chosenAI' => $chosenAI,
+                'codeReviewOrDocumentationType' => $expectedType,
                 'codeReviewOrDocumentation' => $review,
                 'codeReviewOrDocumentationText' => $code,
                 'board_id' => $board->board_id,
                 'user_id' => $user->user_id,
             ]);
-    
+        
             $agiAnswer->save();
         }
+        
     
         $response = response()->json([
             'reviewType' => $expectedType,
@@ -435,6 +445,7 @@ class ChatGPTController extends Controller
     
         return $response;
     }
+
 
     public function generatePerformanceSummary(Request $request)
     {
