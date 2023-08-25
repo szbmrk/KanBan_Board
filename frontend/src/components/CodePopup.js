@@ -7,22 +7,52 @@ import "../styles/popup.css";
 import "../styles/CodePopup.css";
 import hljs from "highlight.js";
 
-const CodePopup = ({ board_id, codeReviewOrDocumentation, onCancel }) => {
+const CodePopup = ({
+  board_id,
+  codeReviewOrDocumentation,
+  reloadCodeReviewOrDocumentation,
+  onCancel,
+}) => {
+  const SearchListForValue = (list, searchValue) => {
+    return list.find(
+      (option) => option.value.toLowerCase() === searchValue.toLowerCase()
+    );
+  };
+
   const codeOptions = [
     { value: "Documentation", label: "Documentation" },
     { value: "Code review", label: "Code review" },
   ];
-  const [selectedOption, setSelectedOption] = useState(codeOptions[0].value);
+  const [selectedOption, setSelectedOption] = useState(
+    codeReviewOrDocumentation
+      ? SearchListForValue(
+          codeOptions,
+          codeReviewOrDocumentation.codeReviewOrDocumentationType
+        ).value
+      : codeOptions[0].value
+  );
 
   const aiOptions = [
     { value: "chatgpt", label: "ChatGPT" },
     { value: "llama", label: "Llama" },
     { value: "bard", label: "Bard" },
   ];
-  let [chosenAI, setChosenAI] = useState(aiOptions[0].value);
+  let [chosenAI, setChosenAI] = useState(
+    codeReviewOrDocumentation
+      ? SearchListForValue(aiOptions, codeReviewOrDocumentation.chosenAI).value
+      : aiOptions[0].value
+  );
 
-  const [inputCode, setInputCode] = useState("");
-  const [output, setOutput] = useState("");
+  const [inputCode, setInputCode] = useState(
+    codeReviewOrDocumentation
+      ? codeReviewOrDocumentation.codeReviewOrDocumentationText
+      : ""
+  );
+  const [output, setOutput] = useState(
+    codeReviewOrDocumentation
+      ? codeReviewOrDocumentation.codeReviewOrDocumentation
+      : ""
+  );
 
   const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
@@ -40,6 +70,9 @@ const CodePopup = ({ board_id, codeReviewOrDocumentation, onCancel }) => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            agi_answer_id: codeReviewOrDocumentation
+              ? codeReviewOrDocumentation.agi_answer_id
+              : undefined,
             ChosenType: `${selectedOption}`,
             ChosenAI: `${chosenAI}`,
             "Content-Type": "application/json",
@@ -50,6 +83,7 @@ const CodePopup = ({ board_id, codeReviewOrDocumentation, onCancel }) => {
       console.log(res);
       console.log(res.data.review);
       setOutput(res.data.review);
+      reloadCodeReviewOrDocumentation();
     } catch (e) {
       console.error(e);
     }
@@ -69,16 +103,12 @@ const CodePopup = ({ board_id, codeReviewOrDocumentation, onCancel }) => {
           <h2>Coding popup</h2>
           <div className="coding-container">
             <p>Your code:</p>
-            <pre>
-              <input
-                type="text"
-                className="code-textarea"
-                contentEditable="true"
-                spellCheck="true"
-                value={inputCode}
-                onChange={(e) => setInputCode(e.target.value)}
-              />
-            </pre>
+            <textarea
+              type="text"
+              className="code-textarea"
+              value={inputCode}
+              onChange={(e) => setInputCode(e.target.value)}
+            />
           </div>
           <div className="gt-action-buttons">
             <div className="dropdown-container">

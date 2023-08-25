@@ -1708,6 +1708,7 @@ const Board = () => {
             <CodePopup
               board_id={board_id}
               codeReviewOrDocumentation={inspectedCodeReviewOrDocumentation}
+              reloadCodeReviewOrDocumentation={reloadCodeReviewOrDocumentation}
               onCancel={handleCodeCancel}
             />
           )}
