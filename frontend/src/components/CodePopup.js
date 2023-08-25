@@ -7,7 +7,7 @@ import "../styles/popup.css";
 import "../styles/CodePopup.css";
 import hljs from "highlight.js";
 
-const CodePopup = ({ board_id, onCancel }) => {
+const CodePopup = ({ board_id, codeReviewOrDocumentation, onCancel }) => {
   const codeOptions = [
     { value: "Documentation", label: "Documentation" },
     { value: "Code review", label: "Code review" },
@@ -32,17 +32,17 @@ const CodePopup = ({ board_id, onCancel }) => {
       console.log("selectedOption");
       console.log(selectedOption);
       console.log(inputCode);
-      const res = await axios.get(
+      const res = await axios.post(
         `/boards/${board_id}/AGI/GenerateCodeReviewOrDocumentation`,
+        {
+          code: JSON.stringify(inputCode),
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
             ChosenType: `${selectedOption}`,
             ChosenAI: `${chosenAI}`,
             "Content-Type": "application/json",
-          },
-          params: {
-            code: inputCode,
           },
         }
       );
@@ -70,7 +70,8 @@ const CodePopup = ({ board_id, onCancel }) => {
           <div className="coding-container">
             <p>Your code:</p>
             <pre>
-              <code
+              <input
+                type="text"
                 className="code-textarea"
                 contentEditable="true"
                 spellCheck="true"

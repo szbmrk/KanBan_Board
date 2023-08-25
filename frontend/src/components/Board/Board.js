@@ -72,6 +72,9 @@ const Board = () => {
   const [craftedPrompts, setCraftedPrompts] = useState([]);
   const [craftedPromptsBoard, setCraftedPromptsBoard] = useState([]);
   const [craftedPromptsTask, setCraftedPromptsTask] = useState([]);
+  const [codeReviewOrDocumentations, setCodeReviewOrDocumentation] = useState(
+    []
+  );
   const navigate = useNavigate();
   const [hoveredColumnId, setHoveredColumnId] = useState(null);
   const [isAGIOpen, setIsAGIOpen] = useState(false);
@@ -127,6 +130,8 @@ const Board = () => {
       let tempColumns = tempBoard.columns;
 
       reloadCraftedPrompts();
+
+      reloadCodeReviewOrDocumentation();
 
       // Sort the columns and tasks by position
       tempColumns.map((column) =>
@@ -835,6 +840,10 @@ const Board = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [inspectedTask, setInspectedTask] = useState(null);
   const [inspectedColumn, setInspectedColumn] = useState(null);
+  const [
+    inspectedCodeReviewOrDocumentation,
+    setInspectedCodeReviewOrDocumentation,
+  ] = useState(null);
   const [inspectedAttachmentLinks, setInspectedAttachmentLinks] =
     useState(null);
 
@@ -961,6 +970,22 @@ const Board = () => {
     console.log(craftedPromptsTask);
   };
 
+  const reloadCodeReviewOrDocumentation = async () => {
+    const codeReviewOrDocumentationResponse = await axios.get(
+      `/AGI/CodeReviewOrDocumentation/boards/${board_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("CodeReviewOrDocumentation:");
+    console.log(codeReviewOrDocumentationResponse);
+    console.log(codeReviewOrDocumentationResponse.data);
+    setCodeReviewOrDocumentation(codeReviewOrDocumentationResponse.data);
+  };
+
   const openCraftPromptPopup = () => {
     setShowCraftPromptPopup(true);
   };
@@ -969,12 +994,14 @@ const Board = () => {
     setShowCraftPromptPopup(false);
   };
 
-  const openCodePopup = () => {
+  const openCodePopup = (codeReviewOrDocumentation) => {
     setShowCodePopup(true);
+    setInspectedCodeReviewOrDocumentation(codeReviewOrDocumentation);
   };
 
   const handleCodeCancel = () => {
     setShowCodePopup(false);
+    setInspectedCodeReviewOrDocumentation(null);
   };
 
   const useCrafterPromptOnColumn = async (craftedPrompt, column) => {
@@ -1565,6 +1592,26 @@ const Board = () => {
                   </span>
                   <span>Code Review</span>
                 </li>
+                {codeReviewOrDocumentations.map((element, index) => (
+                  <li
+                    key={index}
+                    onMouseEnter={() => setIsHoveredCode(index)}
+                    onMouseLeave={() => setIsHoveredCode(null)}
+                    onClick={() => {
+                      openCodePopup(element);
+                    }}
+                  >
+                    <span
+                      className="code-button"
+                      style={{
+                        color: isHoveredCode === index ? "var(--code)" : "",
+                      }}
+                    >
+                      {codeIcon}
+                    </span>
+                    <span>Code review {index + 1}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           )}
@@ -1658,7 +1705,11 @@ const Board = () => {
             />
           )}
           {showCodePopup && (
-            <CodePopup board_id={board_id} onCancel={handleCodeCancel} />
+            <CodePopup
+              board_id={board_id}
+              codeReviewOrDocumentation={inspectedCodeReviewOrDocumentation}
+              onCancel={handleCodeCancel}
+            />
           )}
           {showGenerateTaskWithAGIPopup && (
             <GenerateTaskWithAGIPopup

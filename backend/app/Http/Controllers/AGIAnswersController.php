@@ -273,9 +273,6 @@ class AGIAnswersController extends Controller
             return $answer->only(['agi_answer_id', 'codeReviewOrDocumentationType', 'codeReviewOrDocumentation','codeReviewOrDocumentationText' ,'board_id', 'user_id', 'created_at', 'updated_at']);
         })->values(); 
     
-        if ($answers->isEmpty()) {
-            return response()->json(['error' => 'No answers found.'], 404);
-        }
         return response()->json($answers, 200);
     }
 
