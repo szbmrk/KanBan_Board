@@ -60,7 +60,7 @@ const App = () => {
                             <Sidebar />
                             <ManageBoardPermissions />
                         </ProtectedRoute>} />
-                    <Route exact path="/permissions/:board_id" element={
+                    <Route exact path="/permissions/:team_id/:board_id" element={
                         <ProtectedRoute>
                             <Navbar />
                             <Sidebar />

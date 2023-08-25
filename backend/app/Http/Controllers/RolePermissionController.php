@@ -28,8 +28,16 @@ class RolePermissionController extends Controller
         $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function($role) {
             return in_array('roles_permissions_management', $role->permissions->pluck('name')->toArray());
         });
+
+        $hasRoleTeam_Management = collect($rolesOnBoard)->contains(function($role) {
+            return in_array('team_management', $role->permissions->pluck('name')->toArray());
+        });
+
+        $hasRoleRole_Management = collect($rolesOnBoard)->contains(function($role) {
+            return in_array('role_management', $role->permissions->pluck('name')->toArray());
+        });
     
-        if (!$isTeamMember || !$hasRoleManagementPermission) {
+        if (!$isTeamMember || (!$hasRoleTeam_Management && !$hasRoleManagementPermission && !$hasRoleRole_Management)) {
             return response()->json(['error' => 'You don\'t have permission to view role-permissions on this board.'], 403);
         }
 
@@ -95,7 +103,7 @@ class RolePermissionController extends Controller
             return response()->json(['error' => 'An error occurred while attaching the permission.'], 500);
         }
 
-        return response()->json(['message' => 'Permission added to role successfully']);
+        return response()->json(['message' => 'Permission added to role successfully', 'permission' => $permission]);
     }
 
     public function destroy($boardId, $roleId, $permissionId)

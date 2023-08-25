@@ -28,6 +28,7 @@ export default function ManageBoardPermissions() {
 
     const checkPermissonToManageTeam = (team_id) => {
         //TODO Refactor
+        console.log(teamPermissions);
         if (ownPermissions.includes('system_admin')) {
             return true;
         }
@@ -42,6 +43,42 @@ export default function ManageBoardPermissions() {
             }
         }
     };
+
+    function checkPermissionToManageRole(board_id, team_id) {
+        console.log(teamPermissions);
+        if (ownPermissions.includes('system_admin')) {
+            return true;
+        }
+        if (teamPermissions.length === 0) {
+            return false;
+        }
+        for (let i = 0; i < teamPermissions.length; i++) {
+            if (teamPermissions[i].team_id === team_id) {
+                if (teamPermissions[i].permission === 'role_management' && teamPermissions[i].board_id === board_id) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function checkPermissionToManageRolesPermission(board_id, team_id) {
+        console.log(teamPermissions);
+        if (ownPermissions.includes('system_admin')) {
+            return true;
+        }
+        if (teamPermissions.length === 0) {
+            return false;
+        }
+        for (let i = 0; i < teamPermissions.length; i++) {
+            if (teamPermissions[i].team_id === team_id) {
+                if (teamPermissions[i].permission === 'roles_permissions_management' && teamPermissions[i].board_id === board_id) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     async function ResetRoles() {
         await SetRoles(token);
@@ -87,19 +124,21 @@ export default function ManageBoardPermissions() {
                         <div>
                             <div className='teams'>
                                 {teams.map((team) => (
-                                    checkPermissonToManageTeam(team.team_id) && team.boards.length > 0 &&
+                                    team.boards.length > 0 &&
                                     (<div className='team' key={team.team_id}>
                                         <h3 className='team-title'>{team.name}</h3>
                                         <div className='boards'>
                                             {team.boards.map((board) => (
-                                                <div
-                                                    className='board'
-                                                    key={board.board_id}
-                                                >
-                                                    <Link to={`/permissions/${board.board_id}`} className='board-title'>
-                                                        <p>{board.name}</p>
-                                                    </Link>
-                                                </div>
+                                                ((checkPermissionToManageRole(board.board_id, team.team_id) || checkPermissonToManageTeam(team.team_id)) || checkPermissionToManageRolesPermission(board.board_id, team.team_id)) && (
+                                                    <div
+                                                        className='board'
+                                                        key={board.board_id}
+                                                    >
+                                                        <Link to={`/permissions/${team.team_id}/${board.board_id}`} className='board-title'>
+                                                            <p>{board.name}</p>
+                                                        </Link>
+                                                    </div>
+                                                )
                                             ))}
                                         </div>
                                     </div>)
