@@ -347,7 +347,7 @@ class ChatGPTController extends Controller
         ];
     }
 
-    public function GenerateCodeReviewOrDocumentation(Request $request, $boardId, $expectedType) 
+    public static function GenerateCodeReviewOrDocumentation(Request $request, $boardId, $expectedType) 
     {
         $user = auth()->user();
         if (!$user) {
@@ -381,11 +381,11 @@ class ChatGPTController extends Controller
             ], 400);
         }
     
-        return $this->CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $boardId, $expectedType, $code);
+        return ChatGPTController::CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $boardId, $expectedType, $code);
     }
     
 
-    public function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $boardId, $expectedType, $code) {
+    public static function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $boardId, $expectedType, $code) {
         $path = env('PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
         $foundKeyPhrase = strtolower($expectedType) . ':';

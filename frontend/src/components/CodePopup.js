@@ -35,7 +35,7 @@ const CodePopup = ({ board_id, codeReviewOrDocumentation, onCancel }) => {
       const res = await axios.post(
         `/boards/${board_id}/AGI/GenerateCodeReviewOrDocumentation`,
         {
-          code: JSON.stringify(inputCode),
+          code: inputCode,
         },
         {
           headers: {

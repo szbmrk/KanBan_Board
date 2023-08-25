@@ -196,8 +196,7 @@ class AGIController extends Controller
                 $response = BardController::GenerateCodeReviewOrDocumentation($request, $boardId, $chosenType);
                 break;
             case Str::lower("chatgpt"):
-                $controller = new ChatGPTController();
-                $response = $controller->GenerateCodeReviewOrDocumentation($request, $boardId, $chosenType);
+                $response = ChatGPTController::GenerateCodeReviewOrDocumentation($request, $boardId, $chosenType);
                 break;
             default:
                 $response = "No AI chosen";
