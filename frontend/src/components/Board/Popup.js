@@ -617,7 +617,7 @@ const Popup = ({
                         >
                             <div className='priority-picker-content'>
                                 {priorities.map((priority, index) => (
-                                    <p
+                                    <div
                                         className='priority-picker-item'
                                         key={index}
                                         value={priority.priority_id}
@@ -625,23 +625,15 @@ const Popup = ({
                                             handleModifyPriority(priority.priority_id);
                                         }}
                                     >
-                                        {priority.priority}
-                                    </p>
+                                        <p>{priority.priority}</p>
+                                    </div>
                                 ))}
                             </div>
                         </div>
                     </div>
                 )}
                 {showTagEditorPopup && (
-                    <div className='tag-editor-overlay'>
-                        <div className='tag-editor-popup'>
-                            <TagEditorPopup
-                                onClose={handleCloseTagEditor}
-                                onSave={handleSaveTagEditor}
-                                tagToEdit={tagToEdit}
-                            />
-                        </div>
-                    </div>
+                    <TagEditorPopup onClose={handleCloseTagEditor} onSave={handleSaveTagEditor} tagToEdit={tagToEdit} />
                 )}
             </div>
             {showAddAttachment && (

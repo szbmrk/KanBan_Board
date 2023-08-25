@@ -21,6 +21,7 @@
     flex-direction: row;
     justify-content: space-between;
     flex-wrap: nowrap;
+    margin: 0 !important;
 }
 
 .subtask-options {
