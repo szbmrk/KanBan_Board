@@ -266,14 +266,17 @@ const Popup = ({
                 const formData = new FormData();
                 formData.append('name', tagData.name);
                 formData.append('color', tagData.color);
-                await axios.put(`/boards/${task.board_id}/tags/${tagData.tagId}`,
-                    {name: tagData.name, color: tagData.color}, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+                await axios.put(
+                    `/boards/${task.board_id}/tags/${tagData.tagId}`,
+                    { name: tagData.name, color: tagData.color },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
 
-                const updatedBoardTags = boardTags.map(tag => {
+                const updatedBoardTags = boardTags.map((tag) => {
                     if (tag.tag_id === tagData.tagId) {
                         return {
                             ...tag,
@@ -284,7 +287,7 @@ const Popup = ({
                     return tag;
                 });
 
-                const updatedTaskTags = task.tags.map(tag => {
+                const updatedTaskTags = task.tags.map((tag) => {
                     if (tag.tag_id === tagData.tagId) {
                         return {
                             ...tag,
@@ -299,8 +302,7 @@ const Popup = ({
                 task.tags = updatedTaskTags;
 
                 setShowTagEditorPopup(false);
-            }
-            catch (e) {
+            } catch (e) {
                 console.error(e);
             }
         } else {
@@ -319,8 +321,7 @@ const Popup = ({
                 handleGetBoardTags();
 
                 setShowTagEditorPopup(false);
-            }
-            catch (e) {
+            } catch (e) {
                 console.error(e);
             }
         }
@@ -329,7 +330,7 @@ const Popup = ({
     const handleTagEditing = (tag) => {
         setTagToEdit(tag);
         setShowTagEditorPopup(true);
-    }
+    };
 
     const handleTagDeletion = async (tagData) => {
         try {
@@ -339,9 +340,9 @@ const Popup = ({
                 },
             });
 
-            const updatedBoardTags = boardTags.filter(tag => tag.tag_id !== tagData.tagId);
+            const updatedBoardTags = boardTags.filter((tag) => tag.tag_id !== tagData.tagId);
 
-            const updatedTaskTags = task.tags.filter(tag => tag.tag_id !== tagData.tagId);
+            const updatedTaskTags = task.tags.filter((tag) => tag.tag_id !== tagData.tagId);
 
             setBoardTags(updatedBoardTags);
             task.tags = updatedTaskTags;
@@ -350,7 +351,7 @@ const Popup = ({
         } catch (e) {
             console.error(e);
         }
-    }
+    };
 
     return (
         <div className='overlay'>
@@ -497,7 +498,7 @@ const Popup = ({
                                                     {attachment.link}
                                                 </a>
                                                 <span
-                                                    className='delete-button'
+                                                    className='trash-icon'
                                                     onClick={() =>
                                                         deleteAttachment(
                                                             task.task_id,
@@ -634,7 +635,11 @@ const Popup = ({
                 {showTagEditorPopup && (
                     <div className='tag-editor-overlay'>
                         <div className='tag-editor-popup'>
-                            <TagEditorPopup onClose={handleCloseTagEditor} onSave={handleSaveTagEditor} tagToEdit={tagToEdit}/>
+                            <TagEditorPopup
+                                onClose={handleCloseTagEditor}
+                                onSave={handleSaveTagEditor}
+                                tagToEdit={tagToEdit}
+                            />
                         </div>
                     </div>
                 )}
