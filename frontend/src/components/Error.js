@@ -8,7 +8,7 @@ export default function Error({ error, redirect }) {
     useEffect(() => {
         const onPageLoad = () => {
             setTimeout(() => {
-                setCanBeRedirected(true);
+                redirect && setCanBeRedirected(true);
             }, 2000);
         };
 

@@ -22,13 +22,23 @@ export default function Notification() {
     }, []);
 
     const getNotifications = async () => {
-        const res = await axios.get(`/users/${userId}/notifications`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        console.log(res.data);
-        setNotifications(res.data);
+        try {
+            const res = await axios.get(`/users/${userId}/notifications`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log(res.data);
+            setNotifications(res.data);
+        } catch (e) {
+            console.log(e);
+            if (e.response.status === 401 || e.response.status === 500) {
+                setError('You are not logged in! Redirecting to login page...');
+                setRedirect(true);
+            } else {
+                setError(e.message);
+            }
+        }
     };
 
     const markAllAsSeen = async () => {
@@ -116,7 +126,7 @@ export default function Notification() {
                 error ? (
                     <Error error={error} redirect={redirect} />
                 ) : (
-                    <Loader data_to_load={notifications} text_if_cant_load={"No notifications yet!"} />
+                    <Loader data_to_load={notifications} text_if_cant_load={'No notifications yet!'} />
                 )
             ) : (
                 <>
