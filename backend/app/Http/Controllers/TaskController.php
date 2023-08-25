@@ -26,16 +26,40 @@ class TaskController extends Controller
     public function taskStore(Request $request, $board_id)
     {
         $user = auth()->user();
-
         $board = Board::find($board_id);
+        $teamModel = new Team();
+        $teamId = $teamModel->findTeamIdByBoardId($board_id);
+    
         if (!$board) {
+            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found'], 404);
         }
-
+    
         if (!$user->isMemberOfBoard($board_id)) {
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of this board. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
-        $teamId = $board->team->team_id;
+    
+        $permissions = $user->getPermissions();
+    
+        if (!in_array('system_admin', $permissions)) {
+            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of the team that owns this board. -> board_id: $board_id", $teamId, $board_id, null);
+                return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+            }
+    
+            $rolesOnBoard = $user->getRoles($board_id);
+    
+            $hasTaskManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
+                return in_array('task_management', $role->permissions->pluck('name')->toArray());
+            });
+    
+            if (!$hasTaskManagementPermission) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission for task management.", $teamId, $board_id, null);
+                return response()->json(['error' => 'You don\'t have permission to manage tasks on this board.'], 403);
+            }
+        }
+
         $column_id = $request->input('column_id');
         if ($column_id == null) {
             return response()->json(['error' => 'Column id is required'], 403);
@@ -101,14 +125,37 @@ class TaskController extends Controller
     {
         $user = auth()->user();
         $board = Board::find($board_id);
-        $teamId = $board->team->team_id;
+        $teamModel = new Team();
+        $teamId = $teamModel->findTeamIdByBoardId($board_id);
 
         if (!$board) {
+            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found'], 404);
         }
 
         if (!$user->isMemberOfBoard($board_id)) {
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of this board. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+
+        $permissions = $user->getPermissions();
+
+        if (!in_array('system_admin', $permissions)) {
+            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of the team that owns this board. -> board_id: $board_id", $teamId, $board_id, null);
+                return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+            }
+
+            $rolesOnBoard = $user->getRoles($board_id);
+
+            $hasTaskManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
+                return in_array('task_management', $role->permissions->pluck('name')->toArray());
+            });
+
+            if (!$hasTaskManagementPermission) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission for task management.", $teamId, $board_id, null);
+                return response()->json(['error' => 'You don\'t have permission to manage tasks on this board.'], 403);
+            }
         }
 
         $task = Task::where('board_id', $board_id)->find($task_id);
@@ -162,13 +209,37 @@ class TaskController extends Controller
     {
         $user = auth()->user();
         $board = Board::find($board_id);
-
+        $teamModel = new Team();
+        $teamId = $teamModel->findTeamIdByBoardId($board_id);
+    
         if (!$board) {
+            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found'], 404);
         }
-
+    
         if (!$user->isMemberOfBoard($board_id)) {
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of this board. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+    
+        $permissions = $user->getPermissions();
+    
+        if (!in_array('system_admin', $permissions)) {
+            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of the team that owns this board. -> board_id: $board_id", $teamId, $board_id, null);
+                return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+            }
+    
+            $rolesOnBoard = $user->getRoles($board_id);
+    
+            $hasTaskManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
+                return in_array('task_management', $role->permissions->pluck('name')->toArray());
+            });
+    
+            if (!$hasTaskManagementPermission) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission for task management.", $teamId, $board_id, null);
+                return response()->json(['error' => 'You don\'t have permission to manage tasks on this board.'], 403);
+            }
         }
 
         $task = Task::where('board_id', $board_id)->find($task_id);
@@ -201,15 +272,38 @@ class TaskController extends Controller
     {
         $user = auth()->user();
         $column = Column::find($column_id);
-
+    
         if (!$column) {
             return response()->json(['error' => 'Column not found'], 404);
         }
-
+    
         $board = $column->board;
-
+        $teamModel = new Team();
+        $teamId = $teamModel->findTeamIdByBoardId($board->board_id);
+    
         if (!$user->isMemberOfBoard($board->board_id)) {
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of this board. -> board_id: {$board->board_id}", null, null, null);
             return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+    
+        $permissions = $user->getPermissions();
+    
+        if (!in_array('system_admin', $permissions)) {
+            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of the team that owns this board. -> board_id: {$board->board_id}", $teamId, $board->board_id, null);
+                return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+            }
+    
+            $rolesOnBoard = $user->getRoles($board->board_id);
+    
+            $hasTaskManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
+                return in_array('task_management', $role->permissions->pluck('name')->toArray());
+            });
+    
+            if (!$hasTaskManagementPermission) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission for task management.", $teamId, $board->board_id, null);
+                return response()->json(['error' => 'You don\'t have permission to manage tasks on this board.'], 403);
+            }
         }
 
         $tasks = $request->tasks;
@@ -275,15 +369,39 @@ class TaskController extends Controller
     {
         $user = auth()->user();
         $board = Board::find($board_id);
-
+        $teamModel = new Team();
+        $teamId = $teamModel->findTeamIdByBoardId($board_id);
+    
         if (!$board) {
+            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found'], 404);
         }
-
+    
         if (!$user->isMemberOfBoard($board_id)) {
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of this board. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
-
+    
+        $permissions = $user->getPermissions();
+    
+        if (!in_array('system_admin', $permissions)) {
+            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of the team that owns this board. -> board_id: $board_id", $teamId, $board_id, null);
+                return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+            }
+    
+            $rolesOnBoard = $user->getRoles($board_id);
+    
+            $hasTaskManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
+                return in_array('task_management', $role->permissions->pluck('name')->toArray());
+            });
+    
+            if (!$hasTaskManagementPermission) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission for task management.", $teamId, $board_id, null);
+                return response()->json(['error' => 'You don\'t have permission to manage tasks on this board.'], 403);
+            }
+        }
+        
         $parentTask = Task::find($parent_task_id);
 
         if (!$parentTask || $parentTask->board_id != $board_id) {
