@@ -112,8 +112,8 @@ body {
 
 
 ::selection {
-  background: var(--dark-gray);
-  color: var(--light-gray);
+  background: var(--light-gray);
+  color: var(--dark-gray);
 }
 
 /* <Scrollbar> */
