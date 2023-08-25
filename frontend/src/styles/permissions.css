@@ -67,20 +67,72 @@
     background-color: var(--important-light);
 }
 
-/* Checkbox styling */
-.permission-checkbox [type="checkbox"] {
+.permission-checkbox {
     appearance: none;
-    width: 15px;
-    height: 15px;
-    border: 1px solid var(--dark-gray);
-    border-radius: 3px;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--dark-gray);
+    border-radius: 5px;
     background-color: white;
+    position: relative;
+    transition: background-color 0.3s, border-color 0.3s;
     cursor: pointer;
 }
 
-.permission-checkbox [type="checkbox"]:checked {
-    background-color: var(--confirm);
+.permission-checkbox {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--dark-gray);
+    border-radius: 5px;
+    background-color: var(--light-gray);
+    position: relative;
+    transition: background-color 0.3s, border-color 0.3s;
+    cursor: pointer;
 }
+
+.permission-checkbox:checked {
+    background-color: var(--button);
+    /* Change to the --starred color */
+    border-color: var(--button);
+    /* Change to the --starred color */
+}
+
+.permission-checkbox:disabled {
+    background-color: var(--bg-mostly-black);
+    cursor: not-allowed;
+    border-color: var(--dark-gray);
+}
+
+.permission-checkbox:disabled:checked {
+    opacity: 0.5;
+}
+
+/* Custom checkmark design */
+.permission-checkbox::after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 5px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.permission-checkbox:checked::after {
+    display: block;
+}
+
+/* Hover effect */
+.permission-checkbox:hover {
+    border-color: var(--light-gray);
+}
+
+
+
 
 /* Styling for permission names */
 .permission-name {
@@ -96,6 +148,7 @@
     margin: 0 auto;
     display: block;
 }
+
 
 .role-header-div {
     display: flex;

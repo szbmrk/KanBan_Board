@@ -57,6 +57,7 @@ const Popup = ({
     deleteMember,
     placeTagOnTask,
     removeTagFromTask,
+    handleBoardTagDeletion,
 }) => {
     const popupRef = useRef(null);
 
@@ -81,6 +82,7 @@ const Popup = ({
     const token = sessionStorage.getItem('token');
 
     const [showTagEditorPopup, setShowTagEditorPopup] = useState(false);
+    const [tagToEdit, setTagToEdit] = useState(null);
 
     const validateLink = (inputLink) => {
         const urlPattern = /^(http|https):\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/;
@@ -255,10 +257,100 @@ const Popup = ({
 
     const handleCloseTagEditor = () => {
         setShowTagEditorPopup(false);
+        setTagToEdit(null);
     };
 
-    const handleSaveTagEditor = () => {
-        // setShowTagEditorPopup(false);
+    const handleSaveTagEditor = async (tagData) => {
+        if (tagData.tagId !== -1) {
+            try {
+                const formData = new FormData();
+                formData.append('name', tagData.name);
+                formData.append('color', tagData.color);
+                await axios.put(
+                    `/boards/${task.board_id}/tags/${tagData.tagId}`,
+                    { name: tagData.name, color: tagData.color },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                const updatedBoardTags = boardTags.map((tag) => {
+                    if (tag.tag_id === tagData.tagId) {
+                        return {
+                            ...tag,
+                            name: tagData.name,
+                            color: tagData.color,
+                        };
+                    }
+                    return tag;
+                });
+
+                const updatedTaskTags = task.tags.map((tag) => {
+                    if (tag.tag_id === tagData.tagId) {
+                        return {
+                            ...tag,
+                            name: tagData.name,
+                            color: tagData.color,
+                        };
+                    }
+                    return tag;
+                });
+
+                setBoardTags(updatedBoardTags);
+                task.tags = updatedTaskTags;
+
+                setShowTagEditorPopup(false);
+            } catch (e) {
+                console.error(e);
+            }
+        } else {
+            try {
+                const formData = new FormData();
+                formData.append('name', tagData.name);
+                formData.append('color', tagData.color);
+                await axios.post(`/boards/${task.board_id}/tags`, formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                //TODO: visszakapni a tag_id-t response-sal, mert a tagData-ból nem jön,
+                //TODO: és lecserélni ezt a sort annak a használatára...
+                handleGetBoardTags();
+
+                setShowTagEditorPopup(false);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    };
+
+    const handleTagEditing = (tag) => {
+        setTagToEdit(tag);
+        setShowTagEditorPopup(true);
+    };
+
+    const handleTagDeletion = async (tagData) => {
+        try {
+            await axios.delete(`/boards/${task.board_id}/tags/${tagData.tagId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const updatedBoardTags = boardTags.filter((tag) => tag.tag_id !== tagData.tagId);
+
+            const updatedTaskTags = task.tags.filter((tag) => tag.tag_id !== tagData.tagId);
+
+            setBoardTags(updatedBoardTags);
+            task.tags = updatedTaskTags;
+
+            handleBoardTagDeletion(tagData.tagId);
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     return (
@@ -311,13 +403,15 @@ const Popup = ({
                                         <span className='icon'>{tagsIcon}</span>
                                         <h3>Tags:</h3>
                                     </div>
-                                    <div className='tags'>
+                                    <div className='popup-tags'>
                                         <TagDropdown
                                             tags={task.tags}
                                             allTags={boardTags}
                                             taskId={task.task_id}
                                             placeTagOnTask={placeTagOnTask}
                                             removeTagFromTask={removeTagFromTask}
+                                            tagEditHandler={handleTagEditing}
+                                            tagDeleteHandler={handleTagDeletion}
                                         ></TagDropdown>
                                         <span className='addbtn-tag' onClick={() => setShowTagEditorPopup(true)}>
                                             {plusIcon}
@@ -404,7 +498,7 @@ const Popup = ({
                                                     {attachment.link}
                                                 </a>
                                                 <span
-                                                    className='delete-button'
+                                                    className='trash-icon'
                                                     onClick={() =>
                                                         deleteAttachment(
                                                             task.task_id,
@@ -523,7 +617,7 @@ const Popup = ({
                         >
                             <div className='priority-picker-content'>
                                 {priorities.map((priority, index) => (
-                                    <p
+                                    <div
                                         className='priority-picker-item'
                                         key={index}
                                         value={priority.priority_id}
@@ -531,19 +625,15 @@ const Popup = ({
                                             handleModifyPriority(priority.priority_id);
                                         }}
                                     >
-                                        {priority.priority}
-                                    </p>
+                                        <p>{priority.priority}</p>
+                                    </div>
                                 ))}
                             </div>
                         </div>
                     </div>
                 )}
                 {showTagEditorPopup && (
-                    <div className='tag-editor-overlay'>
-                        <div className='tag-editor-popup'>
-                            <TagEditorPopup onClose={handleCloseTagEditor} onSave={handleSaveTagEditor} />
-                        </div>
-                    </div>
+                    <TagEditorPopup onClose={handleCloseTagEditor} onSave={handleSaveTagEditor} tagToEdit={tagToEdit} />
                 )}
             </div>
             {showAddAttachment && (

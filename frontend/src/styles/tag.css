@@ -1,6 +1,6 @@
 .tag {
     border-radius: 5px;
-    color: var(--dark-gray);
+    color: white;
     transition: 0.4s ease-in-out;
 }
 
