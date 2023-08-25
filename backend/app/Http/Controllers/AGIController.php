@@ -16,6 +16,7 @@ use App\Http\Controllers\ChatGPTController;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\BardController;
 
 
 class AGIController extends Controller
@@ -181,29 +182,27 @@ class AGIController extends Controller
     }
 
     public function GenerateCodeReviewOrDocumentation(Request $request, $boardId)
-    {
-        //without json stringify it will not work!!!
+    {    
         $user = auth()->user();
-
+    
         $response;
         $chosenType = $request->header('ChosenType');
         
-        switch($request->header('ChosenAI')) {
+        switch ($request->header('ChosenAI')) {
             case Str::lower("llama"):
-                $response = LlamaController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
+                $response = LlamaController::GenerateCodeReviewOrDocumentation($request, $boardId, $chosenType);
                 break;
             case Str::lower("bard"):
-                $response = BardController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
+                $response = BardController::GenerateCodeReviewOrDocumentation($request, $boardId, $chosenType);
                 break;
             case Str::lower("chatgpt"):
-                $response = ChatGPTController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
+                $controller = new ChatGPTController();
+                $response = $controller->GenerateCodeReviewOrDocumentation($request, $boardId, $chosenType);
                 break;
             default:
                 $response = "No AI chosen";
                 break;
-        }
+        }  
         return $response;
     }
-
-
 }

@@ -18,6 +18,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\SummaryLog;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use App\Models\AGIAnswers;
 
 
 
@@ -345,32 +347,30 @@ class ChatGPTController extends Controller
         ];
     }
 
-    public static function GenerateCodeReviewOrDocumentation(Request $request, $boardId,$expectedType) 
+    public function GenerateCodeReviewOrDocumentation(Request $request, $boardId, $expectedType) 
     {
         $user = auth()->user();
-        if(!$user)
-        {
+        if (!$user) {
             return response()->json([
                 'error' => 'Unauthorized!',
             ]);
         }
         $board = Board::where('board_id', $boardId)->first();
-
+    
         if (!$board) {
             return response()->json(['error' => 'Board not found.'], 404);
         }
-
+    
         $team = $board->team;
-
+    
         if (!$team->teamMembers->contains('user_id', $user->user_id)) {
             return response()->json(['error' => 'You are not a member of the team.'], 404);
         }
-
+    
         $code = $request->input('code');
         $promptCodeReview = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''.";
-        $promptDocumentation = "Use only UTF-8 chars! Act as an senior programmer and generate a documentation for the following code: '''$code'''.";
-    
-
+        $promptDocumentation = "Use only UTF-8 chars! Act as a senior programmer and generate documentation for the following code: '''$code'''.";
+        
         if ($expectedType === 'Code review') {
             $prompt = $promptCodeReview;
         } elseif ($expectedType === 'Documentation') {
@@ -381,23 +381,38 @@ class ChatGPTController extends Controller
             ], 400);
         }
     
-        return ChatGPTController::CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType);
+        return $this->CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $boardId, $expectedType, $code);
     }
     
-    public static function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType) {
 
+    public function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $boardId, $expectedType, $code) {
         $path = env('PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
         $foundKeyPhrase = strtolower($expectedType) . ':';
         $review = substr($response, stripos($response, $foundKeyPhrase) + strlen($foundKeyPhrase));
         $review = trim($review);
-        return response()->json([
         
+        $user = auth()->user();
+        $board = Board::where('board_id', $boardId)->first();
+    
+        $agiAnswer = new AGIAnswers([
+            'codeReviewOrDocumentationType' => $expectedType,
+            'codeReviewOrDocumentation' => $review,
+            'codeReviewOrDocumentationText' => $code,
+            'board_id' => $board->board_id,
+            'user_id' => $user->user_id,
+        ]);
+    
+        $agiAnswer->save();
+    
+        $response = response()->json([
             'reviewType' => $expectedType,
             'review' => $review,
-            
-            ]);    
+        ]);
+    
+        return $response;
     }
+
 
     public function generatePerformanceSummary(Request $request)
     {

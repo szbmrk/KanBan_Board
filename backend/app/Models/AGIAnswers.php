@@ -20,7 +20,9 @@ class AGIAnswers extends Model
     protected $fillable = [
         'codeReviewOrDocumentationType',
         'codeReviewOrDocumentation',
+        'codeReviewOrDocumentationText',
         'taskDocumentation',
+        'taskDocumentationText',
         'board_id',
         'task_id',
         'column_id',

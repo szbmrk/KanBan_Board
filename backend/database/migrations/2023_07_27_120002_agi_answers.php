@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id('agi_answer_id')->nullable(false);
             $table->enum('codeReviewOrDocumentationType', ['DOCUMENTATION', 'CODE REVIEW'])->nullable(true);
             $table->text('codeReviewOrDocumentation')->nullable(true);
+            $table->text('codeReviewOrDocumentationText')->nullable(true);
             $table->text('taskDocumentation')->nullable(true);
+            $table->text('taskDocumentationText')->nullable(true);
             $table->unsignedBigInteger('task_id')->nullable(true);
             $table->unsignedBigInteger('board_id')->nullable(false);
             $table->unsignedBigInteger('column_id')->nullable(true);

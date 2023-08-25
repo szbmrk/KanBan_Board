@@ -270,7 +270,7 @@ class AGIAnswersController extends Controller
         $answers = $board->AGIAnswers->filter(function ($answer) {
             return $answer->codeReviewOrDocumentationType !== null && $answer->codeReviewOrDocumentation !== null;
         })->map(function ($answer) {
-            return $answer->only(['agi_answer_id', 'codeReviewOrDocumentationType', 'codeReviewOrDocumentation', 'board_id', 'user_id', 'created_at', 'updated_at']);
+            return $answer->only(['agi_answer_id', 'codeReviewOrDocumentationType', 'codeReviewOrDocumentation','codeReviewOrDocumentationText' ,'board_id', 'user_id', 'created_at', 'updated_at']);
         })->values(); 
     
         if ($answers->isEmpty()) {
@@ -279,7 +279,7 @@ class AGIAnswersController extends Controller
         return response()->json($answers, 200);
     }
 
-    public function storeCodeReviewOrDocumentation(Request $request, $boardId)
+    /* public function storeCodeReviewOrDocumentation(Request $request, $boardId)
     {
         $user = auth()->user();
         if (!$user) {
@@ -320,7 +320,7 @@ class AGIAnswersController extends Controller
         $answer->save();
 
         return response()->json(['message' => 'Answer created successfully'], 201);
-    }
+    } */
 
     public function updateCodeReviewOrDocumentation(Request $request, $boardId, $answerId)
     {
@@ -343,20 +343,19 @@ class AGIAnswersController extends Controller
             $this->validate($request, [
                 'codeReviewOrDocumentationType' => 'in:DOCUMENTATION,CODE REVIEW',
                 'codeReviewOrDocumentation' => 'string',
+                'codeReviewOrDocumentationText' => 'string',
             ]);
         } catch (ValidationException) {
             return response()->json(['error' => 'Invalid code review or documentation type or code review or documentation'], 400);
         }
 
-        $data = $request->only(['codeReviewOrDocumentationType', 'codeReviewOrDocumentation']);
+        $data = $request->only(['codeReviewOrDocumentationType', 'codeReviewOrDocumentation', 'codeReviewOrDocumentationText']);
 
         $answer = AGIAnswers::find($answerId);
 
         if (!$answer) {
             return response()->json(['error' => 'Answer not found.'], 404);
         }
-
-        $data = $request->only(['codeReviewOrDocumentationType', 'codeReviewOrDocumentation']);
     
         foreach ($data as $key => $value) {
             if (!is_null($value)) {
