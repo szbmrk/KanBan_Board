@@ -1004,6 +1004,29 @@ const Board = () => {
     setInspectedCodeReviewOrDocumentation(null);
   };
 
+  const deleteCodeReviewOrDocumentation = async (
+    codeReviewOrDocumentationToDelete
+  ) => {
+    const deleteCodeReviewOrDocumentation = await axios.delete(
+      `/AGI/CodeReviewOrDocumentation/boards/${board_id}/agiAnswer/${codeReviewOrDocumentationToDelete.agi_answer_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log(deleteCodeReviewOrDocumentation);
+    if (deleteCodeReviewOrDocumentation) {
+      const filteredCodeReviewOrDocumentations =
+        codeReviewOrDocumentations.filter(
+          (codeReviewOrDocumentation) =>
+            codeReviewOrDocumentation.agi_answer_id !==
+            codeReviewOrDocumentationToDelete.agi_answer_id
+        );
+      setCodeReviewOrDocumentation(filteredCodeReviewOrDocumentations);
+    }
+  };
+
   const useCrafterPromptOnColumn = async (craftedPrompt, column) => {
     console.log("craftedPrompt");
     console.log(craftedPrompt);
@@ -1593,23 +1616,32 @@ const Board = () => {
                   <span>Code Review</span>
                 </li>
                 {codeReviewOrDocumentations.map((element, index) => (
-                  <li
-                    key={index}
-                    onMouseEnter={() => setIsHoveredCode(index)}
-                    onMouseLeave={() => setIsHoveredCode(null)}
-                    onClick={() => {
-                      openCodePopup(element);
-                    }}
-                  >
+                  <li key={index}>
                     <span
-                      className="code-button"
-                      style={{
-                        color: isHoveredCode === index ? "var(--code)" : "",
+                      onMouseEnter={() => setIsHoveredCode(index)}
+                      onMouseLeave={() => setIsHoveredCode(null)}
+                      onClick={() => {
+                        openCodePopup(element);
                       }}
                     >
-                      {codeIcon}
+                      <span
+                        className="code-button"
+                        style={{
+                          color: isHoveredCode === index ? "var(--code)" : "",
+                        }}
+                      >
+                        {codeIcon}
+                      </span>
+                      <span>Code review {index + 1}</span>
                     </span>
-                    <span>Code review {index + 1}</span>
+                    <span
+                      className="delete-code-review-or-documentation-button"
+                      onClick={() => {
+                        deleteCodeReviewOrDocumentation(element);
+                      }}
+                    >
+                      {xMarkIcon}
+                    </span>
                   </li>
                 ))}
               </ul>
