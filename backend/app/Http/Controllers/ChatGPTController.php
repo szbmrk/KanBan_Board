@@ -405,31 +405,46 @@ class ChatGPTController extends Controller
         $endDate = $request->input('end_date');
         $boardId = $request->input('board_id'); 
     
-        $logsQuery = DB::table('logs')->select('action', 'details', 'created_at')->whereBetween('created_at', [$startDate, $endDate]);
+        $logsQuery = DB::table('logs')->select('action', 'details', 'created_at', 'task_id')->whereBetween('created_at', [$startDate, $endDate]);
         if ($boardId) {
             $logsQuery->where('board_id', $boardId);
         }
+
         $logs = $logsQuery->get();
-    
+
+        if (!$logs->count()) {
+            return response()->json(['error' => 'No logs found for the specified board_id and date range']);
+        }
+
         $logEntries = [];
         $tasksCreatedCount = 0;
         $tasksFinishedCount = 0;
-    
+        
+        $finishedTasksSet = [];
+        $revertedTasksSet = [];
+        
         foreach ($logs as $log) {
             $detailText = $log->details;
             $logEntry = "On {$log->created_at}, {$log->action}, {$detailText}";
             $logEntries[] = $logEntry;
-    
+        
             if ($log->action == 'CREATED TASK') {
                 $tasksCreatedCount++;
             }
-            if ($log->action == 'FINISHED TASK') {
+            
+            if ($log->action == 'FINISHED TASK' && !in_array($log->task_id, $finishedTasksSet)) {
                 $tasksFinishedCount++;
+                $finishedTasksSet[] = $log->task_id;
+            }
+            
+            if ($log->action == 'REVERTED FINISHED TASK' && in_array($log->task_id, $finishedTasksSet) && !in_array($log->task_id, $revertedTasksSet)) {
+                $tasksFinishedCount--;
+                $revertedTasksSet[] = $log->task_id;
             }
         }
-    
+        
         $formattedLogs = implode("; ", $logEntries);
-        $prompt = "Based on the following log entries in a Kanban table: {$formattedLogs}, create a performance review by day and point out the most and least productive days.";
+        $prompt = "Based on the following log entries in a Kanban table: {$formattedLogs}, create a performance review by day and point out the most and least productive days of the week.";
     
         $pythonScriptPath = env('PERFORMANCE_PYTHON_SCRIPT_PATH');
         $apiKey = env('OPENAI_API_KEY');
@@ -448,10 +463,6 @@ class ChatGPTController extends Controller
             'updated_at' => now()
         ]);
 
-        return response()->json([
-            'prompt' => $prompt,
-            'response' => $response
-        ]);
+        return response()->json(['response' => $response]);
     }     
-    
 }

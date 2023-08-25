@@ -148,7 +148,7 @@ class TaskController extends Controller
         if ($task->completed != $originalCompletedStatus && $task->completed == 1) {
             LogRequest::instance()->logAction('FINISHED TASK', $user->user_id, "Task finished successfully!", $teamId, $board_id, $task->task_id);
         } elseif ($task->completed != $originalCompletedStatus && $task->completed == 0) {
-            LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "Task status changed to not completed!", $teamId, $board_id, $task->task_id);
+            LogRequest::instance()->logAction('REVERTED FINISHED TASK', $user->user_id, "Task status changed to not completed!", $teamId, $board_id, $task->task_id);
         } else {
             LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "Task updated successfully!", $teamId, $board_id, $task->task_id);
         }

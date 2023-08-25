@@ -12,6 +12,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+        //$schedule->command('performance:generate-summary')
+        //     ->everyMinute();;  // minden percben futtat
+
+        $schedule->command('performance:generate-summary')
+        ->weeklyOn(1, '8:00');  // minden hétfőn reggel 8 órakor
+
         // $schedule->command('inspire')->hourly();
     }
 
