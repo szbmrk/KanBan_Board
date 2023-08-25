@@ -18,6 +18,7 @@ class AGIAnswers extends Model
     protected $primaryKey = 'agi_answer_id';
 
     protected $fillable = [
+        'chosenAI',
         'codeReviewOrDocumentationType',
         'codeReviewOrDocumentation',
         'codeReviewOrDocumentationText',

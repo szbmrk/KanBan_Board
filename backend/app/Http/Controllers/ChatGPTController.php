@@ -394,8 +394,10 @@ class ChatGPTController extends Controller
         
         $user = auth()->user();
         $board = Board::where('board_id', $boardId)->first();
+        $chosenAI = request()->header('ChosenAI');
     
         $agiAnswer = new AGIAnswers([
+            'chosenAI' => $chosenAI,
             'codeReviewOrDocumentationType' => $expectedType,
             'codeReviewOrDocumentation' => $review,
             'codeReviewOrDocumentationText' => $code,

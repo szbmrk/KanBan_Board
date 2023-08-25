@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('agi_answers', function (Blueprint $table) {
             $table->id('agi_answer_id')->nullable(false);
+            $table->text('chosenAI')->nullable(false);
             $table->enum('codeReviewOrDocumentationType', ['DOCUMENTATION', 'CODE REVIEW'])->nullable(true);
             $table->text('codeReviewOrDocumentation')->nullable(true);
             $table->text('codeReviewOrDocumentationText')->nullable(true);

@@ -32,7 +32,7 @@ class AGIAnswersController extends Controller
         $answers = $board->AGIAnswers->filter(function ($answer) {
             return $answer->codeReviewOrDocumentationType === null && $answer->codeReviewOrDocumentation === null;
         })->map(function ($answer) {
-            return $answer->only(['taskDocumentation','taskDocumentationText' ,'task_id', 'board_id', 'column_id', 'user_id', 'created_at', 'updated_at']);
+            return $answer->only(['chosenAI','taskDocumentation','taskDocumentationText' ,'task_id', 'board_id', 'column_id', 'user_id', 'created_at', 'updated_at']);
         })->values();
 
         if ($answers->isEmpty()) {
@@ -77,6 +77,7 @@ class AGIAnswersController extends Controller
         }
 
         $answer = new AGIAnswers([
+            'chosenAI' => $request->header('ChosenAI'),
             'taskDocumentation' => $request->input('taskDocumentation'),
             'taskDocumentationText' => $request->input('taskDocumentationText'),
             'board_id' => $board->board_id,
@@ -121,6 +122,7 @@ class AGIAnswersController extends Controller
         }
 
         $answer = new AGIAnswers([
+            'chosenAI' => $request->header('ChosenAI'),
             'taskDocumentation' => $request->input('taskDocumentation'),
             'taskDocumentationText' => $request->input('taskDocumentationText'),
             'board_id' => $board->board_id,
@@ -159,6 +161,7 @@ class AGIAnswersController extends Controller
         }
 
         $answer = new AGIAnswers([
+            'chosenAI' => $request->header('ChosenAI'),
             'taskDocumentation' => $request->input('taskDocumentation'),
             'taskDocumentationText' => $request->input('taskDocumentationText'),
             'board_id' => $board->board_id,
@@ -274,13 +277,13 @@ class AGIAnswersController extends Controller
         $answers = $board->AGIAnswers->filter(function ($answer) {
             return $answer->codeReviewOrDocumentationType !== null && $answer->codeReviewOrDocumentation !== null;
         })->map(function ($answer) {
-            return $answer->only(['agi_answer_id', 'codeReviewOrDocumentationType', 'codeReviewOrDocumentation','codeReviewOrDocumentationText' ,'board_id', 'user_id', 'created_at', 'updated_at']);
+            return $answer->only(['chosenAI','agi_answer_id', 'codeReviewOrDocumentationType', 'codeReviewOrDocumentation','codeReviewOrDocumentationText' ,'board_id', 'user_id', 'created_at', 'updated_at']);
         })->values(); 
     
         return response()->json($answers, 200);
     }
 
-    /* public function storeCodeReviewOrDocumentation(Request $request, $boardId)
+     public function storeCodeReviewOrDocumentation(Request $request, $boardId)
     {
         $user = auth()->user();
         if (!$user) {
@@ -312,6 +315,7 @@ class AGIAnswersController extends Controller
         $data = $request->only(['codeReviewOrDocumentationType', 'codeReviewOrDocumentation']);
 
         $answer = new AGIAnswers([
+            'chosenAI' => $request->header('ChosenAI'),
             'codeReviewOrDocumentationType' => $data['codeReviewOrDocumentationType'],
             'codeReviewOrDocumentation' => $data['codeReviewOrDocumentation'],
             'board_id' => $board->board_id,
@@ -321,7 +325,7 @@ class AGIAnswersController extends Controller
         $answer->save();
 
         return response()->json(['message' => 'Answer created successfully'], 201);
-    } */
+    } 
 
     public function updateCodeReviewOrDocumentation(Request $request, $boardId, $answerId)
     {
