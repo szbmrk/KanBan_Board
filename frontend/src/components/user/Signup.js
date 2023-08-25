@@ -2,133 +2,50 @@ import React, { useState } from 'react';
 import '../../styles/login-signup.css';
 import axios from '../../api/axios';
 import { Link, useNavigate } from 'react-router-dom';
+import useAuthForm from './useAuthForm';
+import AuthForm from './AuthForm';
 
 const Signup = () => {
     const navigate = useNavigate();
-    const [error, setError] = useState(null);
-    const [display, setDisplay] = useState('none');
-    const [formData, setFormData] = useState({
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        acceptedTerms: false,
-    });
 
-    const handlePaste = (e) => {
-        e.preventDefault();
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            confirmPassword: '',
-        }));
-    };
-
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        const val = type === 'checkbox' ? checked : value;
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            [name]: val,
-        }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (formData.password !== formData.confirmPassword) {
-            setFormData((prevFormData) => ({
-                ...prevFormData,
-                password: '',
-                confirmPassword: '',
-            }));
-            setDisplay('block');
-            setError('Passwords do not match');
-            setTimeout(() => {
-                setDisplay('none');
-            }, 8000);
-            return;
-        }
-        try {
-            const response = await axios.post('/user/signup', formData);
+    const {
+        error: err,
+        display,
+        formData,
+        handleChange,
+        handleSubmit,
+        handlePaste: handlePasswordPaste,
+    } = useAuthForm(
+        { username: '', email: '', password: '', confirmPassword: '', acceptedTerms: false },
+        async (formData) => {
+            if (formData.password !== formData.confirmPassword) {
+                {
+                    setError('Passwords do not match');
+                }
+            }
+            await axios.post('/user/signup', formData);
             console.log('Signup successful');
-            navigate('/login')
+            navigate('/login');
         }
-        catch (error) {
-            console.log(error.response.data.error)
-            setError(error.response.data.error)
-        }
+    );
 
-    };
+    const [error, setError] = useState(err);
 
     return (
-        <form className="signup-form" onSubmit={handleSubmit}>
-            <h2>Sign Up</h2>
-            <div className="form-group">
-                <label htmlFor="username">Username</label>
-                <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleChange}
-                    placeholder="Enter your username"
-                    required
-                />
-            </div>
-            <div className="form-group">
-                <label htmlFor="email">Email</label>
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Enter your email"
-                    required
-                />
-            </div>
-            <div className="form-group">
-                <label htmlFor="password">Password</label>
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="Enter your password"
-                    required
-                />
-            </div>
-            <div className="form-group">
-                <label htmlFor="confirmPassword">Confirm Password</label>
-                <input
-                    type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    placeholder="Enter your password again"
-                    required
-                    onPaste={handlePaste}
-                />
-            </div>
-            <div className="form-group">
-                <label id="checkbox">
-                    <input
-                        type="checkbox"
-                        name="acceptedTerms"
-                        checked={formData.acceptedTerms}
-                        onChange={handleChange}
-                        required
-                    />{' '}
-                    I accept the terms and conditions
-                </label>
-            </div>
-            <div className="errorBox" style={{display}}>
-                <p>{error}</p>
-            </div>
-            <button id="signupbtn" type="submit">Sign Up</button>
-            <Link to="/login">Already have an account?</Link>
-        </form>
+        <AuthForm
+            state='signup'
+            title='Create an account'
+            formData={formData}
+            handleChange={handleChange}
+            handleSubmit={handleSubmit}
+            handlePaste={handlePasswordPaste}
+            error={error}
+            display={display}
+            buttonText='Sign Up'
+            textToTermsAndConditions='By clicking Sign Up, you agree to our Terms, Data Policy and Cookie Policy.'
+            linkText='Already have an account?'
+            linkTo='/login'
+        />
     );
 };
 

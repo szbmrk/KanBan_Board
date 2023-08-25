@@ -1,8 +1,7 @@
-.signup-form,
-.login-form {
+.auth-container{
     width: 60vw;
     max-width: 450px;
-    min-height: 500px;
+    min-height: 450px;
     position: relative;
     top: 10vh;
     background: rgba(255, 255, 255, 0.4);
@@ -13,17 +12,33 @@
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.6);
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 40px;
+    justify-content: space-around;
+    align-items: center;
+    gap: 20px;
 }
 
-.signup-form h2, 
-.login-form h2{
+.auth-container h2 {
     text-align: center;
     margin-bottom: 40px;
     font-size: 36px;
 }
 
+.auth-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 40px;
+    transition: height 0.5s ease;
+}
+
+.form-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+}
 
 .form-group label {
     display: none;
@@ -55,10 +70,8 @@
     margin-right: 5px;
 }
 
-#loginbtn,
-#signupbtn {
+.submit-button {
     width: 100%;
-    margin: 50px auto;
     padding: 10px;
     font-family: var(--basic-font);
     font-size: 16px;
@@ -69,10 +82,10 @@
     cursor: pointer;
 }
 
-#loginbtn:hover,
-#signupbtn:hover {
+.submit-button:hover {
     background-color: var(--button);
     color: var(--light-gray);
+    transition: background-color 0.3s ease;
 }
 
 
