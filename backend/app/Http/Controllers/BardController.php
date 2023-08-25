@@ -379,16 +379,29 @@ class BardController extends Controller
                 $board = Board::where('board_id', $boardId)->first();
                 $chosenAI = request()->header('ChosenAI');
             
-                $agiAnswer = new AGIAnswers([
-                    'chosenAI' => $chosenAI,
-                    'codeReviewOrDocumentationType' => $expectedType,
-                    'codeReviewOrDocumentation' => $answer,
-                    'codeReviewOrDocumentationText' => $code,
-                    'board_id' => $board->board_id,
-                    'user_id' => $user->user_id,
-                ]);
+                $agiAnswer = AGIAnswers::where('board_id', $board->board_id)
+                               ->where('user_id', $user->user_id)
+                               ->first();
+    
+                if ($agiAnswer) {
+                    $agiAnswer->chosenAI = $chosenAI;
+                    $agiAnswer->codeReviewOrDocumentationType = $expectedType;
+                    $agiAnswer->codeReviewOrDocumentation = $answer;
+                    $agiAnswer->codeReviewOrDocumentationText = $code;
+                    $agiAnswer->save();
+                } else {
+                    
+                    $agiAnswer = new AGIAnswers([
+                        'chosenAI' => $chosenAI,
+                        'codeReviewOrDocumentationType' => $expectedType,
+                        'codeReviewOrDocumentation' => $answer,
+                        'codeReviewOrDocumentationText' => $code,
+                        'board_id' => $board->board_id,
+                        'user_id' => $user->user_id,
+                    ]);
             
-                $agiAnswer->save();
+                    $agiAnswer->save();
+                }
             return $parsedData;
         } catch (\Exception $e) {
             Log::error('Error executing shell command: ' . $e->getMessage());

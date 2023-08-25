@@ -396,16 +396,29 @@ class ChatGPTController extends Controller
         $board = Board::where('board_id', $boardId)->first();
         $chosenAI = request()->header('ChosenAI');
     
-        $agiAnswer = new AGIAnswers([
-            'chosenAI' => $chosenAI,
-            'codeReviewOrDocumentationType' => $expectedType,
-            'codeReviewOrDocumentation' => $review,
-            'codeReviewOrDocumentationText' => $code,
-            'board_id' => $board->board_id,
-            'user_id' => $user->user_id,
-        ]);
+        $agiAnswer = AGIAnswers::where('board_id', $board->board_id)
+                               ->where('user_id', $user->user_id)
+                               ->first();
     
-        $agiAnswer->save();
+        if ($agiAnswer) {
+            $agiAnswer->chosenAI = $chosenAI;
+            $agiAnswer->codeReviewOrDocumentationType = $expectedType;
+            $agiAnswer->codeReviewOrDocumentation = $review;
+            $agiAnswer->codeReviewOrDocumentationText = $code;
+            $agiAnswer->save();
+        } else {
+            
+            $agiAnswer = new AGIAnswers([
+                'chosenAI' => $chosenAI,
+                'codeReviewOrDocumentationType' => $expectedType,
+                'codeReviewOrDocumentation' => $review,
+                'codeReviewOrDocumentationText' => $code,
+                'board_id' => $board->board_id,
+                'user_id' => $user->user_id,
+            ]);
+    
+            $agiAnswer->save();
+        }
     
         $response = response()->json([
             'reviewType' => $expectedType,
@@ -414,7 +427,6 @@ class ChatGPTController extends Controller
     
         return $response;
     }
-
 
     public function generatePerformanceSummary(Request $request)
     {
