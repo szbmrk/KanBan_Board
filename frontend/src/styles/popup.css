@@ -19,7 +19,7 @@
     color: var(--light-gray);
     border-radius: 8px;
     padding: 20px 20px 80px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
     width: 80%;
     max-width: 800px;
     height: 800px;
@@ -113,7 +113,7 @@
 
 .board-input:focus {
     outline: none;
-    background-color: var(--scrollbar-hover);
+    background-color: transparent;
     border-radius: 5px;
 }
 
@@ -287,9 +287,10 @@
     backdrop-filter: brightness(0.5);
 }
 
-.add-to-card {
+.add-to-card,
+.priority-picker {
     width: 150px;
-    min-height: 300px;
+    height: max-content;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -306,7 +307,8 @@
     padding-bottom: 5px;
 }
 
-.add-to-card-content {
+.add-to-card-content,
+.priority-picker-content {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -314,18 +316,21 @@
     flex-grow: 1;
 }
 
-.add-to-card-content p {
+.add-to-card-content p,
+.priority-picker-content p {
     margin: 10px 0;
 }
 
-.add-to-card-item {
+.add-to-card-item,
+.priority-picker-item {
     width: 100%;
     border-radius: 5px;
     cursor: pointer;
     transition: 0.1s ease;
 }
 
-.add-to-card-item:hover {
+.add-to-card-item:hover,
+.priority-picker-item:hover {
     background-color: var(--scrollbar-hover);
 }
 
@@ -432,40 +437,6 @@
 
 .add-comment-button:hover {
     color: var(--starred);
-}
-
-.priority-picker {
-    width: 150px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border: 1px solid var(--light-gray);
-    border-radius: 8px;
-    padding: 5px;
-    background-color: var(--bg-mostly-black);
-}
-
-.priority-picker-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    flex-grow: 1;
-}
-
-.priority-picker-content p {
-    margin: 10px 0;
-}
-
-.priority-picker-item {
-    width: 100%;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.1s ease;
-}
-
-.priority-picker-item:hover {
-    background-color: var(--scrollbar-hover);
 }
 
 .attachment-container {
@@ -582,7 +553,7 @@
 
 .member {
     background-color: var(--bg-mostly-black);
-    border-radius: 8px;
+    border-radius: 5px;
     padding: 12px;
     position: relative;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -604,54 +575,24 @@
     align-items: center;
 }
 
-.tag-editor-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
+.tag-editor-content {
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(5px);
-    z-index: 99;
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.tag-editor-name-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.tag-editor-popup {
-    background-color: var(--dark-gray);
-    width: 25%;
-    height: 25%;
-    border-radius: 4px;
-}
-
-.tag-editor-close-btn {
-    top: 10px;
-    right: 10px;
-    color: var(--light-gray);
-    padding: 0 5px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    flex-wrap: nowrap;
-}
-
-.tag-editor-close-btn:hover {
-    cursor: pointer;
-    animation: rotate 0.5s;
-}
-
-.tag-editor-upper-part {
-    height: 30px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 5px 0 10px;
-}
-
-.tag-editor-popup input {
+.tag-editor-name-container input {
     height: 2rem;
     width: 80%;
     border-radius: 5px;
@@ -664,7 +605,6 @@
 .color-picker {
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap;
     margin-top: 10px;
 }
 
@@ -674,25 +614,23 @@
     flex-wrap: wrap;
     align-content: center;
     justify-content: center;
+    gap: 10px;
+    padding: 10px;
 }
 
 .color-square {
     width: 33px;
     height: 33px;
-    margin: 5px;
-    border-radius: 4px;
+    border-radius: 5px;
+}
+
+.color-square:hover {
+    border: 2px dashed var(--light-gray);
+    cursor: pointer;
 }
 
 .color-square.selected-tag-background {
-    border: white;
-    border-style: dashed;
-    border-width: 2px;
-}
-
-.tag-editor-name-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    border: 2px solid var(--light-gray);
 }
 
 .tag-editor-save-button {

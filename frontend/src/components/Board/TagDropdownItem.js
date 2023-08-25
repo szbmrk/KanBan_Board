@@ -1,41 +1,63 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const TagDropdownItem = ({ data, onEdit, onDelete, onToggle, selectedTags }) => {
     const { label, color } = data;
 
+    const checkIcon = <FontAwesomeIcon icon={faCheck} />;
+    const trashIcon = <FontAwesomeIcon icon={faTrash} />;
+    const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
+
     const itemStyle = {
-        color: 'white',
+        color: 'var(--off-white)',
         backgroundColor: color,
         padding: '8px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         margin: '5px 0',
-        borderRadius: '4px'
+        borderRadius: '5px',
     };
 
     const buttonStyle = {
         display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
-    }
+        gap: '10px',
+    };
+
+    const iconStyle = {
+        color: 'var(--off-white)',
+        cursor: 'pointer',
+    };
 
     return (
-        <div className="custom-menu-item" style={itemStyle} onClick={() => onToggle(data)}>
-            <FontAwesomeIcon icon={faCheck} style={{ marginRight: '8px', opacity: selectedTags.some(tag => tag.value === label) ? 1 : 0 }} />
-            <span style={{ backgroundColor: color, color: "white" }}>{label}</span>
+        <div className='custom-menu-item' style={itemStyle} onClick={() => onToggle(data)}>
+            <span style={{ marginRight: '8px', opacity: selectedTags.some((tag) => tag.value === label) ? 1 : 0 }}>
+                {checkIcon}
+            </span>
+            <span style={{ backgroundColor: color, color: 'var(--off-white)' }}>{label}</span>
             <div style={buttonStyle}>
-                <FontAwesomeIcon
-                    icon={faPencilAlt}
-                    style={{ color: 'white', cursor: 'pointer', marginRight: '10px' }}
-                    onClick={(e) => { e.stopPropagation(); onEdit(data); }}
-                />
-                <FontAwesomeIcon
-                    icon={faTrash}
-                    style={{ color: 'white', cursor: 'pointer' }}
-                    onClick={(e) => { e.stopPropagation(); onDelete(data); }}
-                />
+                <span
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(data);
+                    }}
+                    style={iconStyle}
+                >
+                    {pencilIcon}
+                </span>
+                <span
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(data);
+                    }}
+                    style={iconStyle}
+                >
+                    {trashIcon}
+                </span>
             </div>
         </div>
     );
