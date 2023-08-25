@@ -417,7 +417,9 @@ const Board = () => {
 
     const moveCardBackend = async (dragIndex, hoverIndex, sourceDivIndex, targetDivIndex) => {
         const sourceDiv = board.columns[sourceDivIndex];
+        const targetDiv = board.columns[targetDivIndex];
         const task_to_modify_id = sourceDiv.tasks[hoverIndex].task_id;
+        const from_column_id = targetDiv.column_id;
         const to_column_id = sourceDiv.column_id;
         if (hoverIndex === 0) {
             sourceDiv.tasks[hoverIndex].position = sourceDiv.tasks[hoverIndex + 1].position / 2;
@@ -429,10 +431,11 @@ const Board = () => {
         }
 
         const position = sourceDiv.tasks[hoverIndex].position;
+        console.log(position);
 
         try {
             await axios.post(
-                `/columns/${board_id}/tasks/positions`,
+                `/columns/${from_column_id}/tasks/positions`,
                 {
                     tasks: [
                         {
