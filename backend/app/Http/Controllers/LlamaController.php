@@ -8,6 +8,8 @@ use Illuminate\Support\Carbon;
 use App\Models\Task;
 use App\Models\Board;
 use App\Helpers\ExecutePythonScript;
+use App\Models\AGIAnswers;
+use Illuminate\Support\Facades\Log;
 
 class LlamaController extends Controller
 {
@@ -141,7 +143,7 @@ class LlamaController extends Controller
         
         return LlamaController::parseSubtaskResponse($response);
     }
-    /*
+    
     public static function GenerateTaskDocumentationPerTask($boardId,$taskId)
     {
         $user = auth()->user();
@@ -239,9 +241,7 @@ class LlamaController extends Controller
             'response' => $cleanData
         ];
     }    
-    */
     
-
 
     public static function GenerateCodeReviewOrDocumentation(Request $request, $boardId, $expectedType) 
     {
@@ -264,59 +264,118 @@ class LlamaController extends Controller
         }
 
         $code = $request->input('code');
-        $promptCodeReview = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''.";
-        $promptDocumentation = "Use only UTF-8 chars! Act as an senior programmer and generate a documentation for the following code: '''$code'''.";
-        
+
         if ($expectedType === 'Code review') {
-            $prompt = $promptCodeReview;
+            $prompt = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''. Do NOT send back any code!";
         } elseif ($expectedType === 'Documentation') {
-            $prompt = $promptDocumentation;
+            $prompt = "Use only UTF-8 chars! In your response use 'Documentation:'! Act as a senior programmer and generate a documentation for the following code: '$code'. Do NOT send back any code!";
         } else {
             return response()->json([
                 'error' => 'Invalid expected type.',
             ], 400);
         }
-        
-        $response = Self::CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType);
-        
-        return response()->json([
-            'reviewType' => $expectedType,
-            'review' => $response['review'],
-        ]);
+
+        return Self::CallPythonAndFormatCodeReviewOrDocResponse($prompt, $boardId, $expectedType, $code);
     }
 
-    public static function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $expectedType) 
+
+    public static function CallPythonAndFormatCodeReviewOrDocResponse($prompt, $boardId, $expectedType, $code)
     {
-        $path = env('LLAMA_PYTHON_SCRIPT_PATH');
-        $response = self::GenerateApiResponse($prompt, $path);
-        $foundKeyPhrase = strtolower($expectedType) . ':';
-        $review = substr($response, stripos($response, $foundKeyPhrase) + strlen($foundKeyPhrase));
-        $review = trim($review);
+        $pythonScriptPath = env('LLAMA_PYTHON_SCRIPT_PATH');
+        $command = "python {$pythonScriptPath} \"$prompt\"";
+
+        try {
+            $answer = shell_exec($command);
+            if ($expectedType === 'Code review') {
+                $parsedData = Self::parseCodeReviewResponse($answer, $expectedType);
+            } elseif ($expectedType === 'Documentation') {
+                $parsedData = Self::parseDocResponse($answer, $expectedType);
+            }
+            $user = auth()->user();
+            $board = Board::where('board_id', $boardId)->first();
+            $chosenAI = request()->header('ChosenAI');
+            $agiAnswerId = request()->header('agi_answer_id');
         
-        return [
-            'reviewType' => $expectedType,
-            'review' => $review,
-        ];
-    }
-    public static function GenerateApiResponse($prompt, $path)
-    {
-        try
-        {
-            $command = "python $path '$prompt'";
-            $response = shell_exec($command);
-            return $response;
-        }
-        catch(\Exception $e)
-        {
+            if (!empty($agiAnswerId)) {
+                $agiAnswer = AGIAnswers::where('board_id', $board->board_id)
+                                    ->where('user_id', $user->user_id)
+                                    ->where('agi_answer_id', $agiAnswerId)
+                                    ->first();
+            
+                if ($agiAnswer) {
+                    $agiAnswer->chosenAI = $chosenAI;
+                    $agiAnswer->codeReviewOrDocumentationType = $expectedType;
+                    $agiAnswer->codeReviewOrDocumentation = $answer;
+                    $agiAnswer->codeReviewOrDocumentationText = $code;
+            
+                    $agiAnswer->save();
+                } else {
+                    return response()->json([
+                        'error' => 'AGI answer not found.',
+                    ], 404);
+                }
+            } else {
+                $agiAnswer = new AGIAnswers([
+                    'chosenAI' => $chosenAI,
+                    'codeReviewOrDocumentationType' => $expectedType,
+                    'codeReviewOrDocumentation' => $answer,
+                    'codeReviewOrDocumentationText' => $code,
+                    'board_id' => $board->board_id,
+                    'user_id' => $user->user_id,
+                ]);
+        
+                $agiAnswer->save();
+            }
+    
+            return $parsedData;
+        } catch (\Exception $e) {
+            Log::error('Error executing shell command: ' . $e->getMessage());
+
             return response()->json(['error' => $e->getMessage()]);
         }
-        
     }
 
+    public static function parseCodeReviewResponse($response, $expectedType)
+    {
+        preg_match('/Code review:(.*)/s', $response, $matches);
 
-    
+        if (isset($matches[1])) {
+            $review = trim($matches[1]);
+            $review = preg_replace('/\\\\n/', '', $review);
+            $review = preg_replace('/\\n/', '', $review);            
+            $review = preg_replace('/^!/', '', $review);
+            $review = preg_replace('/\s+/', ' ', $review);
+            $review = preg_replace('/\s?\'\s/', '\'', $review);            
 
+            return [
+                "expectedType" => $expectedType,
+                "review" => $review,
+            ];
+        }
 
+        return null;
+    }
+
+    public static function parseDocResponse($response, $expectedType)
+    {
+        preg_match('/Documentation:(.*)/s', $response, $matches);
+
+        if (isset($matches[1])) {
+            $review = trim($matches[1]);
+            $review = preg_replace('/\\\\n/', '', $review);
+            $review = preg_replace('/\\n/', '', $review);
+            $review = preg_replace('/^!/', '', $review);
+            $review = preg_replace('/\s+/', ' ', $review);
+            $review = preg_replace('/\s?\'\s/', '\'', $review);
+
+            return [
+                "expectedType" => $expectedType,
+                "review" => $review,
+            ];
+        }
+
+        return null;
+    }
 
 
 }

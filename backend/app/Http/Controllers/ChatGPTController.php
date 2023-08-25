@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\LlamaController;
 use Illuminate\Validation\ValidationException;
-
+use Illuminate\Exception;
 
 
 
@@ -405,45 +405,50 @@ class ChatGPTController extends Controller
         $board = Board::where('board_id', $boardId)->first();
         $chosenAI = request()->header('ChosenAI');
         $agiAnswerId = request()->header('agi_answer_id');
-        
-        if (!empty($agiAnswerId)) {
-            $agiAnswer = AGIAnswers::where('board_id', $board->board_id)
-                                   ->where('user_id', $user->user_id)
-                                   ->where('agi_answer_id', $agiAnswerId)
-                                   ->first();
-        
-            if ($agiAnswer) {
-                $agiAnswer->chosenAI = $chosenAI;
-                $agiAnswer->codeReviewOrDocumentationType = $expectedType;
-                $agiAnswer->codeReviewOrDocumentation = $review;
-                $agiAnswer->codeReviewOrDocumentationText = $code;
-        
-                $agiAnswer->save();
+        try {
+            if (!empty($agiAnswerId)) {
+                $agiAnswer = AGIAnswers::where('board_id', $board->board_id)
+                                    ->where('user_id', $user->user_id)
+                                    ->where('agi_answer_id', $agiAnswerId)
+                                    ->first();
+            
+                if ($agiAnswer) {
+                    $agiAnswer->chosenAI = $chosenAI;
+                    $agiAnswer->codeReviewOrDocumentationType = $expectedType;
+                    $agiAnswer->codeReviewOrDocumentation = $review;
+                    $agiAnswer->codeReviewOrDocumentationText = $code;
+            
+                    $agiAnswer->save();
+                } else {
+                    return response()->json([
+                        'error' => 'AGI answer not found.',
+                    ], 404);
+                }
             } else {
-                return response()->json([
-                    'error' => 'AGI answer not found.',
-                ], 404);
+                $agiAnswer = new AGIAnswers([
+                    'chosenAI' => $chosenAI,
+                    'codeReviewOrDocumentationType' => $expectedType,
+                    'codeReviewOrDocumentation' => $review,
+                    'codeReviewOrDocumentationText' => $code,
+                    'board_id' => $board->board_id,
+                    'user_id' => $user->user_id,
+                ]);
+            
+                $agiAnswer->save();
             }
-        } else {
-            $agiAnswer = new AGIAnswers([
-                'chosenAI' => $chosenAI,
-                'codeReviewOrDocumentationType' => $expectedType,
-                'codeReviewOrDocumentation' => $review,
-                'codeReviewOrDocumentationText' => $code,
-                'board_id' => $board->board_id,
-                'user_id' => $user->user_id,
+            
+        
+            $response = response()->json([
+                'reviewType' => $expectedType,
+                'review' => $review,
             ]);
         
-            $agiAnswer->save();
+            return $response;
+        } catch (\Exception $e) {
+            
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage(),], 500);
         }
-        
-    
-        $response = response()->json([
-            'reviewType' => $expectedType,
-            'review' => $review,
-        ]);
-    
-        return $response;
     }
 
 
