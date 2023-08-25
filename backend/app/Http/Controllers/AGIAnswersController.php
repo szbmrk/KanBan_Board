@@ -32,14 +32,14 @@ class AGIAnswersController extends Controller
         $answers = $board->AGIAnswers->filter(function ($answer) {
             return $answer->codeReviewOrDocumentationType === null && $answer->codeReviewOrDocumentation === null;
         })->map(function ($answer) {
-            return $answer->only(['taskDocumentation', 'task_id', 'board_id', 'column_id', 'user_id', 'created_at', 'updated_at']);
+            return $answer->only(['taskDocumentation','taskDocumentationText' ,'task_id', 'board_id', 'column_id', 'user_id', 'created_at', 'updated_at']);
         })->values();
 
         if ($answers->isEmpty()) {
             return response()->json(['error' => 'No answers found.'], 404);
         }
 
-        return response()->json(['answers' => $answers], 200);
+        return response()->json($answers, 200);
     }
 
     public function storePerTask(Request $request, $boardId, $taskId)
@@ -78,6 +78,7 @@ class AGIAnswersController extends Controller
 
         $answer = new AGIAnswers([
             'taskDocumentation' => $request->input('taskDocumentation'),
+            'taskDocumentationText' => $request->input('taskDocumentationText'),
             'board_id' => $board->board_id,
             'task_id' => $task->task_id,
             'user_id' => $user->user_id,
@@ -121,6 +122,7 @@ class AGIAnswersController extends Controller
 
         $answer = new AGIAnswers([
             'taskDocumentation' => $request->input('taskDocumentation'),
+            'taskDocumentationText' => $request->input('taskDocumentationText'),
             'board_id' => $board->board_id,
             'column_id' => $column->column_id,
             'user_id' => $user->user_id,
@@ -158,6 +160,7 @@ class AGIAnswersController extends Controller
 
         $answer = new AGIAnswers([
             'taskDocumentation' => $request->input('taskDocumentation'),
+            'taskDocumentationText' => $request->input('taskDocumentationText'),
             'board_id' => $board->board_id,
             'user_id' => $user->user_id,
         ]);
@@ -202,6 +205,7 @@ class AGIAnswersController extends Controller
 
         $answer->fill([
             'taskDocumentation' => $request->input('taskDocumentation', $answer->taskDocumentation),
+            'taskDocumentationText' => $request->input('taskDocumentationText', $answer->taskDocumentationText),
         ]);
 
         $answer->save();
@@ -391,11 +395,5 @@ class AGIAnswersController extends Controller
         $answer->delete();
         return response()->json(['message' => 'Answer deleted successfully'], 200);   
     }
-
-
-
-
-
-    
 
 }
