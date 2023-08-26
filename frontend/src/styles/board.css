@@ -205,25 +205,52 @@
   color: var(--light-gray);
   display: flex;
   flex-direction: row;
+  flex-wrap: nowrap;
   justify-content: flex-start;
   align-items: center;
   gap: 10px;
 }
 
-.agi-menu li span:first-child {
+.agi-menu>li span:first-child {
   width: 20%;
 }
 
-.agi-menu li span:first-child:hover {
+.agi-menu>li span:first-child:hover {
   color: var(--off-white);
 }
 
-.agi-menu li span:last-child {
-  width: 80%;
+.agi-menu>li span:nth-child(2) {
+  width: 70%;
 }
 
-.agi-menu li span:last-child:hover {
+.agi-menu>li span:nth-child(2):hover {
   color: var(--off-white);
+}
+
+.code-review-or-documentation-container {
+  max-height: 300px;
+  overflow: auto;
+  list-style-type: none;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+}
+
+.code-review-or-documentation-title span:hover {
+  color: var(--off-white);
+}
+
+.delete-code-review-or-documentation-button {
+  padding: 5px;
+  cursor: pointer;
+  color: var(--light-gray);
+}
+
+.delete-code-review-or-documentation-button:hover {
+  color: var(--important) !important;
 }
 
 @media (max-width: 830px) {
