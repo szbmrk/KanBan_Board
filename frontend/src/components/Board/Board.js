@@ -13,6 +13,9 @@ import {
     faPenRuler,
     faCode,
     faClipboard,
+    faFilter,
+    faFilterCircleXmark,
+    faSort,
 } from '@fortawesome/free-solid-svg-icons';
 import '../../styles/board.css';
 import '../../styles/popup.css';
@@ -77,6 +80,9 @@ const Board = () => {
     const codeIcon = <FontAwesomeIcon icon={faCode} />;
     const craftIcon = <FontAwesomeIcon icon={faPenRuler} />;
     const clipboardIcon = <FontAwesomeIcon icon={faClipboard} />;
+    const filterIcon = <FontAwesomeIcon icon={faFilter} />;
+    const filterDeleteIcon = <FontAwesomeIcon icon={faFilterCircleXmark} />;
+    const sortIcon = <FontAwesomeIcon icon={faSort} />;
 
     const token = sessionStorage.getItem('token');
     const team_member = JSON.parse(sessionStorage.getItem('team_members'));
@@ -1165,7 +1171,9 @@ const Board = () => {
             );
 
             const updatedBoard = { ...board };
-            const updatedTask = updatedBoard.columns.flatMap(column => column.tasks).find(task => task.task_id === task_id);
+            const updatedTask = updatedBoard.columns
+                .flatMap((column) => column.tasks)
+                .find((task) => task.task_id === task_id);
             updatedTask.tags.push(tag);
             updatedTask.tags.sort((a, b) => a.tag_id - b.tag_id);
 
@@ -1188,8 +1196,10 @@ const Board = () => {
             });
 
             const updatedBoard = { ...board };
-            const updatedTask = updatedBoard.columns.flatMap(column => column.tasks).find(task => task.task_id === task_id);
-            const removedTagIndex = updatedTask.tags.findIndex(tag => tag.tag_id === tag_id);
+            const updatedTask = updatedBoard.columns
+                .flatMap((column) => column.tasks)
+                .find((task) => task.task_id === task_id);
+            const removedTagIndex = updatedTask.tags.findIndex((tag) => tag.tag_id === tag_id);
             if (removedTagIndex !== -1) {
                 updatedTask.tags.splice(removedTagIndex, 1);
             }
@@ -1207,17 +1217,16 @@ const Board = () => {
     };
 
     const handleBoardTagDeletion = async (tag_id) => {
-
         const updatedBoard = { ...board };
         for (const column of updatedBoard.columns) {
             for (const task of column.tasks) {
-                const removedTagIndex = task.tags.findIndex(tag => tag.tag_id === tag_id);
+                const removedTagIndex = task.tags.findIndex((tag) => tag.tag_id === tag_id);
                 if (removedTagIndex !== -1) {
                     task.tags.splice(removedTagIndex, 1);
                 }
             }
         }
-    }
+    };
 
     return (
         <>
@@ -1242,20 +1251,36 @@ const Board = () => {
                                 <div className='title-bar-buttons'>
                                     <ul>
                                         <li>
+                                            <span>{filterIcon}</span>
+                                            <p>Filter</p>
+                                        </li>
+                                        <li>
+                                            <span>{sortIcon}</span>
+                                            <p>Sort by</p>
+                                        </li>
+                                        <li
+                                            onMouseEnter={() => setIsHoveredAITitleBar(true)}
+                                            onMouseLeave={() => setIsHoveredAITitleBar(false)}
+                                            onClick={toggleAGIDropdown}
+                                            style={{
+                                                color:
+                                                    isHoveredAITitleBar || isAGIOpen
+                                                        ? 'var(--off-white)'
+                                                        : 'var(--dark-gray)',
+                                            }}
+                                        >
                                             <span
                                                 className='ai-button-on-title-bar'
-                                                onMouseEnter={() => setIsHoveredAITitleBar(true)}
-                                                onMouseLeave={() => setIsHoveredAITitleBar(false)}
-                                                onClick={toggleAGIDropdown}
                                                 style={{
                                                     color:
                                                         isHoveredAITitleBar || isAGIOpen
-                                                            ? 'var(--magic)'
+                                                            ? 'var(--off-white)'
                                                             : 'var(--dark-gray)',
                                                 }}
                                             >
                                                 {aiIcon}
                                             </span>
+                                            <p>Magic</p>
                                         </li>
                                     </ul>
                                 </div>
