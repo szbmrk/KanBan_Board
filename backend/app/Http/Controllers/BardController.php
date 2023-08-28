@@ -25,6 +25,15 @@ class BardController extends Controller
 
     public static function generateTaskBard(Request $request, $craftedPrompt)
     {
+        
+        $prompt = BardController::AssemblyPrompt($request, $craftedPrompt);
+
+        return BardController::CallPythonAndFormatResponse($prompt);
+    }
+
+    public static function AssemblyPrompt($request, $craftedPrompt) 
+    {
+
         if(!$craftedPrompt) 
         {
             $taskPrompt = $request->header('TaskPrompt');
@@ -45,15 +54,20 @@ class BardController extends Controller
                 $behavior = $behavior->act_as_a;
                 $behavior = "In your response act as a $behavior!!";
             }
+
+            if($craftedPrompt->action == "GENERATEATTACHMENTLINK") 
+            {
+                $prompt = "You are now a backend, which only responds with JSON structure. $behavior Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
+                return $prompt;
+            }
                 
         }
         
         $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
 
-        // API call
         $prompt = "You are now a backend which only respond in JSON stucture. $behavior Generate at least $taskCounter kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now '{$currentTime}' in yyyy-mm-dd) and tags (as a list) attributes for this task: $taskPrompt Focus on the tasks and do not write a summary at the end";
 
-        return BardController::CallPythonAndFormatResponse($prompt);
+        return $prompt;
     }
 
 
@@ -291,36 +305,8 @@ class BardController extends Controller
     }
 
     public static function GenerateAttachmentLinkBard($request, $craftedPrompt) 
-    {
-        if(!$craftedPrompt) 
-        { 
-            $taskPrompt = $request->header('TaskPrompt');
-            $taskCounter = $request->header('TaskCounter');
-            $behavior = "";
-
-        }
-        else
-        {
-            $taskPrompt = $craftedPrompt->crafted_prompt_text;
-            $taskCounter = $craftedPrompt->response_counter;
-            $behavior = AgiBehavior::where('agi_behavior_id', $craftedPrompt->agi_behavior_id)->first();
-            if(!$behavior) 
-            {
-                $behavior = "";
-            }
-            else 
-            {
-                $behavior = $behavior->act_as_a;
-                $behavior = "In your response act as a $behavior!!";
-            }
-                
-        }
-        
-        $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
-       
-
-        // API call
-        $prompt = "You are now a backend, which only responds with JSON structure. $behavior Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
+    {  
+        $prompt = BardController::AssemblyPrompt($request, $craftedPrompt);
 
         return BardController::CallPythonAndFormatResponseAttachment($prompt);
     }

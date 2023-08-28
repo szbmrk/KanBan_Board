@@ -249,10 +249,10 @@ class PromptCraftController extends Controller
                     $response = ChatGPTController::GenerateCraftedTaskChatGPT($request, $craftedPrompt);
                     break;
                 case "GENERATEATTACHMENTLINK":
-                    $response = ChatGPTController::GenerateCraftedAttachmentinkChatGPT($request, $craftedPrompt);
+                    $response = ChatGPTController::GenerateAttachmentLinkChatGPT($request, $craftedPrompt);
                     break;
                 default:
-                    $response = ChatGPTController::GenerateCraftedTaskChatGPT($request, $craftedPrompt);
+                    $response = ChatGPTController::GenerateTaskChatGPT($request, $craftedPrompt);
                     break;
             }
         }

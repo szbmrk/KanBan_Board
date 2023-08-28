@@ -27,18 +27,64 @@ use Illuminate\Exception;
 
 class ChatGPTController extends Controller
 {
-    public static function GenerateTaskChatGPT(Request $request)
+    public static function GenerateTaskChatGPT($request, $craftedPrompt)
     {
-        $taskPrompt = $request->header('TaskPrompt'); // Correct the header key spelling
-        $taskCounter = $request->header('TaskCounter');
-        $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
-
-        // Construct the prompt for the current iteration
-        $prompt = "Generate $taskCounter kanban tickets in JSON structure in a list with title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list) attributes for this ticket: '$taskPrompt'";
-    
-        // Call the Python script and get the formatted response
+        $prompt = ChatGPTController::PromptAssembly($request, $craftedPrompt);
 
         return ChatGPTController::CallPythonAndFormatResponse($prompt);
+    }
+
+    public static function PromptAssembly($request, $craftedPrompt) 
+    {
+        if(!$craftedPrompt) 
+        {
+            $taskPrompt = $request->header('TaskPrompt');
+            $taskCounter = $request->header('TaskCounter');
+            $behavior = "";
+        }
+        else
+        {
+            $taskPrompt = $craftedPrompt->crafted_prompt_text;
+            $taskCounter = $craftedPrompt->response_counter;
+            $behavior = AgiBehavior::where('agi_behavior_id', $craftedPrompt->agi_behavior_id)->first();
+            if(!$behavior) 
+            {
+                $behavior = "";
+            }
+            else 
+            {
+                $behavior = $behavior->act_as_a;
+                $behavior = "You are now a $behavior, act like it!!";
+            }
+
+            if($craftedPrompt->action == "GENERATEATTACHMENTLINK")
+            {
+                $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
+                return $prompt;
+
+            }
+                
+        }
+        $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
+        dd($request);
+
+        // Construct the prompt for the current iteration
+        $prompt = "$behavior Generate $taskCounter kanban tickets in JSON structure in a list with title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list) attributes for this ticket: '$taskPrompt'";
+
+        return $prompt;
+
+    }
+
+    public static function GenerateAttachmentLinkNotCraftedChatGPT($request) 
+    {
+        $taskPrompt = $request->header('TaskPrompt');
+        $taskCounter = $request->header('TaskCounter');
+
+        $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
+
+        return ChatGPTController::CallPythonAndFormatResponse($prompt);
+
+
     }
 
     public static function GenerateTaskDraftChatGPT(Request $request)
@@ -82,15 +128,11 @@ class ChatGPTController extends Controller
         return ChatGPTController::CallPythonAndFormatResponse($prompt);
     }
 
-    public static function GenerateAttachmentLinkChatGPT(Request $request)
+    public static function GenerateAttachmentLinkChatGPT($request, $promptCraft)
     {
         $user = auth()->user();
-        $taskPrompt = $request->header('TaskPrompt');
-        $taskCounter = $request->header('TaskCounter');
 
-        // Prepare the prompt to be sent to the Python script
-        $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
-        // Construct the Python command with the required arguments and path to the script
+        $prompt = ChatGPTController::PromptAssembly($request, $promptCraft);
 
         return ChatGPTController::CallPythonAndFormatResponse($prompt);
     }
@@ -236,42 +278,6 @@ class ChatGPTController extends Controller
             'priorities' => $prioritiesArray,
         ]);
     }
-
-    public static function GenerateCraftedTaskChatGPT($request, $craftedPrompt)
-    {
-        $taskPrompt = $craftedPrompt->crafted_prompt_text; // Correct the header key spelling
-        $taskCounter = $craftedPrompt->response_counter;
-        $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
-        $behavior = AgiBehavior::find($craftedPrompt->agi_behavior_id);
-        
-        if(!$behavior){
-            $behavior = "";
-        } else {
-            $behavior = $behavior->act_as_a;
-        }
-
-
-        $prompt = "Generate $taskCounter task kanban board tickets. JSON structure in a list. title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list). Act as $behavior! This is the ticket instruction: '$taskPrompt'. Act as i said.";
-        $answer = ChatGPTController::CallPythonAndFormatResponse($prompt);
-
-        return $answer;
-
-    }
-
-    public static function GenerateCraftedAttachmentinkChatGPT($request, $craftedPrompt)
-    {
-        $user = auth()->user();
-        $taskPrompt = $craftedPrompt->crafted_prompt_text; 
-        $taskCounter = $craftedPrompt->response_counter;
-
-        // Prepare the prompt to be sent to the Python script
-        $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
-        // Construct the Python command with the required arguments and path to the script
-
-        return ChatGPTController::CallPythonAndFormatResponse($prompt);
-
-    }
-
 
     public static function GenerateTaskDocumentationPerTask($boardId,$taskId)
     {

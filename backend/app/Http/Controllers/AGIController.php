@@ -46,7 +46,8 @@ class AGIController extends Controller
                     $response = ChatGPTController::GenerateTaskDraftChatGPT($request);
                     break;
                 }
-                $response = ChatGPTController::GenerateTaskChatGPT($request);
+                $craftedPrompt = null;
+                $response = ChatGPTController::GenerateTaskChatGPT($request, $craftedPrompt);
                 break;
         }
         return $response;
@@ -111,7 +112,7 @@ class AGIController extends Controller
                 $response = BardController::GenerateAttachmentLinkBard($request, $craftedPrompt);
                 break;
             default:
-                $response = ChatGPTController::GenerateAttachmentLinkChatGPT($request);
+                $response = ChatGPTController::GenerateAttachmentLinkNotCraftedChatGPT($request);
                 break;
         }
 
