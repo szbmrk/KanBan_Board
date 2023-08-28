@@ -5,7 +5,7 @@ import { Link, RedirectFunction } from 'react-router-dom';
 import Loader from '../Loader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faPencil, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { SetRoles } from '../../roles/Roles';
+import { SetRoles, checkPermissionForBoard } from '../../roles/Roles';
 import Error from '../Error';
 
 const plusIcon = <FontAwesomeIcon icon={faPlus} />;
@@ -19,8 +19,6 @@ export default function Dashboard() {
     const [selectedTeamId, setSelectedTeamId] = useState(null);
     const [selectedBoardId, setSelectedBoardId] = useState(null);
     const [hoveredBoardId, setHoveredBoardId] = useState(null);
-    const [ownPermissions, setOwnPermissions] = useState([]);
-    const [teamPermissions, setTeamPermissions] = useState([]);
     const [error, setError] = useState(false);
     const [redirect, setRedirect] = useState(false);
 
@@ -38,8 +36,6 @@ export default function Dashboard() {
 
     async function ResetRoles() {
         await SetRoles(token);
-        setTeamPermissions(JSON.parse(sessionStorage.getItem('permissions')).teams);
-        setOwnPermissions(JSON.parse(sessionStorage.getItem('permissions')).general_role);
     }
 
     const fetchDashboardData = async () => {
@@ -215,24 +211,6 @@ export default function Dashboard() {
         setHoveredBoardId(null);
     };
 
-    const checkPermissonToManageBoard = (board_id, team_id) => {
-        //TODO Refactor
-        console.log(teamPermissions);
-        if (ownPermissions.includes('system_admin')) {
-            return true;
-        }
-        if (teamPermissions.length === 0) {
-            return false;
-        }
-        for (let i = 0; i < teamPermissions.length; i++) {
-            if (teamPermissions[i].team_id === team_id && teamPermissions[i].board_id === board_id) {
-                if (teamPermissions[i].permission === 'board_management') {
-                    return true;
-                }
-            }
-        }
-    };
-
     return (
         <div className='content'>
             {teams.length === 0 ? (
@@ -261,7 +239,7 @@ export default function Dashboard() {
                                                     <Link to={`/board/${board.board_id}`} className='board-title'>
                                                         <p>{board.name}</p>
                                                     </Link>
-                                                    {checkPermissonToManageBoard(board.board_id, team.team_id) ===
+                                                    {checkPermissionForBoard(board.board_id, team.team_id, 'board_management') ===
                                                         true && (
                                                             <span
                                                                 className='delete-icon'
@@ -280,7 +258,7 @@ export default function Dashboard() {
                                                                 {closeIcon}
                                                             </span>
                                                         )}
-                                                    {checkPermissonToManageBoard(board.board_id, team.team_id) ===
+                                                    {checkPermissionForBoard(board.board_id, team.team_id, 'board_management') ===
                                                         true && (
                                                             <span
                                                                 className='edit-board-button'

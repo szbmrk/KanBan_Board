@@ -28,8 +28,6 @@ const Teams = () => {
 
     async function ResetRoles() {
         await SetRoles(token);
-        setTeamPermissions(JSON.parse(sessionStorage.getItem('permissions')).teams);
-        setOwnPermissions(JSON.parse(sessionStorage.getItem('permissions')).general_role);
     }
 
     function addTeam() {

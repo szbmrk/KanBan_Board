@@ -1,9 +1,10 @@
-
 /* Permission table */
 .permission-table {
-    width: 100%;
+    width: 95%;
     border-collapse: collapse;
     margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .permission-table th {
@@ -18,10 +19,12 @@
     border: 1px solid var(--dark-gray);
     padding: 10px;
     text-align: center;
+
 }
 
 .permission-table td {
     background-color: var(--bg-mostly-black);
+    color: var(--light-gray);
 }
 
 .role-header {
@@ -43,6 +46,8 @@
     margin-top: 20px;
     display: flex;
     align-items: center;
+    justify-content: center;
+
 }
 
 .role-input {
@@ -50,6 +55,7 @@
     border: 1px solid var(--dark-gray);
     border-radius: 4px;
     width: 200px;
+    text-align: center;
 }
 
 .add-role-button {
