@@ -274,16 +274,55 @@ class BardController extends Controller
         }
     }
 
-    public static function GenerateAttachmentLinkBard($request) 
+    public static function CallPythonAndFormatResponseAttachment($prompt)
     {
-        $taskPrompt = $request->header('TaskPrompt');
-        $taskCounter = $request->header('TaskCounter');
+        $pythonScriptPath = env('BARD_PYTHON_SCRIPT_PATH'); // Path to your Python script
+        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
+        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
+        $command = "python {$pythonScriptPath} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+
+        try {
+            $answer = shell_exec($command);   
+            $parsedData = BardController::parseLinkResponse($answer);
+            return response()->json($parsedData);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
+        }
+    }
+
+    public static function GenerateAttachmentLinkBard($request, $craftedPrompt) 
+    {
+        if(!$craftedPrompt) 
+        { 
+            $taskPrompt = $request->header('TaskPrompt');
+            $taskCounter = $request->header('TaskCounter');
+            $behavior = "";
+
+        }
+        else
+        {
+            $taskPrompt = $craftedPrompt->crafted_prompt_text;
+            $taskCounter = $craftedPrompt->response_counter;
+            $behavior = AgiBehavior::where('agi_behavior_id', $craftedPrompt->agi_behavior_id)->first();
+            if(!$behavior) 
+            {
+                $behavior = "";
+            }
+            else 
+            {
+                $behavior = $behavior->act_as_a;
+                $behavior = "In your response act as a $behavior!!";
+            }
+                
+        }
+        
         $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
+       
 
         // API call
-        $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
+        $prompt = "You are now a backend, which only responds with JSON structure. $behavior Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
 
-        return BardController::CallPythonAndFormatResponse($prompt);
+        return BardController::CallPythonAndFormatResponseAttachment($prompt);
     }
 
     public static function parseLinkResponse($response)

@@ -260,10 +260,10 @@ class PromptCraftController extends Controller
         {
             switch ($craftedPrompt->action) {
                 case "GENERATESUBTASK":
-                    $response = BardController::GenerateCraftedTaskChatGPT($request, $craftedPrompt);
+                    $response = BardController::generateTaskBard($request, $craftedPrompt);
                     break;
                 case "GENERATEATTACHMENTLINK":
-                    $response = BardController::GenerateCraftedAttachmentinkChatGPT($request, $craftedPrompt);
+                    $response = BardController::GenerateAttachmentLinkBard($request, $craftedPrompt);
                     break;
                 default:
                     $response = BardController::generateTaskBard($request, $craftedPrompt);

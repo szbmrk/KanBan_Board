@@ -107,7 +107,8 @@ class AGIController extends Controller
                 $response = LlamaController::GenerateAttachmentLinkLlama($request);
                 break;
             case Str::lower("bard"):
-                $response = BardController::GenerateAttachmentLinkBard($request);
+                $craftedPrompt = null;
+                $response = BardController::GenerateAttachmentLinkBard($request, $craftedPrompt);
                 break;
             default:
                 $response = ChatGPTController::GenerateAttachmentLinkChatGPT($request);
