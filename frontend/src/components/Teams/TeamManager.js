@@ -47,7 +47,7 @@ const TeamManager = ({ teamData, onClose, ChangeTeamName, addTeam }) => {
                                 type='text'
                                 value={teamName}
                                 onChange={handleInputChange}
-                                placeholder='Board name'
+                                placeholder='Team name'
                                 className='popup-input-mini'
                                 required
                             />
@@ -69,7 +69,7 @@ const TeamManager = ({ teamData, onClose, ChangeTeamName, addTeam }) => {
                                 type='text'
                                 value={teamName}
                                 onChange={handleInputChange}
-                                placeholder='Board name'
+                                placeholder='Team name'
                                 className='popup-input-mini'
                                 required
                             />

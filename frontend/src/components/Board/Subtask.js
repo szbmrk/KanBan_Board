@@ -1,18 +1,33 @@
-import React, { useState } from 'react'
-import Tag from '../Tag'
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencil, faTrash, faStar as faSolidStar } from "@fortawesome/free-solid-svg-icons";
-import { faStar as faRegularStar } from "@fortawesome/free-regular-svg-icons";
+import React, { useState } from 'react';
+import Tag from '../Tag';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPencil, faTrash, faEllipsis, faStar as faSolidStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar as faRegularStar } from '@fortawesome/free-regular-svg-icons';
 
 const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 const trashIcon = <FontAwesomeIcon icon={faTrash} />;
 const regularStarIcon = <FontAwesomeIcon icon={faRegularStar} />;
 const regularStarIconBouncing = <FontAwesomeIcon icon={faRegularStar} bounce />;
 const solidStarIcon = <FontAwesomeIcon icon={faSolidStar} />;
+const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
 
-export default function Subtask({ subTask, index, favouriteSubtask, unFavouriteSubtask, deleteSubtask, setTaskAsInspectedTask }) {
+export default function Subtask({
+    subTask,
+    index,
+    favouriteSubtask,
+    unFavouriteSubtask,
+    deleteSubtask,
+    setTaskAsInspectedTask,
+}) {
     const [bouncingStarIcon, setBouncingStarIcon] = useState(regularStarIcon);
-    const [isHovered, setIsHovered] = useState(false);
+    const [hoveredSubtaskId, setHoveredSubtaskId] = useState(null);
+    const [showIconContainer, setShowIconContainer] = useState(false);
+    const [iconContainerPosition, setIconContainerPosition] = useState({ x: 0, y: 0 });
+    const [subtaskIndex, setSubtaskIndex] = useState(null);
+    const [subtaskZIndex, setSubtaskZIndex] = useState(0);
+    const [isHoveredEdit, setIsHoveredEdit] = useState(false);
+    const [isHoveredFavorite, setIsHoveredFavorite] = useState(false);
+    const [isHoveredDelete, setIsHoveredDelete] = useState(false);
 
     const handleMouseEnterOnStarIcon = () => {
         setBouncingStarIcon(regularStarIconBouncing);
@@ -22,61 +37,146 @@ export default function Subtask({ subTask, index, favouriteSubtask, unFavouriteS
         setBouncingStarIcon(regularStarIcon);
     };
 
-    const handleMouseEnterOnTaskTitle = () => {
-        const taskTitle = document.getElementsByClassName("task-title")[index];
-        if (taskTitle.textContent.length > 20) {
-            setIsHovered(true);
-        }
+    const handleMouseEnterOnSubtask = (subtaskId) => {
+        setHoveredSubtaskId(subtaskId);
     };
 
-    const handleMouseLeaveOnTaskTitle = () => {
-        setIsHovered(false);
+    const handleMouseLeaveOnSubtask = () => {
+        setHoveredSubtaskId(null);
+    };
+
+    const handleDotsClick = (event, cardIndex) => {
+        const buttonRect = event.target.getBoundingClientRect();
+        const newX = buttonRect.right + 20;
+        const newY = buttonRect.top;
+
+        // Set the icon-container's position and show it
+        setIconContainerPosition({ x: newX, y: newY });
+        setShowIconContainer(!showIconContainer);
+
+        setSubtaskIndex(cardIndex);
+
+        subtaskZIndex === 1 ? setSubtaskZIndex(100) : setSubtaskZIndex(1);
     };
 
     return (
-        <div className="card subtask-card">
-            <div className="subtask-title"
-                onMouseEnter={handleMouseEnterOnTaskTitle}
-                onMouseLeave={handleMouseLeaveOnTaskTitle}
+        <>
+            <div
+                className='card subtask-card'
+                onMouseEnter={() => handleMouseEnterOnSubtask(subTask.task_id)}
+                onMouseLeave={handleMouseLeaveOnSubtask}
+                style={{ zIndex: subtaskZIndex }}
             >
-                {subTask.title}
-
-            </div>
-            <div className="tags-container">
-                {subTask.tags && subTask.tags.map((tag, tagIndex) => (
-                    <Tag key={tagIndex} name={tag.name} color={tag.color} extraClassName="tag-on-board" />
-                ))}
-            </div>
-            <div className="icon-container">
-                {subTask.is_favourite ?
-                    <span className="favourite-button solid-icon"
-                        onClick={unFavouriteSubtask}
-                        style={{ display: isHovered ? "none" : "block" }}
+                <div className='task-title'>{subTask.title}</div>
+                <div
+                    className='subtask-options'
+                    style={{ visibility: hoveredSubtaskId === subTask.task_id ? 'visible' : 'hidden' }}
+                >
+                    <span
+                        className='dots'
+                        onClick={(e) => handleDotsClick(e, index)}
+                        style={{
+                            visibility: hoveredSubtaskId === subTask.task_id ? 'visible' : 'hidden',
+                            transition: 'visibility 0.1s ease',
+                        }}
                     >
-                        {solidStarIcon}
-                    </span> :
-                    <span className="favourite-button regular-icon"
-                        onClick={favouriteSubtask}
-                        onMouseEnter={handleMouseEnterOnStarIcon}
-                        onMouseLeave={handleMouseLeaveOnStarIcon}
-                        style={{ display: isHovered ? "none" : "block" }}
-                    >
-                        {bouncingStarIcon}
+                        {dotsIcon}
                     </span>
-                }
-                <span className="edit"
-                    onClick={() => setTaskAsInspectedTask(subTask)}
-                    style={{ display: isHovered ? "none" : "block" }}
-                >
-                    {pencilIcon}
-                </span>
-                <span className="delete-button"
-                    onClick={deleteSubtask}
-                    style={{ display: isHovered ? "none" : "block" }}
-                >
-                    {trashIcon}
-                </span>
+                </div>
+                <div className='tags-container'>
+                    {subTask.tags &&
+                        subTask.tags.map((tag, tagIndex) => (
+                            <Tag key={tagIndex} name={tag.name} color={tag.color} extraClassName='tag-on-board' />
+                        ))}
+                </div>
             </div>
-        </div>
-    )
+            {showIconContainer && (
+                <div
+                    className='overlay darken'
+                    onClick={() => {
+                        setShowIconContainer(false);
+                        setSubtaskZIndex(1);
+                    }}
+                >
+                    <div
+                        className='icon-container'
+                        style={{
+                            position: 'fixed',
+                            left: iconContainerPosition.x + 'px',
+                            top: iconContainerPosition.y + 'px',
+                        }}
+                    >
+                        <div
+                            className='option'
+                            onMouseEnter={() => setIsHoveredEdit(true)}
+                            onMouseLeave={() => setIsHoveredEdit(false)}
+                            onClick={() => setTaskAsInspectedTask(subTask.task_id)}
+                        >
+                            <span
+                                className='edit'
+                                style={{
+                                    color: isHoveredEdit ? 'var(--edit)' : '',
+                                    animation: isHoveredEdit ? 'rotate 0.5s' : 'none',
+                                }}
+                            >
+                                {pencilIcon}
+                            </span>
+                            <p>Edit Subtask</p>
+                        </div>
+                        {subTask.is_favourite ? (
+                            <div
+                                className='option'
+                                onMouseEnter={() => setIsHoveredFavorite(true)}
+                                onMouseLeave={() => setIsHoveredFavorite(false)}
+                                onClick={unFavouriteSubtask}
+                            >
+                                <span
+                                    className='favourite-button solid-icon'
+                                    style={{
+                                        color: isHoveredFavorite ? 'var(--light-gray)' : '',
+                                    }}
+                                >
+                                    {isHoveredFavorite ? regularStarIcon : solidStarIcon}
+                                </span>
+                                <p>Remove from Favourites</p>
+                            </div>
+                        ) : (
+                            <div
+                                className='option'
+                                onMouseEnter={() => setIsHoveredFavorite(true)}
+                                onMouseLeave={() => setIsHoveredFavorite(false)}
+                                onClick={favouriteSubtask}
+                            >
+                                <span
+                                    className='favourite-button regular-icon'
+                                    onMouseEnter={handleMouseEnterOnStarIcon}
+                                    onMouseLeave={handleMouseLeaveOnStarIcon}
+                                    style={{ color: isHoveredFavorite ? 'var(--starred)' : '' }}
+                                >
+                                    {bouncingStarIcon}
+                                </span>
+                                <p onMouseEnter={handleMouseEnterOnStarIcon} onMouseLeave={handleMouseLeaveOnStarIcon}>
+                                    Add to Favourites
+                                </p>
+                            </div>
+                        )}
+                        <div
+                            className='option'
+                            onMouseEnter={() => setIsHoveredDelete(true)}
+                            onMouseLeave={() => setIsHoveredDelete(false)}
+                        >
+                            <span
+                                className='trash-icon'
+                                onClick={deleteSubtask}
+                                style={{ color: isHoveredDelete ? 'var(--important)' : '' }}
+                            >
+                                {trashIcon}
+                            </span>
+                            <p>Delete Subtask</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
+    );
 }

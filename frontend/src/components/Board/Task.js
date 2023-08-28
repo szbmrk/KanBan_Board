@@ -215,12 +215,13 @@ export const Task = ({
                             <span
                                 className='edit-button'
                                 style={{
+                                    color: isHoveredEdit ? 'var(--edit)' : '',
                                     animation: isHoveredEdit ? 'rotate 0.5s' : 'none',
                                 }}
                             >
                                 {pencilIcon}
                             </span>
-                            <p>Edit</p>
+                            <p>Edit Task</p>
                         </div>
                         <div
                             className='option'
@@ -270,7 +271,7 @@ export const Task = ({
                                         color: isHoveredFavorite ? 'var(--light-gray)' : '',
                                     }}
                                 >
-                                    {solidStarIcon}
+                                    {isHoveredFavorite ? regularStarIcon : solidStarIcon}
                                 </span>
                                 <p>Remove from Favourites</p>
                             </div>
@@ -306,7 +307,7 @@ export const Task = ({
                             >
                                 {trashIcon}
                             </span>
-                            <p>Delete</p>
+                            <p>Delete Task</p>
                         </div>
                     </div>
                 </div>

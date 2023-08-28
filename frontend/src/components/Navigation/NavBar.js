@@ -4,7 +4,15 @@ import { AuthContext } from '../../auth/AuthContext';
 import '../../styles/navbar.css';
 import '../../styles/popup.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faUser, faBars, faSignOutAlt, faUserPen, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import {
+    faBell,
+    faUser,
+    faBars,
+    faSignOutAlt,
+    faUserPen,
+    faMagnifyingGlass,
+    faCircleHalfStroke,
+} from '@fortawesome/free-solid-svg-icons';
 
 const notificationIcon = <FontAwesomeIcon icon={faBell} />;
 const profileIcon = <FontAwesomeIcon icon={faUser} />;
@@ -12,6 +20,7 @@ const menuIcon = <FontAwesomeIcon icon={faBars} />;
 const signOutIcon = <FontAwesomeIcon icon={faSignOutAlt} />;
 const editProfileIcon = <FontAwesomeIcon icon={faUserPen} />;
 const searchIcon = <FontAwesomeIcon icon={faMagnifyingGlass} />;
+const displayModeIcon = <FontAwesomeIcon icon={faCircleHalfStroke} />;
 
 const Navbar = () => {
     const { isLoggedIn, onLogout } = React.useContext(AuthContext);
@@ -49,7 +58,9 @@ const Navbar = () => {
                                 <button type='submit'>{searchIcon}</button>
                             </form>
                         </li>
-                        <li></li>
+                        <li>
+                            <span>{displayModeIcon}</span>
+                        </li>
                         <li>
                             <Link to='/notifications'>
                                 <span>{notificationIcon}</span>

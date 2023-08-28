@@ -13,6 +13,9 @@ import {
   faPenRuler,
   faCode,
   faClipboard,
+  faFilter,
+  faFilterCircleXmark,
+  faSort,
 } from "@fortawesome/free-solid-svg-icons";
 import "../../styles/board.css";
 import "../../styles/popup.css";
@@ -72,18 +75,21 @@ const Board = () => {
   const [craftedPrompts, setCraftedPrompts] = useState([]);
   const [craftedPromptsBoard, setCraftedPromptsBoard] = useState([]);
   const [craftedPromptsTask, setCraftedPromptsTask] = useState([]);
+  const [isHoveredAITitleBar, setIsHoveredAITitleBar] = useState([]);
   const [codeReviewOrDocumentations, setCodeReviewOrDocumentation] = useState(
     []
   );
   const navigate = useNavigate();
   const [hoveredColumnId, setHoveredColumnId] = useState(null);
   const [isAGIOpen, setIsAGIOpen] = useState(false);
-
   const checkIcon = <FontAwesomeIcon icon={faCheck} />;
   const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
   const codeIcon = <FontAwesomeIcon icon={faCode} />;
   const craftIcon = <FontAwesomeIcon icon={faPenRuler} />;
   const clipboardIcon = <FontAwesomeIcon icon={faClipboard} />;
+  const filterIcon = <FontAwesomeIcon icon={faFilter} />;
+  const filterDeleteIcon = <FontAwesomeIcon icon={faFilterCircleXmark} />;
+  const sortIcon = <FontAwesomeIcon icon={faSort} />;
 
   const token = sessionStorage.getItem("token");
   const team_member = JSON.parse(sessionStorage.getItem("team_members"));
@@ -138,7 +144,6 @@ const Board = () => {
         column.tasks.sort((a, b) => a.position - b.position)
       );
       tempBoard.columns = tempColumns.sort((a, b) => a.position - b.position);
-
       let tempColumnPositions = tempBoard.columns.map(
         (column) => column.column_id
       );
@@ -450,7 +455,9 @@ const Board = () => {
     targetDivIndex
   ) => {
     const sourceDiv = board.columns[sourceDivIndex];
+    const targetDiv = board.columns[targetDivIndex];
     const task_to_modify_id = sourceDiv.tasks[hoverIndex].task_id;
+    const from_column_id = targetDiv.column_id;
     const to_column_id = sourceDiv.column_id;
     if (hoverIndex === 0) {
       sourceDiv.tasks[hoverIndex].position =
@@ -466,10 +473,11 @@ const Board = () => {
     }
 
     const position = sourceDiv.tasks[hoverIndex].position;
+    console.log(position);
 
     try {
       await axios.post(
-        `/columns/${board_id}/tasks/positions`,
+        `/columns/${from_column_id}/tasks/positions`,
         {
           tasks: [
             {
@@ -846,7 +854,6 @@ const Board = () => {
   ] = useState(null);
   const [inspectedAttachmentLinks, setInspectedAttachmentLinks] =
     useState(null);
-
   const setTaskAsInspectedTask = (task) => {
     setInspectedTask(task);
     setShowPopup(true);
@@ -989,7 +996,6 @@ const Board = () => {
   const openCraftPromptPopup = () => {
     setShowCraftPromptPopup(true);
   };
-
   const handleCraftPromptCancel = () => {
     setShowCraftPromptPopup(false);
   };
@@ -997,13 +1003,14 @@ const Board = () => {
   const openCodePopup = (codeReviewOrDocumentation) => {
     setShowCodePopup(true);
     setInspectedCodeReviewOrDocumentation(codeReviewOrDocumentation);
+    setIsAGIOpen(false);
+    setIsHoveredCode(false);
   };
 
   const handleCodeCancel = () => {
     setShowCodePopup(false);
     setInspectedCodeReviewOrDocumentation(null);
   };
-
   const deleteCodeReviewOrDocumentation = async (
     codeReviewOrDocumentationToDelete
   ) => {
@@ -1030,7 +1037,6 @@ const Board = () => {
   const useCrafterPromptOnColumn = async (craftedPrompt, column) => {
     console.log("craftedPrompt");
     console.log(craftedPrompt);
-
     try {
       const token = sessionStorage.getItem("token");
 
@@ -1244,6 +1250,8 @@ const Board = () => {
 
   const handleShowCraftPromptPopup = () => {
     setShowCraftPromptPopup(true);
+    setIsAGIOpen(false);
+    setIsHoveredCraft(false);
   };
 
   const handleAddMember = async (task_id, column_id, member_id) => {
@@ -1319,17 +1327,20 @@ const Board = () => {
 
   const handlePlaceTagOnTask = async (task_id, tag) => {
     try {
-      const response = await axios.post(
+      await axios.post(
         `/boards/${board_id}/tasks/${task_id}/tags/${tag.tag_id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      inspectedTask.tags.push(tag);
+      const updatedBoard = { ...board };
+      const updatedTask = updatedBoard.columns
+        .flatMap((column) => column.tasks)
+        .find((task) => task.task_id === task_id);
+      updatedTask.tags.push(tag);
+      updatedTask.tags.sort((a, b) => a.tag_id - b.tag_id);
 
-      inspectedTask.tags.sort((a, b) => {
-        return a.tag_id - b.tag_id;
-      });
+      setBoard(updatedBoard);
     } catch (e) {
       console.error(e);
       if (e.response.status === 401 || e.response.status === 500) {
@@ -1343,19 +1354,25 @@ const Board = () => {
 
   const handleRemoveTagFromTask = async (task_id, tag_id) => {
     try {
-      const response = await axios.delete(
+      await axios.delete(
         `/boards/${board_id}/tasks/${task_id}/tags/${tag_id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      const removedTagIndex = inspectedTask.tags.findIndex((tag) => {
-        if (tag.tag_id === tag_id) {
-          return true;
-        }
-      });
-      inspectedTask.tags.splice(removedTagIndex, 1);
+      const updatedBoard = { ...board };
+      const updatedTask = updatedBoard.columns
+        .flatMap((column) => column.tasks)
+        .find((task) => task.task_id === task_id);
+      const removedTagIndex = updatedTask.tags.findIndex(
+        (tag) => tag.tag_id === tag_id
+      );
+      if (removedTagIndex !== -1) {
+        updatedTask.tags.splice(removedTagIndex, 1);
+      }
+
+      setBoard(updatedBoard);
     } catch (e) {
       console.error(e);
       if (e.response.status === 401 || e.response.status === 500) {
@@ -1367,11 +1384,25 @@ const Board = () => {
     }
   };
 
+  const handleBoardTagDeletion = async (tag_id) => {
+    const updatedBoard = { ...board };
+    for (const column of updatedBoard.columns) {
+      for (const task of column.tasks) {
+        const removedTagIndex = task.tags.findIndex(
+          (tag) => tag.tag_id === tag_id
+        );
+        if (removedTagIndex !== -1) {
+          task.tags.splice(removedTagIndex, 1);
+        }
+      }
+    }
+  };
+
   return (
     <>
       {permission === false ? (
         error ? (
-          <Error error={error}></Error>
+          <Error error={error} redirect={redirect}></Error>
         ) : (
           <div className="content">
             <Loader />
@@ -1390,20 +1421,36 @@ const Board = () => {
                 <div className="title-bar-buttons">
                   <ul>
                     <li>
+                      <span>{filterIcon}</span>
+                      <p>Filter</p>
+                    </li>
+                    <li>
+                      <span>{sortIcon}</span>
+                      <p>Sort by</p>
+                    </li>
+                    <li
+                      onMouseEnter={() => setIsHoveredAITitleBar(true)}
+                      onMouseLeave={() => setIsHoveredAITitleBar(false)}
+                      onClick={toggleAGIDropdown}
+                      style={{
+                        color:
+                          isHoveredAITitleBar || isAGIOpen
+                            ? "var(--off-white)"
+                            : "var(--dark-gray)",
+                      }}
+                    >
                       <span
-                        className="ai-button"
-                        onMouseEnter={() => setIsHoveredAI(true)}
-                        onMouseLeave={() => setIsHoveredAI(false)}
-                        onClick={toggleAGIDropdown}
+                        className="ai-button-on-title-bar"
                         style={{
                           color:
-                            isHoveredAI || isAGIOpen
-                              ? "var(--magic)"
+                            isHoveredAITitleBar || isAGIOpen
+                              ? "var(--off-white)"
                               : "var(--dark-gray)",
                         }}
                       >
                         {aiIcon}
                       </span>
+                      <p>Magic</p>
                     </li>
                   </ul>
                 </div>

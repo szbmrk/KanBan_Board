@@ -13,7 +13,7 @@
     border-radius: 8px;
     border-top-right-radius: 0;
     border: 1px solid var(--bg-dark);
-    box-shadow: 0 5px 20px var(--bg-dark);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
     overflow-y: auto;
 }
 
