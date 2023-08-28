@@ -3,14 +3,13 @@ import '../../styles/dashboard.css';
 import axios from '../../api/axios';
 import { Link } from 'react-router-dom';
 import Loader from '../Loader';
-import { SetRoles } from '../../roles/Roles';
+import { SetRoles, checkPermissionForBoard } from '../../roles/Roles';
 import Error from '../Error';
+import { checkPermisson } from '../../roles/Roles';
 
 export default function ManageBoardPermissions() {
     const [userID, setUserID] = useState(null);
     const [teams, setTeams] = useState(null);
-    const [ownPermissions, setOwnPermissions] = useState([]);
-    const [teamPermissions, setTeamPermissions] = useState([]);
     const [error, setError] = useState(false);
     const [redirect, setRedirect] = useState(false);
 
@@ -26,64 +25,8 @@ export default function ManageBoardPermissions() {
         fetchDashboardData();
     }, []);
 
-    const checkPermissonToManageTeam = (team_id) => {
-        //TODO Refactor
-        console.log(teamPermissions);
-        if (ownPermissions.includes('system_admin')) {
-            return true;
-        }
-        if (teamPermissions.length === 0) {
-            return false;
-        }
-        for (let i = 0; i < teamPermissions.length; i++) {
-            if (teamPermissions[i].team_id === team_id) {
-                if (teamPermissions[i].permission === 'team_management') {
-                    return true;
-                }
-            }
-        }
-    };
-
-    function checkPermissionToManageRole(board_id, team_id) {
-        console.log(teamPermissions);
-        if (ownPermissions.includes('system_admin')) {
-            return true;
-        }
-        if (teamPermissions.length === 0) {
-            return false;
-        }
-        for (let i = 0; i < teamPermissions.length; i++) {
-            if (teamPermissions[i].team_id === team_id) {
-                if (teamPermissions[i].permission === 'role_management' && teamPermissions[i].board_id === board_id) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    function checkPermissionToManageRolesPermission(board_id, team_id) {
-        console.log(teamPermissions);
-        if (ownPermissions.includes('system_admin')) {
-            return true;
-        }
-        if (teamPermissions.length === 0) {
-            return false;
-        }
-        for (let i = 0; i < teamPermissions.length; i++) {
-            if (teamPermissions[i].team_id === team_id) {
-                if (teamPermissions[i].permission === 'roles_permissions_management' && teamPermissions[i].board_id === board_id) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     async function ResetRoles() {
         await SetRoles(token);
-        setTeamPermissions(JSON.parse(sessionStorage.getItem('permissions')).teams);
-        setOwnPermissions(JSON.parse(sessionStorage.getItem('permissions')).general_role);
     }
 
     const fetchDashboardData = async () => {
@@ -129,7 +72,7 @@ export default function ManageBoardPermissions() {
                                         <h3 className='team-title'>{team.name}</h3>
                                         <div className='boards'>
                                             {team.boards.map((board) => (
-                                                ((checkPermissionToManageRole(board.board_id, team.team_id) || checkPermissonToManageTeam(team.team_id)) || checkPermissionToManageRolesPermission(board.board_id, team.team_id)) && (
+                                                ((checkPermissionForBoard(board.board_id, team.team_id, 'roles_permissions_management') || checkPermisson(team.team_id)) || checkPermissionForBoard(board.board_id, team.team_id, 'role_management')) && (
                                                     <div
                                                         className='board'
                                                         key={board.board_id}

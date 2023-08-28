@@ -4,16 +4,13 @@ import axios from '../../api/axios';
 import Loader from '../Loader';
 import '../../styles/permissions.css';
 import '../../styles/teamcard.css';
-import { SetRoles } from '../../roles/Roles';
+import { SetRoles, checkPermissionForBoard } from '../../roles/Roles';
 
 export default function Permissiontable() {
     const { board_id, team_id } = useParams();
     const [roles, setRoles] = useState([]);
     const [permissions, setPermissions] = useState([]);
     const [newRoleName, setNewRoleName] = useState('');
-    const [reRender, setReRender] = useState(false);
-    const [ownPermissions, setOwnPermissions] = useState([]);
-    const [teamPermissions, setTeamPermissions] = useState([]);
 
     const token = sessionStorage.getItem('token');
 
@@ -38,44 +35,8 @@ export default function Permissiontable() {
         }
     }
 
-    function checkPermissionToModifyRole() {
-        if (ownPermissions.includes('system_admin')) {
-            return true;
-        }
-        if (teamPermissions.length === 0) {
-            return false;
-        }
-        for (let i = 0; i < teamPermissions.length; i++) {
-            if (parseInt(teamPermissions[i].team_id) === parseInt(team_id)) {
-                if (teamPermissions[i].permission === 'roles_permissions_management' && parseInt(teamPermissions[i].board_id) === parseInt(board_id)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    function checkPermissionToAddAndDeleteRole() {
-        if (ownPermissions.includes('system_admin')) {
-            return true;
-        }
-        if (teamPermissions.length === 0) {
-            return false;
-        }
-        for (let i = 0; i < teamPermissions.length; i++) {
-            if (parseInt(teamPermissions[i].team_id) === parseInt(team_id)) {
-                if (teamPermissions[i].permission === 'role_management' && parseInt(teamPermissions[i].board_id) === parseInt(board_id)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     async function ResetRoles() {
         await SetRoles(token);
-        setTeamPermissions(JSON.parse(sessionStorage.getItem('permissions')).teams);
-        setOwnPermissions(JSON.parse(sessionStorage.getItem('permissions')).general_role);
     }
 
     async function getAllPermissions() {
@@ -151,15 +112,12 @@ export default function Permissiontable() {
             const newRoles = [...roles];
             for (let i = 0; i < newRoles.length; i++) {
                 if (parseInt(newRoles[i].role_id) === parseInt(role_id)) {
-                    console.log('x');
                     newRoles[i].permissions.splice(newRoles[i].permissions.findIndex(permission => parseInt(permission.id) === parseInt(permission_id)), 1);
                     break;
                 }
             }
+            await ResetRoles();
             setRoles(newRoles);
-            console.log(newRoles);
-            setReRender(!reRender);
-            ResetRoles();
         } catch (error) {
             console.log(error.response);
         }
@@ -180,9 +138,8 @@ export default function Permissiontable() {
                     role.permissions.push(response.data.permission);
                 }
             });
+            await ResetRoles();
             setRoles(newRoleData);
-            setReRender(!reRender);
-            ResetRoles();
         } catch (error) {
             console.log(error.response);
         }
@@ -190,7 +147,6 @@ export default function Permissiontable() {
 
     function handleChange(e) {
         setNewRoleName(e.target.value);
-        console.log(e.target.value);
     }
 
     function handleCheckboxChange(e) {
@@ -200,8 +156,6 @@ export default function Permissiontable() {
         else {
             DeletePermissionFromRole(e.target.id, e.target.value);
         }
-        console.log(e.target.value);
-        console.log(e.target.id);
     }
 
 
@@ -224,7 +178,7 @@ export default function Permissiontable() {
                                             <p>
                                                 {role.name}
                                             </p>
-                                            {checkPermissionToAddAndDeleteRole() && (
+                                            {checkPermissionForBoard(board_id, team_id, 'role_management') && (
                                                 <button onClick={() => DeleteRole(role.role_id)} className='delete-role'>Delete</button>
                                             )}
                                         </div>
@@ -241,7 +195,7 @@ export default function Permissiontable() {
                                         </td>
                                         {roles.map((role) => (
                                             <td key={role.role_id} className='role-permission'>
-                                                <input className='permission-checkbox' type="checkbox" onChange={handleCheckboxChange} id={role.role_id} value={permission.id} name={permission.name} checked={checkIfPermissionIsSet(role.role_id, permission.id)} disabled={!checkPermissionToModifyRole()} />
+                                                <input className='permission-checkbox' type="checkbox" onChange={handleCheckboxChange} id={role.role_id} value={permission.id} name={permission.name} checked={checkIfPermissionIsSet(role.role_id, permission.id)} disabled={!checkPermissionForBoard(board_id, team_id, 'roles_permissions_management')} />
                                             </td>
                                         ))}
                                     </tr>
@@ -251,7 +205,7 @@ export default function Permissiontable() {
                     </table>
                 </div>
             )}
-            {checkPermissionToAddAndDeleteRole() &&
+            {checkPermissionForBoard(board_id, team_id, 'role_management') &&
                 <div className='add-role'>
                     <input type='text' onChange={handleChange} value={newRoleName} placeholder='Role name' className='role-input' />
                     <button onClick={AddNewRole} className='add-role-button'>Add Role</button>

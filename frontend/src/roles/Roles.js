@@ -1,5 +1,7 @@
 import axios from "../api/axios";
-//const token=sessionStorage.getItem('token');
+import { useState } from "react";
+let teamPermissions = [];
+let ownPermissions = [];
 
 export const SetRoles = async (token) => {
     try {
@@ -9,9 +11,51 @@ export const SetRoles = async (token) => {
             }
         });
         sessionStorage.setItem('permissions', roleHandler(response.data));
+        teamPermissions = JSON.parse(sessionStorage.getItem('permissions')).teams;
+        ownPermissions = JSON.parse(sessionStorage.getItem('permissions')).general_role;
     } catch (error) {
         console.log(error);
     }
+}
+
+export const checkPermisson = (team_id, permissionToCheck) => {
+    if (teamPermissions === undefined || ownPermissions === undefined) {
+        return false;
+    }
+    //TODO Refactor
+    if (ownPermissions.includes('system_admin')) {
+        return true;
+    }
+    if (teamPermissions.length === 0) {
+        return false;
+    }
+    for (let i = 0; i < teamPermissions.length; i++) {
+        if (parseInt(teamPermissions[i].team_id) === parseInt(team_id)) {
+            if (teamPermissions[i].permission === permissionToCheck) {
+                return true;
+            }
+        }
+    }
+};
+
+export function checkPermissionForBoard(board_id, team_id, permissionToCheck) {
+    if (teamPermissions === undefined || ownPermissions === undefined) {
+        return false;
+    }
+    if (ownPermissions.includes('system_admin')) {
+        return true;
+    }
+    if (teamPermissions.length === 0) {
+        return false;
+    }
+    for (let i = 0; i < teamPermissions.length; i++) {
+        if (parseInt(teamPermissions[i].team_id) === parseInt(team_id)) {
+            if (teamPermissions[i].permission === permissionToCheck && parseInt(teamPermissions[i].board_id) === parseInt(board_id)) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 
