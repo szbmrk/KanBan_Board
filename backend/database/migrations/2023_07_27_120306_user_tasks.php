@@ -12,6 +12,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable(false);
             $table->unsignedBigInteger('task_id')->nullable(false);
             $table->primary(['user_id', 'task_id']);
+            $table->timestamps();
 
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
             $table->foreign('task_id')->references('task_id')->on('tasks')->onDelete('cascade');
