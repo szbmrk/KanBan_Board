@@ -64,8 +64,8 @@ const Board = () => {
   const [showIconContainer, setShowIconContainer] = useState(false);
   const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
   const [showCodePopup, setShowCodePopup] = useState(false);
-  const [isHoveredAI, setIsHoveredAI] = useState(false);
-  const [isHoveredClipboard, setIsHoveredClipboard] = useState(false);
+  const [isHoveredAI, setIsHoveredAI] = useState(-1);
+  const [isHoveredClipboard, setIsHoveredClipboard] = useState(-1);
   const [isHoveredCode, setIsHoveredCode] = useState(false);
   const [isHoveredCraft, setIsHoveredCraft] = useState(false);
   const [isHoveredX, setIsHoveredX] = useState(false);
@@ -1646,7 +1646,7 @@ const Board = () => {
                   <span>Craft Prompt</span>
                 </li>
                 <li
-                  onMouseEnter={() => setIsHoveredCode(true)}
+                  onMouseEnter={() => setIsHoveredCode(0)}
                   onMouseLeave={() => setIsHoveredCode(false)}
                   onClick={() => {
                     openCodePopup();
@@ -1655,7 +1655,7 @@ const Board = () => {
                   <span
                     className="code-button"
                     style={{
-                      color: isHoveredCode ? "var(--code)" : "",
+                      color: isHoveredCode === 0 ? "var(--code)" : "",
                     }}
                   >
                     {codeIcon}
@@ -1669,12 +1669,21 @@ const Board = () => {
                   >
                     <li className="code-review-or-documentation-title">
                       <span
-                        onMouseEnter={() => setIsHoveredCode(index)}
+                        onMouseEnter={() => setIsHoveredCode(index + 1)}
                         onMouseLeave={() => setIsHoveredCode(null)}
                         onClick={() => {
                           openCodePopup(element);
                         }}
                       >
+                        <span
+                          className="code-button"
+                          style={{
+                            color:
+                              isHoveredCode === index + 1 ? "var(--code)" : "",
+                          }}
+                        >
+                          {codeIcon}
+                        </span>
                         Code review {index + 1}
                       </span>
                       <span
@@ -1709,8 +1718,8 @@ const Board = () => {
               >
                 <div
                   className="option"
-                  onMouseEnter={() => setIsHoveredAI(true)}
-                  onMouseLeave={() => setIsHoveredAI(false)}
+                  onMouseEnter={() => setIsHoveredAI(0)}
+                  onMouseLeave={() => setIsHoveredAI(-1)}
                   onClick={() =>
                     openGenerateTaskWithAGIPopup(
                       null,
@@ -1721,7 +1730,7 @@ const Board = () => {
                   <span
                     className="ai-button"
                     style={{
-                      color: isHoveredAI ? "var(--magic)" : "",
+                      color: isHoveredAI === 0 ? "var(--magic)" : "",
                     }}
                   >
                     {aiIcon}
@@ -1732,8 +1741,8 @@ const Board = () => {
                   <div
                     className="option"
                     key={index}
-                    onMouseEnter={() => setIsHoveredClipboard(true)}
-                    onMouseLeave={() => setIsHoveredClipboard(false)}
+                    onMouseEnter={() => setIsHoveredClipboard(index + 1)}
+                    onMouseLeave={() => setIsHoveredClipboard(-1)}
                     onClick={() =>
                       HandleCraftedPromptColumnClick(
                         craftedPrompt,
@@ -1747,7 +1756,10 @@ const Board = () => {
                     <span
                       className="clipboard-button"
                       style={{
-                        color: isHoveredClipboard ? "var(--light-blue)" : "",
+                        color:
+                          isHoveredClipboard === index + 1
+                            ? "var(--light-blue)"
+                            : "",
                       }}
                     >
                       {clipboardIcon}
