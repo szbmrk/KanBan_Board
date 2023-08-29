@@ -246,7 +246,7 @@ class PromptCraftController extends Controller
             switch ($craftedPrompt->action) {
                 case "GENERATESUBTASK":
                     //ez azért ugyanaz mint a GenerateCraftedTaskChatGPT, mert nincs kiválasztva a frontenden, hogy mi az a taszk amihez a subtaskok kellenek
-                    $response = ChatGPTController::GenerateCraftedTaskChatGPT($request, $craftedPrompt);
+                    $response = ChatGPTController::GenerateTaskChatGPT($request, $craftedPrompt);
                     break;
                 case "GENERATEATTACHMENTLINK":
                     $response = ChatGPTController::GenerateAttachmentLinkChatGPT($request, $craftedPrompt);

@@ -66,7 +66,7 @@ class ChatGPTController extends Controller
                 
         }
         $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
-        dd($request);
+        
 
         // Construct the prompt for the current iteration
         $prompt = "$behavior Generate $taskCounter kanban tickets in JSON structure in a list with title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list) attributes for this ticket: '$taskPrompt'";
