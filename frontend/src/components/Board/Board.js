@@ -96,7 +96,14 @@ const Board = () => {
 
   useEffect(() => {
     document.title = "Board";
+
+    reloadPriorities();
+
     fetchBoardData();
+
+    reloadCraftedPrompts();
+
+    reloadCodeReviewOrDocumentation();
     //setOwnPermissions(team_member.teams.filter(team => team.team_id === data.team_id).map(permission => permission.permission_data));
   }, []);
 
@@ -115,7 +122,7 @@ const Board = () => {
     };
   }, [editingColumnIndex]);
 
-  const fetchBoardData = async () => {
+  const reloadPriorities = async () => {
     try {
       const prioritiesResponse = await axios.get("/priorities", {
         headers: {
@@ -124,7 +131,21 @@ const Board = () => {
       });
       console.log(prioritiesResponse);
       setPriorities(prioritiesResponse.data.priorities);
+    } catch (e) {
+      console.error(e);
+      if (e.response.status === 401 || e.response.status === 500) {
+        setError("You are not logged in! Redirecting to login page...");
+        setRedirect(true);
+      } else {
+        setError(e.message);
+      }
+      if (e.response.status === 403) setError("No permission");
+      else setError(e.message);
+    }
+  };
 
+  const fetchBoardData = async () => {
+    try {
       const response = await axios.get(`/boards/${board_id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -134,10 +155,6 @@ const Board = () => {
       setPermission(true);
       let tempBoard = response.data.board;
       let tempColumns = tempBoard.columns;
-
-      reloadCraftedPrompts();
-
-      reloadCodeReviewOrDocumentation();
 
       // Sort the columns and tasks by position
       tempColumns.map((column) =>
@@ -948,49 +965,73 @@ const Board = () => {
   };
 
   const reloadCraftedPrompts = async () => {
-    const craftedPromptsResponse = await axios.get(
-      `/boards/${board_id}/AGI/crafted-prompts`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    try {
+      const craftedPromptsResponse = await axios.get(
+        `/boards/${board_id}/AGI/crafted-prompts`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("crafted prompts");
+      console.log(craftedPromptsResponse.data);
+      setCraftedPrompts(craftedPromptsResponse.data);
+      console.log("craftedPrompts");
+      console.log(craftedPrompts);
+      const boardPrompts = craftedPromptsResponse.data.filter(
+        (prompt) => prompt.action === "GENERATETASK"
+      );
+      const taskPrompts = craftedPromptsResponse.data.filter(
+        (prompt) =>
+          prompt.action === "GENERATESUBTASK" ||
+          prompt.action === "GENERATEATTACHMENTLINK"
+      );
+
+      setCraftedPromptsBoard(boardPrompts);
+      setCraftedPromptsTask(taskPrompts);
+      console.log(craftedPromptsBoard);
+      console.log(craftedPromptsTask);
+    } catch (e) {
+      console.error(e);
+      if (e.response.status === 401 || e.response.status === 500) {
+        setError("You are not logged in! Redirecting to login page...");
+        setRedirect(true);
+      } else {
+        setError(e.message);
       }
-    );
-
-    console.log("crafted prompts");
-    console.log(craftedPromptsResponse.data);
-    setCraftedPrompts(craftedPromptsResponse.data);
-    console.log("craftedPrompts");
-    console.log(craftedPrompts);
-    const boardPrompts = craftedPromptsResponse.data.filter(
-      (prompt) => prompt.action === "GENERATETASK"
-    );
-    const taskPrompts = craftedPromptsResponse.data.filter(
-      (prompt) =>
-        prompt.action === "GENERATESUBTASK" ||
-        prompt.action === "GENERATEATTACHMENTLINK"
-    );
-
-    setCraftedPromptsBoard(boardPrompts);
-    setCraftedPromptsTask(taskPrompts);
-    console.log(craftedPromptsBoard);
-    console.log(craftedPromptsTask);
+      if (e.response.status === 403) setError("No permission");
+      else setError(e.message);
+    }
   };
 
   const reloadCodeReviewOrDocumentation = async () => {
-    const codeReviewOrDocumentationResponse = await axios.get(
-      `/AGI/CodeReviewOrDocumentation/boards/${board_id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    try {
+      const codeReviewOrDocumentationResponse = await axios.get(
+        `/AGI/CodeReviewOrDocumentation/boards/${board_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    console.log("CodeReviewOrDocumentation:");
-    console.log(codeReviewOrDocumentationResponse);
-    console.log(codeReviewOrDocumentationResponse.data);
-    setCodeReviewOrDocumentation(codeReviewOrDocumentationResponse.data);
+      console.log("CodeReviewOrDocumentation:");
+      console.log(codeReviewOrDocumentationResponse);
+      console.log(codeReviewOrDocumentationResponse.data);
+      setCodeReviewOrDocumentation(codeReviewOrDocumentationResponse.data);
+    } catch (e) {
+      console.error(e);
+      if (e.response.status === 401 || e.response.status === 500) {
+        setError("You are not logged in! Redirecting to login page...");
+        setRedirect(true);
+      } else {
+        setError(e.message);
+      }
+      if (e.response.status === 403) setError("No permission");
+      else setError(e.message);
+    }
   };
 
   const openCraftPromptPopup = () => {
@@ -1034,20 +1075,24 @@ const Board = () => {
     }
   };
 
+  const getCraftedPromptResult = async (craftedPrompt) => {
+    const token = sessionStorage.getItem("token");
+
+    return await axios.get(
+      `/boards/${board_id}/AGI/crafted-prompts/${craftedPrompt.crafted_prompt_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  };
+
   const useCrafterPromptOnColumn = async (craftedPrompt, column) => {
     console.log("craftedPrompt");
     console.log(craftedPrompt);
     try {
-      const token = sessionStorage.getItem("token");
-
-      const res = await axios.get(
-        `/boards/${board_id}/AGI/crafted-prompts/${craftedPrompt.crafted_prompt_id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await getCraftedPromptResult(craftedPrompt);
 
       console.log("res.data");
       console.log(res.data);
@@ -1079,16 +1124,7 @@ const Board = () => {
     console.log(craftedPrompt);
 
     try {
-      const token = sessionStorage.getItem("token");
-
-      const res = await axios.get(
-        `/boards/${board_id}/AGI/crafted-prompts/${craftedPrompt.crafted_prompt_id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await getCraftedPromptResult(craftedPrompt);
 
       switch (craftedPrompt.action) {
         case "GENERATESUBTASK":
@@ -1805,6 +1841,7 @@ const Board = () => {
               board_id={board_id}
               column={inspectedColumn}
               tasks={inspectedTask}
+              fetchBoardData={fetchBoardData}
               onCancel={handleGenerateTaskCancel}
             />
           )}

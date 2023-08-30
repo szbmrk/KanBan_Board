@@ -8,7 +8,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
 
-const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
+const GenerateTaskWithAGIPopup = ({
+  board_id,
+  column,
+  tasks,
+  fetchBoardData,
+  onCancel,
+}) => {
   let [editedTasks, setEditedTasks] = useState(tasks ? [...tasks] : []);
   const taskTitleInputRef = useRef(null);
   const popupRef = useRef(null);
@@ -76,6 +82,9 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
 
       console.log(res);
       console.log(res.data);
+      fetchBoardData();
+      alert("Saved!");
+      oncancel();
     } catch (e) {
       console.error(e);
     }
