@@ -14,7 +14,7 @@ const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
 export default function Dashboard() {
     const [userID, setUserID] = useState(null);
-    const [teams, setTeams] = useState([]);
+    const [teams, setTeams] = useState(null);
     const [showAddBoardPopup, setShowAddBoardPopup] = useState(false);
     const [selectedTeamId, setSelectedTeamId] = useState(null);
     const [selectedBoardId, setSelectedBoardId] = useState(null);
@@ -213,7 +213,7 @@ export default function Dashboard() {
 
     return (
         <div className='content'>
-            {teams.length === 0 ? (
+            {teams === null ? (
                 error ? (
                     <Error error={error} redirect={redirect}></Error>
                 ) : (
@@ -222,87 +222,96 @@ export default function Dashboard() {
             ) : (
                 <>
                     <h1 className='header'>Dashboard</h1>
-                    {userID && (
-                        <div>
-                            <div className='teams'>
-                                {teams.map((team) => (
-                                    <div className='team' key={team.team_id}>
-                                        <h3 className='team-title'>{team.name}</h3>
-                                        <div className='boards'>
-                                            {team.boards.map((board) => (
-                                                <div
-                                                    className='board'
-                                                    key={board.board_id}
-                                                    onMouseEnter={() => handleMouseEnterOnBoard(board.board_id)}
-                                                    onMouseLeave={() => handleMouseLeaveOnBoard()}
-                                                >
-                                                    <Link to={`/board/${board.board_id}`} className='board-title'>
-                                                        <p>{board.name}</p>
-                                                    </Link>
-                                                    {checkPermissionForBoard(board.board_id, team.team_id, 'board_management') ===
-                                                        true && (
-                                                            <span
-                                                                className='delete-icon'
-                                                                style={{
-                                                                    visibility:
-                                                                        hoveredBoardId === board.board_id
-                                                                            ? 'visible'
-                                                                            : 'hidden',
-                                                                    transition: 'visibility 0.1s ease',
-                                                                }}
-                                                                onClick={() =>
-                                                                    deleteBoardFromTeam(team.team_id, board.board_id)
-                                                                }
-                                                                data-hover='Delete Board'
-                                                            >
-                                                                {closeIcon}
-                                                            </span>
-                                                        )}
-                                                    {checkPermissionForBoard(board.board_id, team.team_id, 'board_management') ===
-                                                        true && (
-                                                            <span
-                                                                className='edit-board-button'
-                                                                style={{
-                                                                    display:
-                                                                        hoveredBoardId === board.board_id
-                                                                            ? 'block'
-                                                                            : 'none',
-                                                                }}
-                                                                onClick={() =>
-                                                                    openAddBoardPopup(team.team_id, board.board_id)
-                                                                }
-                                                            >
-                                                                {pencilIcon}
-                                                            </span>
-                                                        )}
-                                                </div>
-                                            ))}
-                                            <div
-                                                className='board add-board'
-                                                onClick={() => openAddBoardPopup(team.team_id, null)}
-                                            >
-                                                <span>{plusIcon} Add new board</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            {showAddBoardPopup && (
-                                <>
-                                    <div className='overlay'>
-                                        <div className='popup popup-mini'>
-                                            <AddBoardPopup
-                                                teamId={selectedTeamId}
-                                                boardId={selectedBoardId}
-                                                onClose={closeAddBoardPopup}
-                                                onSave={handleSaveBoard}
-                                            />
-                                        </div>
-                                    </div>
-                                </>
-                            )}
+                    {teams.length === 0 ?
+                        (<div>
+                            <p>You don't have any teams yet!</p>
+                            Link to <Link to='/teams'>Teams</Link> page.
                         </div>
-                    )}
+                        )
+                        :
+                        (
+                            userID && (
+                                <div>
+                                    <div className='teams'>
+                                        {teams.map((team) => (
+                                            <div className='team' key={team.team_id}>
+                                                <h3 className='team-title'>{team.name}</h3>
+                                                <div className='boards'>
+                                                    {team.boards.map((board) => (
+                                                        <div
+                                                            className='board'
+                                                            key={board.board_id}
+                                                            onMouseEnter={() => handleMouseEnterOnBoard(board.board_id)}
+                                                            onMouseLeave={() => handleMouseLeaveOnBoard()}
+                                                        >
+                                                            <Link to={`/board/${board.board_id}`} className='board-title'>
+                                                                <p>{board.name}</p>
+                                                            </Link>
+                                                            {checkPermissionForBoard(board.board_id, team.team_id, 'board_management') ===
+                                                                true && (
+                                                                    <span
+                                                                        className='delete-icon'
+                                                                        style={{
+                                                                            visibility:
+                                                                                hoveredBoardId === board.board_id
+                                                                                    ? 'visible'
+                                                                                    : 'hidden',
+                                                                            transition: 'visibility 0.1s ease',
+                                                                        }}
+                                                                        onClick={() =>
+                                                                            deleteBoardFromTeam(team.team_id, board.board_id)
+                                                                        }
+                                                                        data-hover='Delete Board'
+                                                                    >
+                                                                        {closeIcon}
+                                                                    </span>
+                                                                )}
+                                                            {checkPermissionForBoard(board.board_id, team.team_id, 'board_management') ===
+                                                                true && (
+                                                                    <span
+                                                                        className='edit-board-button'
+                                                                        style={{
+                                                                            display:
+                                                                                hoveredBoardId === board.board_id
+                                                                                    ? 'block'
+                                                                                    : 'none',
+                                                                        }}
+                                                                        onClick={() =>
+                                                                            openAddBoardPopup(team.team_id, board.board_id)
+                                                                        }
+                                                                    >
+                                                                        {pencilIcon}
+                                                                    </span>
+                                                                )}
+                                                        </div>
+                                                    ))}
+                                                    <div
+                                                        className='board add-board'
+                                                        onClick={() => openAddBoardPopup(team.team_id, null)}
+                                                    >
+                                                        <span>{plusIcon} Add new board</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {showAddBoardPopup && (
+                                        <>
+                                            <div className='overlay'>
+                                                <div className='popup popup-mini'>
+                                                    <AddBoardPopup
+                                                        teamId={selectedTeamId}
+                                                        boardId={selectedBoardId}
+                                                        onClose={closeAddBoardPopup}
+                                                        onSave={handleSaveBoard}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            )
+                        )}
                 </>
             )}
         </div>

@@ -63,32 +63,37 @@ export default function ManageBoardPermissions() {
             ) : (
                 <>
                     <h1 className='header'>Boards you can manage</h1>
-                    {userID && (
-                        <div>
-                            <div className='teams'>
-                                {teams.map((team) => (
-                                    team.boards.length > 0 &&
-                                    (<div className='team' key={team.team_id}>
-                                        <h3 className='team-title'>{team.name}</h3>
-                                        <div className='boards'>
-                                            {team.boards.map((board) => (
-                                                ((checkPermissionForBoard(board.board_id, team.team_id, 'roles_permissions_management') || checkPermisson(team.team_id)) || checkPermissionForBoard(board.board_id, team.team_id, 'role_management')) && (
-                                                    <div
-                                                        className='board'
-                                                        key={board.board_id}
-                                                    >
-                                                        <Link to={`/permissions/${team.team_id}/${board.board_id}`} className='board-title'>
-                                                            <p>{board.name}</p>
-                                                        </Link>
-                                                    </div>
-                                                )
-                                            ))}
-                                        </div>
-                                    </div>)
-                                ))}
+                    {teams.length === 0 ? (
+                        <p className='text'>No boards found to manage!</p>
+                    ) :
+                        userID && (
+                            <div>
+                                <div className='teams'>
+                                    {teams.map((team) => (
+                                        team.boards.length > 0 &&
+                                        (<div className='team' key={team.team_id}>
+                                            <h3 className='team-title'>{team.name}</h3>
+                                            <div className='boards'>
+                                                {team.boards.map((board) => (
+                                                    ((checkPermissionForBoard(board.board_id, team.team_id, 'roles_permissions_management') || checkPermisson(team.team_id)) || checkPermissionForBoard(board.board_id, team.team_id, 'role_management')) && (
+                                                        <div
+                                                            className='board'
+                                                            key={board.board_id}
+                                                        >
+                                                            <Link to={`/permissions/${team.team_id}/${board.board_id}`} className='board-title'>
+                                                                <p>{board.name}</p>
+                                                            </Link>
+                                                        </div>
+                                                    )
+                                                ))}
+                                            </div>
+                                        </div>)
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )
+                    }
+
                 </>
             )}
         </div>

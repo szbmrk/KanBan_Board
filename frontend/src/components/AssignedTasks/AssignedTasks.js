@@ -5,7 +5,7 @@ import Loader from '../Loader';
 import Error from '../Error';
 
 const AssignedTasks = () => {
-    const [tasks, setTasks] = useState([]);
+    const [tasks, setTasks] = useState(null);
     const [redirect, setRedirect] = useState(false);
     const [error, setError] = useState(false);
 
@@ -50,20 +50,27 @@ const AssignedTasks = () => {
 
     return (
         <div className='content'>
-            {tasks.length === 0 ? (
+            {tasks === null ? (
                 error ? (
+
                     <Error error={error} redirect={redirect} />
                 ) : (
                     <Loader data_to_load={tasks} text_if_cant_load={"No assigned task yet!"} />
                 )
-            ) : (
-                <div className='scrollable-container'>
-                    {tasks.map((task, index) => (
-                        <TaskCard key={index} task={task} />
-                    ))}
-                </div>
-            )}
-        </div>
+            )
+
+                : (
+                    <div className='scrollable-container'>
+                        {tasks.length === 0 ? (
+                            <h2 className='no-data'>No assigned task yet!</h2>
+                        ) : tasks.map((task, index) => (
+                            <TaskCard key={index} task={task} />
+                        ))}
+
+                    </div>
+                )
+            }
+        </div >
     );
 };
 export default AssignedTasks;
