@@ -11,6 +11,7 @@ export default function Permissiontable() {
     const [roles, setRoles] = useState([]);
     const [permissions, setPermissions] = useState([]);
     const [newRoleName, setNewRoleName] = useState('');
+    const [needLoader, setNeedLoader] = useState(false);
 
     const token = sessionStorage.getItem('token');
 
@@ -118,6 +119,7 @@ export default function Permissiontable() {
             }
             await ResetRoles();
             setRoles(newRoles);
+            setNeedLoader(false);
         } catch (error) {
             console.log(error.response);
         }
@@ -140,6 +142,7 @@ export default function Permissiontable() {
             });
             await ResetRoles();
             setRoles(newRoleData);
+            setNeedLoader(false);
         } catch (error) {
             console.log(error.response);
         }
@@ -150,6 +153,7 @@ export default function Permissiontable() {
     }
 
     function handleCheckboxChange(e) {
+        setNeedLoader(true);
         if (e.target.checked) {
             AddPermissionToRole(e.target.id, e.target.value);
         }
@@ -162,7 +166,7 @@ export default function Permissiontable() {
 
     return (
         <div className='content'>
-            {roles.length === 0 && permissions.length === 0 ? (
+            {(roles.length === 0 && permissions.length === 0) || needLoader ? (
                 <Loader />
             ) : (
                 <div>

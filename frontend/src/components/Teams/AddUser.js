@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react';
 import axios from '../../api/axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import Loader from '../Loader';
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
 const AddUser = ({ teamID, OnClose, AddUsers }) => {
     const [users, setUsers] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
+    const [needLoader, setNeedLoader] = useState(false);
 
     useEffect(() => {
+        setNeedLoader(true);
         getUsers();
     }, []);
 
@@ -22,6 +25,7 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
                 },
             });
             setUsers(response.data.users);
+            setNeedLoader(false);
         } catch (error) {
             console.log(error.response);
         }
@@ -47,21 +51,26 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
                     {closeIcon}
                 </span>
                 <p className='confirmation-text'>Select Users to Add: </p>
-                {users.length === 0 ? (
-                    <p>No users to add</p>
-                ) : (
-                    <div className='user-select'>
-                        {users.map((user) => (
-                            <div
-                                key={user.user_id}
-                                onClick={() => toggleUserSelection(user.user_id)}
-                                className={selectedUsers.includes(user.user_id) ? 'selected' : ''}
-                            >
-                                <p>{user.username}</p>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                {needLoader ?
+                    <Loader /> :
+                    users.length === 0 ? (
+                        <div>
+                            <p>No users to add</p>
+                        </div>
+                    ) : (
+                        <div className='user-select'>
+                            {users.map((user) => (
+                                <div
+                                    key={user.user_id}
+                                    onClick={() => toggleUserSelection(user.user_id)}
+                                    className={selectedUsers.includes(user.user_id) ? 'selected' : ''}
+                                >
+                                    <p>{user.username}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )
+                }
                 <button className='add-button' onClick={handleAddUsers}>
                     Add Users
                 </button>
