@@ -14,7 +14,7 @@ const Teams = () => {
     const [redirect, setRedirect] = useState(false);
     const [error, setError] = useState(false);
 
-    const [teams, setTeams] = useState([]);
+    const [teams, setTeams] = useState(null);
     const [manageIsClicked, setManage] = useState(false);
 
     useEffect(() => {
@@ -28,8 +28,6 @@ const Teams = () => {
 
     async function ResetRoles() {
         await SetRoles(token);
-        setTeamPermissions(JSON.parse(sessionStorage.getItem('permissions')).teams);
-        setOwnPermissions(JSON.parse(sessionStorage.getItem('permissions')).general_role);
     }
 
     function addTeam() {
@@ -249,7 +247,7 @@ const Teams = () => {
 
     return (
         <div className='content'>
-            {teams.length === 0 ? (
+            {(teams === null) ? (
                 error ? (
                     <Error error={error} redirect={redirect} />
                 ) : (

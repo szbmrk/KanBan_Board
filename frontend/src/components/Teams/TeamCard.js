@@ -9,6 +9,7 @@ import axios from '../../api/axios';
 import { formatDate } from '../../utils/DateFormat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faEllipsis, faPencil, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { checkPermisson } from '../../roles/Roles';
 
 const TeamCard = ({
     data,
@@ -16,8 +17,6 @@ const TeamCard = ({
     ChangeTeamName,
     AddUsers,
     DeleteTeam,
-    ownPermissions,
-    teamPermissions,
     handleDeleteRole,
     AddRoleToUser,
 }) => {
@@ -76,40 +75,6 @@ const TeamCard = ({
         setRoles(!rolesIsClicked);
     }
 
-    const checkPermissonToManageTeam = (team_id) => {
-        //TODO Refactor
-        if (ownPermissions.includes('system_admin')) {
-            return true;
-        }
-        if (teamPermissions.length === 0) {
-            return false;
-        }
-        for (let i = 0; i < teamPermissions.length; i++) {
-            if (teamPermissions[i].team_id === team_id) {
-                if (teamPermissions[i].permission === 'team_management') {
-                    return true;
-                }
-            }
-        }
-    };
-
-    const checkPermissonToManageTeamMembers = (team_id) => {
-        //TODO Refactor
-        if (ownPermissions.includes('system_admin')) {
-            return true;
-        }
-        if (teamPermissions.length === 0) {
-            return false;
-        }
-        for (let i = 0; i < teamPermissions.length; i++) {
-            if (teamPermissions[i].team_id === team_id) {
-                if (teamPermissions[i].permission === 'team_member_management') {
-                    return true;
-                }
-            }
-        }
-    };
-
     const checkPermissionToDeleteRoles = (role) => {
         for (let i = 0; i < role.permissions.length; i++) {
             if (role.permissions[i].name === 'team_member_management' || role.permissions[i].name === 'system_admin') {
@@ -156,16 +121,18 @@ const TeamCard = ({
                 >
                     <h2>{data.name}</h2>
                 </div>
-                <span
-                    className='dots'
-                    onClick={(e) => handleDotsClick(e, data.team_id)}
-                    style={{
-                        visibility: hoveredTeam === data.team_id ? 'visible' : 'hidden',
-                        transition: 'visibility 0.1s ease',
-                    }}
-                >
-                    {dotsIcon}
-                </span>
+                {(checkPermisson(data.team_id, 'team_management') || checkPermisson(data.team_id, 'team_member_management')) && (
+                    <span
+                        className='dots'
+                        onClick={(e) => handleDotsClick(e, data.team_id)}
+                        style={{
+                            visibility: hoveredTeam === data.team_id ? 'visible' : 'hidden',
+                            transition: 'visibility 0.1s ease',
+                        }}
+                    >
+                        {dotsIcon}
+                    </span>
+                )}
                 <div className='teamcard-subheader'>
                     <p>Created by: {createdBy}</p>
                     <p>Created at: {formatDate(data.created_at)}</p>
@@ -219,7 +186,7 @@ const TeamCard = ({
                                                             ? role.name + ' in ' + role.board.name
                                                             : role.name}
                                                     </li>
-                                                    {checkPermissonToManageTeam(data.team_id) && (
+                                                    {checkPermisson(data.team_id, 'team_management') && (
                                                         <div>
                                                             {checkPermissionToDeleteRoles(role) && (
                                                                 <span
@@ -247,9 +214,9 @@ const TeamCard = ({
                                     </div>
                                 </div>
                                 <div className='team-member-card-body-actions-container'>
-                                    {checkPermissonToManageTeamMembers(data.team_id) && (
-                                        <div className='teamcard-actions'>
-                                            {parseInt(member.user.user_id) !== user_id && (
+                                    <div className='teamcard-actions'>
+                                        {checkPermisson(data.team_id, 'team_member_management') && (
+                                            parseInt(member.user.user_id) !== user_id && (
                                                 <button
                                                     className='delete-button'
                                                     onClick={() =>
@@ -258,17 +225,17 @@ const TeamCard = ({
                                                 >
                                                     Remove user
                                                 </button>
-                                            )}
-                                            {checkPermissonToManageTeam(data.team_id) && (
-                                                <button
-                                                    className='add-button'
-                                                    onClick={() => handleRolesButton(member.team_members_id)}
-                                                >
-                                                    Add role
-                                                </button>
-                                            )}
-                                        </div>
-                                    )}
+                                            )
+                                        )}
+                                        {checkPermisson(data.team_id, 'team_member_management') && (
+                                            <button
+                                                className='add-button'
+                                                onClick={() => handleRolesButton(member.team_members_id)}
+                                            >
+                                                Add role
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -290,13 +257,13 @@ const TeamCard = ({
                                 top: iconContainerPosition.y + 'px',
                             }}
                         >
-                            <div
-                                className='option'
-                                onMouseEnter={() => setIsHoveredEdit(true)}
-                                onMouseLeave={() => setIsHoveredEdit(false)}
-                                onClick={ManageTeam}
-                            >
-                                {checkPermissonToManageTeam(data.team_id) && (
+                            {checkPermisson(data.team_id, 'team_management') && (
+                                <div
+                                    className='option'
+                                    onMouseEnter={() => setIsHoveredEdit(true)}
+                                    onMouseLeave={() => setIsHoveredEdit(false)}
+                                    onClick={ManageTeam}
+                                >
                                     <>
                                         <span
                                             className='edit-button'
@@ -308,31 +275,34 @@ const TeamCard = ({
                                         </span>
                                         <p>Edit Name</p>
                                     </>
-                                )}
-                            </div>
-                            <div
-                                className='option'
-                                onMouseEnter={() => setIsHoveredAddUser(true)}
-                                onMouseLeave={() => setIsHoveredAddUser(false)}
-                                onClick={handleAddButton}
-                            >
-                                <span
-                                    className='add-user-button'
-                                    style={{
-                                        color: isHoveredAddUser ? 'var(--light-blue)' : '',
-                                    }}
+                                </div>
+                            )}
+                            {checkPermisson(data.team_id, 'team_member_management') && (
+
+                                <div
+                                    className='option'
+                                    onMouseEnter={() => setIsHoveredAddUser(true)}
+                                    onMouseLeave={() => setIsHoveredAddUser(false)}
+                                    onClick={handleAddButton}
                                 >
-                                    {addUserIcon}
-                                </span>
-                                <p>Add Users</p>
-                            </div>
-                            <div
-                                className='option'
-                                onMouseEnter={() => setIsHoveredDelete(true)}
-                                onMouseLeave={() => setIsHoveredDelete(false)}
-                                onClick={handleDeleteButton}
-                            >
-                                {checkPermissonToManageTeam(data.team_id) && (
+                                    <span
+                                        className='add-user-button'
+                                        style={{
+                                            color: isHoveredAddUser ? 'var(--light-blue)' : '',
+                                        }}
+                                    >
+                                        {addUserIcon}
+                                    </span>
+                                    <p>Add Users</p>
+                                </div>
+                            )}
+                            {checkPermisson(data.team_id, 'team_management') && (
+                                <div
+                                    className='option'
+                                    onMouseEnter={() => setIsHoveredDelete(true)}
+                                    onMouseLeave={() => setIsHoveredDelete(false)}
+                                    onClick={handleDeleteButton}
+                                >
                                     <>
                                         <span
                                             className='delete-task-button'
@@ -342,8 +312,8 @@ const TeamCard = ({
                                         </span>
                                         <p>Delete Team</p>
                                     </>
-                                )}
-                            </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

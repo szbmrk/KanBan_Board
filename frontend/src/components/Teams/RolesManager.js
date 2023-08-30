@@ -43,8 +43,14 @@ export default function RolesManager({ OnClose, team_id, team_member_id, AddRole
                     Authorization: `Bearer ${token}`,
                 },
             });
-            setBoardRoles(response.data.roles);
-            console.log(response.data);
+            console.log(response.data.roles.length);
+            let newRoles = response.data.roles;
+            if (response.data.roles.length === undefined) {
+                newRoles = [response.data.roles[1]];
+            }
+            setBoardRoles(newRoles);
+            console.log(newRoles);
+            setBoardIsSelected(true);
         } catch (error) {
             console.log(error);
         }
@@ -57,7 +63,6 @@ export default function RolesManager({ OnClose, team_id, team_member_id, AddRole
 
     function handleChange(e) {
         GetRoles(e.target.value);
-        setBoardIsSelected(true);
         setBoardID(e.target.value);
     }
 

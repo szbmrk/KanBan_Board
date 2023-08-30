@@ -22,6 +22,7 @@ import TagDropdown from './TagDropdown';
 import Comment from './Comment';
 import DatePicker from 'react-datepicker';
 import TagEditorPopup from './TagEditorPopup';
+import ErrorWrapper from "../../ErrorWrapper";
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const subtaskIcon = <FontAwesomeIcon icon={faListCheck} />;
@@ -83,6 +84,12 @@ const Popup = ({
 
     const [showTagEditorPopup, setShowTagEditorPopup] = useState(false);
     const [tagToEdit, setTagToEdit] = useState(null);
+
+    const [error, setError] = useState(null);
+
+    const handleErrorClose = () => {
+        setError(null);
+    };
 
     const validateLink = (inputLink) => {
         const urlPattern = /^(http|https):\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/;
@@ -175,7 +182,7 @@ const Popup = ({
             });
             setBoardTags(response.data.tags);
         } catch (err) {
-            console.log(err);
+            setError(err.response.data.error);
         }
     };
 
@@ -303,7 +310,7 @@ const Popup = ({
 
                 setShowTagEditorPopup(false);
             } catch (e) {
-                console.error(e);
+                setError(e.response.data.error);
             }
         } else {
             try {
@@ -322,7 +329,7 @@ const Popup = ({
 
                 setShowTagEditorPopup(false);
             } catch (e) {
-                console.error(e);
+                setError(e.response.data.error);
             }
         }
     };
@@ -349,7 +356,7 @@ const Popup = ({
 
             handleBoardTagDeletion(tagData.tagId);
         } catch (e) {
-            console.error(e);
+            setError(e.response.data.error);
         }
     };
 
@@ -693,6 +700,9 @@ const Popup = ({
                         </form>
                     </div>
                 </div>
+            )}
+            {error && (
+                <ErrorWrapper originalError={error} onClose={handleErrorClose}/>
             )}
         </div>
     );
