@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import axios from '../../api/axios';
 import Loader from '../Loader';
@@ -55,7 +55,6 @@ export default function Permissiontable() {
 
     function checkIfPermissionIsSet(role_id, permission_id) {
         for (let i = 0; i < roles.length; i++) {
-
             if (parseInt(roles[i].role_id) === parseInt(role_id)) {
                 for (let j = 0; j < roles[i].permissions.length; j++) {
                     if (roles[i].permissions[j].id === permission_id) {
@@ -69,12 +68,15 @@ export default function Permissiontable() {
 
     async function AddNewRole() {
         try {
-            const response = await axios.post(`/boards/${board_id}/roles`, { "name": newRoleName },
+            const response = await axios.post(
+                `/boards/${board_id}/roles`,
+                { name: newRoleName },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
-                });
+                }
+            );
             console.log(response.data);
             const newRole = response.data.role;
             newRole.permissions = [];
@@ -87,14 +89,13 @@ export default function Permissiontable() {
 
     async function DeleteRole(role_id) {
         try {
-            const response = await axios.delete(`/boards/${board_id}/roles/${role_id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+            const response = await axios.delete(`/boards/${board_id}/roles/${role_id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             console.log(response);
-            setRoles(roles.filter(role => role.role_id !== role_id));
+            setRoles(roles.filter((role) => role.role_id !== role_id));
         } catch (error) {
             console.log(error.response);
         }
@@ -102,17 +103,21 @@ export default function Permissiontable() {
 
     async function DeletePermissionFromRole(role_id, permission_id) {
         try {
-            const response = await axios.delete(`/boards/${board_id}/roles/${role_id}/permissions/${permission_id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+            const response = await axios.delete(`/boards/${board_id}/roles/${role_id}/permissions/${permission_id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             console.log(response);
             const newRoles = [...roles];
             for (let i = 0; i < newRoles.length; i++) {
                 if (parseInt(newRoles[i].role_id) === parseInt(role_id)) {
-                    newRoles[i].permissions.splice(newRoles[i].permissions.findIndex(permission => parseInt(permission.id) === parseInt(permission_id)), 1);
+                    newRoles[i].permissions.splice(
+                        newRoles[i].permissions.findIndex(
+                            (permission) => parseInt(permission.id) === parseInt(permission_id)
+                        ),
+                        1
+                    );
                     break;
                 }
             }
@@ -125,15 +130,18 @@ export default function Permissiontable() {
 
     async function AddPermissionToRole(role_id, permission_id) {
         try {
-            const response = await axios.post(`/boards/${board_id}/roles/${role_id}/permissions/`, { permission_id: permission_id },
+            const response = await axios.post(
+                `/boards/${board_id}/roles/${role_id}/permissions/`,
+                { permission_id: permission_id },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
-                });
+                }
+            );
             console.log(response);
             const newRoleData = [...roles];
-            newRoleData.forEach(role => {
+            newRoleData.forEach((role) => {
                 if (parseInt(role.role_id) === parseInt(role_id)) {
                     role.permissions.push(response.data.permission);
                 }
@@ -152,13 +160,10 @@ export default function Permissiontable() {
     function handleCheckboxChange(e) {
         if (e.target.checked) {
             AddPermissionToRole(e.target.id, e.target.value);
-        }
-        else {
+        } else {
             DeletePermissionFromRole(e.target.id, e.target.value);
         }
     }
-
-
 
     return (
         <div className='content'>
@@ -166,51 +171,73 @@ export default function Permissiontable() {
                 <Loader />
             ) : (
                 <div>
-                    <table className='permission-table'>
-                        <thead>
-                            <tr>
-                                <th>
-                                    Permissions
-                                </th>
-                                {roles.map((role) => (
-                                    <th key={role.role_id} className='role-header'>
-                                        <div className='role-header-div'>
-                                            <p>
-                                                {role.name}
-                                            </p>
-                                            {checkPermissionForBoard(board_id, team_id, 'role_management') && (
-                                                <button onClick={() => DeleteRole(role.role_id)} className='delete-role'>Delete</button>
-                                            )}
-                                        </div>
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {permissions.map((permission) => (
-                                permission.name !== 'system_admin' && permission.name !== 'user_permission' && permission.name !== 'team_management' && permission.name !== 'team_member_management' && permission.name !== 'team_member_role_management' && (
-                                    <tr key={permission.permission_id}>
-                                        <td className='permission-name'>
-                                            {permission.name}
-                                        </td>
-                                        {roles.map((role) => (
-                                            <td key={role.role_id} className='role-permission'>
-                                                <input className='permission-checkbox' type="checkbox" onChange={handleCheckboxChange} id={role.role_id} value={permission.id} name={permission.name} checked={checkIfPermissionIsSet(role.role_id, permission.id)} disabled={!checkPermissionForBoard(board_id, team_id, 'roles_permissions_management')} />
-                                            </td>
-                                        ))}
-                                    </tr>
-                                )
+                    <div className='permission-table'>
+                        <div className='permission-table-header'>
+                            <div className='permission-table-header-cell'>Permissions</div>
+                            {roles.map((role) => (
+                                <div key={role.role_id} className='permission-table-header-cell'>
+                                    <div className='role-header-div'>
+                                        <p>{role.name}</p>
+                                        {checkPermissionForBoard(board_id, team_id, 'role_management') && (
+                                            <button onClick={() => DeleteRole(role.role_id)} className='delete-role'>
+                                                Delete
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
                             ))}
-                        </tbody>
-                    </table>
+                        </div>
+                        <div className='permission-table-body'>
+                            {permissions.map(
+                                (permission) =>
+                                    permission.name !== 'system_admin' &&
+                                    permission.name !== 'user_permission' &&
+                                    permission.name !== 'team_management' &&
+                                    permission.name !== 'team_member_management' &&
+                                    permission.name !== 'team_member_role_management' && (
+                                        <div key={permission.permission_id} className='permission-table-row'>
+                                            <div className='permission-table-body-cell'>{permission.name}</div>
+                                            {roles.map((role) => (
+                                                <div key={role.role_id} className='permission-table-body-cell'>
+                                                    <input
+                                                        className='permission-checkbox'
+                                                        type='checkbox'
+                                                        onChange={handleCheckboxChange}
+                                                        id={role.role_id}
+                                                        value={permission.id}
+                                                        name={permission.name}
+                                                        checked={checkIfPermissionIsSet(role.role_id, permission.id)}
+                                                        disabled={
+                                                            !checkPermissionForBoard(
+                                                                board_id,
+                                                                team_id,
+                                                                'roles_permissions_management'
+                                                            )
+                                                        }
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )
+                            )}
+                        </div>
+                    </div>
                 </div>
             )}
-            {checkPermissionForBoard(board_id, team_id, 'role_management') &&
+            {checkPermissionForBoard(board_id, team_id, 'role_management') && (
                 <div className='add-role'>
-                    <input type='text' onChange={handleChange} value={newRoleName} placeholder='Role name' className='role-input' />
-                    <button onClick={AddNewRole} className='add-role-button'>Add Role</button>
+                    <input
+                        type='text'
+                        onChange={handleChange}
+                        value={newRoleName}
+                        placeholder='Role name'
+                        className='role-input'
+                    />
+                    <button onClick={AddNewRole} className='add-role-button'>
+                        Add Role
+                    </button>
                 </div>
-            }
+            )}
         </div>
-    )
+    );
 }
