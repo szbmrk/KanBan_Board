@@ -829,7 +829,7 @@ class TaskController extends Controller
                 if ($validator->fails()) {
                     return response()->json(['errors' => $validator->errors()], 400);
                 }
-                $this->processTaskData($taskData, $boardId, $columnId);
+                $newTask = $this->processTaskData($taskData, $boardId, $columnId);
             }
     
             DB::commit();
@@ -840,25 +840,27 @@ class TaskController extends Controller
             return response()->json(['error' => 'There was an error while updating tasks.','message' => $e->getMessage()], 500);
         }
 
-        return response()->json(['message' => 'Tasks updated successfully'], 200);
+        return response()->json(['message' => 'Tasks updated successfully', 'task' -> $newTask], 200);
     }
 
     private function processTaskData($taskData, $boardId, $columnId, $parentTask = null)
     {
         $mainTask = null; // Inicializáljuk a változót null-ra
-        
+        $response = null;
         if (isset($taskData['title'])) {
             if (isset($taskData['task_id'])) {
                 $existingTask = Task::find($taskData['task_id']);
                 if ($existingTask) {
                     $this->updateTask($existingTask, $taskData);
                     $mainTask = $existingTask; 
+                    $response = $mainTask;
                 }
             } else {
                 $mainTask = $this->createTask($taskData, $boardId, $columnId);
                 if ($parentTask !== null) {
                     $mainTask->parentTask()->associate($parentTask);
                     $mainTask->save();
+                    $response = $mainTask;
                 }
             }
             
@@ -868,6 +870,7 @@ class TaskController extends Controller
                 }
             }
         }
+        return $response;
     }
     
     
