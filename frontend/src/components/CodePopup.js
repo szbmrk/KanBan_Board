@@ -6,6 +6,7 @@ import axios from '../api/axios';
 import '../styles/popup.css';
 import '../styles/CodePopup.css';
 import hljs from 'highlight.js';
+import ErrorWrapper from "../ErrorWrapper";
 
 const CodePopup = ({ board_id, codeReviewOrDocumentation, reloadCodeReviewOrDocumentation, onCancel }) => {
     const SearchListForValue = (list, searchValue) => {
@@ -42,6 +43,8 @@ const CodePopup = ({ board_id, codeReviewOrDocumentation, reloadCodeReviewOrDocu
 
     const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
+    const [error, setError] = useState(null);
+
     const handleRunClick = async () => {
         try {
             const token = sessionStorage.getItem('token');
@@ -69,7 +72,7 @@ const CodePopup = ({ board_id, codeReviewOrDocumentation, reloadCodeReviewOrDocu
             setOutput(res.data.review);
             reloadCodeReviewOrDocumentation();
         } catch (e) {
-            console.error(e);
+            setError(e.response.data);
         }
     };
 
@@ -124,6 +127,9 @@ const CodePopup = ({ board_id, codeReviewOrDocumentation, reloadCodeReviewOrDocu
                     <textarea className='output-textarea' value={output} disabled />
                 </div>
             </div>
+            {error && (
+                <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+            )}
         </div>
     );
 };

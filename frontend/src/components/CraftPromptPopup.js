@@ -8,8 +8,11 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import BasicAutocomplete from "./BasicAutocomplete";
+import ErrorWrapper from "../ErrorWrapper";
 
 const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     // This code will run when the component is mounted
     console.log("Component mounted");
@@ -38,7 +41,7 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
       console.log(res);
       setBehaviourOptions(formatBehaviourToOptions(res.data));
     } catch (e) {
-      console.error(e);
+      setError(e.response.data);
     }
   };
 
@@ -121,7 +124,7 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
       console.log(res);
       console.log(res.data);
     } catch (e) {
-      console.error(e);
+      setError(e.response.data);
     }
   };
 
@@ -217,6 +220,9 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
           </div>
         </div>
       </div>
+      {error && (
+          <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+      )}
     </div>
   );
 };

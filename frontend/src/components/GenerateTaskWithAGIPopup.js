@@ -7,7 +7,7 @@ import "../styles/GenerateTaskWithAGIPopup.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
-import Loader from "./Loader";
+import ErrorWrapper from "../ErrorWrapper";
 
 const GenerateTaskWithAGIPopup = ({
   board_id,
@@ -41,6 +41,8 @@ const GenerateTaskWithAGIPopup = ({
   let [taskCounter, setTaskCounter] = useState(counterOptions[0]);
 
   const closeIcon = <FontAwesomeIcon icon={faXmark} />;
+
+  const [error, setError] = useState(null);
 
   const handleTitleChange = (task, title) => {
     const updatedTask = (task.title = title);
@@ -93,7 +95,7 @@ const GenerateTaskWithAGIPopup = ({
       alert("Saved!");
       oncancel();
     } catch (e) {
-      console.error(e);
+      setError(e.response.data);
     }
   };
 
@@ -128,7 +130,7 @@ const GenerateTaskWithAGIPopup = ({
         setEditedTasks(res.data);
       }
     } catch (e) {
-      console.error(e);
+      setError(e.response.data);
     }
   };
 
@@ -192,7 +194,7 @@ const GenerateTaskWithAGIPopup = ({
         setEditedTasks(res.data);
       }
     } catch (e) {
-      console.error(e);
+      setError(e.response.data);
     }
   };
 
@@ -282,6 +284,9 @@ const GenerateTaskWithAGIPopup = ({
           )}
         </div>
       </div>
+      {error && (
+          <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+      )}
     </div>
   );
 };

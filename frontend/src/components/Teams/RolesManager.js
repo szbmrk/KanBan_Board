@@ -3,6 +3,7 @@ import axios from '../../api/axios';
 import '../../styles/rolesmanager.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import ErrorWrapper from "../../ErrorWrapper";
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
@@ -13,6 +14,8 @@ export default function RolesManager({ OnClose, team_id, team_member_id, AddRole
     const [boardRoles, setBoardRoles] = useState([]);
     const [role_id, setRoleId] = useState();
     const [board_id, setBoardID] = useState();
+
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         getBoards();
@@ -32,7 +35,7 @@ export default function RolesManager({ OnClose, team_id, team_member_id, AddRole
                 }
             }
         } catch (e) {
-            console.error(e);
+            setError(e.response.data);
         }
     }
 
@@ -52,7 +55,7 @@ export default function RolesManager({ OnClose, team_id, team_member_id, AddRole
             console.log(newRoles);
             setBoardIsSelected(true);
         } catch (error) {
-            console.log(error);
+            setError(error.response.data);
         }
     }
 
@@ -105,6 +108,9 @@ export default function RolesManager({ OnClose, team_id, team_member_id, AddRole
                     Add role to user
                 </button>
             </div>
+            {error && (
+                <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+            )}
         </div>
     );
 }

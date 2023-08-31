@@ -87,10 +87,6 @@ const Popup = ({
 
     const [error, setError] = useState(null);
 
-    const handleErrorClose = () => {
-        setError(null);
-    };
-
     const validateLink = (inputLink) => {
         const urlPattern = /^(http|https):\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/;
         return urlPattern.test(inputLink);
@@ -148,7 +144,7 @@ const Popup = ({
             setNotMembers(response.data.users);
             setNewMember(response.data.users[0].user_id);
         } catch (error) {
-            console.log(error.response);
+            setError(error.response.data)
         }
     };
 
@@ -182,7 +178,7 @@ const Popup = ({
             });
             setBoardTags(response.data.tags);
         } catch (err) {
-            setError(err.response.data.error);
+            setError(err.response.data);
         }
     };
 
@@ -310,7 +306,7 @@ const Popup = ({
 
                 setShowTagEditorPopup(false);
             } catch (e) {
-                setError(e.response.data.error);
+                setError(e.response.data);
             }
         } else {
             try {
@@ -329,7 +325,7 @@ const Popup = ({
 
                 setShowTagEditorPopup(false);
             } catch (e) {
-                setError(e.response.data.error);
+                setError(e.response.data);
             }
         }
     };
@@ -356,7 +352,7 @@ const Popup = ({
 
             handleBoardTagDeletion(tagData.tagId);
         } catch (e) {
-            setError(e.response.data.error);
+            setError(e.response.data);
         }
     };
 
@@ -702,7 +698,7 @@ const Popup = ({
                 </div>
             )}
             {error && (
-                <ErrorWrapper originalError={error} onClose={handleErrorClose}/>
+                <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
             )}
         </div>
     );

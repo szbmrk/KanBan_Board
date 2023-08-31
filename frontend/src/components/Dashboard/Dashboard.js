@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../styles/dashboard.css';
 import axios from '../../api/axios';
-import { Link, RedirectFunction } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Loader from '../Loader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faPencil, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { SetRoles, checkPermissionForBoard } from '../../roles/Roles';
 import Error from '../Error';
+import ErrorWrapper from "../../ErrorWrapper";
 
 const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
@@ -323,6 +324,8 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
     const [boardName, setBoardName] = useState('');
     const [isLoading, setIsLoading] = useState(true);
 
+    const [error, setError] = useState(null);
+
     useEffect(() => {
         if (boardId) {
             fetchDashboardData();
@@ -341,8 +344,10 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
             });
             setBoardName(response.data.board.name);
             setIsLoading(false);
-        } catch (error) {
-            console.error(error);
+        } catch (e) {
+            e.response.status === 401 || e.response.status === 500
+                ? setError('You are not logged in! Redirecting to login page...')
+                : setError(e.message);
         }
     };
 
@@ -372,6 +377,9 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
                     />
                     <button className='board-save-button'>Save</button>
                 </form>
+            )}
+            {error && (
+                <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
             )}
         </>
     );

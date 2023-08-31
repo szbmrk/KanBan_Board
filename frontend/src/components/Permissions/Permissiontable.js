@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import axios from '../../api/axios';
 import Loader from '../Loader';
 import '../../styles/permissions.css';
 import '../../styles/teamcard.css';
 import { SetRoles, checkPermissionForBoard } from '../../roles/Roles';
+import ErrorWrapper from "../../ErrorWrapper";
 
 export default function Permissiontable() {
     const { board_id, team_id } = useParams();
@@ -14,6 +15,8 @@ export default function Permissiontable() {
     const [needLoader, setNeedLoader] = useState(false);
 
     const token = sessionStorage.getItem('token');
+
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         document.title = 'Permission Table';
@@ -32,7 +35,7 @@ export default function Permissiontable() {
             console.log(response.data.roles);
             setRoles(response.data.roles);
         } catch (error) {
-            console.log(error.response);
+            setError(error.response.data);
         }
     }
 
@@ -50,7 +53,7 @@ export default function Permissiontable() {
             console.log(response.data.permissions);
             setPermissions(response.data.permissions);
         } catch (error) {
-            console.log(error.response);
+            setError(error.response.data);
         }
     }
 
@@ -84,7 +87,7 @@ export default function Permissiontable() {
             setRoles([...roles, newRole]);
             setNewRoleName('');
         } catch (error) {
-            console.log(error.response);
+            setError(error.response.data);
         }
     }
 
@@ -98,7 +101,7 @@ export default function Permissiontable() {
             console.log(response);
             setRoles(roles.filter((role) => role.role_id !== role_id));
         } catch (error) {
-            console.log(error.response);
+            setError(error.response.data);
         }
     }
 
@@ -126,7 +129,7 @@ export default function Permissiontable() {
             setRoles(newRoles);
             setNeedLoader(false);
         } catch (error) {
-            console.log(error.response);
+            setError(error.response.data);
         }
     }
 
@@ -152,7 +155,7 @@ export default function Permissiontable() {
             setRoles(newRoleData);
             setNeedLoader(false);
         } catch (error) {
-            console.log(error.response);
+            setError(error.response.data);
         }
     }
 
@@ -241,6 +244,9 @@ export default function Permissiontable() {
                         Add Role
                     </button>
                 </div>
+            )}
+            {error && (
+                <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
             )}
         </div>
     );

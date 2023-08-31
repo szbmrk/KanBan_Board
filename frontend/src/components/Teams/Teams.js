@@ -181,7 +181,7 @@ const Teams = () => {
             console.log(response.data.teams);
             setTeams(tempData);
         } catch (error) {
-            console.log(error.response);
+            setError(error.response.data.error);
         }
     };
 
@@ -212,7 +212,7 @@ const Teams = () => {
             setTeams(newTeamData);
 
         } catch (error) {
-            console.log(error.response);
+            setError(error.response.data);
         }
     }
 
@@ -241,7 +241,7 @@ const Teams = () => {
             setTeams(newTeamData);
         }
         catch (error) {
-            console.log(error);
+            setError(error.response.data);
         }
     }
 

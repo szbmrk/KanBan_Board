@@ -9,7 +9,7 @@ const ErrorWrapper = ({originalError, onClose}) => {
                 <div className="error-popup">
                     <div className="error-popup-title">Error</div>
                     <hr className="error-popup-line" />
-                    <div className="error-popup-message">{originalError}</div>
+                    <div className="error-popup-message">{originalError.error ? originalError.error : originalError.message}</div>
                     <button className="error-popup-button" onClick={onClose}>
                         OK
                     </button>

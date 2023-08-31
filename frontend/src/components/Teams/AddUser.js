@@ -3,6 +3,7 @@ import axios from '../../api/axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import Loader from '../Loader';
+import ErrorWrapper from "../../ErrorWrapper";
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
@@ -10,6 +11,8 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [needLoader, setNeedLoader] = useState(false);
+
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     setNeedLoader(true);
@@ -27,7 +30,7 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
       setUsers(response.data.users);
       setNeedLoader(false);
     } catch (error) {
-      console.log(error.response);
+        setError(error.response.data);
     }
   }
 
@@ -75,6 +78,9 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
           Add Users
         </button>
       </div>
+      {error && (
+        <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+      )}
     </div>
   );
 };

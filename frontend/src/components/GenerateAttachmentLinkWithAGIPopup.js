@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
-import Loader from "./Loader";
+import ErrorWrapper from "../ErrorWrapper";
 
 const GenerateAttachmentLinkWithAGIPopup = ({
   task,
@@ -42,6 +42,8 @@ const GenerateAttachmentLinkWithAGIPopup = ({
 
   const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
+  const [error, setError] = useState(null);
+
   const saveToDatabase = async (task, attachments) => {
     try {
       const token = sessionStorage.getItem("token");
@@ -63,7 +65,7 @@ const GenerateAttachmentLinkWithAGIPopup = ({
 
       console.log(res);
     } catch (e) {
-      console.error(e);
+      setError(e.response.data);
     }
   };
 
@@ -89,7 +91,7 @@ const GenerateAttachmentLinkWithAGIPopup = ({
       setAttachments(res.data);
       //setNeedLoader(false);
     } catch (e) {
-      console.error(e);
+      setError(e.response.data);
     }
   };
 
@@ -209,6 +211,9 @@ const GenerateAttachmentLinkWithAGIPopup = ({
           )}
         </div>
       </div>
+      {error && (
+          <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+      )}
     </div>
   );
 };
