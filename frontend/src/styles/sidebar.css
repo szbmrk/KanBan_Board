@@ -3,6 +3,7 @@
 }
 
 .sidebar {
+    transform: translateX(-220px);
     transition: 0.5s;
     position: sticky;
     left: 0;
@@ -52,5 +53,10 @@
 
   .sidebar-hidden {
     transform: translateX(-220px);
+    transition: transform 0.5s ease-in-out;
+  }
+  
+  .sidebar-visible {
+    transform: translateX(0);
     transition: transform 0.5s ease-in-out;
   }

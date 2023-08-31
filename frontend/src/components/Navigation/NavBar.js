@@ -27,7 +27,21 @@ const Navbar = () => {
 
     const hideSidebar = () => {
         const sidebar = document.querySelector('.sidebar');
+        const content = document.querySelector('.content');
+
         sidebar.classList.toggle('sidebar-hidden');
+        sidebar.classList.toggle('sidebar-visible');
+        if (sidebar.classList.contains('sidebar-hidden')) {
+            setTimeout(() => {
+                sidebar.style.display = 'none';
+                content.style.width = '100%';
+                content.style.transition = 'width 0.5s ease-in-out';
+            }, 500);
+        } else {
+            sidebar.style.display = 'block';
+            content.style.width = '83.33%';
+            content.style.transition = 'width 0.5s ease-in-out';
+        }
     };
 
     const [isOpen, setIsOpen] = useState(false);

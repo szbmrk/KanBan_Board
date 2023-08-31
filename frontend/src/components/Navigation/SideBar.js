@@ -17,9 +17,8 @@ const Sidebar = () => {
         console.log(permissions);
     }, []);
 
-
     return (
-        <div className='sidebar'>
+        <div className='sidebar sidebar-visible'>
             <div className='sidebar-menu col-2 col-s-2'>
                 <ul>
                     <li>
@@ -49,7 +48,6 @@ const Sidebar = () => {
                             <span>Permission table</span>
                         </Link>
                     </li>
-
                 </ul>
             </div>
         </div>
