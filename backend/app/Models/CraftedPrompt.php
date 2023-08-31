@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\AdjustTimestampsForHungaryTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CraftedPrompt extends Model
 {
     use HasFactory;
+    use AdjustTimestampsForHungaryTrait;
 
     protected $primaryKey = 'crafted_prompt_id'; // Define the primary key field name
 
@@ -18,8 +21,10 @@ class CraftedPrompt extends Model
         'crafted_prompt_text',
         'craft_with',
         'action',
+        'response_counter',
         'created_by',
     ];
+
 
     // Define relationships with other tables (if any)
     

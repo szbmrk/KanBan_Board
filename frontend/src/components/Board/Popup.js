@@ -21,7 +21,8 @@ import Subtask from './Subtask';
 import TagDropdown from './TagDropdown';
 import Comment from './Comment';
 import DatePicker from 'react-datepicker';
-import TagEditorPopup from "./TagEditorPopup";
+import TagEditorPopup from './TagEditorPopup';
+import ErrorWrapper from "../../ErrorWrapper";
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const subtaskIcon = <FontAwesomeIcon icon={faListCheck} />;
@@ -56,7 +57,8 @@ const Popup = ({
     addMember,
     deleteMember,
     placeTagOnTask,
-    removeTagFromTask
+    removeTagFromTask,
+    handleBoardTagDeletion,
 }) => {
     const popupRef = useRef(null);
 
@@ -81,6 +83,13 @@ const Popup = ({
     const token = sessionStorage.getItem('token');
 
     const [showTagEditorPopup, setShowTagEditorPopup] = useState(false);
+    const [tagToEdit, setTagToEdit] = useState(null);
+
+    const [error, setError] = useState(null);
+
+    const handleErrorClose = () => {
+        setError(null);
+    };
 
     const validateLink = (inputLink) => {
         const urlPattern = /^(http|https):\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/;
@@ -173,7 +182,7 @@ const Popup = ({
             });
             setBoardTags(response.data.tags);
         } catch (err) {
-            console.log(err);
+            setError(err.response.data.error);
         }
     };
 
@@ -181,7 +190,7 @@ const Popup = ({
         const nextWeek = new Date();
         console.log(nextWeek);
         nextWeek.setDate(nextWeek.getDate() + 7);
-        nextWeek.setHours(nextWeek.getHours() + 2);
+        nextWeek.setHours(nextWeek.getHours() + 2); // kell a két óra mivel a new Date alapból 2 órával kevesebbet ad vissza
         nextWeek.setMinutes(0);
         nextWeek.setSeconds(0);
         nextWeek.setMilliseconds(0);
@@ -198,7 +207,7 @@ const Popup = ({
         if (newDeadlineDate !== null) {
             const newDeadLine = new Date(newDeadlineDate);
             newDeadLine.setHours(0);
-            newDeadLine.setHours(newDeadLine.getHours() + 2);
+            newDeadLine.setHours(newDeadLine.getHours() + 2); // kell a két óra mivel a new Date alapból 2 órával kevesebbet ad vissza
             newDeadLine.setMinutes(0);
             newDeadLine.setSeconds(0);
             newDeadLine.setMilliseconds(0);
@@ -255,10 +264,100 @@ const Popup = ({
 
     const handleCloseTagEditor = () => {
         setShowTagEditorPopup(false);
+        setTagToEdit(null);
     };
 
-    const handleSaveTagEditor = () => {
-        // setShowTagEditorPopup(false);
+    const handleSaveTagEditor = async (tagData) => {
+        if (tagData.tagId !== -1) {
+            try {
+                const formData = new FormData();
+                formData.append('name', tagData.name);
+                formData.append('color', tagData.color);
+                await axios.put(
+                    `/boards/${task.board_id}/tags/${tagData.tagId}`,
+                    { name: tagData.name, color: tagData.color },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                const updatedBoardTags = boardTags.map((tag) => {
+                    if (tag.tag_id === tagData.tagId) {
+                        return {
+                            ...tag,
+                            name: tagData.name,
+                            color: tagData.color,
+                        };
+                    }
+                    return tag;
+                });
+
+                const updatedTaskTags = task.tags.map((tag) => {
+                    if (tag.tag_id === tagData.tagId) {
+                        return {
+                            ...tag,
+                            name: tagData.name,
+                            color: tagData.color,
+                        };
+                    }
+                    return tag;
+                });
+
+                setBoardTags(updatedBoardTags);
+                task.tags = updatedTaskTags;
+
+                setShowTagEditorPopup(false);
+            } catch (e) {
+                setError(e.response.data.error);
+            }
+        } else {
+            try {
+                const formData = new FormData();
+                formData.append('name', tagData.name);
+                formData.append('color', tagData.color);
+                await axios.post(`/boards/${task.board_id}/tags`, formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                //TODO: visszakapni a tag_id-t response-sal, mert a tagData-ból nem jön,
+                //TODO: és lecserélni ezt a sort annak a használatára...
+                handleGetBoardTags();
+
+                setShowTagEditorPopup(false);
+            } catch (e) {
+                setError(e.response.data.error);
+            }
+        }
+    };
+
+    const handleTagEditing = (tag) => {
+        setTagToEdit(tag);
+        setShowTagEditorPopup(true);
+    };
+
+    const handleTagDeletion = async (tagData) => {
+        try {
+            await axios.delete(`/boards/${task.board_id}/tags/${tagData.tagId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const updatedBoardTags = boardTags.filter((tag) => tag.tag_id !== tagData.tagId);
+
+            const updatedTaskTags = task.tags.filter((tag) => tag.tag_id !== tagData.tagId);
+
+            setBoardTags(updatedBoardTags);
+            task.tags = updatedTaskTags;
+
+            handleBoardTagDeletion(tagData.tagId);
+        } catch (e) {
+            setError(e.response.data.error);
+        }
     };
 
     return (
@@ -311,9 +410,19 @@ const Popup = ({
                                         <span className='icon'>{tagsIcon}</span>
                                         <h3>Tags:</h3>
                                     </div>
-                                    <div className='tags'>
-                                        <TagDropdown tags={task.tags} allTags={boardTags} taskId={task.task_id} placeTagOnTask={placeTagOnTask} removeTagFromTask={removeTagFromTask}></TagDropdown>
-                                        <span className='addbtn-tag' onClick={() => setShowTagEditorPopup(true)}>{plusIcon}</span>
+                                    <div className='popup-tags'>
+                                        <TagDropdown
+                                            tags={task.tags}
+                                            allTags={boardTags}
+                                            taskId={task.task_id}
+                                            placeTagOnTask={placeTagOnTask}
+                                            removeTagFromTask={removeTagFromTask}
+                                            tagEditHandler={handleTagEditing}
+                                            tagDeleteHandler={handleTagDeletion}
+                                        ></TagDropdown>
+                                        <span className='addbtn-tag' onClick={() => setShowTagEditorPopup(true)}>
+                                            {plusIcon}
+                                        </span>
                                     </div>
                                 </>
                             )}
@@ -396,7 +505,7 @@ const Popup = ({
                                                     {attachment.link}
                                                 </a>
                                                 <span
-                                                    className='delete-button'
+                                                    className='trash-icon'
                                                     onClick={() =>
                                                         deleteAttachment(
                                                             task.task_id,
@@ -448,7 +557,7 @@ const Popup = ({
                 >
                     Save
                 </button>
-                <button className='add-button' onClick={handleAddToCard} style={{ zIndex: addToCardIconZIndex }}>
+                <button className='add-icon' onClick={handleAddToCard} style={{ zIndex: addToCardIconZIndex }}>
                     {plusIcon}
                 </button>
                 {showAddToCard && (
@@ -515,7 +624,7 @@ const Popup = ({
                         >
                             <div className='priority-picker-content'>
                                 {priorities.map((priority, index) => (
-                                    <p
+                                    <div
                                         className='priority-picker-item'
                                         key={index}
                                         value={priority.priority_id}
@@ -523,19 +632,15 @@ const Popup = ({
                                             handleModifyPriority(priority.priority_id);
                                         }}
                                     >
-                                        {priority.priority}
-                                    </p>
+                                        <p>{priority.priority}</p>
+                                    </div>
                                 ))}
                             </div>
                         </div>
-                    </div>)
-                }
-                {showTagEditorPopup && (
-                    <div className='tag-editor-overlay'>
-                        <div className='tag-editor-popup'>
-                            <TagEditorPopup onClose={handleCloseTagEditor} onSave={handleSaveTagEditor}/>
-                        </div>
                     </div>
+                )}
+                {showTagEditorPopup && (
+                    <TagEditorPopup onClose={handleCloseTagEditor} onSave={handleSaveTagEditor} tagToEdit={tagToEdit} />
                 )}
             </div>
             {showAddAttachment && (
@@ -595,6 +700,9 @@ const Popup = ({
                         </form>
                     </div>
                 </div>
+            )}
+            {error && (
+                <ErrorWrapper originalError={error} onClose={handleErrorClose}/>
             )}
         </div>
     );

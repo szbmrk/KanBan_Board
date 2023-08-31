@@ -14,7 +14,7 @@ const Teams = () => {
     const [redirect, setRedirect] = useState(false);
     const [error, setError] = useState(false);
 
-    const [teams, setTeams] = useState([]);
+    const [teams, setTeams] = useState(null);
     const [manageIsClicked, setManage] = useState(false);
 
     useEffect(() => {
@@ -28,8 +28,6 @@ const Teams = () => {
 
     async function ResetRoles() {
         await SetRoles(token);
-        setTeamPermissions(JSON.parse(sessionStorage.getItem('permissions')).teams);
-        setOwnPermissions(JSON.parse(sessionStorage.getItem('permissions')).general_role);
     }
 
     function addTeam() {
@@ -186,13 +184,74 @@ const Teams = () => {
             console.log(error.response);
         }
     };
+
+    const handleDeleteRole = async (role_id, board_id, team_id, user_id) => {
+        const token = sessionStorage.getItem('token');
+        try {
+            const response = await axios.delete(`/boards/${board_id}/team-member-roles/${role_id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            console.log(response);
+            const newTeamData = teams.map((team) => {
+                if (team.team_id === team_id) {
+                    const newTeamMembers = team.team_members.map((member) => {
+                        if (member.user_id === user_id) {
+                            const newRoles = member.roles.filter((role) => role.team_members_role_id !== role_id);
+                            member.roles = newRoles;
+                        }
+                        return member;
+                    });
+                    team.team_members = newTeamMembers;
+                }
+                return team;
+            });
+            setTeams(newTeamData);
+
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
+    async function AddRoleToUser(board_id, team_member_id, role_id) {
+        try {
+            const response = await axios.post(`/boards/${board_id}/team-member-roles`, { team_member_id: team_member_id, role_id: role_id },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+            console.log(response);
+            const newTeamMember = response.data.team_member;
+            const newTeamData = teams.map((team) => {
+                if (team.team_id === newTeamMember.team_id) {
+                    const newTeamMembers = team.team_members.map((member) => {
+                        if (member.user_id === newTeamMember.user_id) {
+                            member.roles = newTeamMember.roles;
+                        }
+                        return member;
+                    });
+                    team.team_members = newTeamMembers;
+                }
+                return team;
+            });
+            setTeams(newTeamData);
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <div className='content'>
-            {teams.length === undefined ? (
+            {(teams === null) ? (
                 error ? (
                     <Error error={error} redirect={redirect} />
                 ) : (
-                    <Loader />
+                    <Loader data_to_load={teams} text_if_cant_load={"No teams yet!"} />
                 )
             ) : (
                 <div className='teams-container'>
@@ -223,6 +282,8 @@ const Teams = () => {
                                     DeleteTeam={DeleteTeam}
                                     ownPermissions={ownPermissions}
                                     teamPermissions={teamPermissions}
+                                    AddRoleToUser={AddRoleToUser}
+                                    handleDeleteRole={handleDeleteRole}
                                 />
                             ))}
 

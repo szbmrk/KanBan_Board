@@ -1,426 +1,247 @@
-import React from 'react'
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router';
+import axios from '../../api/axios';
+import Loader from '../Loader';
 import '../../styles/permissions.css';
+import '../../styles/teamcard.css';
+import { SetRoles, checkPermissionForBoard } from '../../roles/Roles';
 
-const Permissiontable = () => {
+export default function Permissiontable() {
+    const { board_id, team_id } = useParams();
+    const [roles, setRoles] = useState([]);
+    const [permissions, setPermissions] = useState([]);
+    const [newRoleName, setNewRoleName] = useState('');
+    const [needLoader, setNeedLoader] = useState(false);
+
+    const token = sessionStorage.getItem('token');
+
+    useEffect(() => {
+        document.title = 'Permission Table';
+        ResetRoles();
+        fetchBoardPermissions();
+        getAllPermissions();
+    }, []);
+
+    async function fetchBoardPermissions() {
+        try {
+            const response = await axios.get(`/boards/${board_id}/role-permissions`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log(response.data.roles);
+            setRoles(response.data.roles);
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
+    async function ResetRoles() {
+        await SetRoles(token);
+    }
+
+    async function getAllPermissions() {
+        try {
+            const response = await axios.get(`/all-permissions`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log(response.data.permissions);
+            setPermissions(response.data.permissions);
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
+    function checkIfPermissionIsSet(role_id, permission_id) {
+        for (let i = 0; i < roles.length; i++) {
+            if (parseInt(roles[i].role_id) === parseInt(role_id)) {
+                for (let j = 0; j < roles[i].permissions.length; j++) {
+                    if (roles[i].permissions[j].id === permission_id) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    async function AddNewRole() {
+        try {
+            const response = await axios.post(
+                `/boards/${board_id}/roles`,
+                { name: newRoleName },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            console.log(response.data);
+            const newRole = response.data.role;
+            newRole.permissions = [];
+            setRoles([...roles, newRole]);
+            setNewRoleName('');
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
+    async function DeleteRole(role_id) {
+        try {
+            const response = await axios.delete(`/boards/${board_id}/roles/${role_id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log(response);
+            setRoles(roles.filter((role) => role.role_id !== role_id));
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
+    async function DeletePermissionFromRole(role_id, permission_id) {
+        try {
+            const response = await axios.delete(`/boards/${board_id}/roles/${role_id}/permissions/${permission_id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log(response);
+            const newRoles = [...roles];
+            for (let i = 0; i < newRoles.length; i++) {
+                if (parseInt(newRoles[i].role_id) === parseInt(role_id)) {
+                    newRoles[i].permissions.splice(
+                        newRoles[i].permissions.findIndex(
+                            (permission) => parseInt(permission.id) === parseInt(permission_id)
+                        ),
+                        1
+                    );
+                    break;
+                }
+            }
+            await ResetRoles();
+            setRoles(newRoles);
+            setNeedLoader(false);
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
+    async function AddPermissionToRole(role_id, permission_id) {
+        try {
+            const response = await axios.post(
+                `/boards/${board_id}/roles/${role_id}/permissions/`,
+                { permission_id: permission_id },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            console.log(response);
+            const newRoleData = [...roles];
+            newRoleData.forEach((role) => {
+                if (parseInt(role.role_id) === parseInt(role_id)) {
+                    role.permissions.push(response.data.permission);
+                }
+            });
+            await ResetRoles();
+            setRoles(newRoleData);
+            setNeedLoader(false);
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
+    function handleChange(e) {
+        setNewRoleName(e.target.value);
+    }
+
+    function handleCheckboxChange(e) {
+        setNeedLoader(true);
+        if (e.target.checked) {
+            AddPermissionToRole(e.target.id, e.target.value);
+        } else {
+            DeletePermissionFromRole(e.target.id, e.target.value);
+        }
+    }
+
     return (
         <div className='content'>
-            <form>
-                <table>
-                    <tbody>
-                        <tr>
-                            <th>
-                                Permissions
-                            </th>
-                            <th>
-                                User
-                            </th>
-                            <th>
-                                Admin
-                            </th>
-                            <th>
-                                Project Manager
-                            </th>
-                            <th>
-                                Team manager
-                            </th>
-                            <th>
-                                Task manager
-                            </th>
-                            <th>
-                                Board manager
-                            </th>
-                        </tr>
-                        <tr key="">
-                            <td className='permission'>
-                                <p>Task read</p>
-                                <p className="description">You can read the content of a task</p>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="1" name="vehicle1" value="1" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="1" name="vehicle2" value="1" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="1" name="vehicle3" value="1" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="1" name="vehicle3" value="1" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="1" name="vehicle3" value="1" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="1" name="vehicle3" value="1" disabled checked />
-                            </td>
-                        </tr>
-                        <tr key="">
-                            <td className='permission'>
-                                <p>Task write</p>
-                                <p className="description">You can write the content of a task</p>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="2" name="vehicle1" value="2" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="2" name="vehicle2" value="2" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="2" name="vehicle3" value="2" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="2" name="vehicle3" value="2" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="2" name="vehicle3" value="2" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="2" name="vehicle3" value="2" disabled checked />
-                            </td>
-                        </tr>
-                        <tr key="">
-                            <td className='permission'>
-                                <p>Task delete</p>
-                                <p className="description">You can delete the content of a column</p>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="4" name="vehicle1" value="4" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="4" name="vehicle2" value="4" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="4" name="vehicle3" value="4" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="4" name="vehicle3" value="4" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="4" name="vehicle3" value="4" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="4" name="vehicle3" value="4" disabled checked />
-                            </td>
-                        </tr>
-                        <tr key="">
-                            <td className='permission'>
-                                <p>Task add</p>
-                                <p className="description">You can create tasks in columns</p>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="8" name="vehicle1" value="8" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="8" name="vehicle2" value="8" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="8" name="vehicle3" value="8" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="8" name="vehicle3" value="8" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="8" name="vehicle3" value="8" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="8" name="vehicle3" value="8" disabled checked />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className='permission'>
-                                <p>Column read</p>
-                                <p className="description">You can read the content of a column</p>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="16" name="vehicle1" value="16" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="16" name="vehicle2" value="16" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="16" name="vehicle3" value="16" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="16" name="vehicle3" value="16" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="16" name="vehicle3" value="16" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="16" name="vehicle3" value="16" disabled checked />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className='permission'>
-                                <p>Column write</p>
-                                <p className="description">You can modify the content of a column</p>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="32" name="vehicle1" value="32" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="32" name="vehicle2" value="32" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="32" name="vehicle3" value="32" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="32" name="vehicle3" value="32" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="32" name="vehicle3" value="32" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="32" name="vehicle3" value="32" disabled checked />
-                            </td>
-                        </tr>
-                        <tr key="">
-                            <td className='permission'>
-                                <p>Column delete</p>
-                                <p className="description">You can delete a column</p>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="64" name="vehicle1" value="64" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="64" name="vehicle2" value="64" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="64" name="vehicle3" value="64" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="64" name="vehicle3" value="64" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="64" name="vehicle3" value="64" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="64" name="vehicle3" value="64" disabled checked />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className='permission'>
-                                <p>Column add</p>
-                                <p className="description">You can create a new column</p>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="128" name="vehicle1" value="128" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="128" name="vehicle2" value="128" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="128" name="vehicle3" value="128" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="128" name="vehicle3" value="128" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="128" name="vehicle3" value="128" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="128" name="vehicle3" value="128" disabled checked />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className='permission'>
-                                <p>Board read</p>
-                                <p className="description">You can read the content of a board</p>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="256" name="vehicle1" value="256" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="256" name="vehicle2" value="256" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="256" name="vehicle3" value="256" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="256" name="vehicle3" value="256" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="256" name="vehicle3" value="256" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="256" name="vehicle3" value="256" disabled checked />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className='permission'>
-                                <p>Board write</p>
-                                <p className="description">You can edit the board name</p>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="512" name="vehicle1" value="512" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="512" name="vehicle2" value="512" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="512" name="vehicle3" value="512" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="512" name="vehicle3" value="512" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="512" name="vehicle3" value="512" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="512" name="vehicle3" value="512" disabled checked />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className='permission'>
-                                <p>Board delete</p>
-                                <p className="description">You can delete a board</p>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="1024" name="vehicle1" value="1024" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="1024" name="vehicle2" value="1024" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="1024" name="vehicle3" value="1024" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="1024" name="vehicle3" value="1024" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="1024" name="vehicle3" value="1024" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="1024" name="vehicle3" value="1024" disabled checked />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className='permission'>
-                                <p>Board add</p>
-                                <p className="description">You can create new board</p>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="2048" name="vehicle1" value="2048" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="2048" name="vehicle2" value="2048" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="2048" name="vehicle3" value="2048" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="2048" name="vehicle3" value="2048" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="2048" name="vehicle3" value="2048" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="2048" name="vehicle3" value="2048" disabled checked />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className='permission'>
-                                <p>Team read</p>
-                                <p className="description">You can read the team's data</p>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="4096" name="vehicle1" value="4096" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="4096" name="vehicle2" value="4096" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="4096" name="vehicle3" value="4096" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="4096" name="vehicle3" value="4096" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="4096" name="vehicle3" value="4096" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="4096" name="vehicle3" value="4096" disabled checked />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className='permission'>
-                                <p>Team write</p>
-                                <p className="description">You can manage the users of a team</p>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="8192" name="vehicle1" value="8192" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="8192" name="vehicle2" value="8192" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="8192" name="vehicle3" value="8192" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="8192" name="vehicle3" value="8192" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="8192" name="vehicle3" value="8192" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="8192" name="vehicle3" value="8192" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className='permission'>
-                                <p>Team delete</p>
-                                <p className="description">You can delete teams</p>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="16384" name="vehicle1" value="16384" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="16384" name="vehicle2" value="16384" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="16384" name="vehicle3" value="16384" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="16384" name="vehicle3" value="16384" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="16384" name="vehicle3" value="16384" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="16384" name="vehicle3" value="16384" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className='permission'>
-                                <div>
-                                    <p>Team add</p>
-                                    <p className="description">You can create new team</p>
+            {(roles.length === 0 && permissions.length === 0) || needLoader ? (
+                <Loader />
+            ) : (
+                <div>
+                    <div className='permission-table'>
+                        <div className='permission-table-header'>
+                            <div className='permission-table-header-cell'>Permissions</div>
+                            {roles.map((role) => (
+                                <div key={role.role_id} className='permission-table-header-cell'>
+                                    <div className='role-header-div'>
+                                        <p>{role.name}</p>
+                                        {checkPermissionForBoard(board_id, team_id, 'role_management') && (
+                                            <button onClick={() => DeleteRole(role.role_id)} className='delete-role'>
+                                                Delete
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
-                            </td>
-                            <td>
-                                <input type="checkbox" id="32768" name="vehicle1" value="32768" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="32768" name="vehicle2" value="32768" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="32768" name="vehicle3" value="32768" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="32768" name="vehicle3" value="32768" disabled checked />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="32768" name="vehicle3" value="32768" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="32768" name="vehicle3" value="32768" />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <button className='submit-btn' type="submit">Submit</button>
-            </form>
+                            ))}
+                        </div>
+                        <div className='permission-table-body'>
+                            {permissions.map(
+                                (permission) =>
+                                    permission.name !== 'system_admin' &&
+                                    permission.name !== 'user_permission' &&
+                                    permission.name !== 'team_management' &&
+                                    permission.name !== 'team_member_management' &&
+                                    permission.name !== 'team_member_role_management' && (
+                                        <div key={permission.permission_id} className='permission-table-row'>
+                                            <div className='permission-table-body-cell'>{permission.name}</div>
+                                            {roles.map((role) => (
+                                                <div key={role.role_id} className='permission-table-body-cell'>
+                                                    <input
+                                                        className='permission-checkbox'
+                                                        type='checkbox'
+                                                        onChange={handleCheckboxChange}
+                                                        id={role.role_id}
+                                                        value={permission.id}
+                                                        name={permission.name}
+                                                        checked={checkIfPermissionIsSet(role.role_id, permission.id)}
+                                                        disabled={
+                                                            !checkPermissionForBoard(
+                                                                board_id,
+                                                                team_id,
+                                                                'roles_permissions_management'
+                                                            )
+                                                        }
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+            {checkPermissionForBoard(board_id, team_id, 'role_management') && (
+                <div className='add-role'>
+                    <input
+                        type='text'
+                        onChange={handleChange}
+                        value={newRoleName}
+                        placeholder='Role name'
+                        className='role-input'
+                    />
+                    <button onClick={AddNewRole} className='add-role-button'>
+                        Add Role
+                    </button>
+                </div>
+            )}
         </div>
-    )
+    );
 }
-export default Permissiontable;

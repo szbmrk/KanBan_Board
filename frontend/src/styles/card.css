@@ -21,7 +21,15 @@
     flex-direction: row;
     justify-content: space-between;
     flex-wrap: nowrap;
+    margin: 0 !important;
+}
 
+.subtask-options {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 5px;
 }
 
 .card:hover {
@@ -167,7 +175,6 @@
     align-items: flex-end;
     overflow: visible;
     gap: 6px;
-    z-index: 1;
 }
 
 .tags-container {

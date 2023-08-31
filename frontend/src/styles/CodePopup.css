@@ -30,7 +30,6 @@
   text-align: left;
 }
 
-
 .output-textarea:disabled {
   background-color: var(--light-gray);
   cursor: not-allowed;

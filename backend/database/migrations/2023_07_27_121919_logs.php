@@ -18,7 +18,7 @@ return new class extends Migration
                 'SYSTEM ERROR',
                 'USER ERROR', 'UPDATED USER', 'DELETED USER', 'CREATED USER',
                 'AUTHENTICATION ERROR', 'NO PERMISSION',
-                'UPDATED TASK', 'DELETED TASK', 'CREATED TASK', 'FINISHED TASK', 'COMMENTED ON TASK'
+                'UPDATED TASK', 'DELETED TASK', 'CREATED TASK', 'FINISHED TASK', 'COMMENTED ON TASK', 'REVERTED FINISHED TASK'
             ])->nullable(false);
             $table->text('details')->nullable();
             $table->unsignedBigInteger('team_id')->nullable();

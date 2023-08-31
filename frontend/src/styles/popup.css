@@ -19,7 +19,7 @@
     color: var(--light-gray);
     border-radius: 8px;
     padding: 20px 20px 80px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
     width: 80%;
     max-width: 800px;
     height: 800px;
@@ -59,8 +59,7 @@
 
 .popup-content {
     width: 100%;
-    height: 100%;
-    padding: 10px 50px 20px;
+    padding: 10px 30px 20px;
     display: grid;
     grid-template-columns: 60% 40%;
     row-gap: 10px;
@@ -114,7 +113,7 @@
 
 .board-input:focus {
     outline: none;
-    background-color: var(--scrollbar-hover);
+    background-color: transparent;
     border-radius: 5px;
 }
 
@@ -183,7 +182,7 @@
 }
 
 .addbtn-tag {
-    margin-left: 5px;
+    margin-left: 10px;
     font-size: 1.2em;
     color: var(--light-gray);
     cursor: pointer;
@@ -203,7 +202,6 @@
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 0 10px;
     border-bottom: 1px solid var(--light-gray);
 }
 
@@ -267,7 +265,7 @@
     color: var(--light-gray);
 }
 
-.add-button {
+.add-icon {
     position: absolute;
     bottom: 10px;
     left: 10px;
@@ -281,7 +279,7 @@
     transition: 0.1s ease;
 }
 
-.add-button:hover {
+.add-icon:hover {
     color: var(--off-white);
 }
 
@@ -289,24 +287,28 @@
     backdrop-filter: brightness(0.5);
 }
 
-.add-to-card {
+.add-to-card,
+.priority-picker {
     width: 150px;
-    min-height: 300px;
+    height: max-content;
     display: flex;
     flex-direction: column;
     justify-content: center;
     border: 1px solid var(--light-gray);
     border-radius: 8px;
     padding: 10px;
+    background-color: var(--bg-dark);
 }
 
 .add-to-card-title {
     font-size: 1.2em;
     margin-bottom: 10px;
     border-bottom: 1px solid var(--light-gray);
+    padding-bottom: 5px;
 }
 
-.add-to-card-content {
+.add-to-card-content,
+.priority-picker-content {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -314,18 +316,21 @@
     flex-grow: 1;
 }
 
-.add-to-card-content p {
+.add-to-card-content p,
+.priority-picker-content p {
     margin: 10px 0;
 }
 
-.add-to-card-item {
+.add-to-card-item,
+.priority-picker-item {
     width: 100%;
     border-radius: 5px;
     cursor: pointer;
     transition: 0.1s ease;
 }
 
-.add-to-card-item:hover {
+.add-to-card-item:hover,
+.priority-picker-item:hover {
     background-color: var(--scrollbar-hover);
 }
 
@@ -434,44 +439,9 @@
     color: var(--starred);
 }
 
-.priority-picker {
-    width: 150px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border: 1px solid var(--light-gray);
-    border-radius: 8px;
-    padding: 5px;
-    background-color: var(--bg-mostly-black);
-}
-
-.priority-picker-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    flex-grow: 1;
-}
-
-.priority-picker-content p {
-    margin: 10px 0;
-}
-
-.priority-picker-item {
-    width: 100%;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.1s ease;
-}
-
-.priority-picker-item:hover {
-    background-color: var(--scrollbar-hover);
-}
-
 .attachment-container {
     width: 90%;
     margin-left: 10%;
-    overflow-y: auto;
     padding: 5px;
     border: 1px solid var(--light-gray);
     border-radius: 5px;
@@ -484,6 +454,10 @@
     justify-content: space-between;
     padding: 5px;
     gap: 5px;
+}
+
+.attachment .trash-icon:hover::before {
+    opacity: 0 !important;
 }
 
 .attachment-link {
@@ -579,7 +553,7 @@
 
 .member {
     background-color: var(--bg-mostly-black);
-    border-radius: 8px;
+    border-radius: 5px;
     padding: 12px;
     position: relative;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -595,57 +569,43 @@
     padding: 40px 20px 60px;
 }
 
-.tag-editor-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
+.popup-tags {
+    margin-left: 5%;
+    display: flex;
+    align-items: center;
+}
+
+.tag-editor-content {
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(5px);
-    z-index: 99;
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.tag-editor-name-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.tag-editor-popup {
-    background-color: var(--dark-gray);
-    width: 25%;
-    height: 25%;
-    border-radius: 4px;
-}
-
-.tag-editor-close-btn {
-    top: 10px;
-    right: 10px;
-    color: var(--light-gray);
-    padding: 0 5px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    flex-wrap: nowrap;
-}
-
-.tag-editor-close-btn:hover {
-    cursor: pointer;
-    animation: rotate 0.5s;
-}
-
-.tag-editor-upper-part {
-    height: 30px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 5px 0 10px;
+.tag-editor-name-container input {
+    height: 2rem;
+    width: 80%;
+    border-radius: 5px;
+    border: 1px solid var(--light-gray);
+    background-color: var(--light-gray);
+    font-family: var(--basic-font);
+    padding: 0 10px;
 }
 
 .color-picker {
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap;
+    margin-top: 10px;
 }
 
 .color-squares {
@@ -654,23 +614,42 @@
     flex-wrap: wrap;
     align-content: center;
     justify-content: center;
+    gap: 10px;
+    padding: 10px;
 }
 
 .color-square {
     width: 33px;
     height: 33px;
-    margin: 5px;
-    border-radius: 4px;
+    border-radius: 5px;
 }
 
-.color-square.selected {
-    border: white;
-    border-style: dashed;
-    border-width: 2px;
+.color-square:hover {
+    border: 2px dashed var(--light-gray);
+    cursor: pointer;
 }
 
-.tag-editor-name-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.color-square.selected-tag-background {
+    border: 2px solid var(--light-gray);
+}
+
+.tag-editor-save-button {
+    bottom: 10px;
+    right: 10px;
+    width: 80px;
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: var(--basic-font);
+    font-size: 0.85em;
+    background-color: var(--light-gray);
+    color: var(--dark-gray);
+    transition: 0.1s ease;
+}
+
+.tag-editor-save-button:hover {
+    background-color: var(--confirm);
+    color: var(--light-gray);
 }

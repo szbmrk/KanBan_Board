@@ -19,22 +19,47 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Priority;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\LogRequest;
 
 class TaskController extends Controller
 {
     public function taskStore(Request $request, $board_id)
     {
         $user = auth()->user();
-
         $board = Board::find($board_id);
+        $teamModel = new Team();
+        $teamId = $teamModel->findTeamIdByBoardId($board_id);
+
         if (!$board) {
+            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found'], 404);
         }
 
         if (!$user->isMemberOfBoard($board_id)) {
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of this board. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
-        $teamId = $board->team->team_id;
+
+        $permissions = $user->getPermissions();
+
+        if (!in_array('system_admin', $permissions)) {
+            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of the team that owns this board. -> board_id: $board_id", $teamId, $board_id, null);
+                return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+            }
+
+            $rolesOnBoard = $user->getRoles($board_id);
+
+            $hasTaskManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
+                return in_array('task_management', $role->permissions->pluck('name')->toArray());
+            });
+
+            if (!$hasTaskManagementPermission) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission for task management.", $teamId, $board_id, null);
+                return response()->json(['error' => 'You don\'t have permission to manage tasks on this board.'], 403);
+            }
+        }
+
         $column_id = $request->input('column_id');
         if ($column_id == null) {
             return response()->json(['error' => 'Column id is required'], 403);
@@ -64,6 +89,7 @@ class TaskController extends Controller
                 }),
             ],
             'priority_id' => 'nullable|integer|exists:priorities,priority_id',
+            'completed' => 'boolean',
         ]);
 
         $lastTask = Task::where('column_id', $request->input('column_id'))
@@ -91,7 +117,7 @@ class TaskController extends Controller
 
         $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task->task_id);
 
-        //LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Task created successfully!", $teamId, $board_id, $task->task_id);
+        LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Task created successfully!", $teamId, $board_id, $task->task_id);
         return response()->json(['message' => 'Task created successfully', 'task' => $taskWithSubtasksAndTags]);
     }
 
@@ -99,13 +125,37 @@ class TaskController extends Controller
     {
         $user = auth()->user();
         $board = Board::find($board_id);
+        $teamModel = new Team();
+        $teamId = $teamModel->findTeamIdByBoardId($board_id);
 
         if (!$board) {
+            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found'], 404);
         }
 
         if (!$user->isMemberOfBoard($board_id)) {
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of this board. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+
+        $permissions = $user->getPermissions();
+
+        if (!in_array('system_admin', $permissions)) {
+            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of the team that owns this board. -> board_id: $board_id", $teamId, $board_id, null);
+                return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+            }
+
+            $rolesOnBoard = $user->getRoles($board_id);
+
+            $hasTaskManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
+                return in_array('task_management', $role->permissions->pluck('name')->toArray());
+            });
+
+            if (!$hasTaskManagementPermission) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission for task management.", $teamId, $board_id, null);
+                return response()->json(['error' => 'You don\'t have permission to manage tasks on this board.'], 403);
+            }
         }
 
         $task = Task::where('board_id', $board_id)->find($task_id);
@@ -119,22 +169,36 @@ class TaskController extends Controller
             'description' => 'nullable|string',
             'due_date' => 'nullable|date',
             'priority_id' => 'nullable|integer|exists:priorities,priority_id',
+            'completed' => 'nullable|boolean',
         ]);
 
+        $originalCompletedStatus = $task->completed;
+
         if ($request->input('title')) {
-        $task->title = $request->input('title');
+            $task->title = $request->input('title');
         }
         if ($request->input('description')) {
-        $task->description = $request->input('description');
+            $task->description = $request->input('description');
         }
         if ($request->input('due_date')) {
-        $task->due_date = $request->input('due_date');
+            $task->due_date = $request->input('due_date');
         }
         if ($request->input('priority_id')) {
-        $task->priority_id = $request->input('priority_id');
+            $task->priority_id = $request->input('priority_id');
+        }
+        if ($request->has('completed')) {
+            $task->completed = $request->input('completed');
         }
 
         $task->save();
+
+        if ($task->completed != $originalCompletedStatus && $task->completed == 1) {
+            LogRequest::instance()->logAction('FINISHED TASK', $user->user_id, "Task finished successfully!", $teamId, $board_id, $task->task_id);
+        } elseif ($task->completed != $originalCompletedStatus && $task->completed == 0) {
+            LogRequest::instance()->logAction('REVERTED FINISHED TASK', $user->user_id, "Task status changed to not completed!", $teamId, $board_id, $task->task_id);
+        } else {
+            LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "Task updated successfully!", $teamId, $board_id, $task->task_id);
+        }
 
         $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task_id);
 
@@ -145,13 +209,37 @@ class TaskController extends Controller
     {
         $user = auth()->user();
         $board = Board::find($board_id);
+        $teamModel = new Team();
+        $teamId = $teamModel->findTeamIdByBoardId($board_id);
 
         if (!$board) {
+            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found'], 404);
         }
 
         if (!$user->isMemberOfBoard($board_id)) {
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of this board. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+
+        $permissions = $user->getPermissions();
+
+        if (!in_array('system_admin', $permissions)) {
+            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of the team that owns this board. -> board_id: $board_id", $teamId, $board_id, null);
+                return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+            }
+
+            $rolesOnBoard = $user->getRoles($board_id);
+
+            $hasTaskManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
+                return in_array('task_management', $role->permissions->pluck('name')->toArray());
+            });
+
+            if (!$hasTaskManagementPermission) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission for task management.", $teamId, $board_id, null);
+                return response()->json(['error' => 'You don\'t have permission to manage tasks on this board.'], 403);
+            }
         }
 
         $task = Task::where('board_id', $board_id)->find($task_id);
@@ -190,9 +278,32 @@ class TaskController extends Controller
         }
 
         $board = $column->board;
+        $teamModel = new Team();
+        $teamId = $teamModel->findTeamIdByBoardId($board->board_id);
 
         if (!$user->isMemberOfBoard($board->board_id)) {
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of this board. -> board_id: {$board->board_id}", null, null, null);
             return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+
+        $permissions = $user->getPermissions();
+
+        if (!in_array('system_admin', $permissions)) {
+            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of the team that owns this board. -> board_id: {$board->board_id}", $teamId, $board->board_id, null);
+                return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+            }
+
+            $rolesOnBoard = $user->getRoles($board->board_id);
+
+            $hasTaskManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
+                return in_array('task_management', $role->permissions->pluck('name')->toArray());
+            });
+
+            if (!$hasTaskManagementPermission) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission for task management.", $teamId, $board->board_id, null);
+                return response()->json(['error' => 'You don\'t have permission to manage tasks on this board.'], 403);
+            }
         }
 
         $tasks = $request->tasks;
@@ -258,13 +369,37 @@ class TaskController extends Controller
     {
         $user = auth()->user();
         $board = Board::find($board_id);
+        $teamModel = new Team();
+        $teamId = $teamModel->findTeamIdByBoardId($board_id);
 
         if (!$board) {
+            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found'], 404);
         }
 
         if (!$user->isMemberOfBoard($board_id)) {
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of this board. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+
+        $permissions = $user->getPermissions();
+
+        if (!in_array('system_admin', $permissions)) {
+            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of the team that owns this board. -> board_id: $board_id", $teamId, $board_id, null);
+                return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+            }
+
+            $rolesOnBoard = $user->getRoles($board_id);
+
+            $hasTaskManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
+                return in_array('task_management', $role->permissions->pluck('name')->toArray());
+            });
+
+            if (!$hasTaskManagementPermission) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission for task management.", $teamId, $board_id, null);
+                return response()->json(['error' => 'You don\'t have permission to manage tasks on this board.'], 403);
+            }
         }
 
         $parentTask = Task::find($parent_task_id);
@@ -385,8 +520,7 @@ class TaskController extends Controller
 
         $validationErrors = [];
 
-        foreach ($tasksData as $taskData) 
-        {
+        foreach ($tasksData as $taskData) {
             $position = $taskData['position'] ?? null;
             if ($position !== null && in_array($position, $existingPositions)) {
                 return response()->json(['error' => "Position $position already exists in the column."], 400);
@@ -400,10 +534,9 @@ class TaskController extends Controller
         DB::beginTransaction();
 
         try {
-            foreach ($validatedTasksData as $taskData) 
-            {
+            foreach ($validatedTasksData as $taskData) {
                 $mainTask = $this->createTask($taskData, $boardId, $columnId);
-                if (isset($taskData['tasks']) && is_array($taskData['tasks'])) { 
+                if (isset($taskData['tasks']) && is_array($taskData['tasks'])) {
                     $this->createSubtasks($mainTask, $taskData['tasks'], $boardId, $columnId);
                 }
                 $tasks[] = $mainTask;
@@ -471,7 +604,7 @@ class TaskController extends Controller
         if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
-        if(!$board->columns->contains('column_id', $columnId)) {
+        if (!$board->columns->contains('column_id', $columnId)) {
             return response()->json(['error' => 'Column not found.'], 404);
         }
 
@@ -502,36 +635,36 @@ class TaskController extends Controller
             ->orderByDesc('position')
             ->first();
 
-            $validationErrors = [];
+        $validationErrors = [];
 
-            foreach ($subtasksData as $subtaskData) {
-            
-                if (isset($subtaskData['priority_id'])) {
-                    $validPriorityIds = [1, 2, 3, 4];
-                    if (!in_array($subtaskData['priority_id'], $validPriorityIds)) {
-                        $validationErrors[] = 'Invalid priority_id.';
-                    }
-                }
-            
-                if ($lastTaskInColumn && isset($subtaskData['position']) && $subtaskData['position'] <= $lastTaskInColumn->position) {
-                    $validationErrors[] = 'Invalid position.';
+        foreach ($subtasksData as $subtaskData) {
+
+            if (isset($subtaskData['priority_id'])) {
+                $validPriorityIds = [1, 2, 3, 4];
+                if (!in_array($subtaskData['priority_id'], $validPriorityIds)) {
+                    $validationErrors[] = 'Invalid priority_id.';
                 }
             }
-            
-            if (!empty($validationErrors)) {
-                return response()->json(['error' => implode(' ', $validationErrors)], 400);
+
+            if ($lastTaskInColumn && isset($subtaskData['position']) && $subtaskData['position'] <= $lastTaskInColumn->position) {
+                $validationErrors[] = 'Invalid position.';
             }
-            
-            foreach ($subtasksData as $subtaskData) {
-                $subtask = $this->createTask($subtaskData, $task->board_id, $task->column_id);
-                $subtask->parentTask()->associate($task);
-                $subtask->save();
-            
-                if (isset($subtaskData['tasks']) && is_array($subtaskData['tasks'])) {
-                    $this->createSubtasks($subtask, $subtaskData['tasks'], $task->board_id, $task->column_id);
-                }
+        }
+
+        if (!empty($validationErrors)) {
+            return response()->json(['error' => implode(' ', $validationErrors)], 400);
+        }
+
+        foreach ($subtasksData as $subtaskData) {
+            $subtask = $this->createTask($subtaskData, $task->board_id, $task->column_id);
+            $subtask->parentTask()->associate($task);
+            $subtask->save();
+
+            if (isset($subtaskData['tasks']) && is_array($subtaskData['tasks'])) {
+                $this->createSubtasks($subtask, $subtaskData['tasks'], $task->board_id, $task->column_id);
             }
-            
+        }
+
         return response()->json(['message' => 'Subtasks added successfully'], 201);
     }
 
@@ -540,12 +673,12 @@ class TaskController extends Controller
         foreach ($subtasks as $subtaskData) {
             if (isset($subtaskData['task_id'])) {
                 $subtask = Task::find($subtaskData['task_id']);
-                            
+
                 if ($subtask) {
-                    $subtask->update(array_filter($subtaskData, function($value) {
+                    $subtask->update(array_filter($subtaskData, function ($value) {
                         return !is_array($value);
                     }));
-                    
+
                     if (isset($subtaskData['tasks']) && is_array($subtaskData['tasks'])) {
                         $this->updateSubtasks($subtask, $subtaskData['tasks']);
                     }
@@ -575,7 +708,7 @@ class TaskController extends Controller
         if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
-        if(!$board->columns->contains('column_id', $columnId)) {
+        if (!$board->columns->contains('column_id', $columnId)) {
             return response()->json(['error' => 'Column not found.'], 404);
         }
 
@@ -591,7 +724,7 @@ class TaskController extends Controller
             '*.due_date' => 'nullable|date|after:today',
             '*.tasks.*.due_date' => 'nullable|date|after:today',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
@@ -601,7 +734,7 @@ class TaskController extends Controller
         return response()->json(['message' => 'Subtasks updated successfully'], 200);
     }
 
-    public function deleteExistingTaskWithItsSubtasks($boardId, $columnId,$taskId)
+    public function deleteExistingTaskWithItsSubtasks($boardId, $columnId, $taskId)
     {
         $user = auth()->user();
         if (!$user) {
@@ -621,12 +754,12 @@ class TaskController extends Controller
         if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
-        if(!$board->columns->contains('column_id', $columnId)) {
+        if (!$board->columns->contains('column_id', $columnId)) {
             return response()->json(['error' => 'Column not found.'], 404);
         }
 
         foreach ($task->subtasks as $subtask) {
-            $this->deleteExistingTaskWithItsSubtasks($boardId,$columnId, $subtask->id);
+            $this->deleteExistingTaskWithItsSubtasks($boardId, $columnId, $subtask->id);
         }
 
         $subtasks = Task::where('parent_task_id', $taskId)->get();
@@ -677,7 +810,7 @@ class TaskController extends Controller
         $tasksData = $request->all();
 
         DB::beginTransaction();
-    
+
         try {
             foreach ($tasksData as $taskData) {
                 $validator = Validator::make($tasksData, [
@@ -690,19 +823,19 @@ class TaskController extends Controller
                     '*.due_date' => 'nullable|date|after:today',
                     '*.tasks.*.due_date' => 'nullable|date|after:today',
                 ]);
-            
+
                 if ($validator->fails()) {
                     return response()->json(['errors' => $validator->errors()], 400);
                 }
                 $this->processTaskData($taskData, $boardId, $columnId);
             }
-    
+
             DB::commit();
-    
+
         } catch (\Exception $e) {
             DB::rollback();
-    
-            return response()->json(['error' => 'There was an error while updating tasks.','message' => $e->getMessage()], 500);
+
+            return response()->json(['error' => 'There was an error while updating tasks.', 'message' => $e->getMessage()], 500);
         }
 
         return response()->json(['message' => 'Tasks updated successfully'], 200);
@@ -711,13 +844,12 @@ class TaskController extends Controller
     private function processTaskData($taskData, $boardId, $columnId, $parentTask = null)
     {
         $mainTask = null; // Inicializáljuk a változót null-ra
-        
         if (isset($taskData['title'])) {
             if (isset($taskData['task_id'])) {
                 $existingTask = Task::find($taskData['task_id']);
                 if ($existingTask) {
                     $this->updateTask($existingTask, $taskData);
-                    $mainTask = $existingTask; 
+                    $mainTask = $existingTask;
                 }
             } else {
                 $mainTask = $this->createTask($taskData, $boardId, $columnId);
@@ -726,7 +858,7 @@ class TaskController extends Controller
                     $mainTask->save();
                 }
             }
-            
+
             if (isset($taskData['tasks']) && is_array($taskData['tasks'])) {
                 foreach ($taskData['tasks'] as $subtaskData) {
                     $this->processTaskData($subtaskData, $boardId, $columnId, $mainTask);
@@ -734,14 +866,14 @@ class TaskController extends Controller
             }
         }
     }
-    
-    
-
-    
-    
 
 
-    
+
+
+
+
+
+
 
 
     private function updateTask($task, $data)
@@ -750,5 +882,19 @@ class TaskController extends Controller
         $task->update($data);
     }
 
+
+    public function boardTaskCompletionRate(Request $request, $board_id)
+    {
+        $totalTasks = Task::where('board_id', $board_id)->count();
+        $completedTasks = Task::where('board_id', $board_id)->where('completed', true)->count();
+
+        if ($totalTasks > 0) {
+            $completionRate = ($completedTasks / $totalTasks) * 100;
+        } else {
+            $completionRate = 0;
+        }
+
+        return response()->json(['completion_rate' => $completionRate]);
+    }
 
 }

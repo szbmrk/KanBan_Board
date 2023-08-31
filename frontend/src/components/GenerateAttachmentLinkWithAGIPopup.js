@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
+import Loader from "./Loader";
 
 const GenerateAttachmentLinkWithAGIPopup = ({
   task,
@@ -21,8 +22,10 @@ const GenerateAttachmentLinkWithAGIPopup = ({
   const aiOptions = [
     { value: "chatgpt", label: "ChatGPT" },
     { value: "llama", label: "Llama" },
+    { value: "bard", label: "Bard" },
   ];
   let [chosenAI, setChosenAI] = useState(aiOptions[0]);
+  //const [needLoader, setNeedLoader] = useState(false);
   const counterOptions = [
     { value: "1", label: "1" },
     { value: "2", label: "2" },
@@ -84,6 +87,7 @@ const GenerateAttachmentLinkWithAGIPopup = ({
       console.log(res.data);
 
       setAttachments(res.data);
+      //setNeedLoader(false);
     } catch (e) {
       console.error(e);
     }
@@ -110,6 +114,11 @@ const GenerateAttachmentLinkWithAGIPopup = ({
     // Update the state with the modified attachments array
     setAttachments(updatedAttachments);
   };
+
+  const handleLoader = (editedTask, chosenAI, taskCounter) => {
+    //setNeedLoader(true);
+    generateAttachment(editedTask, chosenAI, taskCounter);
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -153,7 +162,7 @@ const GenerateAttachmentLinkWithAGIPopup = ({
             <button
               className="generate-button"
               onClick={() =>
-                generateAttachment(
+                handleLoader(
                   editedTask,
                   chosenAI.value,
                   taskCounter.value

@@ -58,6 +58,12 @@ class BoardsTableSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'name' => 'Board of user 10',
+                'team_id' => 5, 
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
 
         ];
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComments } from '@fortawesome/free-solid-svg-icons';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import { dateFormatOptions } from '../../utils/DateFormat';
+import { formatDate } from '../../utils/DateFormat';
 
 const sendMessageIcon = <FontAwesomeIcon icon={faPaperPlane} />;
 
@@ -24,17 +24,16 @@ export default function Comment({ comments, handlePostComment }) {
                 <div class='previous-comments'>
                     {comments.map((comment, index) => (
                         <div
-                            className={`comment ${
-                                sessionStorage.getItem('username') === comment.user.username
-                                    ? 'own-comment'
-                                    : 'other-comment'
-                            }`}
+                            className={`comment ${sessionStorage.getItem('username') === comment.user.username
+                                ? 'own-comment'
+                                : 'other-comment'
+                                }`}
                             key={index}
                         >
                             <div class='comment-header'>
                                 <span className='username'>{comment.user.username}</span>
                                 <span className='date'>
-                                    {new Date(comment.created_at).toLocaleString('en-US', dateFormatOptions)}
+                                    {formatDate(comment.created_at)}
                                 </span>
                             </div>
                             <div className='comment-text'>{comment.text}</div>

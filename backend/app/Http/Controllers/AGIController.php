@@ -16,6 +16,7 @@ use App\Http\Controllers\ChatGPTController;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\BardController;
 
 
 class AGIController extends Controller
@@ -36,7 +37,8 @@ class AGIController extends Controller
                     $response = BardController::generateTaskDraftBard($request);
                     break;
                 }
-                $response = BardController::generateTaskBard($request);
+                $craftedPrompt = null;
+                $response = BardController::generateTaskBard($request, $craftedPrompt);
                 break;
             default:
                 if($request->header('Draft') == true)
@@ -44,7 +46,8 @@ class AGIController extends Controller
                     $response = ChatGPTController::GenerateTaskDraftChatGPT($request);
                     break;
                 }
-                $response = ChatGPTController::GenerateTaskChatGPT($request);
+                $craftedPrompt = null;
+                $response = ChatGPTController::GenerateTaskChatGPT($request, $craftedPrompt);
                 break;
         }
         return $response;
@@ -105,10 +108,11 @@ class AGIController extends Controller
                 $response = LlamaController::GenerateAttachmentLinkLlama($request);
                 break;
             case Str::lower("bard"):
-                $response = BardController::GenerateAttachmentLinkBard($request);
+                $craftedPrompt = null;
+                $response = BardController::GenerateAttachmentLinkBard($request, $craftedPrompt);
                 break;
             default:
-                $response = ChatGPTController::GenerateAttachmentLinkChatGPT($request);
+                $response = ChatGPTController::GenerateAttachmentLinkNotCraftedChatGPT($request);
                 break;
         }
 
@@ -181,27 +185,26 @@ class AGIController extends Controller
     }
 
     public function GenerateCodeReviewOrDocumentation(Request $request, $boardId)
-{
-    //without json stingify it will not work!!!
-    $user = auth()->user();
-
-    $response;
-    $chosenType = $request->header('ChosenType');
+    {    
+        $user = auth()->user();
     
+        $response;
+        $chosenType = $request->header('ChosenType');
         
-    switch($request->header('ChosenAI')) {
-         case Str::lower("llama"):
-            $response = LlamaController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
-            break;
-        case Str::lower("bard"):
-            $response = BardController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
-            break;
-        default:
-            $response = ChatGPTController::GenerateCodeReviewOrDocumentation($request,$boardId,$chosenType);
-            break;
+        switch ($request->header('ChosenAI')) {
+            case Str::lower("llama"):
+                $response = LlamaController::GenerateCodeReviewOrDocumentation($request, $boardId, $chosenType);
+                break;
+            case Str::lower("bard"):
+                $response = BardController::GenerateCodeReviewOrDocumentation($request, $boardId, $chosenType);
+                break;
+            case Str::lower("chatgpt"):
+                $response = ChatGPTController::GenerateCodeReviewOrDocumentation($request, $boardId, $chosenType);
+                break;
+            default:
+                $response = "No AI chosen";
+                break;
+        }  
+        return $response;
     }
-    return $response;
-}
-
-
 }

@@ -7,8 +7,15 @@ import "../styles/GenerateTaskWithAGIPopup.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
+import Loader from "./Loader";
 
-const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
+const GenerateTaskWithAGIPopup = ({
+  board_id,
+  column,
+  tasks,
+  fetchBoardData,
+  onCancel,
+}) => {
   let [editedTasks, setEditedTasks] = useState(tasks ? [...tasks] : []);
   const taskTitleInputRef = useRef(null);
   const popupRef = useRef(null);
@@ -18,6 +25,7 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
     { value: "bard", label: "Bard" },
   ];
   let [chosenAI, setChosenAI] = useState(aiOptions[0]);
+  //const [needLoader, setNeedLoader] = useState(false);
   const counterOptions = [
     { value: "1", label: "1" },
     { value: "2", label: "2" },
@@ -50,6 +58,11 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
     setEditedTasks(updatedTasks);
   };
 
+  const handleLoader = (taskTitleInputRefParam, nullParam, chosenAI, taskCounter) => {
+    //setNeedLoader(true);
+    generateTask(taskTitleInputRefParam, nullParam, chosenAI, taskCounter);
+  };
+
   const handleDueDateChange = (task, date) => {
     const updatedTask = (task.due_date = date);
 
@@ -76,6 +89,9 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
 
       console.log(res);
       console.log(res.data);
+      fetchBoardData();
+      alert("Saved!");
+      oncancel();
     } catch (e) {
       console.error(e);
     }
@@ -107,6 +123,7 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
         const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
 
         setEditedTasks(updatedTasks);
+        //setNeedLoader(false);
       } else {
         setEditedTasks(res.data);
       }
@@ -115,18 +132,20 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
     }
   };
 
+
   const updateTaskInEditedTasks = (tasksList, updatedTask) => {
     return tasksList.map((task) =>
       task === updatedTask
         ? updatedTask
         : {
-            ...task,
-            tasks: task.tasks
-              ? updateTaskInEditedTasks(task.tasks, updatedTask)
-              : task.tasks,
-          }
+          ...task,
+          tasks: task.tasks
+            ? updateTaskInEditedTasks(task.tasks, updatedTask)
+            : task.tasks,
+        }
     );
   };
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -168,6 +187,7 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
         const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
 
         setEditedTasks(updatedTasks);
+        //setNeedLoader(false);
       } else {
         setEditedTasks(res.data);
       }
@@ -177,6 +197,7 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
   };
 
   return (
+
     <div className="overlay">
       <div className="popup agi-popup">
         <span className="close-btn" onClick={onCancel}>
@@ -190,6 +211,8 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
                   deepness={0}
                   key={index}
                   task={editedTask}
+                  aiOptions={aiOptions}
+                  counterOptions={counterOptions}
                   generateSubtask={generateSubtask}
                   handleTitleChange={handleTitleChange}
                   handleDescriptionChange={handleDescriptionChange}
@@ -243,7 +266,7 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
                   <button
                     className="generate-button"
                     onClick={() =>
-                      generateTask(
+                      handleLoader(
                         taskTitleInputRef.current.value,
                         null,
                         chosenAI.value,
@@ -267,31 +290,17 @@ const TaskRecursive = ({
   deepness,
   task,
   index,
+  aiOptions,
+  counterOptions,
   generateSubtask,
   handleTitleChange,
   handleDescriptionChange,
   handleDueDateChange,
   editedTasks,
 }) => {
-  const aiOptions = [
-    { value: "chatgpt", label: "ChatGPT" },
-    { value: "llama", label: "Llama" },
-    { value: "bard", label: "Bard" },
-  ];
   let [chosenAI, setChosenAI] = useState(aiOptions[0]);
-  const counterOptions = [
-    { value: "1", label: "1" },
-    { value: "2", label: "2" },
-    { value: "3", label: "3" },
-    { value: "4", label: "4" },
-    { value: "5", label: "5" },
-    { value: "6", label: "6" },
-    { value: "7", label: "7" },
-    { value: "8", label: "8" },
-    { value: "9", label: "9" },
-    { value: "10", label: "10" },
-  ];
   let [taskCounter, setTaskCounter] = useState(counterOptions[0]);
+  //const [needLoader, setNeedLoader] = useState(false);
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -305,6 +314,7 @@ const TaskRecursive = ({
   };
 
   const generateSubtaskPrepare = (task) => {
+    //setNeedLoader(true);
     console.log(chosenAI);
     generateSubtask(
       `${task.description}, due_date: '${task.due_date ? task.due_date : "-"}'`,
@@ -325,13 +335,13 @@ const TaskRecursive = ({
         style={
           editedTasks.length > 0
             ? {
-                fontSize: "1.1em",
-                textAlign: "left",
-              }
+              fontSize: "1.1em",
+              textAlign: "left",
+            }
             : {
-                fontSize: "1.2em",
-                textAlign: "center",
-              }
+              fontSize: "1.2em",
+              textAlign: "center",
+            }
         }
       >
         {editedTasks.length > 0
@@ -411,6 +421,8 @@ const TaskRecursive = ({
               deepness={deepness + 1}
               key={subtaskIndex}
               task={subtask}
+              aiOptions={aiOptions}
+              counterOptions={counterOptions}
               generateSubtask={generateSubtask}
               handleTitleChange={handleTitleChange}
               handleDescriptionChange={handleDescriptionChange}

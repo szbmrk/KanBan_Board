@@ -10,15 +10,17 @@
   --important: rgba(255, 0, 0, 0.4);
   --important-light: rgba(255, 0, 0, 0.6);
   --basic-font: "Raleway", sans-serif;
-  --confirm: #359138;
+  --confirm: rgba(0, 230, 0, 0.4);
   --starred: #f5d142;
   --magic: #937bff;
+  --edit: #fab45f;
   --attachment-link: #49b6ff;
   --scrollbar-hover: #555;
-  --bg-dark: rgba(var(--dark-grayRGB), 0.5);
+  --bg-dark: rgba(var(--dark-grayRGB), 0.7);
   --bg-light: rgba(var(--light-grayRGB), 0.5);
   --bg-mostly-black: #1f1f1f;
   --notification-type: #7a7a7a;
+  --title-bar: rgba(112, 104, 106, 0.3);
   --code: #ff8c00;
   --craft: #5bffc8;
   --light-blue: #00bfff;
@@ -66,6 +68,11 @@ body {
   border-bottom: 1px solid var(--light-gray);
 }
 
+.trash-icon {
+  cursor: pointer;
+  color: var(--light-gray);
+}
+
 .delete-icon {
     position: absolute;
     top: 15px;
@@ -105,8 +112,8 @@ body {
 
 
 ::selection {
-  background: var(--dark-gray);
-  color: var(--light-gray);
+  background: var(--light-gray);
+  color: var(--dark-gray);
 }
 
 /* <Scrollbar> */

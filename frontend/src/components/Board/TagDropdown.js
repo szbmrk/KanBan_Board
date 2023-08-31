@@ -1,89 +1,112 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
-import {components} from "react-select";
-import TagDropdownItem from "./TagDropdownItem";
+import { components } from 'react-select';
+import TagDropdownItem from './TagDropdownItem';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
-const TagDropdown = ({tags, allTags, taskId, placeTagOnTask, removeTagFromTask}) => {
+const TagDropdown = ({
+    tags,
+    allTags,
+    taskId,
+    placeTagOnTask,
+    removeTagFromTask,
+    tagEditHandler,
+    tagDeleteHandler,
+}) => {
     const [selectedTags, setSelectedTags] = useState([]);
     const [options, setOptions] = useState([]);
+
+    const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
     const [inputValue, setInputValue] = useState('');
 
     const customStyles = {
         container: (base) => ({
             ...base,
-            width: '60%'
+            width: 'max-content',
         }),
         control: (base) => ({
             ...base,
-            backgroundColor: 'lightGray'
+            backgroundColor: 'var(--light-gray)',
+            border: 'none',
+            borderRadius: '5px',
         }),
         option: (base, state) => ({
             ...base,
             backgroundColor: state.data.color,
-            color: 'white'
+            color: 'var(--off-white)',
         }),
         multiValue: (base, state) => ({
             ...base,
             backgroundColor: state.data.color,
-            borderRadius: '4px'
+            borderRadius: '5px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '5px',
+            padding: '2px 5px',
+        }),
+        multiValueGeneric: (base) => ({
+            ...base,
+            padding: '0',
         }),
         multiValueLabel: (base) => ({
             ...base,
-            color: 'white'
+            color: 'var(--off-white)',
         }),
         multiValueRemove: (base) => ({
             ...base,
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: 'small',
-            marginRight: '4px'
+            color: 'var(--off-white)',
+            fontSize: '0.8em',
+            cursor: 'pointer',
+            padding: '0',
         }),
         indicatorSeparator: (base) => ({
             ...base,
-            backgroundColor: 'black'
+            backgroundColor: 'var(--dark-gray)',
         }),
         dropdownIndicator: (base) => ({
             ...base,
-            color: 'black'
+            color: 'var(--dark-gray)',
         }),
         menuList: (base) => ({
             ...base,
             padding: '0 5px',
-            borderRadius: '4px',
-            backgroundColor: 'lightGray'
-        })
+            borderRadius: '5px',
+            backgroundColor: 'var(--light-gray)',
+        }),
     };
 
     useEffect(() => {
-        const tagsAsOptions = allTags.map(option => ({
+        const tagsAsOptions = allTags.map((option) => ({
             tagId: option.tag_id,
             value: option.name,
             label: option.name,
-            color: option.color
+            color: option.color,
         }));
         setOptions(tagsAsOptions);
 
-        const selectedTagsArray = tags.map(tag => ({
+        const selectedTagsArray = tags.map((tag) => ({
             tagId: tag.tag_id,
             value: tag.name,
             label: tag.name,
-            color: tag.color
+            color: tag.color,
         }));
         setSelectedTags(selectedTagsArray);
     }, [allTags]);
 
-    const theme = theme => ({
+    const theme = (theme) => ({
         ...theme,
         fonts: {
             ...theme.fonts,
-            base: 'Raleway, sans-serif',
+            base: 'var(--basic-font)',
         },
     });
 
     const handleTagToggle = (item) => {
         const updatedSelectedTags = [...selectedTags];
-        const index = updatedSelectedTags.findIndex(tag => tag.value === item.value);
+        const index = updatedSelectedTags.findIndex((tag) => tag.value === item.value);
 
         if (index !== -1) {
             updatedSelectedTags.splice(index, 1); // Remove the tag
@@ -100,29 +123,27 @@ const TagDropdown = ({tags, allTags, taskId, placeTagOnTask, removeTagFromTask})
 
         // Reorder the selected tags based on the options array
         updatedSelectedTags.sort((a, b) => {
-            const indexA = options.findIndex(option => option.value === a.value);
-            const indexB = options.findIndex(option => option.value === b.value);
+            const indexA = options.findIndex((option) => option.value === a.value);
+            const indexB = options.findIndex((option) => option.value === b.value);
             return indexA - indexB;
         });
 
         handleInputChange('');
 
         setSelectedTags(updatedSelectedTags);
-    }
+    };
 
     const handleEdit = (item) => {
-        // Handle edit logic
-        console.log('edit');
+        tagEditHandler(item);
     };
 
     const handleDelete = (item) => {
-        // Handle delete logic
-        console.log('delete');
+        tagDeleteHandler(item);
     };
 
     const ClearIndicator = () => {
         return null;
-    }
+    };
 
     const handleInputChange = (newValue) => {
         setInputValue(newValue);
@@ -135,7 +156,7 @@ const TagDropdown = ({tags, allTags, taskId, placeTagOnTask, removeTagFromTask})
 
     const handleMultiValueRemove = (item) => {
         handleTagToggle(item);
-    }
+    };
 
     const customComponents = {
         Option: (props) => (
@@ -151,10 +172,12 @@ const TagDropdown = ({tags, allTags, taskId, placeTagOnTask, removeTagFromTask})
         MultiValueRemove: (props) => {
             return (
                 <components.MultiValueRemove {...props}>
-                    <div onClick={() => handleMultiValueRemove(props.data)}>x</div>
+                    <div onClick={() => handleMultiValueRemove(props.data)}>
+                        <span>{closeIcon}</span>
+                    </div>
                 </components.MultiValueRemove>
-            )
-        }
+            );
+        },
     };
 
     return (
@@ -163,7 +186,7 @@ const TagDropdown = ({tags, allTags, taskId, placeTagOnTask, removeTagFromTask})
             isMulti
             value={selectedTags}
             onChange={setSelectedTags}
-            placeholder="Select tags or create a new one..."
+            placeholder='Select tags or create a new one...'
             styles={customStyles}
             theme={theme}
             components={customComponents}

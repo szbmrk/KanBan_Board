@@ -47,7 +47,7 @@
   background-color: var(--bg-dark);
 }
 
-.name-edit { 
+.name-edit {
   display: flex;
   justify-content: flex-start;
   color: var(--light-gray);
@@ -56,7 +56,7 @@
   column-gap: 10px;
 }
 
-.name-edit input{
+.name-edit input {
   width: 70%;
   color: var(--light-gray);
   font-family: var(--basic-font);
@@ -106,7 +106,8 @@
   color: var(--important);
 }
 
-.ai-button {
+.ai-button,
+.ai-button-on-title-bar {
   color: var(--light-gray);
   padding: 5px;
   cursor: pointer;
@@ -152,7 +153,7 @@
   left: 0;
   padding: 5px 10px;
 }
-.option-p{
+.option-p {
   color: aliceblue;
 }
 
@@ -205,25 +206,40 @@
   color: var(--light-gray);
   display: flex;
   flex-direction: row;
+  flex-wrap: nowrap;
   justify-content: flex-start;
   align-items: center;
   gap: 10px;
 }
 
-.agi-menu li span:first-child {
+.agi-menu > li span:first-child {
   width: 20%;
 }
 
-.agi-menu li span:first-child:hover {
+.agi-menu > li span:first-child:hover {
   color: var(--off-white);
 }
 
-.agi-menu li span:last-child {
-  width: 80%;
+.agi-menu > li span:nth-child(2) {
+  width: 70%;
 }
 
-.agi-menu li span:last-child:hover {
+.agi-menu > li span:nth-child(2):hover {
   color: var(--off-white);
+}
+
+.code-review-or-documentation-title span:hover {
+  color: var(--off-white);
+}
+
+.delete-code-review-or-documentation-button {
+  padding: 5px;
+  cursor: pointer;
+  color: var(--light-gray);
+}
+
+.delete-code-review-or-documentation-button:hover {
+  color: var(--important) !important;
 }
 
 @media (max-width: 830px) {
@@ -263,4 +279,3 @@
     padding: 20px 0px;
   }
 }
-

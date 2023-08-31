@@ -23,12 +23,14 @@ return new class extends Migration
             $table->enum('action', [
                 'GENERATETASK', 'GENERATESUBTASK', 'GENERATEATTACHMENTLINK'
             ])->nullable(false);
+            $table->unsignedBigInteger('response_counter')->nullable(false);
             $table->unsignedBigInteger('created_by')->nullable(false);
-            $table->timestamps();
 
-            // Add the onDelete('cascade') option to both foreign key definitions
+            $table->timestamp('created_at')->useCurrent()->nullable(false);
+            $table->timestamp('updated_at')->useCurrent()->nullable(false);
+
             $table->foreign('board_id')->references('board_id')->on('boards')->onDelete('cascade');
-            $table->foreign('agi_behavior_id')->references('agi_behavior_id')->on('agi_behaviors')->onDelete('cascade');
+            $table->foreign('agi_behavior_id')->references('agi_behavior_id')->on('agi_behaviors')->onDelete('set null');
             $table->foreign('created_by')->references('user_id')->on('users')->onDelete('cascade');
         });
     }
