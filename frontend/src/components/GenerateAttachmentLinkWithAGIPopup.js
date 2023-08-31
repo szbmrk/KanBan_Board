@@ -24,7 +24,7 @@ const GenerateAttachmentLinkWithAGIPopup = ({
     { value: "llama", label: "Llama" },
   ];
   let [chosenAI, setChosenAI] = useState(aiOptions[0]);
-  const [needLoader, setNeedLoader] = useState(false);
+  //const [needLoader, setNeedLoader] = useState(false);
   const counterOptions = [
     { value: "1", label: "1" },
     { value: "2", label: "2" },
@@ -86,7 +86,7 @@ const GenerateAttachmentLinkWithAGIPopup = ({
       console.log(res.data);
 
       setAttachments(res.data);
-      setNeedLoader(false);
+      //setNeedLoader(false);
     } catch (e) {
       console.error(e);
     }
@@ -115,7 +115,7 @@ const GenerateAttachmentLinkWithAGIPopup = ({
   };
 
   const handleLoader = (editedTask, chosenAI, taskCounter) => {
-    setNeedLoader(true);
+    //setNeedLoader(true);
     generateAttachment(editedTask, chosenAI, taskCounter);
   }
 
@@ -134,84 +134,81 @@ const GenerateAttachmentLinkWithAGIPopup = ({
   }, [onCancel]);
 
   return (
-    needLoader ? (
-      <Loader data_to_load={attachments} text_if_cant_load={"No attachments found!"} />
-    ) :
-      <div className="overlay">
-        <div className="popup agi-popup">
-          <span className="close-btn" onClick={onCancel}>
-            {closeIcon}
-          </span>
-          <div className="gt-popup-content">
-            <div className="gt-input-container">
-              <p>Generate attachment links for: {editedTask.title}</p>
-              <div className="dropdown-container">
-                <p>Select the number of attachment(s):</p>
-                <Dropdown
-                  options={counterOptions}
-                  value={taskCounter}
-                  onChange={(selectedOption) => setTaskCounter(selectedOption)}
-                />
-              </div>
-              <div className="dropdown-container">
-                <p>Select an AI:</p>
-                <Dropdown
-                  options={aiOptions}
-                  value={chosenAI}
-                  onChange={(selectedOption) => setChosenAI(selectedOption)}
-                />
-              </div>
-              <button
-                className="generate-button"
-                onClick={() =>
-                  handleLoader(
-                    editedTask,
-                    chosenAI.value,
-                    taskCounter.value
-                  )
-                }
-              >
-                Generate Attachment(s)
-              </button>
+    <div className="overlay">
+      <div className="popup agi-popup">
+        <span className="close-btn" onClick={onCancel}>
+          {closeIcon}
+        </span>
+        <div className="gt-popup-content">
+          <div className="gt-input-container">
+            <p>Generate attachment links for: {editedTask.title}</p>
+            <div className="dropdown-container">
+              <p>Select the number of attachment(s):</p>
+              <Dropdown
+                options={counterOptions}
+                value={taskCounter}
+                onChange={(selectedOption) => setTaskCounter(selectedOption)}
+              />
             </div>
-            {attachments.length > 0 && (
-              <div className="gt-input-container">
-                {attachments.map((attachment, index) => (
-                  <div key={index} className="gt-attributes-container">
-                    <div className="gt-attributes">
-                      <p className="title">Description:</p>
-                      <textarea
-                        type="text"
-                        value={attachment.description}
-                        onChange={(event) =>
-                          handleDescriptionChange(event, index)
-                        }
-                      />
-                    </div>
-                    <div className="gt-attributes">
-                      <p className="title">Link:</p>
-                      <textarea
-                        type="text"
-                        value={attachment.link}
-                        onChange={(event) => handleLinkChange(event, index)}
-                      />
-                    </div>
-                  </div>
-                ))}
-
-                <div>
-                  <button
-                    className="save-button"
-                    onClick={() => saveToDatabase(editedTask, attachments)}
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
-            )}
+            <div className="dropdown-container">
+              <p>Select an AI:</p>
+              <Dropdown
+                options={aiOptions}
+                value={chosenAI}
+                onChange={(selectedOption) => setChosenAI(selectedOption)}
+              />
+            </div>
+            <button
+              className="generate-button"
+              onClick={() =>
+                handleLoader(
+                  editedTask,
+                  chosenAI.value,
+                  taskCounter.value
+                )
+              }
+            >
+              Generate Attachment(s)
+            </button>
           </div>
+          {attachments.length > 0 && (
+            <div className="gt-input-container">
+              {attachments.map((attachment, index) => (
+                <div key={index} className="gt-attributes-container">
+                  <div className="gt-attributes">
+                    <p className="title">Description:</p>
+                    <textarea
+                      type="text"
+                      value={attachment.description}
+                      onChange={(event) =>
+                        handleDescriptionChange(event, index)
+                      }
+                    />
+                  </div>
+                  <div className="gt-attributes">
+                    <p className="title">Link:</p>
+                    <textarea
+                      type="text"
+                      value={attachment.link}
+                      onChange={(event) => handleLinkChange(event, index)}
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <div>
+                <button
+                  className="save-button"
+                  onClick={() => saveToDatabase(editedTask, attachments)}
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+    </div>
   );
 };
 

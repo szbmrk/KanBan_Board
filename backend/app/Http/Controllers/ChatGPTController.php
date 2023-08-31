@@ -141,6 +141,8 @@ class ChatGPTController extends Controller
         $path = env('PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
         
+        dd($response);
+
         $cleanData = trim($response);
         $cleanData = str_replace("'", "\"", $response);
         $formattedResponse = json_decode($cleanData, true);

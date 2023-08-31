@@ -25,7 +25,7 @@ const GenerateTaskWithAGIPopup = ({
     { value: "bard", label: "Bard" },
   ];
   let [chosenAI, setChosenAI] = useState(aiOptions[0]);
-  const [needLoader, setNeedLoader] = useState(false);
+  //const [needLoader, setNeedLoader] = useState(false);
   const counterOptions = [
     { value: "1", label: "1" },
     { value: "2", label: "2" },
@@ -59,7 +59,7 @@ const GenerateTaskWithAGIPopup = ({
   };
 
   const handleLoader = (taskTitleInputRefParam, nullParam, chosenAI, taskCounter) => {
-    setNeedLoader(true);
+    //setNeedLoader(true);
     generateTask(taskTitleInputRefParam, nullParam, chosenAI, taskCounter);
   };
 
@@ -123,7 +123,7 @@ const GenerateTaskWithAGIPopup = ({
         const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
 
         setEditedTasks(updatedTasks);
-        setNeedLoader(false);
+        //setNeedLoader(false);
       } else {
         setEditedTasks(res.data);
       }
@@ -187,7 +187,7 @@ const GenerateTaskWithAGIPopup = ({
         const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
 
         setEditedTasks(updatedTasks);
-        setNeedLoader(false);
+        //setNeedLoader(false);
       } else {
         setEditedTasks(res.data);
       }
@@ -197,94 +197,92 @@ const GenerateTaskWithAGIPopup = ({
   };
 
   return (
-    needLoader ? (
-      <Loader />
-    ) :
-      <div className="overlay">
-        <div className="popup agi-popup">
-          <span className="close-btn" onClick={onCancel}>
-            {closeIcon}
-          </span>
-          <div className="gt-popup-content">
-            {editedTasks.length > 0 ? (
-              <>
-                {editedTasks.map((editedTask, index) => (
-                  <TaskRecursive
-                    deepness={0}
-                    key={index}
-                    task={editedTask}
-                    aiOptions={aiOptions}
-                    counterOptions={counterOptions}
-                    generateSubtask={generateSubtask}
-                    handleTitleChange={handleTitleChange}
-                    handleDescriptionChange={handleDescriptionChange}
-                    handleDueDateChange={handleDueDateChange}
-                    editedTasks={editedTasks}
-                  />
-                ))}
-                <div className="gt-button-container">
-                  <button className="save-button" onClick={saveToDatabase}>
-                    Save
+
+    <div className="overlay">
+      <div className="popup agi-popup">
+        <span className="close-btn" onClick={onCancel}>
+          {closeIcon}
+        </span>
+        <div className="gt-popup-content">
+          {editedTasks.length > 0 ? (
+            <>
+              {editedTasks.map((editedTask, index) => (
+                <TaskRecursive
+                  deepness={0}
+                  key={index}
+                  task={editedTask}
+                  aiOptions={aiOptions}
+                  counterOptions={counterOptions}
+                  generateSubtask={generateSubtask}
+                  handleTitleChange={handleTitleChange}
+                  handleDescriptionChange={handleDescriptionChange}
+                  handleDueDateChange={handleDueDateChange}
+                  editedTasks={editedTasks}
+                />
+              ))}
+              <div className="gt-button-container">
+                <button className="save-button" onClick={saveToDatabase}>
+                  Save
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="gt-input-container">
+                <p
+                  style={{
+                    fontSize: "1.2em",
+                    textAlign: "left",
+                  }}
+                >
+                  Give me a task to generate tickets about:
+                </p>
+                <input
+                  type="text"
+                  placeholder="Enter task title"
+                  ref={taskTitleInputRef}
+                />
+                <div className="gt-action-buttons">
+                  <div className="dropdown-container">
+                    <p>How many tasks do you want to generate?</p>
+                    <Dropdown
+                      className="dropdown-numbers"
+                      options={counterOptions}
+                      value={taskCounter}
+                      onChange={(selectedOption) =>
+                        setTaskCounter(selectedOption)
+                      }
+                    />
+                  </div>
+                  <div className="dropdown-container">
+                    <p>Which AI do you want to use?</p>
+                    <Dropdown
+                      className="dropdown-AGI"
+                      options={aiOptions}
+                      value={chosenAI}
+                      onChange={(selectedOption) => setChosenAI(selectedOption)}
+                    />
+                  </div>
+                  <button
+                    className="generate-button"
+                    onClick={() =>
+                      handleLoader(
+                        taskTitleInputRef.current.value,
+                        null,
+                        chosenAI.value,
+                        taskCounter.value
+                      )
+                    }
+                  >
+                    Generate tasks
                   </button>
                 </div>
-              </>
-            ) : (
-              <>
-                <div className="gt-input-container">
-                  <p
-                    style={{
-                      fontSize: "1.2em",
-                      textAlign: "left",
-                    }}
-                  >
-                    Give me a task to generate tickets about:
-                  </p>
-                  <input
-                    type="text"
-                    placeholder="Enter task title"
-                    ref={taskTitleInputRef}
-                  />
-                  <div className="gt-action-buttons">
-                    <div className="dropdown-container">
-                      <p>How many tasks do you want to generate?</p>
-                      <Dropdown
-                        className="dropdown-numbers"
-                        options={counterOptions}
-                        value={taskCounter}
-                        onChange={(selectedOption) =>
-                          setTaskCounter(selectedOption)
-                        }
-                      />
-                    </div>
-                    <div className="dropdown-container">
-                      <p>Which AI do you want to use?</p>
-                      <Dropdown
-                        className="dropdown-AGI"
-                        options={aiOptions}
-                        value={chosenAI}
-                        onChange={(selectedOption) => setChosenAI(selectedOption)}
-                      />
-                    </div>
-                    <button
-                      className="generate-button"
-                      onClick={() =>
-                        handleLoader(
-                          taskTitleInputRef.current.value,
-                          null,
-                          chosenAI.value,
-                          taskCounter.value
-                        )
-                      }
-                    >
-                      Generate tasks
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
+    </div>
   );
 };
 
@@ -302,7 +300,7 @@ const TaskRecursive = ({
 }) => {
   let [chosenAI, setChosenAI] = useState(aiOptions[0]);
   let [taskCounter, setTaskCounter] = useState(counterOptions[0]);
-  const [needLoader, setNeedLoader] = useState(false);
+  //const [needLoader, setNeedLoader] = useState(false);
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -316,7 +314,7 @@ const TaskRecursive = ({
   };
 
   const generateSubtaskPrepare = (task) => {
-    setNeedLoader(true);
+    //setNeedLoader(true);
     console.log(chosenAI);
     generateSubtask(
       `${task.description}, due_date: '${task.due_date ? task.due_date : "-"}'`,
@@ -327,117 +325,114 @@ const TaskRecursive = ({
   };
 
   return (
-    needLoader ? (
-      <Loader />
-    ) :
-      <div
-        className={
-          deepness > 0 ? "gt-input-container gt-space" : "gt-input-container"
+    <div
+      className={
+        deepness > 0 ? "gt-input-container gt-space" : "gt-input-container"
+      }
+      key={index}
+    >
+      <p
+        style={
+          editedTasks.length > 0
+            ? {
+              fontSize: "1.1em",
+              textAlign: "left",
+            }
+            : {
+              fontSize: "1.2em",
+              textAlign: "center",
+            }
         }
-        key={index}
       >
-        <p
-          style={
-            editedTasks.length > 0
-              ? {
-                fontSize: "1.1em",
-                textAlign: "left",
-              }
-              : {
-                fontSize: "1.2em",
-                textAlign: "center",
-              }
-          }
-        >
-          {editedTasks.length > 0
-            ? `Generate subtasks for "${task.title}" task`
-            : "Generate task"}
-        </p>
-        <div className="gt-attributes-container">
-          <div className="gt-attributes">
-            <p className="title">Title:</p>
-            {!task.task_id ? (
-              <textarea
-                type="text"
-                value={task.title}
-                onChange={(e) => handleTitleChange(task, e.value)}
-              />
-            ) : (
-              <p className="value">{task.title}</p>
-            )}
-          </div>
-          <div className="gt-attributes">
-            <p className="title">Description:</p>
-            {!task.task_id ? (
-              <textarea
-                value={task.description}
-                onChange={(e) => handleDescriptionChange(task, e.value)}
-              />
-            ) : (
-              <p className="value">{task.description}</p>
-            )}
-          </div>
-          <div className="gt-attributes">
-            <p className="title">Due date:</p>
-            {!task.task_id ? (
-              <DatePicker
-                selected={task.due_date ? new Date(task.due_date) : null}
-                onChange={(date) => handleDueDateChange(task, formatDate(date))}
-                showTimeSelect
-                dateFormat="yyyy-MM-dd HH:mm:ss"
-                timeFormat="HH:mm:ss"
-              />
-            ) : (
-              <p className="value">{task.due_date}</p>
-            )}
-          </div>
-        </div>
-        <div className="gt-action-buttons">
-          <div className="dropdown-container">
-            <p>How many subtasks do you want to generate?</p>
-            <Dropdown
-              className="dropdown-numbers"
-              options={counterOptions}
-              value={taskCounter}
-              onChange={(selectedOption) => setTaskCounter(selectedOption)}
+        {editedTasks.length > 0
+          ? `Generate subtasks for "${task.title}" task`
+          : "Generate task"}
+      </p>
+      <div className="gt-attributes-container">
+        <div className="gt-attributes">
+          <p className="title">Title:</p>
+          {!task.task_id ? (
+            <textarea
+              type="text"
+              value={task.title}
+              onChange={(e) => handleTitleChange(task, e.value)}
             />
-          </div>
-          <div className="dropdown-container">
-            <p>Which AI do you want to use?</p>
-            <Dropdown
-              className="dropdown-AGI"
-              options={aiOptions}
-              value={chosenAI}
-              onChange={(selectedOption) => setChosenAI(selectedOption)}
-            />
-          </div>
-          <button
-            className="generate-button"
-            onClick={() => generateSubtaskPrepare(task)}
-          >
-            Generate Subtasks
-          </button>
+          ) : (
+            <p className="value">{task.title}</p>
+          )}
         </div>
-        {task.tasks && task.tasks.length > 0 && (
-          <div className="subtasks">
-            <h2>Generated Subtasks:</h2>
-            {task.tasks.map((subtask, subtaskIndex) => (
-              <TaskRecursive
-                deepness={deepness + 1}
-                key={subtaskIndex}
-                task={subtask}
-                aiOptions={aiOptions}
-                counterOptions={counterOptions}
-                generateSubtask={generateSubtask}
-                handleTitleChange={handleTitleChange}
-                handleDescriptionChange={handleDescriptionChange}
-                handleDueDateChange={handleDueDateChange}
-                editedTasks={editedTasks}
-              />
-            ))}
-          </div>
-        )}
+        <div className="gt-attributes">
+          <p className="title">Description:</p>
+          {!task.task_id ? (
+            <textarea
+              value={task.description}
+              onChange={(e) => handleDescriptionChange(task, e.value)}
+            />
+          ) : (
+            <p className="value">{task.description}</p>
+          )}
+        </div>
+        <div className="gt-attributes">
+          <p className="title">Due date:</p>
+          {!task.task_id ? (
+            <DatePicker
+              selected={task.due_date ? new Date(task.due_date) : null}
+              onChange={(date) => handleDueDateChange(task, formatDate(date))}
+              showTimeSelect
+              dateFormat="yyyy-MM-dd HH:mm:ss"
+              timeFormat="HH:mm:ss"
+            />
+          ) : (
+            <p className="value">{task.due_date}</p>
+          )}
+        </div>
       </div>
+      <div className="gt-action-buttons">
+        <div className="dropdown-container">
+          <p>How many subtasks do you want to generate?</p>
+          <Dropdown
+            className="dropdown-numbers"
+            options={counterOptions}
+            value={taskCounter}
+            onChange={(selectedOption) => setTaskCounter(selectedOption)}
+          />
+        </div>
+        <div className="dropdown-container">
+          <p>Which AI do you want to use?</p>
+          <Dropdown
+            className="dropdown-AGI"
+            options={aiOptions}
+            value={chosenAI}
+            onChange={(selectedOption) => setChosenAI(selectedOption)}
+          />
+        </div>
+        <button
+          className="generate-button"
+          onClick={() => generateSubtaskPrepare(task)}
+        >
+          Generate Subtasks
+        </button>
+      </div>
+      {task.tasks && task.tasks.length > 0 && (
+        <div className="subtasks">
+          <h2>Generated Subtasks:</h2>
+          {task.tasks.map((subtask, subtaskIndex) => (
+            <TaskRecursive
+              deepness={deepness + 1}
+              key={subtaskIndex}
+              task={subtask}
+              aiOptions={aiOptions}
+              counterOptions={counterOptions}
+              generateSubtask={generateSubtask}
+              handleTitleChange={handleTitleChange}
+              handleDescriptionChange={handleDescriptionChange}
+              handleDueDateChange={handleDueDateChange}
+              editedTasks={editedTasks}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
