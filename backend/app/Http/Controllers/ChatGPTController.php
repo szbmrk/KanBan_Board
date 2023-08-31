@@ -34,39 +34,32 @@ class ChatGPTController extends Controller
         return ChatGPTController::CallPythonAndFormatResponse($prompt);
     }
 
-    public static function PromptAssembly($request, $craftedPrompt) 
+    public static function PromptAssembly($request, $craftedPrompt)
     {
-        if(!$craftedPrompt) 
-        {
+        if (!$craftedPrompt) {
             $taskPrompt = $request->header('TaskPrompt');
             $taskCounter = $request->header('TaskCounter');
             $behavior = "";
-        }
-        else
-        {
+        } else {
             $taskPrompt = $craftedPrompt->crafted_prompt_text;
             $taskCounter = $craftedPrompt->response_counter;
             $behavior = AgiBehavior::where('agi_behavior_id', $craftedPrompt->agi_behavior_id)->first();
-            if(!$behavior) 
-            {
+            if (!$behavior) {
                 $behavior = "";
-            }
-            else 
-            {
+            } else {
                 $behavior = $behavior->act_as_a;
                 $behavior = "You are now a $behavior, act like it!!";
             }
 
-            if($craftedPrompt->action == "GENERATEATTACHMENTLINK")
-            {
+            if ($craftedPrompt->action == "GENERATEATTACHMENTLINK") {
                 $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
                 return $prompt;
 
             }
-                
+
         }
         $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
-        
+
 
         // Construct the prompt for the current iteration
         $prompt = "$behavior Generate $taskCounter kanban tickets in JSON structure in a list with title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list) attributes for this ticket: '$taskPrompt'";
@@ -75,7 +68,7 @@ class ChatGPTController extends Controller
 
     }
 
-    public static function GenerateAttachmentLinkNotCraftedChatGPT($request) 
+    public static function GenerateAttachmentLinkNotCraftedChatGPT($request)
     {
         $taskPrompt = $request->header('TaskPrompt');
         $taskCounter = $request->header('TaskCounter');
@@ -93,15 +86,15 @@ class ChatGPTController extends Controller
         $taskCounter = $request->header('TaskCounter');
         $responseCounter = $request->header('ResponseCounter');
         $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
-    
+
         // Initialize an array to store the responses
         $allResponses = [];
-    
+
         // Loop through the desired number of times based on ResponseCounter
         for ($i = 1; $i <= $responseCounter; $i++) {
             // Construct the prompt for the current iteration
             $prompt = "Generate $taskCounter task kanban board tickets. JSON structure in a list. title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list). '$taskPrompt'. ";
-    
+
             // Call the Python script and get the formatted response
             $formattedResponse = ChatGPTController::CallPythonAndFormatResponse($prompt);
 
@@ -137,11 +130,10 @@ class ChatGPTController extends Controller
         return ChatGPTController::CallPythonAndFormatResponse($prompt);
     }
 
-    public static function CallPythonAndFormatResponse($prompt) {
+    public static function CallPythonAndFormatResponse($prompt)
+    {
         $path = env('PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
-        
-        dd($response);
 
         $cleanData = trim($response);
         $cleanData = str_replace("'", "\"", $response);
@@ -154,12 +146,12 @@ class ChatGPTController extends Controller
     {
         $user = auth()->user();
 
-        if($user == null || !$user->isMemberOfBoard($boardId)) {
+        if ($user == null || !$user->isMemberOfBoard($boardId)) {
             return response()->json([
                 'error' => 'Not authorized!',
             ]);
         }
-        
+
         //find the task for the task id
         $task = Task::find($taskId);
         $taskTag = TaskTag::where('task_id', $task->task_id)->get();
@@ -172,27 +164,27 @@ class ChatGPTController extends Controller
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         //save the response to a txt file
         //Storage::put('code.txt', $response);
-    
+
         //$cleanData = trim($response);
-        
+
         $cleanData = str_replace("'", "\"", $response);
         $cleanData = str_replace("<Response [200]>", "", $response);
 
         //$formattedResponse = json_decode($response, true);    
-        
+
         return $cleanData;
-       /*  return response()->json([
-            'code' => $cleanData,
-        ]); */
-        
+        /*  return response()->json([
+             'code' => $cleanData,
+         ]); */
+
 
     }
 
-    public static function generatePriority(Request $request, $boardId, $taskId) 
+    public static function generatePriority(Request $request, $boardId, $taskId)
     {
         $user = auth()->user();
 
-        if($user == null || !$user->isMemberOfBoard($boardId)) {
+        if ($user == null || !$user->isMemberOfBoard($boardId)) {
             return response()->json([
                 'error' => 'Not authorized!',
             ]);
@@ -210,7 +202,7 @@ class ChatGPTController extends Controller
 
         foreach ($column as $task) {
 
-            if($task->priority_id == null) {
+            if ($task->priority_id == null) {
                 $priorityName = "null";
             } else {
                 $priorityName = Priority::find($task->priority_id)->priority;
@@ -221,70 +213,70 @@ class ChatGPTController extends Controller
 
         $youAre = "a priority manager state machine. You can only answer with only one priority suggestion! You can choose from the following enums: TOP PRIORITY, HIGH PRIORITY, MEDIUM PRIORITY, LOW PRIORITY.";
         $prompt = "You are $youAre . Estimate the priority of the following kanban board ticket-> title: $task->title, description: $task->description. These tasks are in the column-> $otherTasks. Answer with the priortiy enum only, nothing else!";
-        
+
         $path = env('PYTHON_SCRIPT_PATH3');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
 
 
         $cleanData = trim($response);
-        
+
         return response()->json([
             'priority' => $cleanData,
         ]);
     }
 
-    public static function generatePrioritiesForColumn(Request $request, $boardId, $columnId) 
+    public static function generatePrioritiesForColumn(Request $request, $boardId, $columnId)
     {
         $user = auth()->user();
 
-        if($user == null || !$user->isMemberOfBoard($boardId)) {
+        if ($user == null || !$user->isMemberOfBoard($boardId)) {
             return response()->json([
                 'error' => 'Not authorized!',
             ]);
         }
 
 
-        $column = Column::find($columnId)->tasks()->get();  
+        $column = Column::find($columnId)->tasks()->get();
 
         $tasks = '';
 
         foreach ($column as $task) {
-            if($task->priority_id == null) {
+            if ($task->priority_id == null) {
                 $priorityName = "null";
             } else {
-                $priorityName = Priority::find($task->priority_id)->priority; 
+                $priorityName = Priority::find($task->priority_id)->priority;
             }
             $tasks .= "title: {$task->title}, description: {$task->description}, priority: {$priorityName}. ";
         }
 
-        
+
         $youAre = "a priority manager state machine. You can only answer with ONLY priority suggestion! Separatethem with a comma! You can choose from the following enums: TOP PRIORITY, HIGH PRIORITY, MEDIUM PRIORITY, LOW PRIORITY.";
         $prompt = "You are $youAre . Estimate the priority of the following kanban board tickets->  $tasks. Answer with their priortiy enum only, nothing else!";
         // Construct the Python command with the required arguments and path to the script
 
         $path = env('PYTHON_SCRIPT_PATH4');
-        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path );
+        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
 
         $cleanData = trim($response);
 
 
         $prioritiesArray = [];
-    
+
         // Split the comma-separated priorities and create an array of priority objects
         $priorities = explode(', ', $cleanData);
         foreach ($priorities as $priority) {
             $prioritiesArray[] = ['priority' => $priority];
         }
-    
+
         return response()->json([
             'priorities' => $prioritiesArray,
         ]);
     }
 
-    public static function GenerateTaskDocumentationPerTask($boardId,$taskId)
+    public static function GenerateTaskDocumentationPerTask($boardId, $taskId)
     {
         $user = auth()->user();
-        if(!$user){
+        if (!$user) {
             return response()->json([
                 'error' => 'Unauthorized!',
             ]);
@@ -292,7 +284,7 @@ class ChatGPTController extends Controller
         }
 
         $task = Task::find($taskId);
-        if(!$task){
+        if (!$task) {
             return response()->json([
                 'error' => 'Task not found!',
             ]);
@@ -301,7 +293,7 @@ class ChatGPTController extends Controller
         if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
-        
+
         $prompt = "Generate documentation or a longer description for the task with the following title: {$task->title}, description: {$task->description}.";
         $path = env('PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
@@ -379,7 +371,7 @@ class ChatGPTController extends Controller
         ];
     }
 
-    public static function GenerateCodeReviewOrDocumentation(Request $request, $boardId, $expectedType) 
+    public static function GenerateCodeReviewOrDocumentation(Request $request, $boardId, $expectedType)
     {
         $user = auth()->user();
         if (!$user) {
@@ -388,21 +380,21 @@ class ChatGPTController extends Controller
             ]);
         }
         $board = Board::where('board_id', $boardId)->first();
-    
+
         if (!$board) {
             return response()->json(['error' => 'Board not found.'], 404);
         }
-    
+
         $team = $board->team;
-    
+
         if (!$team->teamMembers->contains('user_id', $user->user_id)) {
             return response()->json(['error' => 'You are not a member of the team.'], 404);
         }
-    
+
         $code = $request->input('code');
         $promptCodeReview = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''.";
         $promptDocumentation = "Use only UTF-8 chars! Act as a senior programmer and generate documentation for the following code: '''$code'''.";
-        
+
         if ($expectedType === 'Code review') {
             $prompt = $promptCodeReview;
         } elseif ($expectedType === 'Documentation') {
@@ -412,18 +404,19 @@ class ChatGPTController extends Controller
                 'error' => 'Invalid expected type.',
             ], 400);
         }
-    
-        return Self::CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $boardId, $expectedType, $code);
-    }
-    
 
-    public static function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $boardId, $expectedType, $code) {
+        return self::CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $boardId, $expectedType, $code);
+    }
+
+
+    public static function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $boardId, $expectedType, $code)
+    {
         $path = env('PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
         $foundKeyPhrase = strtolower($expectedType) . ':';
         $review = substr($response, stripos($response, $foundKeyPhrase) + strlen($foundKeyPhrase));
         $review = trim($review);
-        
+
         $user = auth()->user();
         $board = Board::where('board_id', $boardId)->first();
         $chosenAI = request()->header('ChosenAI');
@@ -431,16 +424,16 @@ class ChatGPTController extends Controller
         try {
             if (!empty($agiAnswerId)) {
                 $agiAnswer = AGIAnswers::where('board_id', $board->board_id)
-                                    ->where('user_id', $user->user_id)
-                                    ->where('agi_answer_id', $agiAnswerId)
-                                    ->first();
-            
+                    ->where('user_id', $user->user_id)
+                    ->where('agi_answer_id', $agiAnswerId)
+                    ->first();
+
                 if ($agiAnswer) {
                     $agiAnswer->chosenAI = $chosenAI;
                     $agiAnswer->codeReviewOrDocumentationType = $expectedType;
                     $agiAnswer->codeReviewOrDocumentation = $review;
                     $agiAnswer->codeReviewOrDocumentationText = $code;
-            
+
                     $agiAnswer->save();
                 } else {
                     return response()->json([
@@ -456,21 +449,22 @@ class ChatGPTController extends Controller
                     'board_id' => $board->board_id,
                     'user_id' => $user->user_id,
                 ]);
-            
+
                 $agiAnswer->save();
             }
-            
-        
+
+
             $response = response()->json([
                 'reviewType' => $expectedType,
                 'review' => $review,
             ]);
-        
+
             return $response;
         } catch (\Exception $e) {
-            
+
             return response()->json([
-                'error' => 'An error occurred: ' . $e->getMessage(),], 500);
+                'error' => 'An error occurred: ' . $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -479,8 +473,8 @@ class ChatGPTController extends Controller
     {
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-        $boardId = $request->input('board_id'); 
-    
+        $boardId = $request->input('board_id');
+
         $logsQuery = DB::table('logs')->select('action', 'details', 'created_at', 'task_id')->whereBetween('created_at', [$startDate, $endDate]);
         if ($boardId) {
             $logsQuery->where('board_id', $boardId);
@@ -495,40 +489,40 @@ class ChatGPTController extends Controller
         $logEntries = [];
         $tasksCreatedCount = 0;
         $tasksFinishedCount = 0;
-        
+
         $finishedTasksSet = [];
         $revertedTasksSet = [];
-        
+
         foreach ($logs as $log) {
             $detailText = $log->details;
             $logEntry = "On {$log->created_at}, {$log->action}, {$detailText}";
             $logEntries[] = $logEntry;
-        
+
             if ($log->action == 'CREATED TASK') {
                 $tasksCreatedCount++;
             }
-            
+
             if ($log->action == 'FINISHED TASK' && !in_array($log->task_id, $finishedTasksSet)) {
                 $tasksFinishedCount++;
                 $finishedTasksSet[] = $log->task_id;
             }
-            
+
             if ($log->action == 'REVERTED FINISHED TASK' && in_array($log->task_id, $finishedTasksSet) && !in_array($log->task_id, $revertedTasksSet)) {
                 $tasksFinishedCount--;
                 $revertedTasksSet[] = $log->task_id;
             }
         }
-        
+
         $formattedLogs = implode("; ", $logEntries);
         $prompt = "Based on the following log entries in a Kanban table: {$formattedLogs}, create a performance review by day and point out the most and least productive days of the week.";
-    
+
         $pythonScriptPath = env('PERFORMANCE_PYTHON_SCRIPT_PATH');
         $apiKey = env('OPENAI_API_KEY');
         $command = "python {$pythonScriptPath} " . escapeshellarg($prompt) . " " . escapeshellarg($apiKey);
         $response = shell_exec($command);
         $responseSummary = "\n\nSummary for the week: Total tasks created: {$tasksCreatedCount}. Total tasks finished: {$tasksFinishedCount}.";
         $response .= $responseSummary;
-        
+
         DB::table('summary_logs')->insert([
             'start_date' => $startDate,
             'end_date' => $endDate,
@@ -540,5 +534,5 @@ class ChatGPTController extends Controller
         ]);
 
         return response()->json(['response' => $response]);
-    }     
+    }
 }
