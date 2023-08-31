@@ -7,6 +7,7 @@ import "../styles/GenerateTaskWithAGIPopup.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
+import Loader from "./Loader";
 
 const GenerateTaskWithAGIPopup = ({
   board_id,
@@ -24,6 +25,7 @@ const GenerateTaskWithAGIPopup = ({
     { value: "bard", label: "Bard" },
   ];
   let [chosenAI, setChosenAI] = useState(aiOptions[0]);
+  //const [needLoader, setNeedLoader] = useState(false);
   const counterOptions = [
     { value: "1", label: "1" },
     { value: "2", label: "2" },
@@ -54,6 +56,11 @@ const GenerateTaskWithAGIPopup = ({
     const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
 
     setEditedTasks(updatedTasks);
+  };
+
+  const handleLoader = (taskTitleInputRefParam, nullParam, chosenAI, taskCounter) => {
+    //setNeedLoader(true);
+    generateTask(taskTitleInputRefParam, nullParam, chosenAI, taskCounter);
   };
 
   const handleDueDateChange = (task, date) => {
@@ -116,6 +123,7 @@ const GenerateTaskWithAGIPopup = ({
         const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
 
         setEditedTasks(updatedTasks);
+        //setNeedLoader(false);
       } else {
         setEditedTasks(res.data);
       }
@@ -124,18 +132,20 @@ const GenerateTaskWithAGIPopup = ({
     }
   };
 
+
   const updateTaskInEditedTasks = (tasksList, updatedTask) => {
     return tasksList.map((task) =>
       task === updatedTask
         ? updatedTask
         : {
-            ...task,
-            tasks: task.tasks
-              ? updateTaskInEditedTasks(task.tasks, updatedTask)
-              : task.tasks,
-          }
+          ...task,
+          tasks: task.tasks
+            ? updateTaskInEditedTasks(task.tasks, updatedTask)
+            : task.tasks,
+        }
     );
   };
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -177,6 +187,7 @@ const GenerateTaskWithAGIPopup = ({
         const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
 
         setEditedTasks(updatedTasks);
+        //setNeedLoader(false);
       } else {
         setEditedTasks(res.data);
       }
@@ -186,6 +197,7 @@ const GenerateTaskWithAGIPopup = ({
   };
 
   return (
+
     <div className="overlay">
       <div className="popup agi-popup">
         <span className="close-btn" onClick={onCancel}>
@@ -254,7 +266,7 @@ const GenerateTaskWithAGIPopup = ({
                   <button
                     className="generate-button"
                     onClick={() =>
-                      generateTask(
+                      handleLoader(
                         taskTitleInputRef.current.value,
                         null,
                         chosenAI.value,
@@ -288,6 +300,7 @@ const TaskRecursive = ({
 }) => {
   let [chosenAI, setChosenAI] = useState(aiOptions[0]);
   let [taskCounter, setTaskCounter] = useState(counterOptions[0]);
+  //const [needLoader, setNeedLoader] = useState(false);
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -301,6 +314,7 @@ const TaskRecursive = ({
   };
 
   const generateSubtaskPrepare = (task) => {
+    //setNeedLoader(true);
     console.log(chosenAI);
     generateSubtask(
       `${task.description}, due_date: '${task.due_date ? task.due_date : "-"}'`,
@@ -321,13 +335,13 @@ const TaskRecursive = ({
         style={
           editedTasks.length > 0
             ? {
-                fontSize: "1.1em",
-                textAlign: "left",
-              }
+              fontSize: "1.1em",
+              textAlign: "left",
+            }
             : {
-                fontSize: "1.2em",
-                textAlign: "center",
-              }
+              fontSize: "1.2em",
+              textAlign: "center",
+            }
         }
       >
         {editedTasks.length > 0
