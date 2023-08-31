@@ -10,6 +10,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow-y: scroll;
+    overflow-x: scroll;
 }
 
 .popup {
@@ -27,7 +29,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow: auto;
+    overflow-y: scroll;
+    overflow-x: scroll;
 }
 
 .close-btn {
