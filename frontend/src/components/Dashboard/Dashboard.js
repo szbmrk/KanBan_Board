@@ -258,6 +258,7 @@ export default function Dashboard() {
                                                                                     ? 'visible'
                                                                                     : 'hidden',
                                                                             transition: 'visibility 0.1s ease',
+                                                                            zIndex: '99',
                                                                         }}
                                                                         onClick={() =>
                                                                             deleteBoardFromTeam(team.team_id, board.board_id)

@@ -155,11 +155,15 @@ const GenerateAttachmentLinkWithAGIPopup = ({
             </div>
             <div className="dropdown-container">
               <p>Select an AI:</p>
-              <Dropdown
-                options={aiOptions}
-                value={chosenAI}
-                onChange={(selectedOption) => setChosenAI(selectedOption)}
-              />
+              <div
+                style={{ overflowY: "auto", height: "100px" }}
+              >
+                <Dropdown
+                  options={aiOptions}
+                  value={chosenAI}
+                  onChange={(selectedOption) => setChosenAI(selectedOption)}
+                />
+              </div>
             </div>
             <button
               className="generate-button"

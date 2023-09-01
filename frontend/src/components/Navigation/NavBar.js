@@ -97,7 +97,7 @@ const Navbar = () => {
                             </Link>
                         </li>
                         <li>
-                            <Link to='/login' onClick={[onLogout, toggleDropdown]} className='logout'>
+                            <Link to='/login' onClick={onLogout} className='logout'>
                                 <span>{signOutIcon}</span>
                                 <span>Sign Out</span>
                             </Link>

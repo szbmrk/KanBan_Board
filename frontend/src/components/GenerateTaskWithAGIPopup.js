@@ -258,12 +258,16 @@ const GenerateTaskWithAGIPopup = ({
                   </div>
                   <div className="dropdown-container">
                     <p>Which AI do you want to use?</p>
-                    <Dropdown
-                      className="dropdown-AGI"
-                      options={aiOptions}
-                      value={chosenAI}
-                      onChange={(selectedOption) => setChosenAI(selectedOption)}
-                    />
+                    <div
+                      style={{ overflowY: "auto", height: "100px" }}
+                    >
+                      <Dropdown
+                        className="dropdown-AGI"
+                        options={aiOptions}
+                        value={chosenAI}
+                        onChange={(selectedOption) => setChosenAI(selectedOption)}
+                      />
+                    </div>
                   </div>
                   <button
                     className="generate-button"
@@ -404,12 +408,16 @@ const TaskRecursive = ({
         </div>
         <div className="dropdown-container">
           <p>Which AI do you want to use?</p>
-          <Dropdown
-            className="dropdown-AGI"
-            options={aiOptions}
-            value={chosenAI}
-            onChange={(selectedOption) => setChosenAI(selectedOption)}
-          />
+          <div
+            style={{ overflowY: "auto", height: "100px" }}
+          >
+            <Dropdown
+              className="dropdown-AGI"
+              options={aiOptions}
+              value={chosenAI}
+              onChange={(selectedOption) => setChosenAI(selectedOption)}
+            />
+          </div>
         </div>
         <button
           className="generate-button"

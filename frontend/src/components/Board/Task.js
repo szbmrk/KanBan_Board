@@ -45,7 +45,7 @@ export const Task = ({
   setTaskAsInspectedTask,
   generateTasks,
   generateAttachmentLinks,
-  HandleCraftedPromptTaskClick,
+  HandleCraftedPromptTaskClick
 }) => {
   const [bouncingStarIcon, setBouncingStarIcon] = useState(regularStarIcon);
   const [isHoveredEdit, setIsHoveredEdit] = useState(false);
@@ -206,9 +206,8 @@ export const Task = ({
                 key={tagIndex}
                 name={tag.name}
                 color={tag.color}
-                extraClassName={`tag-on-board ${
-                  activeTags.includes(task.tags) ? "clicked" : ""
-                }`}
+                extraClassName={`tag-on-board ${activeTags.includes(task.tags) ? "clicked" : ""
+                  }`}
                 enableClickBehavior={true}
                 onClick={() => handleTagClick(task.tags)}
               />

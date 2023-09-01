@@ -178,11 +178,15 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
               </div>
               <div className="dropdown-container">
                 <p>Choose an AI you want to fulfill your prompt with:</p>
-                <Dropdown
-                  options={aiOptions}
-                  value={chosenAI}
-                  onChange={(selectedOption) => setChosenAI(selectedOption)}
-                />
+                <div
+                  style={{ overflowY: "auto", height: "100px" }}
+                >
+                  <Dropdown
+                    options={aiOptions}
+                    value={chosenAI}
+                    onChange={(selectedOption) => setChosenAI(selectedOption)}
+                  />
+                </div>
               </div>
               <div className="dropdown-container">
                 <p>AI should act as a...:</p>
