@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 
 export const Column = ({
@@ -8,6 +8,7 @@ export const Column = ({
     children,
     onMouseEnter,
     onMouseLeave,
+    index,
     zIndex,
 }) => {
     const [originalPos, setOriginalPos] = useState(null);
@@ -53,7 +54,7 @@ export const Column = ({
         <div
             className='column'
             ref={(node) => drag(drop(node))}
-            style={{ opacity, display, zIndex: zIndex }}
+            style={{ opacity, display, zIndex: index === divIndex ? zIndex : 1 }}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
         >

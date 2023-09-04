@@ -1376,6 +1376,7 @@ const Board = () => {
                                         onMouseEnter={() => handleMouseEnterOnColumn(index)}
                                         onMouseLeave={handleMouseLeaveOnColumn}
                                         index={columnIndex}
+                                        zIndex={columnZIndex}
                                     >
                                         <div className='card-container'>
                                             {editingColumnIndex === index ? (
