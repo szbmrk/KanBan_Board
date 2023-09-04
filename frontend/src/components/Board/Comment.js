@@ -21,20 +21,19 @@ export default function Comment({ comments, handlePostComment }) {
     return comments && comments.length > 0 ? (
         <>
             <div className='comments'>
-                <div class='previous-comments'>
+                <div className='previous-comments'>
                     {comments.map((comment, index) => (
                         <div
-                            className={`comment ${sessionStorage.getItem('username') === comment.user.username
-                                ? 'own-comment'
-                                : 'other-comment'
-                                }`}
+                            className={`comment ${
+                                sessionStorage.getItem('username') === comment.user.username
+                                    ? 'own-comment'
+                                    : 'other-comment'
+                            }`}
                             key={index}
                         >
                             <div class='comment-header'>
                                 <span className='username'>{comment.user.username}</span>
-                                <span className='date'>
-                                    {formatDate(comment.created_at)}
-                                </span>
+                                <span className='date'>{formatDate(comment.created_at)}</span>
                             </div>
                             <div className='comment-text'>{comment.text}</div>
                         </div>
