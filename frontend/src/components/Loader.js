@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import "../styles/loader.css";
+import React, { useEffect, useState } from 'react';
+import '../styles/loader.css';
 
 const Loader = ({ data_to_load, text_if_cant_load }) => {
     const [loading, setLoading] = useState(true);
@@ -10,22 +10,18 @@ const Loader = ({ data_to_load, text_if_cant_load }) => {
         }, 15000);
     }, [data_to_load]);
 
-    return loading ? (
-        Loading_component
-    ) : (
-        Loading_component_with_text({ text: text_if_cant_load })
-    );
+    return loading ? Loading_component : Loading_component_with_text({ text: text_if_cant_load });
 };
 
 const Loading_component = (
-    <div className="loading-container">
-        <div className="loader"></div>
+    <div className='loading-container'>
+        <div className='loader'></div>
     </div>
 );
 
 const Loading_component_with_text = ({ text }) => (
-    <div className="loading-container">
-        <div className="loading-text">{text}</div>
+    <div className='loading-container'>
+        <div className='loading-text'>{text}</div>
     </div>
 );
 

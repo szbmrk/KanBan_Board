@@ -18,8 +18,8 @@ const Sidebar = () => {
     }, []);
 
     return (
-        <div className='sidebar sidebar-visible'>
-            <div className='sidebar-menu col-2 col-s-2'>
+        <div className='sidebar col-2 sidebar-visible'>
+            <div className='sidebar-menu'>
                 <ul>
                     <li>
                         <Link to='/dashboard'>

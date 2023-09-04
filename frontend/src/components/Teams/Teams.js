@@ -188,13 +188,11 @@ const Teams = () => {
     const handleDeleteRole = async (role_id, board_id, team_id, user_id) => {
         const token = sessionStorage.getItem('token');
         try {
-            const response = await axios.delete(`/boards/${board_id}/team-member-roles/${role_id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const response = await axios.delete(`/boards/${board_id}/team-member-roles/${role_id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             console.log(response);
             const newTeamData = teams.map((team) => {
                 if (team.team_id === team_id) {
@@ -210,20 +208,22 @@ const Teams = () => {
                 return team;
             });
             setTeams(newTeamData);
-
         } catch (error) {
             setError(error.response.data);
         }
-    }
+    };
 
     async function AddRoleToUser(board_id, team_member_id, role_id) {
         try {
-            const response = await axios.post(`/boards/${board_id}/team-member-roles`, { team_member_id: team_member_id, role_id: role_id },
+            const response = await axios.post(
+                `/boards/${board_id}/team-member-roles`,
+                { team_member_id: team_member_id, role_id: role_id },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
-                    }
-                });
+                    },
+                }
+            );
             console.log(response);
             const newTeamMember = response.data.team_member;
             const newTeamData = teams.map((team) => {
@@ -239,19 +239,18 @@ const Teams = () => {
                 return team;
             });
             setTeams(newTeamData);
-        }
-        catch (error) {
+        } catch (error) {
             setError(error.response.data);
         }
     }
 
     return (
-        <div className='content'>
-            {(teams === null) ? (
+        <div className='content col-10'>
+            {teams === null ? (
                 error ? (
                     <Error error={error} redirect={redirect} />
                 ) : (
-                    <Loader data_to_load={teams} text_if_cant_load={"No teams yet!"} />
+                    <Loader data_to_load={teams} text_if_cant_load={'No teams yet!'} />
                 )
             ) : (
                 <div className='teams-container'>

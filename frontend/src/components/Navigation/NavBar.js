@@ -25,22 +25,30 @@ const displayModeIcon = <FontAwesomeIcon icon={faCircleHalfStroke} />;
 const Navbar = () => {
     const { isLoggedIn, onLogout } = React.useContext(AuthContext);
 
-    const hideSidebar = () => {
+    const toggleSidebar = () => {
         const sidebar = document.querySelector('.sidebar');
         const content = document.querySelector('.content');
 
         sidebar.classList.toggle('sidebar-hidden');
         sidebar.classList.toggle('sidebar-visible');
         if (sidebar.classList.contains('sidebar-hidden')) {
+            sidebar.style.transform = 'translateX(-231px)';
+            sidebar.style.transition = 'transform 0.5s ease-in-out';
             setTimeout(() => {
+                sidebar.classList.remove('col-2');
+                content.classList.remove('col-10');
+                content.classList.add('col-12');
                 sidebar.style.display = 'none';
-                content.style.width = '100%';
-                content.style.transition = 'width 0.5s ease-in-out';
             }, 500);
         } else {
-            sidebar.style.display = 'block';
-            content.style.width = '83.33%';
-            content.style.transition = 'width 0.5s ease-in-out';
+            sidebar.classList.add('col-2');
+            content.classList.remove('col-12');
+            content.classList.add('col-10');
+            setTimeout(() => {
+                sidebar.style.display = 'block';
+                sidebar.style.transform = 'translateX(0px)';
+                sidebar.style.transition = 'transform 0.5s ease-in-out';
+            }, 500);
         }
     };
 
@@ -56,9 +64,9 @@ const Navbar = () => {
 
     return (
         <>
-            <div className='navbar'>
-                <div className='navbar-menu col-12 col-s-12'>
-                    <button id='menu-btn' onClick={hideSidebar}>
+            <div className='navbar col-12'>
+                <div className='navbar-menu'>
+                    <button id='menu-btn' onClick={toggleSidebar}>
                         {menuIcon}
                     </button>
                     <ul>

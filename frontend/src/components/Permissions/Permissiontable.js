@@ -5,7 +5,7 @@ import Loader from '../Loader';
 import '../../styles/permissions.css';
 import '../../styles/teamcard.css';
 import { SetRoles, checkPermissionForBoard } from '../../roles/Roles';
-import ErrorWrapper from "../../ErrorWrapper";
+import ErrorWrapper from '../../ErrorWrapper';
 
 export default function Permissiontable() {
     const { board_id, team_id } = useParams();
@@ -173,7 +173,7 @@ export default function Permissiontable() {
     }
 
     return (
-        <div className='content'>
+        <div className='content col-10'>
             {(roles.length === 0 && permissions.length === 0) || needLoader ? (
                 <Loader />
             ) : (
@@ -246,7 +246,12 @@ export default function Permissiontable() {
                 </div>
             )}
             {error && (
-                <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+                <ErrorWrapper
+                    originalError={error}
+                    onClose={() => {
+                        setError(null);
+                    }}
+                />
             )}
         </div>
     );

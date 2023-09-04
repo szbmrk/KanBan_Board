@@ -15,5 +15,17 @@ export default function Error({ error, redirect }) {
         document.readyState === 'complete' ? onPageLoad() : window.addEventListener('load', onPageLoad);
     }, []);
 
-    return <>{canBeRedirected ? <Navigate to='/login' /> : <h1 style={{ textAlign: 'center' }}>{error}</h1>}</>;
+    return (
+        <>
+            {canBeRedirected ? (
+                <Navigate to='/login' />
+            ) : (
+                <>
+                    <div className='content col-10'>
+                        <h1 style={{ textAlign: 'center' }}>{error}</h1>
+                    </div>
+                </>
+            )}
+        </>
+    );
 }

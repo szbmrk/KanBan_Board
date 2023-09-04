@@ -49,28 +49,23 @@ const AssignedTasks = () => {
     };
 
     return (
-        <div className='content'>
+        <div className='content col-10'>
             {tasks === null ? (
                 error ? (
-
                     <Error error={error} redirect={redirect} />
                 ) : (
-                    <Loader data_to_load={tasks} text_if_cant_load={"No assigned task yet!"} />
+                    <Loader data_to_load={tasks} text_if_cant_load={'No assigned task yet!'} />
                 )
-            )
-
-                : (
-                    <div className='scrollable-container'>
-                        {tasks.length === 0 ? (
-                            <h2 className='no-data'>No assigned task yet!</h2>
-                        ) : tasks.map((task, index) => (
-                            <TaskCard key={index} task={task} />
-                        ))}
-
-                    </div>
-                )
-            }
-        </div >
+            ) : (
+                <div className='scrollable-container'>
+                    {tasks.length === 0 ? (
+                        <h2 className='no-data'>No assigned task yet!</h2>
+                    ) : (
+                        tasks.map((task, index) => <TaskCard key={index} task={task} />)
+                    )}
+                </div>
+            )}
+        </div>
     );
 };
 export default AssignedTasks;

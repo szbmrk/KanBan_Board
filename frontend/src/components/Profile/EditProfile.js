@@ -130,7 +130,7 @@ export default function EditProfile() {
     }
 
     return (
-        <div className='content'>
+        <div className='content col-10'>
             {formData.username === '' ? (
                 error ? (
                     <Error error={error} redirect={redirect} />
