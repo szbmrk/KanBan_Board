@@ -75,6 +75,8 @@ const Board = () => {
     const navigate = useNavigate();
     const [hoveredColumnId, setHoveredColumnId] = useState(null);
     const [isAGIOpen, setIsAGIOpen] = useState(false);
+    const [taskIsClickable, setTaskIsClickable] = useState(true);
+
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
     const codeIcon = <FontAwesomeIcon icon={faCode} />;
@@ -834,6 +836,8 @@ const Board = () => {
         console.log('column');
         console.log(column);
 
+        setColumnZIndex(1);
+
         setShowGenerateTaskWithAGIPopup(true);
         console.log(task);
         if (task) {
@@ -1045,10 +1049,12 @@ const Board = () => {
     };
 
     const HandleCraftedPromptColumnClick = (craftedPrompt, column) => {
+        setColumnZIndex(1);
         useCrafterPromptOnColumn(craftedPrompt, column);
     };
 
     const HandleCraftedPromptTaskClick = (craftedPrompt, task, column) => {
+        setColumnZIndex(1);
         useCrafterPromptOnTask(craftedPrompt, task, column);
     };
 
@@ -1060,6 +1066,7 @@ const Board = () => {
         setColumnIndex(columnIndex);
         setIconContainerPosition({ x: newX, y: newY });
         setShowIconContainer(!showIconContainer);
+        setTaskIsClickable(!taskIsClickable);
         columnZIndex === 1 ? setColumnZIndex(100) : setColumnZIndex(1);
     };
 
@@ -1368,7 +1375,7 @@ const Board = () => {
                                         moveColumnBackend={moveColumnBackend}
                                         onMouseEnter={() => handleMouseEnterOnColumn(index)}
                                         onMouseLeave={handleMouseLeaveOnColumn}
-                                        zIndex={columnIndex === index ? columnZIndex : () => setColumnZIndex(1)}
+                                        index={columnIndex}
                                     >
                                         <div className='card-container'>
                                             {editingColumnIndex === index ? (
@@ -1443,6 +1450,7 @@ const Board = () => {
                                                         deleteTask={handleDeleteTask}
                                                         setTaskAsInspectedTask={setTaskAsInspectedTask}
                                                         openGenerateTaskWithAGIPopup={openGenerateTaskWithAGIPopup}
+                                                        clickable={taskIsClickable}
                                                         moveCardFrontend={(
                                                             dragIndex,
                                                             hoverIndex,
@@ -1577,6 +1585,7 @@ const Board = () => {
                             onClick={() => {
                                 setShowIconContainer(false);
                                 setColumnZIndex(1);
+                                setTaskIsClickable(true);
                             }}
                         >
                             <div
