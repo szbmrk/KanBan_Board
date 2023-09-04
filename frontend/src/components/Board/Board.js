@@ -32,6 +32,7 @@ import GenerateAttachmentLinkWithAGIPopup from '../GenerateAttachmentLinkWithAGI
 import CraftPromptPopup from '../CraftPromptPopup';
 import { useNavigate } from 'react-router-dom';
 import CodePopup from '../CodePopup';
+import IconContainer from './IconContainer';
 
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
@@ -1309,6 +1310,39 @@ const Board = () => {
         }
     };
 
+    const options = [
+        {
+            onMouseEnter: () => setIsHoveredAI(0),
+            onMouseLeave: () => setIsHoveredAI(-1),
+            onClick: () => openGenerateTaskWithAGIPopup(null, board.columns[columnIndex]),
+            iconClassName: 'ai-button',
+            hoverColor: 'var(--magic)',
+            icon: aiIcon,
+            label: 'Generate Tasks',
+        },
+        {
+            onMouseEnter: () => setIsHoveredClipboard(1),
+            onMouseLeave: () => setIsHoveredClipboard(-1),
+            onClick: () => HandleCraftedPromptColumnClick(craftedPromptsBoard, board.columns[columnIndex]),
+            style: {
+                transform: 'translateX(10px)',
+            },
+            iconClassName: 'clipboard-button',
+            hoverColor: 'var(--light-blue)',
+            icon: clipboardIcon,
+            label: craftedPromptsBoard.crafted_prompt_title,
+        },
+        {
+            onMouseEnter: () => setIsHoveredX(true),
+            onMouseLeave: () => setIsHoveredX(false),
+            onClick: (e) => handleDeleteButtonClick(e, columnIndex),
+            iconClassName: 'delete-column-button',
+            hoverColor: 'var(--important)',
+            icon: trashIcon,
+            label: 'Delete Column',
+        },
+    ];
+
     return (
         <>
             {permission === false ? (
@@ -1589,7 +1623,8 @@ const Board = () => {
                                 setTaskIsClickable(true);
                             }}
                         >
-                            <div
+                            <IconContainer iconContainerPosition={iconContainerPosition} options={options} />
+                            {/*<div
                                 className='icon-container'
                                 style={{
                                     position: 'fixed',
@@ -1653,7 +1688,7 @@ const Board = () => {
                                     </span>
                                     <p>Delete Column</p>
                                 </div>
-                            </div>
+                            </div>*/}
                         </div>
                     )}
                     {showGenerateAttachmentLinkWithAGIPopup && (
