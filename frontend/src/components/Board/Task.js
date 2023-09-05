@@ -8,6 +8,7 @@ import {
     faTrash,
     faStar as faSolidStar,
     faEllipsis,
+    faClipboard,
     faLink,
 } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faRegularStar } from '@fortawesome/free-regular-svg-icons';
@@ -26,6 +27,7 @@ export const regularStarIconBouncing = <FontAwesomeIcon icon={faRegularStar} bou
 export const solidStarIcon = <FontAwesomeIcon icon={faSolidStar} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
 export const attachmentLinkIcon = <FontAwesomeIcon icon={faLink} />;
+export const clipboardIcon = <FontAwesomeIcon icon={faClipboard} />;
 
 export const Task = ({
     id,
@@ -45,6 +47,7 @@ export const Task = ({
     generateAttachmentLinks,
     HandleCraftedPromptTaskClick,
     clickable,
+    onChildData,
 }) => {
     const [bouncingStarIcon, setBouncingStarIcon] = useState(regularStarIcon);
     const [isHoveredEdit, setIsHoveredEdit] = useState(false);
@@ -119,6 +122,7 @@ export const Task = ({
         setCardIndex(cardIndex);
 
         cardZIndex === 1 ? setCardZIndex(100) : setCardZIndex(1);
+        sendDataToParent();
     };
 
     const [activeTags, setActiveTags] = useState([]);
@@ -167,6 +171,84 @@ export const Task = ({
         }
     };
 
+    // Example function to send data back to the parent
+    const sendDataToParent = () => {
+        onChildData(options, iconContainerPosition, showIconContainer);
+    };
+
+    const options = [
+        {
+            onMouseEnter: () => setIsHoveredEdit(true),
+            onMouseLeave: () => setIsHoveredEdit(false),
+            onClick: () => setTaskAsInspectedTask(task),
+            style: {
+                animation: isHoveredEdit ? 'rotate 0.5s' : 'none',
+            },
+            iconClassName: 'edit-button',
+            hoverColor: 'var(--edit)',
+            icon: pencilIcon,
+            label: 'Edit Task',
+        },
+        {
+            onMouseEnter: () => setIsHoveredAI(0),
+            onMouseLeave: () => setIsHoveredAI(-1),
+            onClick: () => handleAI(),
+            style: {
+                transform: 'translateX(5px)',
+            },
+            iconClassName: 'ai-button',
+            hoverColor: 'var(--magic)',
+            icon: aiIcon,
+            label: 'Generate Subtasks',
+        },
+        {
+            onMouseEnter: () => setIsHoveredAttachmentLink(true),
+            onMouseLeave: () => setIsHoveredAttachmentLink(false),
+            onClick: () => handleAttachmentLinks(),
+            iconClassName: 'ai-button',
+            hoverColor: 'var(--attachment-link)',
+            icon: attachmentLinkIcon,
+            label: 'Generate Attachment Links',
+        },
+        {
+            onMouseEnter: () => setIsHoveredAI(index + 1),
+            onMouseLeave: () => setIsHoveredAI(-1),
+            onClick: () => HandleCraftedPromptTaskClick(craftedPromptsTask, task, column),
+            iconClassName: 'ai-button',
+            hoverColor: getCSSForCraftedPrompt(craftedPromptsTask),
+            icon: getIconforCraftedPrompt(craftedPromptsTask),
+            label: craftedPromptsTask.crafted_prompt_title,
+        },
+        task.is_favourite
+            ? {
+                  onMouseEnter: () => setIsHoveredFavorite(true),
+                  onMouseLeave: () => setIsHoveredFavorite(false),
+                  onClick: () => unFavouriteTask(id, task.column_id),
+                  iconClassName: 'favourite-button solid-icon',
+                  hoverColor: isHoveredFavorite ? 'var(--light-gray)' : '',
+                  icon: isHoveredFavorite ? regularStarIcon : solidStarIcon,
+                  label: 'Remove from Favourites',
+              }
+            : {
+                  onMouseEnter: () => setIsHoveredFavorite(true),
+                  onMouseLeave: () => setIsHoveredFavorite(false),
+                  onClick: () => favouriteTask(id, task.column_id),
+                  iconClassName: 'favourite-button regular-icon',
+                  hoverColor: isHoveredFavorite ? 'var(--starred)' : '',
+                  icon: bouncingStarIcon,
+                  label: 'Add to Favourites',
+              },
+        {
+            onMouseEnter: () => setIsHoveredDelete(true),
+            onMouseLeave: () => setIsHoveredDelete(false),
+            onClick: () => deleteTask(id, task.column_id),
+            iconClassName: 'delete-task-button',
+            hoverColor: isHoveredDelete ? 'var(--important)' : '',
+            icon: trashIcon,
+            label: 'Delete Task',
+        },
+    ];
+
     return (
         <>
             <div
@@ -207,7 +289,7 @@ export const Task = ({
                         ))}
                 </div>
             </div>
-            {showIconContainer && (
+            {/*{showIconContainer && (
                 <div
                     className='overlay'
                     onClick={() => {
@@ -268,7 +350,7 @@ export const Task = ({
                                     color: isHoveredAttachmentLink ? 'var(--attachment-link)' : '',
                                 }}
                             >
-                                {attachmentLinkIcon}
+                                {attachmentLinkIcon}2
                             </span>
                             <p>Generate Attachment Links</p>
                         </div>
@@ -342,9 +424,9 @@ export const Task = ({
                             </span>
                             <p>Delete Task</p>
                         </div>
-                    </div>
                 </div>
-            )}
+                      </div>
+            )}*/}
         </>
     );
 };
