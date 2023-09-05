@@ -77,6 +77,9 @@ const Board = () => {
     const [hoveredColumnId, setHoveredColumnId] = useState(null);
     const [isAGIOpen, setIsAGIOpen] = useState(false);
     const [taskIsClickable, setTaskIsClickable] = useState(true);
+    const [childData, setChildData] = useState(null);
+    const [iconContainerOptions, setIconContainerOptions] = useState(null);
+    const [isTaskDotsIconClicked, setIsTaskDotsIconClicked] = useState(false);
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
@@ -1064,6 +1067,7 @@ const Board = () => {
         const newX = buttonRect.right + 20;
         const newY = buttonRect.top;
 
+        handleIconContainerOptions();
         setColumnIndex(columnIndex);
         setIconContainerPosition({ x: newX, y: newY });
         setShowIconContainer(!showIconContainer);
@@ -1310,6 +1314,17 @@ const Board = () => {
         }
     };
 
+    // Callback function to receive data from child
+    const handleChildData = (options, iconContainerPosition, showIconContainer) => {
+        setChildData(options);
+        setIconContainerPosition(iconContainerPosition);
+        setShowIconContainer(showIconContainer);
+    };
+
+    const handleIconContainerOptions = () => {
+        setIconContainerOptions(options);
+    };
+
     const options = [
         {
             onMouseEnter: () => setIsHoveredAI(0),
@@ -1521,6 +1536,7 @@ const Board = () => {
                                                         HandleCraftedPromptTaskClick={(craftedPrompt, task, column) =>
                                                             HandleCraftedPromptTaskClick(craftedPrompt, task, column)
                                                         }
+                                                        onChildData={handleChildData}
                                                     />
                                                 ))}
                                             </div>
@@ -1623,7 +1639,10 @@ const Board = () => {
                                 setTaskIsClickable(true);
                             }}
                         >
-                            <IconContainer iconContainerPosition={iconContainerPosition} options={options} />
+                            <IconContainer
+                                iconContainerPosition={iconContainerPosition}
+                                options={isTaskDotsIconClicked ? childData : iconContainerOptions}
+                            />
                             {/*<div
                                 className='icon-container'
                                 style={{
