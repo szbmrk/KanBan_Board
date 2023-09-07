@@ -80,6 +80,7 @@ const Board = () => {
     const [childData, setChildData] = useState(null);
     const [iconContainerOptions, setIconContainerOptions] = useState(null);
     const [isTaskDotsIconClicked, setIsTaskDotsIconClicked] = useState(false);
+    const [cardZIndex, setCardZIndex] = useState(1);
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
@@ -1315,9 +1316,11 @@ const Board = () => {
     };
 
     // Callback function to receive data from child
-    const handleChildData = (options, iconContainerPosition, showIconContainer) => {
-        setChildData(options);
+    const handleChildData = (options, iconContainerPosition, showIconContainer, zIndex) => {
+        setIconContainerOptions(options);
         setIconContainerPosition(iconContainerPosition);
+        setIsTaskDotsIconClicked(!isTaskDotsIconClicked);
+        isTaskDotsIconClicked ? setCardZIndex(zIndex) : setCardZIndex(1);
         setShowIconContainer(showIconContainer);
     };
 
@@ -1501,6 +1504,9 @@ const Board = () => {
                                                         setTaskAsInspectedTask={setTaskAsInspectedTask}
                                                         openGenerateTaskWithAGIPopup={openGenerateTaskWithAGIPopup}
                                                         clickable={taskIsClickable}
+                                                        onChildData={handleChildData}
+                                                        showIconContainer={showIconContainer}
+                                                        zIndex={cardZIndex}
                                                         moveCardFrontend={(
                                                             dragIndex,
                                                             hoverIndex,
@@ -1536,7 +1542,6 @@ const Board = () => {
                                                         HandleCraftedPromptTaskClick={(craftedPrompt, task, column) =>
                                                             HandleCraftedPromptTaskClick(craftedPrompt, task, column)
                                                         }
-                                                        onChildData={handleChildData}
                                                     />
                                                 ))}
                                             </div>
@@ -1636,12 +1641,14 @@ const Board = () => {
                             onClick={() => {
                                 setShowIconContainer(false);
                                 setColumnZIndex(1);
+                                setCardZIndex(1);
                                 setTaskIsClickable(true);
+                                setIsTaskDotsIconClicked(false);
                             }}
                         >
                             <IconContainer
                                 iconContainerPosition={iconContainerPosition}
-                                options={isTaskDotsIconClicked ? childData : iconContainerOptions}
+                                options={iconContainerOptions}
                             />
                             {/*<div
                                 className='icon-container'

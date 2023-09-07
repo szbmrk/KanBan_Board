@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import '../../styles/card.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -48,6 +48,8 @@ export const Task = ({
     HandleCraftedPromptTaskClick,
     clickable,
     onChildData,
+    iconContainer,
+    zIndex,
 }) => {
     const [bouncingStarIcon, setBouncingStarIcon] = useState(regularStarIcon);
     const [isHoveredEdit, setIsHoveredEdit] = useState(false);
@@ -59,8 +61,8 @@ export const Task = ({
         x: 0,
         y: 0,
     });
-    const [showIconContainer, setShowIconContainer] = useState(false);
-    const [cardZIndex, setCardZIndex] = useState(1);
+    const [showIconContainer, setShowIconContainer] = useState(iconContainer);
+    const [cardZIndex, setCardZIndex] = useState(zIndex);
     const [cardIndex, setCardIndex] = useState(null);
 
     const [{ isDragging: dragging }, drag] = useDrag({
@@ -117,13 +119,16 @@ export const Task = ({
 
         // Set the icon-container's position and show it
         setIconContainerPosition({ x: newX, y: newY });
-        setShowIconContainer(!showIconContainer);
+        setShowIconContainer(true);
 
         setCardIndex(cardIndex);
 
-        cardZIndex === 1 ? setCardZIndex(100) : setCardZIndex(1);
-        sendDataToParent();
+        setCardZIndex(100);
     };
+
+    useEffect(() => {
+        sendDataToParent(iconContainerPosition, showIconContainer, cardZIndex);
+    }, [iconContainerPosition, showIconContainer, cardZIndex]);
 
     const [activeTags, setActiveTags] = useState([]);
 
@@ -172,8 +177,8 @@ export const Task = ({
     };
 
     // Example function to send data back to the parent
-    const sendDataToParent = () => {
-        onChildData(options, iconContainerPosition, showIconContainer);
+    const sendDataToParent = (position, isIconContainerShowable) => {
+        onChildData(options, position, isIconContainerShowable);
     };
 
     const options = [
@@ -185,9 +190,10 @@ export const Task = ({
                 animation: isHoveredEdit ? 'rotate 0.5s' : 'none',
             },
             iconClassName: 'edit-button',
-            hoverColor: 'var(--edit)',
+            hoverColor: isHoveredEdit ? 'var(--edit)' : '',
             icon: pencilIcon,
             label: 'Edit Task',
+            isHovered: isHoveredEdit,
         },
         {
             onMouseEnter: () => setIsHoveredAI(0),
