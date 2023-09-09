@@ -1338,18 +1338,15 @@ const Board = () => {
             icon: aiIcon,
             label: 'Generate Tasks',
         },
-        {
-            onMouseEnter: () => setIsHoveredClipboard(1),
+        ...craftedPromptsBoard.map((craftedPrompt, index) => ({
+            onMouseEnter: () => setIsHoveredClipboard(index + 1),
             onMouseLeave: () => setIsHoveredClipboard(-1),
-            onClick: () => HandleCraftedPromptColumnClick(craftedPromptsBoard, board.columns[columnIndex]),
-            style: {
-                transform: 'translateX(10px)',
-            },
+            onClick: () => HandleCraftedPromptColumnClick(craftedPrompt, board.columns[columnIndex]),
             iconClassName: 'clipboard-button',
             hoverColor: 'var(--light-blue)',
             icon: clipboardIcon,
-            label: craftedPromptsBoard.crafted_prompt_title,
-        },
+            label: craftedPrompt.crafted_prompt_title,
+        })),
         {
             onMouseEnter: () => setIsHoveredX(true),
             onMouseLeave: () => setIsHoveredX(false),

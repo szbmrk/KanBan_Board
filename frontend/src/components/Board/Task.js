@@ -199,9 +199,6 @@ export const Task = ({
             onMouseEnter: () => setIsHoveredAI(0),
             onMouseLeave: () => setIsHoveredAI(-1),
             onClick: () => handleAI(),
-            style: {
-                transform: 'translateX(5px)',
-            },
             iconClassName: 'ai-button',
             hoverColor: 'var(--magic)',
             icon: aiIcon,
@@ -216,15 +213,15 @@ export const Task = ({
             icon: attachmentLinkIcon,
             label: 'Generate Attachment Links',
         },
-        {
+        ...craftedPromptsTask.map((craftedPromptsTaskItem, index) => ({
             onMouseEnter: () => setIsHoveredAI(index + 1),
             onMouseLeave: () => setIsHoveredAI(-1),
-            onClick: () => HandleCraftedPromptTaskClick(craftedPromptsTask, task, column),
+            onClick: () => HandleCraftedPromptTaskClick(craftedPromptsTaskItem, task, column),
             iconClassName: 'ai-button',
-            hoverColor: getCSSForCraftedPrompt(craftedPromptsTask),
-            icon: getIconforCraftedPrompt(craftedPromptsTask),
-            label: craftedPromptsTask.crafted_prompt_title,
-        },
+            hoverColor: getCSSForCraftedPrompt(craftedPromptsTaskItem),
+            icon: getIconforCraftedPrompt(craftedPromptsTaskItem),
+            label: craftedPromptsTaskItem.crafted_prompt_title,
+        })),
         task.is_favourite
             ? {
                   onMouseEnter: () => setIsHoveredFavorite(true),
