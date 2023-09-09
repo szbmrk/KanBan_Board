@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const IconContainer = ({ iconContainerPosition, options }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    const [isHoveredIndex, setIsHoveredIndex] = useState(null);
+
     return (
         <div
             className='icon-container'
@@ -10,31 +13,26 @@ const IconContainer = ({ iconContainerPosition, options }) => {
                 top: iconContainerPosition.y + 'px',
             }}
         >
-            {options.map(
-                (option, index) => (
-                    console.log(option),
-                    (
-                        <div
-                            className='option'
-                            key={index}
-                            onMouseEnter={() => option.onMouseEnter(index)}
-                            onMouseLeave={() => option.onMouseLeave(index)}
-                            onClick={() => option.onClick()}
-                            style={option.style || {}}
-                        >
-                            <span
-                                className={option.iconClassName || ''}
-                                style={{
-                                    color: option.isHovered ? option.hoverColor : '',
-                                }}
-                            >
-                                {option.icon || ''}
-                            </span>
-                            <p>{option.label || ''}</p>
-                        </div>
-                    )
-                )
-            )}
+            {options.map((option, index) => (
+                <div
+                    className='option'
+                    key={index}
+                    onMouseEnter={() => [setIsHovered(true), setIsHoveredIndex(index)]}
+                    onMouseLeave={() => [setIsHovered(false), setIsHoveredIndex(null)]}
+                    onClick={() => option.onClick()}
+                >
+                    <span
+                        className={option.iconClassName || ''}
+                        style={{
+                            color: (isHoveredIndex === index && isHovered && option.hoverColor) || '',
+                            animation: (isHoveredIndex === index && isHovered && option.animation) || '',
+                        }}
+                    >
+                        {(isHoveredIndex === index && isHovered ? option.hoveredIcon : option.icon) || ''}
+                    </span>
+                    <p>{option.label || ''}</p>
+                </div>
+            ))}
         </div>
     );
 };

@@ -1336,6 +1336,7 @@ const Board = () => {
             iconClassName: 'ai-button',
             hoverColor: 'var(--magic)',
             icon: aiIcon,
+            hoveredIcon: aiIcon,
             label: 'Generate Tasks',
         },
         ...craftedPromptsBoard.map((craftedPrompt, index) => ({
@@ -1345,6 +1346,7 @@ const Board = () => {
             iconClassName: 'clipboard-button',
             hoverColor: 'var(--light-blue)',
             icon: clipboardIcon,
+            hoveredIcon: clipboardIcon,
             label: craftedPrompt.crafted_prompt_title,
         })),
         {
@@ -1354,6 +1356,7 @@ const Board = () => {
             iconClassName: 'delete-column-button',
             hoverColor: 'var(--important)',
             icon: trashIcon,
+            hoveredIcon: trashIcon,
             label: 'Delete Column',
         },
     ];

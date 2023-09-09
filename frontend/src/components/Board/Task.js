@@ -51,12 +51,6 @@ export const Task = ({
     iconContainer,
     zIndex,
 }) => {
-    const [bouncingStarIcon, setBouncingStarIcon] = useState(regularStarIcon);
-    const [isHoveredEdit, setIsHoveredEdit] = useState(false);
-    const [isHoveredAI, setIsHoveredAI] = useState(-1);
-    const [isHoveredAttachmentLink, setIsHoveredAttachmentLink] = useState(false);
-    const [isHoveredFavorite, setIsHoveredFavorite] = useState(false);
-    const [isHoveredDelete, setIsHoveredDelete] = useState(false);
     const [iconContainerPosition, setIconContainerPosition] = useState({
         x: 0,
         y: 0,
@@ -103,14 +97,6 @@ export const Task = ({
     });
 
     const opacity = dragging ? 0 : 1;
-
-    const handleMouseEnterOnStarIcon = () => {
-        setBouncingStarIcon(regularStarIconBouncing);
-    };
-
-    const handleMouseLeaveOnStarIcon = () => {
-        setBouncingStarIcon(regularStarIcon);
-    };
 
     const handleDotsClick = (event, cardIndex) => {
         const buttonRect = event.target.getBoundingClientRect();
@@ -183,71 +169,61 @@ export const Task = ({
 
     const options = [
         {
-            onMouseEnter: () => setIsHoveredEdit(true),
-            onMouseLeave: () => setIsHoveredEdit(false),
             onClick: () => setTaskAsInspectedTask(task),
-            style: {
-                animation: isHoveredEdit ? 'rotate 0.5s' : 'none',
-            },
+            animation: 'rotate 0.5s',
             iconClassName: 'edit-button',
-            hoverColor: isHoveredEdit ? 'var(--edit)' : '',
+            hoverColor: 'var(--edit)',
             icon: pencilIcon,
+            hoveredIcon: pencilIcon,
             label: 'Edit Task',
-            isHovered: isHoveredEdit,
         },
         {
-            onMouseEnter: () => setIsHoveredAI(0),
-            onMouseLeave: () => setIsHoveredAI(-1),
             onClick: () => handleAI(),
             iconClassName: 'ai-button',
             hoverColor: 'var(--magic)',
             icon: aiIcon,
+            hoveredIcon: aiIcon,
             label: 'Generate Subtasks',
         },
         {
-            onMouseEnter: () => setIsHoveredAttachmentLink(true),
-            onMouseLeave: () => setIsHoveredAttachmentLink(false),
             onClick: () => handleAttachmentLinks(),
             iconClassName: 'ai-button',
             hoverColor: 'var(--attachment-link)',
             icon: attachmentLinkIcon,
+            hoveredIcon: attachmentLinkIcon,
             label: 'Generate Attachment Links',
         },
         ...craftedPromptsTask.map((craftedPromptsTaskItem, index) => ({
-            onMouseEnter: () => setIsHoveredAI(index + 1),
-            onMouseLeave: () => setIsHoveredAI(-1),
             onClick: () => HandleCraftedPromptTaskClick(craftedPromptsTaskItem, task, column),
             iconClassName: 'ai-button',
             hoverColor: getCSSForCraftedPrompt(craftedPromptsTaskItem),
             icon: getIconforCraftedPrompt(craftedPromptsTaskItem),
+            hoveredIcon: getIconforCraftedPrompt(craftedPromptsTaskItem),
             label: craftedPromptsTaskItem.crafted_prompt_title,
         })),
         task.is_favourite
             ? {
-                  onMouseEnter: () => setIsHoveredFavorite(true),
-                  onMouseLeave: () => setIsHoveredFavorite(false),
                   onClick: () => unFavouriteTask(id, task.column_id),
                   iconClassName: 'favourite-button solid-icon',
-                  hoverColor: isHoveredFavorite ? 'var(--light-gray)' : '',
-                  icon: isHoveredFavorite ? regularStarIcon : solidStarIcon,
+                  hoverColor: 'var(--light-gray)',
+                  icon: solidStarIcon,
+                  hoveredIcon: regularStarIcon,
                   label: 'Remove from Favourites',
               }
             : {
-                  onMouseEnter: () => setIsHoveredFavorite(true),
-                  onMouseLeave: () => setIsHoveredFavorite(false),
                   onClick: () => favouriteTask(id, task.column_id),
                   iconClassName: 'favourite-button regular-icon',
-                  hoverColor: isHoveredFavorite ? 'var(--starred)' : '',
-                  icon: bouncingStarIcon,
+                  hoverColor: 'var(--starred)',
+                  icon: regularStarIcon,
+                  hoveredIcon: regularStarIconBouncing,
                   label: 'Add to Favourites',
               },
         {
-            onMouseEnter: () => setIsHoveredDelete(true),
-            onMouseLeave: () => setIsHoveredDelete(false),
             onClick: () => deleteTask(id, task.column_id),
             iconClassName: 'delete-task-button',
-            hoverColor: isHoveredDelete ? 'var(--important)' : '',
+            hoverColor: 'var(--important)',
             icon: trashIcon,
+            hoveredIcon: trashIcon,
             label: 'Delete Task',
         },
     ];
