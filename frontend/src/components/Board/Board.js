@@ -71,7 +71,7 @@ const Board = () => {
     const [craftedPrompts, setCraftedPrompts] = useState([]);
     const [craftedPromptsBoard, setCraftedPromptsBoard] = useState([]);
     const [craftedPromptsTask, setCraftedPromptsTask] = useState([]);
-    const [isHoveredAITitleBar, setIsHoveredAITitleBar] = useState([]);
+    const [isHoveredAITitleBar, setIsHoveredAITitleBar] = useState(false);
     const [codeReviewOrDocumentations, setCodeReviewOrDocumentation] = useState([]);
     const navigate = useNavigate();
     const [hoveredColumnId, setHoveredColumnId] = useState(null);
