@@ -1235,20 +1235,6 @@ const Board = () => {
         setIsAGIOpen(!isAGIOpen);
     };
 
-    const handleTransformMouseEnter = () => {
-        const options = document.getElementsByClassName('option');
-        for (const option of options) {
-            option.style.transform = 'translateX(10px)';
-        }
-    };
-
-    const handleTransformMouseLeave = () => {
-        const options = document.getElementsByClassName('option');
-        for (const option of options) {
-            option.style.transform = 'translateX(0px)';
-        }
-    };
-
     const handlePlaceTagOnTask = async (task_id, tag) => {
         try {
             await axios.post(
