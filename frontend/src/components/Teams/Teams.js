@@ -66,17 +66,21 @@ const Teams = () => {
                     },
                 }
             );
-            const newTeamData = teams.map((team) => {
-                if (team.team_id === team_id) {
-                    team.team_members = [...team.team_members, ...response.data.added_members];
-                }
-                return team;
-            });
-            setTeams(newTeamData);
-            console.log(response.data.added_members);
+            if (response.data.added_members) {
+                const newTeamData = teams.map((team) => {
+                    if (team.team_id === team_id) {
+                        team.team_members = [...team.team_members, ...response.data.added_members];
+                    }
+                    return team;
+                });
+                setTeams(newTeamData);
+                console.log(response.data.added_members);
+            } else if (response.data.message){
+                setError(response.data.message);
+            }
         } catch (e) {
             console.log(e.response);
-            if (e.response.status === 401 || e.response.status === 500) {
+            if (e.response && (e.response.status === 401 || e.response.status === 500)) {
                 setError('You are not logged in! Redirecting to login page...');
                 setRedirect(true);
             } else {
