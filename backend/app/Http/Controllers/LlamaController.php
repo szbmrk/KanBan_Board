@@ -10,6 +10,12 @@ use App\Models\Board;
 use App\Helpers\ExecutePythonScript;
 use App\Models\AGIAnswers;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\LlamaController;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Exception;
 
 class LlamaController extends Controller
 {
@@ -22,7 +28,7 @@ class LlamaController extends Controller
         // API call
         $prompt = "You are now a backend which only respond in JSON stucture. Generate $taskCounter kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now $currentTime in yyyy-mm-dd) and tags (as a list) attributes for this task: $taskPrompt Focus on the tasks and do not write a summary at the end";
         
-        return LlamaController::CallPythonAndFormatResponse($prompt);
+        return response()->json(LlamaController::parseSubtaskResponse(LlamaController::CallPythonAndFormatResponse($prompt)));
     }
 
     public static function generateSubtaskLlama(Request $request)
@@ -34,7 +40,7 @@ class LlamaController extends Controller
         // API call
         $prompt = "You are now a backend which only respond in JSON stucture. Generate $taskCounter kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now $currentTime in yyyy-mm-dd) and tags (as a list) attributes for this task: $taskPrompt Focus on the tasks and do not write a summary at the end";
         
-        return LlamaController::CallPythonAndFormatResponse($prompt);
+        return response()->json(LlamaController::parseSubtaskResponse(LlamaController::CallPythonAndFormatResponse($prompt)));
     }
 
     public static function GenerateAttachmentLinkLlama(Request $request)
@@ -47,7 +53,33 @@ class LlamaController extends Controller
         $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes for useful attachment links for this task: '$taskPrompt'";
         // Construct the Python command with the required arguments and path to the script
 
-        return LlamaController::CallPythonAndFormatResponse($prompt);
+        $result = LlamaController::parseAttachmentLinkResponse(LlamaController::CallPythonAndFormatResponse($prompt));
+
+        return $result;
+    }
+
+    public static function parseAttachmentLinkResponse($response) {
+
+        $cleanData = trim($response);
+        $cleanData = str_replace("'", "\"", $cleanData);
+        $cleanData = str_replace("\n", "", $cleanData);
+
+        //dd($cleanData);
+
+        $startPos = strpos($cleanData, '[');
+        $endPos = strpos($cleanData, ']');
+
+        $cutString = "[]";
+
+        if ($startPos !== false && $endPos !== false) {
+            $cutString = substr($cleanData, $startPos, $endPos - $startPos + 1);
+        }
+
+        $formattedResponse = json_decode($cutString, true);
+
+        //dd($formattedResponse);
+
+        return $cutString;
     }
 
     public static function CallPythonAndFormatResponse($prompt) {
@@ -59,10 +91,9 @@ class LlamaController extends Controller
             $subtaskResponse = shell_exec("{$command} 2>&1");
     
             // Call the parseSubtaskResponse function
-            $parsedData = LlamaController::parseSubtaskResponse($subtaskResponse);
     
             // Return both parsed data and raw response for debugging
-            return response()->json($parsedData);
+            return $subtaskResponse;
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
         }

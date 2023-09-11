@@ -308,6 +308,12 @@ class BardController extends Controller
     {  
         $prompt = BardController::AssemblyPrompt($request, $craftedPrompt);
 
+        if(!$craftedPrompt) {
+            $taskPrompt = $request->header('TaskPrompt');
+            $taskCounter = $request->header('TaskCounter');
+            $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
+        }
+
         return BardController::CallPythonAndFormatResponseAttachment($prompt);
     }
 

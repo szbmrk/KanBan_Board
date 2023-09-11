@@ -3,6 +3,7 @@
 import os
 import replicate
 import sys
+import json
 
 def generate_subtasks(prompt):
     try:
@@ -12,7 +13,6 @@ def generate_subtasks(prompt):
         )
 
         subtasks = [item for item in output]
-
         return "\n".join(subtasks)
     except Exception as e:
         return str(e)
