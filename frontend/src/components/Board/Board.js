@@ -57,6 +57,10 @@ const Board = () => {
         x: 0,
         y: 0,
     });
+    const [taskPosition, setTaskPosition] = useState({
+        x: 0,
+        y: 0,
+    });
     const [showIconContainer, setShowIconContainer] = useState(false);
     const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
     const [showCodePopup, setShowCodePopup] = useState(false);
@@ -81,6 +85,8 @@ const Board = () => {
     const [iconContainerOptions, setIconContainerOptions] = useState(null);
     const [isTaskDotsIconClicked, setIsTaskDotsIconClicked] = useState(false);
     const [cardZIndex, setCardZIndex] = useState(1);
+    const [showableTaskRef, setShowableTaskRef] = useState(null);
+    const [showableTask] = useRef(null);
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
@@ -1302,12 +1308,14 @@ const Board = () => {
     };
 
     // Callback function to receive data from child
-    const handleChildData = (options, iconContainerPosition, showIconContainer, zIndex) => {
+    const handleChildData = (options, iconContainerPosition, showIconContainer, zIndex, taskPosition, task) => {
         setIconContainerOptions(options);
         setIconContainerPosition(iconContainerPosition);
         setIsTaskDotsIconClicked(!isTaskDotsIconClicked);
         isTaskDotsIconClicked ? setCardZIndex(zIndex) : setCardZIndex(1);
         setShowIconContainer(showIconContainer);
+        setTaskPosition(taskPosition);
+        showableTask.current = task;
     };
 
     const handleIconContainerOptions = () => {
@@ -1622,21 +1630,22 @@ const Board = () => {
                         </div>
                     )}
                     {showIconContainer && (
-                        <div
-                            className='overlay'
-                            onClick={() => {
-                                setShowIconContainer(false);
-                                setColumnZIndex(1);
-                                setCardZIndex(1);
-                                setTaskIsClickable(true);
-                                setIsTaskDotsIconClicked(false);
-                            }}
-                        >
-                            <IconContainer
-                                iconContainerPosition={iconContainerPosition}
-                                options={iconContainerOptions}
-                            />
-                            {/*<div
+                        <>
+                            <div
+                                className='overlay'
+                                onClick={() => {
+                                    setShowIconContainer(false);
+                                    setColumnZIndex(1);
+                                    setCardZIndex(1);
+                                    setTaskIsClickable(true);
+                                    setIsTaskDotsIconClicked(false);
+                                }}
+                            >
+                                <IconContainer
+                                    iconContainerPosition={iconContainerPosition}
+                                    options={iconContainerOptions}
+                                />
+                                {/*<div
                                 className='icon-container'
                                 style={{
                                     position: 'fixed',
@@ -1701,7 +1710,8 @@ const Board = () => {
                                     <p>Delete Column</p>
                                 </div>
                             </div>*/}
-                        </div>
+                            </div>
+                        </>
                     )}
                     {showGenerateAttachmentLinkWithAGIPopup && (
                         <GenerateAttachmentLinkWithAGIPopup

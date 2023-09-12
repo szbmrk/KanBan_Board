@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import '../../styles/card.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -55,9 +55,14 @@ export const Task = ({
         x: 0,
         y: 0,
     });
+    const [taskPosition, setTaskPosition] = useState({
+        x: 0,
+        y: 0,
+    });
     const [showIconContainer, setShowIconContainer] = useState(iconContainer);
     const [cardZIndex, setCardZIndex] = useState(zIndex);
     const [cardIndex, setCardIndex] = useState(null);
+    const [taskToShow, setTaskToShow] = useState(null);
 
     const [{ isDragging: dragging }, drag] = useDrag({
         type: ItemTypes.CARD,
@@ -110,11 +115,13 @@ export const Task = ({
         setCardIndex(cardIndex);
 
         setCardZIndex(100);
+
+        getTaskPosition(cardIndex);
     };
 
     useEffect(() => {
-        sendDataToParent(iconContainerPosition, showIconContainer, cardZIndex);
-    }, [iconContainerPosition, showIconContainer, cardZIndex]);
+        sendDataToParent(iconContainerPosition, showIconContainer, cardZIndex, taskPosition, taskToShow);
+    }, [iconContainerPosition, showIconContainer, cardZIndex, taskPosition, taskToShow]);
 
     const [activeTags, setActiveTags] = useState([]);
 
@@ -162,9 +169,26 @@ export const Task = ({
         }
     };
 
+    const getTaskPosition = (index) => {
+        const tasks = document.getElementsByClassName('card');
+        for (let i = 0; i < tasks.length; i++) {
+            if (i === index) {
+                handlePosition(tasks[i].getBoundingClientRect());
+                setTaskToShow(tasks[i]);
+            }
+        }
+    };
+
+    const handlePosition = (rect) => {
+        setTaskPosition({
+            x: rect.x + window.scrollX,
+            y: rect.y + window.scrollY,
+        });
+    };
+
     // Example function to send data back to the parent
-    const sendDataToParent = (position, isIconContainerShowable) => {
-        onChildData(options, position, isIconContainerShowable);
+    const sendDataToParent = (iconContainerPosition, isIconContainerShowable) => {
+        onChildData(options, iconContainerPosition, isIconContainerShowable, cardZIndex, taskPosition, taskToShow);
     };
 
     const options = [
