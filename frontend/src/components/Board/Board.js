@@ -86,7 +86,7 @@ const Board = () => {
     const [isTaskDotsIconClicked, setIsTaskDotsIconClicked] = useState(false);
     const [cardZIndex, setCardZIndex] = useState(1);
     const [showableTaskRef, setShowableTaskRef] = useState(null);
-    const [showableTask] = useRef(null);
+    const showableTask = useRef(null);
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
@@ -1490,6 +1490,7 @@ const Board = () => {
                                                         index={taskIndex}
                                                         task={task}
                                                         column={column}
+                                                        ref={showableTask}
                                                         craftedPromptsTask={craftedPromptsTask}
                                                         divName={`div${index + 1}`}
                                                         favouriteTask={handleFavouriteTask}
@@ -1711,6 +1712,7 @@ const Board = () => {
                                 </div>
                             </div>*/}
                             </div>
+                            {showableTask.current && []}
                         </>
                     )}
                     {showGenerateAttachmentLinkWithAGIPopup && (
