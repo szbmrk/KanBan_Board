@@ -375,64 +375,31 @@ class BardController extends Controller
     
         return BardController::CallPythonAndFormatCodeReviewOrDocResponse($prompt, $boardId, $expectedType, $code);
     }
-    
-    public static function parseCodeReviewResponse($response, $expectedType)
+
+    public static function parseResponse($response)
     {
-        preg_match('/Code review:(.*)/s', $response, $matches);
+        $cleanData = trim($response);
+        $cleanData = str_replace("'", "\"", $response);
+        $cleanData = str_replace("\n", "", $cleanData);
 
-        if (isset($matches[1])) {
-            $review = trim($matches[1]);
-            $review = str_replace("\n", '', $review);
-            $review = str_replace("*", '', $review);
-    
-            return [
-                "expectedType" => $expectedType,
-                "review" => $review,
-            ];
-        }
-
-        return null;
+        return $cleanData;
     }
 
-    public static function parseDocResponse($response, $expectedType)
-    {
-
-        preg_match('/Documentation:(.*)/s', $response, $matches);
-
-        if (isset($matches[1])) {
-            $review = trim($matches[1]);
-            $review = str_replace("\n", '', $review);
-            $review = str_replace("*", '', $review);
-    
-            return [
-                "expectedType" => $expectedType,
-                "review" => $review,
-            ];
-        }
-
-        return null;
-    }
-
-    public static function CallPythonAndFormatCodeReviewOrDocResponse($prompt,$boardId, $expectedType, $code)
+    public static function CallPythonAndFormatCodeReviewOrDocResponse($prompt, $boardId, $expectedType, $code)
     {
         $pythonScriptPath = env('BARD_PYTHON_SCRIPT_PATH_CODE_REVIEW_AND_DOCUMENTATION'); // Path to your Python script
-        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
-        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
         $command = "python {$pythonScriptPath} \"{$prompt}\"";
 
-                
         try {
-            $answer = shell_exec($command); 
-            if($expectedType === 'Code review') 
-                $parsedData = BardController::parseCodeReviewResponse($answer, $expectedType);
-            if($expectedType === 'Documentation') 
-                $parsedData = BardController::parseDocResponse($answer, $expectedType);
+            $answer = shell_exec($command);
 
-                $user = auth()->user();
-                $board = Board::where('board_id', $boardId)->first();
-                $chosenAI = request()->header('ChosenAI');
+            $parsedData = BardController::parseResponse($answer);
+
+            $user = auth()->user();
+            $board = Board::where('board_id', $boardId)->first();
+            $chosenAI = request()->header('ChosenAI');
             
-                $agiAnswerId = request()->header('agi_answer_id');
+            $agiAnswerId = request()->header('agi_answer_id');
         
             if (!empty($agiAnswerId)) {
                 $agiAnswer = AGIAnswers::where('board_id', $board->board_id)
@@ -443,7 +410,7 @@ class BardController extends Controller
                     if ($agiAnswer) {
                         $agiAnswer->chosenAI = $chosenAI;
                         $agiAnswer->codeReviewOrDocumentationType = $expectedType;
-                        $agiAnswer->codeReviewOrDocumentation = $answer;
+                        $agiAnswer->codeReviewOrDocumentation = $parsedData;
                         $agiAnswer->codeReviewOrDocumentationText = $code;
                 
                         $agiAnswer->save();
@@ -456,7 +423,7 @@ class BardController extends Controller
                     $agiAnswer = new AGIAnswers([
                         'chosenAI' => $chosenAI,
                         'codeReviewOrDocumentationType' => $expectedType,
-                        'codeReviewOrDocumentation' => $answer,
+                        'codeReviewOrDocumentation' => $parsedData,
                         'codeReviewOrDocumentationText' => $code,
                         'board_id' => $board->board_id,
                         'user_id' => $user->user_id,
@@ -465,7 +432,14 @@ class BardController extends Controller
             
                     $agiAnswer->save();
                 }
-            return $parsedData;
+            
+                
+            $response = response()->json([
+                'reviewType' => $expectedType,
+                'review' => $parsedData,
+            ]);
+
+            return $response;
         } catch (\Exception $e) {
             Log::error('Error executing shell command: ' . $e->getMessage());
 

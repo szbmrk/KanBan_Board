@@ -317,11 +317,9 @@ class LlamaController extends Controller
 
         try {
             $answer = shell_exec($command);
-            if ($expectedType === 'Code review') {
-                $parsedData = Self::parseCodeReviewResponse($answer, $expectedType);
-            } elseif ($expectedType === 'Documentation') {
-                $parsedData = Self::parseDocResponse($answer, $expectedType);
-            }
+
+            $parsedData = Self::parseResponse($answer);
+
             $user = auth()->user();
             $board = Board::where('board_id', $boardId)->first();
             $chosenAI = request()->header('ChosenAI');
@@ -336,7 +334,7 @@ class LlamaController extends Controller
                 if ($agiAnswer) {
                     $agiAnswer->chosenAI = $chosenAI;
                     $agiAnswer->codeReviewOrDocumentationType = $expectedType;
-                    $agiAnswer->codeReviewOrDocumentation = $answer;
+                    $agiAnswer->codeReviewOrDocumentation = $parsedData;
                     $agiAnswer->codeReviewOrDocumentationText = $code;
             
                     $agiAnswer->save();
@@ -349,7 +347,7 @@ class LlamaController extends Controller
                 $agiAnswer = new AGIAnswers([
                     'chosenAI' => $chosenAI,
                     'codeReviewOrDocumentationType' => $expectedType,
-                    'codeReviewOrDocumentation' => $answer,
+                    'codeReviewOrDocumentation' => $parsedData,
                     'codeReviewOrDocumentationText' => $code,
                     'board_id' => $board->board_id,
                     'user_id' => $user->user_id,
@@ -357,8 +355,13 @@ class LlamaController extends Controller
         
                 $agiAnswer->save();
             }
-    
-            return $parsedData;
+
+            $response = response()->json([
+                'reviewType' => $expectedType,
+                'review' => $parsedData,
+            ]);
+
+            return $response;
         } catch (\Exception $e) {
             Log::error('Error executing shell command: ' . $e->getMessage());
 
@@ -366,47 +369,12 @@ class LlamaController extends Controller
         }
     }
 
-    public static function parseCodeReviewResponse($response, $expectedType)
+    public static function parseResponse($response)
     {
-        preg_match('/Code review:(.*)/s', $response, $matches);
+        $cleanData = trim($response);
+        $cleanData = str_replace("'", "\"", $response);
+        $cleanData = str_replace("\n", "", $cleanData);
 
-        if (isset($matches[1])) {
-            $review = trim($matches[1]);
-            $review = preg_replace('/\\\\n/', '', $review);
-            $review = preg_replace('/\\n/', '', $review);            
-            $review = preg_replace('/^!/', '', $review);
-            $review = preg_replace('/\s+/', ' ', $review);
-            $review = preg_replace('/\s?\'\s/', '\'', $review);            
-
-            return [
-                "expectedType" => $expectedType,
-                "review" => $review,
-            ];
-        }
-
-        return null;
+        return $cleanData;
     }
-
-    public static function parseDocResponse($response, $expectedType)
-    {
-        preg_match('/Documentation:(.*)/s', $response, $matches);
-
-        if (isset($matches[1])) {
-            $review = trim($matches[1]);
-            $review = preg_replace('/\\\\n/', '', $review);
-            $review = preg_replace('/\\n/', '', $review);
-            $review = preg_replace('/^!/', '', $review);
-            $review = preg_replace('/\s+/', ' ', $review);
-            $review = preg_replace('/\s?\'\s/', '\'', $review);
-
-            return [
-                "expectedType" => $expectedType,
-                "review" => $review,
-            ];
-        }
-
-        return null;
-    }
-
-
 }
