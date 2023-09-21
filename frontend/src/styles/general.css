@@ -143,6 +143,7 @@ body {
 }
 /* </Scrollbar> */
 
+
 /* Declaring classNames for responsiveness */
 
 @media only screen and (min-width: 768px) {
@@ -194,5 +195,12 @@ body {
   .col-12 {
     width: 100%;
     transition: width 0.3s ease-in-out;
+  }
+}
+
+@media only screen and (max-height: 640px) and (orientation: landscape){
+  #root {
+    height: 100vh;
+    overflow: auto;
   }
 }

@@ -3,7 +3,7 @@
     max-width: 450px;
     min-height: 450px;
     position: relative;
-    top: 10vh;
+    top: 20vh;
     background: rgba(255, 255, 255, 0.4);
     margin: 0 auto;
     padding: 20px 50px;
@@ -104,33 +104,32 @@ a {
 }
 
 /* Tablets and under */
-@media(max-width: 768px){
-    .signup-form,
-    .login-form {
-        width: 70vw;
-        top: 5vh;
+@media only screen and (max-width: 768px) and (orientation: portrait){
+    .auth-container {
+        width: 80vw;
         margin: 0 auto;
     }
 }
+
+@media only screen and (max-height: 560px) and (orientation: landscape){
+    .auth-container {
+        top: 10vh;
+        margin-bottom: 10vh;
+    }
+}
+
+@media only screen and (max-height: 480px) and (orientation: landscape){
+    .auth-container {
+        top: 5vh;
+    }
+  }
+  
 
 /* Mobile */
-@media(max-width: 480px) {
-    .signup-form,
-    .login-form {
+@media(max-width: 512px) {
+    .auth-container {
         width: 100%;
         max-height: 100vh;
-        top: 0;
-        padding: 20px 20px;
-        margin: 0 auto;
-    }
-}
-
-@media(max-width: 480px){
-    .signup-form,
-    .login-form {
-        width: 100%;
-        max-height: 100vh;
-        top: 0;
         padding: 20px 20px;
         margin: 0 auto;
     }
