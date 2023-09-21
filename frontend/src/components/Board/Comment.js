@@ -31,7 +31,7 @@ export default function Comment({ comments, handlePostComment }) {
                             }`}
                             key={index}
                         >
-                            <div class='comment-header'>
+                            <div className='comment-header'>
                                 <span className='username'>{comment.user.username}</span>
                                 <span className='date'>{formatDate(comment.created_at)}</span>
                             </div>

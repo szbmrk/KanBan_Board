@@ -32,6 +32,7 @@ import GenerateAttachmentLinkWithAGIPopup from '../GenerateAttachmentLinkWithAGI
 import CraftPromptPopup from '../CraftPromptPopup';
 import { useNavigate } from 'react-router-dom';
 import CodePopup from '../CodePopup';
+import IconContainer from './IconContainer';
 
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
@@ -56,6 +57,10 @@ const Board = () => {
         x: 0,
         y: 0,
     });
+    const [taskPosition, setTaskPosition] = useState({
+        x: 0,
+        y: 0,
+    });
     const [showIconContainer, setShowIconContainer] = useState(false);
     const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
     const [showCodePopup, setShowCodePopup] = useState(false);
@@ -70,12 +75,18 @@ const Board = () => {
     const [craftedPrompts, setCraftedPrompts] = useState([]);
     const [craftedPromptsBoard, setCraftedPromptsBoard] = useState([]);
     const [craftedPromptsTask, setCraftedPromptsTask] = useState([]);
-    const [isHoveredAITitleBar, setIsHoveredAITitleBar] = useState([]);
+    const [isHoveredAITitleBar, setIsHoveredAITitleBar] = useState(false);
     const [codeReviewOrDocumentations, setCodeReviewOrDocumentation] = useState([]);
     const navigate = useNavigate();
     const [hoveredColumnId, setHoveredColumnId] = useState(null);
     const [isAGIOpen, setIsAGIOpen] = useState(false);
     const [taskIsClickable, setTaskIsClickable] = useState(true);
+    const [childData, setChildData] = useState(null);
+    const [iconContainerOptions, setIconContainerOptions] = useState(null);
+    const [isTaskDotsIconClicked, setIsTaskDotsIconClicked] = useState(false);
+    const [cardZIndex, setCardZIndex] = useState(1);
+    const [showableTaskRef, setShowableTaskRef] = useState(null);
+    const showableTask = useRef(null);
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
@@ -1063,6 +1074,7 @@ const Board = () => {
         const newX = buttonRect.right + 20;
         const newY = buttonRect.top;
 
+        handleIconContainerOptions();
         setColumnIndex(columnIndex);
         setIconContainerPosition({ x: newX, y: newY });
         setShowIconContainer(!showIconContainer);
@@ -1229,20 +1241,6 @@ const Board = () => {
         setIsAGIOpen(!isAGIOpen);
     };
 
-    const handleTransformMouseEnter = () => {
-        const options = document.getElementsByClassName('option');
-        for (const option of options) {
-            option.style.transform = 'translateX(10px)';
-        }
-    };
-
-    const handleTransformMouseLeave = () => {
-        const options = document.getElementsByClassName('option');
-        for (const option of options) {
-            option.style.transform = 'translateX(0px)';
-        }
-    };
-
     const handlePlaceTagOnTask = async (task_id, tag) => {
         try {
             await axios.post(
@@ -1308,6 +1306,54 @@ const Board = () => {
             }
         }
     };
+
+    // Callback function to receive data from child
+    const handleChildData = (options, iconContainerPosition, showIconContainer, zIndex, taskPosition, task) => {
+        setIconContainerOptions(options);
+        setIconContainerPosition(iconContainerPosition);
+        setIsTaskDotsIconClicked(!isTaskDotsIconClicked);
+        isTaskDotsIconClicked ? setCardZIndex(zIndex) : setCardZIndex(1);
+        setShowIconContainer(showIconContainer);
+        setTaskPosition(taskPosition);
+        showableTask.current = task;
+    };
+
+    const handleIconContainerOptions = () => {
+        setIconContainerOptions(options);
+    };
+
+    const options = [
+        {
+            onMouseEnter: () => setIsHoveredAI(0),
+            onMouseLeave: () => setIsHoveredAI(-1),
+            onClick: () => openGenerateTaskWithAGIPopup(null, board.columns[columnIndex]),
+            iconClassName: 'ai-button',
+            hoverColor: 'var(--magic)',
+            icon: aiIcon,
+            hoveredIcon: aiIcon,
+            label: 'Generate Tasks',
+        },
+        ...craftedPromptsBoard.map((craftedPrompt, index) => ({
+            onMouseEnter: () => setIsHoveredClipboard(index + 1),
+            onMouseLeave: () => setIsHoveredClipboard(-1),
+            onClick: () => HandleCraftedPromptColumnClick(craftedPrompt, board.columns[columnIndex]),
+            iconClassName: 'clipboard-button',
+            hoverColor: 'var(--light-blue)',
+            icon: clipboardIcon,
+            hoveredIcon: clipboardIcon,
+            label: craftedPrompt.crafted_prompt_title,
+        })),
+        {
+            onMouseEnter: () => setIsHoveredX(true),
+            onMouseLeave: () => setIsHoveredX(false),
+            onClick: (e) => handleDeleteButtonClick(e, columnIndex),
+            iconClassName: 'delete-column-button',
+            hoverColor: 'var(--important)',
+            icon: trashIcon,
+            hoveredIcon: trashIcon,
+            label: 'Delete Column',
+        },
+    ];
 
     return (
         <>
@@ -1444,6 +1490,7 @@ const Board = () => {
                                                         index={taskIndex}
                                                         task={task}
                                                         column={column}
+                                                        ref={showableTask}
                                                         craftedPromptsTask={craftedPromptsTask}
                                                         divName={`div${index + 1}`}
                                                         favouriteTask={handleFavouriteTask}
@@ -1452,6 +1499,9 @@ const Board = () => {
                                                         setTaskAsInspectedTask={setTaskAsInspectedTask}
                                                         openGenerateTaskWithAGIPopup={openGenerateTaskWithAGIPopup}
                                                         clickable={taskIsClickable}
+                                                        onChildData={handleChildData}
+                                                        showIconContainer={showIconContainer}
+                                                        zIndex={cardZIndex}
                                                         moveCardFrontend={(
                                                             dragIndex,
                                                             hoverIndex,
@@ -1581,15 +1631,22 @@ const Board = () => {
                         </div>
                     )}
                     {showIconContainer && (
-                        <div
-                            className='overlay'
-                            onClick={() => {
-                                setShowIconContainer(false);
-                                setColumnZIndex(1);
-                                setTaskIsClickable(true);
-                            }}
-                        >
+                        <>
                             <div
+                                className='overlay'
+                                onClick={() => {
+                                    setShowIconContainer(false);
+                                    setColumnZIndex(1);
+                                    setCardZIndex(1);
+                                    setTaskIsClickable(true);
+                                    setIsTaskDotsIconClicked(false);
+                                }}
+                            >
+                                <IconContainer
+                                    iconContainerPosition={iconContainerPosition}
+                                    options={iconContainerOptions}
+                                />
+                                {/*<div
                                 className='icon-container'
                                 style={{
                                     position: 'fixed',
@@ -1653,8 +1710,10 @@ const Board = () => {
                                     </span>
                                     <p>Delete Column</p>
                                 </div>
+                            </div>*/}
                             </div>
-                        </div>
+                            {showableTask.current && []}
+                        </>
                     )}
                     {showGenerateAttachmentLinkWithAGIPopup && (
                         <GenerateAttachmentLinkWithAGIPopup

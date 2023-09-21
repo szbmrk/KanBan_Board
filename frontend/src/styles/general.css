@@ -39,7 +39,7 @@ html {
 body {
   color: var(--dark-gray);
   line-height: 1.6;
-  background: url("./imgs/background-small.jpg") no-repeat center;
+  background: url("./imgs/background-regular-small.jpg") no-repeat center;
   background-size: cover;
   height: 100vh;
   width: 100vw;
@@ -51,7 +51,7 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: url("./imgs/background.jpg") no-repeat center;
+  background: url("./imgs/background-regular.jpg") no-repeat center;
   background-size: cover;
 }
 .content {
