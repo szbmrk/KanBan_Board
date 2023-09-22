@@ -83,8 +83,6 @@ const Navbar = () => {
         const content = document.querySelector('.content');
 
         const setSidebarOnTop = (e) => {
-            console.log('matches', e.matches);
-            console.log('isSidebarOnTop', isSidebarOnTop);
             if (e.matches) {
                 content.style.maxWidth = '100%';
                 content.style.transition = 'max-width 0.5s ease-in-out';
