@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../auth/AuthContext';
 import '../../styles/navbar.css';
@@ -24,13 +24,26 @@ const displayModeIcon = <FontAwesomeIcon icon={faCircleHalfStroke} />;
 
 const Navbar = () => {
     const { isLoggedIn, onLogout } = React.useContext(AuthContext);
+    const [sidebarIsClosed, setSidebarIsClosed] = useState(false);
+    const [menuIconClicked, setMenuIconClicked] = useState(false);
 
     const toggleSidebar = () => {
         const sidebar = document.querySelector('.sidebar');
         const content = document.querySelector('.content');
 
-        sidebar.classList.toggle('sidebar-hidden');
-        sidebar.classList.toggle('sidebar-visible');
+        if (menuIconClicked) {
+            sidebar.classList.toggle('sidebar-hidden');
+            sidebar.classList.toggle('sidebar-visible');
+        }
+
+        if (sidebarIsClosed) {
+            sidebar.classList.remove('sidebar-visible');
+            sidebar.classList.add('sidebar-hidden');
+        } else {
+            sidebar.classList.remove('sidebar-hidden');
+            sidebar.classList.add('sidebar-visible');
+        }
+
         if (sidebar.classList.contains('sidebar-hidden')) {
             sidebar.style.transform = 'translateX(-231px)';
             sidebar.style.transition = 'transform 0.5s ease-in-out';
@@ -38,19 +51,37 @@ const Navbar = () => {
                 sidebar.classList.remove('col-2');
                 content.classList.remove('col-10');
                 content.classList.add('col-12');
+                content.style.maxWidth = '100%';
                 sidebar.style.display = 'none';
             }, 500);
         } else {
             sidebar.classList.add('col-2');
             content.classList.remove('col-12');
             content.classList.add('col-10');
+            content.style.maxWidth = 'calc(100% - 231px)';
+            content.style.transition = 'max-width 0.5s ease-in-out';
             setTimeout(() => {
                 sidebar.style.display = 'block';
                 sidebar.style.transform = 'translateX(0px)';
                 sidebar.style.transition = 'transform 0.5s ease-in-out';
             }, 500);
         }
+        setMenuIconClicked(false);
     };
+
+    useEffect(() => {
+        const maxWidth = window.matchMedia('(min-width: 980px)');
+
+        const closeSidebar = (e) => {
+            setSidebarIsClosed(e.matches);
+            toggleSidebar();
+        };
+        maxWidth.addEventListener('change', closeSidebar);
+
+        return () => {
+            maxWidth.removeEventListener('change', closeSidebar);
+        };
+    }, [sidebarIsClosed]);
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -62,11 +93,16 @@ const Navbar = () => {
         console.log('Search not implemented yet');
     }
 
+    const handleClick = () => {
+        setMenuIconClicked(true);
+        toggleSidebar();
+    };
+
     return (
         <>
             <div className='navbar col-12'>
                 <div className='navbar-menu'>
-                    <button id='menu-btn' onClick={toggleSidebar}>
+                    <button id='menu-btn' onClick={handleClick}>
                         {menuIcon}
                     </button>
                     <ul>
