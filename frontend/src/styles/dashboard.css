@@ -130,3 +130,18 @@
     background-color: var(--confirm);
     color: var(--light-gray);
 }
+
+@media screen and (max-width: 752px) {
+    .boards {
+        justify-content: center;
+    }
+}
+
+@media screen and (max-width: 358px) {
+    .team {
+        margin-left: 5px;
+        margin-right: 5px;
+        overflow-x: hidden;
+    }
+}
+

@@ -27,7 +27,7 @@ const Navbar = () => {
     const [isSidebarClosable, setIsSidebarClosable] = useState(false);
     const [isSidebarVisible, setIsSidebarVisible] = useState(true);
     const [menuIconClicked, setMenuIconClicked] = useState(false);
-    const [isUnder980px, setIsUnder980px] = useState(false);
+    const [isSidebarOnTop, setIsSidebarOnTop] = useState(false);
 
     const toggleSidebar = () => {
         const sidebar = document.querySelector('.sidebar');
@@ -36,7 +36,7 @@ const Navbar = () => {
         sidebar.classList.toggle('sidebar-hidden');
         sidebar.classList.toggle('sidebar-visible');
         if (sidebar.classList.contains('sidebar-hidden')) {
-            sidebar.style.transform = 'translateX(-231px)';
+            sidebar.style.transform = isSidebarOnTop ? 'translateY(-253px)' : 'translateX(-231px)';
             sidebar.style.transition = 'transform 0.5s ease-in-out';
             setIsSidebarVisible(false);
             setTimeout(() => {
@@ -50,7 +50,7 @@ const Navbar = () => {
             sidebar.classList.add('col-2');
             content.classList.remove('col-12');
             content.classList.add('col-10');
-            content.style.maxWidth = 'calc(100% - 231px)';
+            content.style.maxWidth = isSidebarOnTop ? '100%' : 'calc(100% - 231px)';
             content.style.transition = 'max-width 0.5s ease-in-out';
             setIsSidebarVisible(true);
             setTimeout(() => {
@@ -67,25 +67,46 @@ const Navbar = () => {
 
         const closeSidebar = (e) => {
             setIsSidebarClosable(!e.matches);
-            setIsUnder980px(!e.matches);
             toggleSidebar();
         };
+
         maxWidth.addEventListener('change', closeSidebar);
 
         return () => {
             maxWidth.removeEventListener('change', closeSidebar);
         };
-    }, [isSidebarClosable, isUnder980px]);
+    }, [isSidebarClosable]);
+
+    useEffect(() => {
+        const sidebarVisibleOnTop = window.matchMedia('(max-width: 600px)');
+
+        const content = document.querySelector('.content');
+
+        const setSidebarOnTop = (e) => {
+            console.log('matches', e.matches);
+            console.log('isSidebarOnTop', isSidebarOnTop);
+            if (e.matches) {
+                content.style.maxWidth = '100%';
+                content.style.transition = 'max-width 0.5s ease-in-out';
+            } else {
+                content.style.maxWidth = 'calc(100% - 231px)';
+                content.style.transition = 'max-width 0.5s ease-in-out';
+            }
+            setIsSidebarOnTop(e.matches);
+        };
+
+        sidebarVisibleOnTop.addEventListener('change', setSidebarOnTop);
+
+        return () => {
+            sidebarVisibleOnTop.removeEventListener('change', setSidebarOnTop);
+        };
+    }, [isSidebarOnTop]);
 
     const [isOpen, setIsOpen] = useState(false);
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
     };
-
-    async function handleSearch(e) {
-        console.log('Search not implemented yet');
-    }
 
     const handleClick = () => {
         setMenuIconClicked(true);
@@ -100,16 +121,6 @@ const Navbar = () => {
                         {menuIcon}
                     </button>
                     <ul>
-                        <li
-                            style={{
-                                visibility: 'hidden',
-                            }}
-                        >
-                            <form className='search-form' onSubmit={(e) => handleSearch()}>
-                                <input type='text' placeholder='Search..'></input>
-                                <button type='submit'>{searchIcon}</button>
-                            </form>
-                        </li>
                         <li>
                             <span>{displayModeIcon}</span>
                         </li>

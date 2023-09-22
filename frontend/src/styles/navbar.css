@@ -39,6 +39,10 @@
     gap: 20px;
 }
 
+.navbar-menu li:first-child {
+    height: 90%;
+}
+
 .navbar-menu li {
     font-size: 1.2em;
     padding: 5px;
@@ -119,6 +123,7 @@
     justify-content: center;
     align-items: center;
     gap: 5px;
+    height: 0.9em;
 }
 
 .search-form input[type='text'] {

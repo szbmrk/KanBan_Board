@@ -70,6 +70,12 @@ body {
   max-width: calc(100% - 231px);
 }
 
+@media screen and (max-width: 600px) {
+  .content {
+    max-width: 100%;
+  }
+}
+
 .card-title {
   color: var(--light-gray);
   margin: 0 20px 30px;
@@ -120,7 +126,7 @@ body {
 
 
 ::selection {
-  background: var(--light-gray);
+  background: var(--important);
   color: var(--dark-gray);
 }
 
