@@ -246,36 +246,20 @@
   body {
     font-size: 0.9em;
   }
-
-  .div-container {
-    flex-wrap: wrap;
-  }
 }
 
 @media (max-width: 480px) {
-  body {
-    font-size: 0.75em;
-  }
-
   .div-container {
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 60px;
   }
 }
 
 @media (max-width: 415px) {
   .content {
-    padding: 20px 10px;
+    padding: 0;
   }
 }
 
-@media (max-width: 380px) {
-  .content {
-    padding: 20px 5px;
-  }
-}
-
-@media (max-width: 370px) {
-  .content {
-    padding: 20px 0px;
-  }
-}

@@ -62,4 +62,8 @@
         justify-content: space-around;
         align-items: center;
     }
+
+    .sidebar-menu a {
+        padding: 10px;
+    }
 }
