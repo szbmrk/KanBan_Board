@@ -24,29 +24,21 @@ const displayModeIcon = <FontAwesomeIcon icon={faCircleHalfStroke} />;
 
 const Navbar = () => {
     const { isLoggedIn, onLogout } = React.useContext(AuthContext);
-    const [sidebarIsClosed, setSidebarIsClosed] = useState(false);
+    const [isSidebarClosable, setIsSidebarClosable] = useState(false);
+    const [isSidebarVisible, setIsSidebarVisible] = useState(true);
     const [menuIconClicked, setMenuIconClicked] = useState(false);
+    const [isUnder980px, setIsUnder980px] = useState(false);
 
     const toggleSidebar = () => {
         const sidebar = document.querySelector('.sidebar');
         const content = document.querySelector('.content');
 
-        if (menuIconClicked) {
-            sidebar.classList.toggle('sidebar-hidden');
-            sidebar.classList.toggle('sidebar-visible');
-        }
-
-        if (sidebarIsClosed) {
-            sidebar.classList.remove('sidebar-visible');
-            sidebar.classList.add('sidebar-hidden');
-        } else {
-            sidebar.classList.remove('sidebar-hidden');
-            sidebar.classList.add('sidebar-visible');
-        }
-
+        sidebar.classList.toggle('sidebar-hidden');
+        sidebar.classList.toggle('sidebar-visible');
         if (sidebar.classList.contains('sidebar-hidden')) {
             sidebar.style.transform = 'translateX(-231px)';
             sidebar.style.transition = 'transform 0.5s ease-in-out';
+            setIsSidebarVisible(false);
             setTimeout(() => {
                 sidebar.classList.remove('col-2');
                 content.classList.remove('col-10');
@@ -60,6 +52,7 @@ const Navbar = () => {
             content.classList.add('col-10');
             content.style.maxWidth = 'calc(100% - 231px)';
             content.style.transition = 'max-width 0.5s ease-in-out';
+            setIsSidebarVisible(true);
             setTimeout(() => {
                 sidebar.style.display = 'block';
                 sidebar.style.transform = 'translateX(0px)';
@@ -73,7 +66,8 @@ const Navbar = () => {
         const maxWidth = window.matchMedia('(min-width: 980px)');
 
         const closeSidebar = (e) => {
-            setSidebarIsClosed(e.matches);
+            setIsSidebarClosable(!e.matches);
+            setIsUnder980px(!e.matches);
             toggleSidebar();
         };
         maxWidth.addEventListener('change', closeSidebar);
@@ -81,7 +75,7 @@ const Navbar = () => {
         return () => {
             maxWidth.removeEventListener('change', closeSidebar);
         };
-    }, [sidebarIsClosed]);
+    }, [isSidebarClosable, isUnder980px]);
 
     const [isOpen, setIsOpen] = useState(false);
 
