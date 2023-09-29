@@ -177,7 +177,10 @@ class BardController extends Controller
         
         $prompt = "Generate documentation or a longer description for the task with the following title: {$task->title}, description: {$task->description}.";
         $path = env('BARD_PYTHON_SCRIPT_PATH');
-        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
+        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
+        $command = "python {$path} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+        $response = shell_exec($command);
         $cleanData = trim($response);
 
         return [
@@ -208,7 +211,10 @@ class BardController extends Controller
 
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
         $path = env('BARD_PYTHON_SCRIPT_PATH');
-        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
+        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
+        $command = "python {$path} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+        $response = shell_exec($command);
         $cleanData = trim($response);
 
         return [
@@ -244,7 +250,10 @@ class BardController extends Controller
 
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
         $path = env('BARD_PYTHON_SCRIPT_PATH');
-        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
+        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
+        $command = "python {$path} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+        $response = shell_exec($command);
         $cleanData = trim($response);
 
         return [

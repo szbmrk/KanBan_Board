@@ -12,6 +12,7 @@ import {
   faTrash,
   faPenRuler,
   faCode,
+  faFileLines,
   faClipboard,
   faFilter,
   faFilterCircleXmark,
@@ -32,7 +33,9 @@ import GenerateAttachmentLinkWithAGIPopup from "../GenerateAttachmentLinkWithAGI
 import CraftPromptPopup from "../CraftPromptPopup";
 import { useNavigate } from "react-router-dom";
 import CodePopup from "../CodePopup";
+import DocumentationPopup from "../DocumentationPopup";
 
+export const documentationIcon = <FontAwesomeIcon icon={faFileLines} />;
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
 export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
@@ -64,10 +67,12 @@ const Board = () => {
   const [showIconContainer, setShowIconContainer] = useState(false);
   const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
   const [showCodePopup, setShowCodePopup] = useState(false);
+  const [showDocumentationPopup, setShowDocumentationPopup] = useState(false);
   const [isHoveredAI, setIsHoveredAI] = useState(-1);
   const [isHoveredClipboard, setIsHoveredClipboard] = useState(-1);
   const [isHoveredCode, setIsHoveredCode] = useState(false);
   const [isHoveredCraft, setIsHoveredCraft] = useState(false);
+  const [isHoveredDocumentation, setIsHoveredDocumentation] = useState(false);
   const [isHoveredX, setIsHoveredX] = useState(false);
   const [columnIndex, setColumnIndex] = useState(null);
   const [priorities, setPriorities] = useState([]);
@@ -1052,6 +1057,30 @@ const Board = () => {
     setShowCodePopup(false);
     setInspectedCodeReviewOrDocumentation(null);
   };
+
+  const generateDocumentationForTask = (task) => {
+    setInspectedTask(task);
+    openDocumentationPopup();
+  };
+
+  const generateDocumentationForColumn = (column) => {
+    setInspectedColumn(column);
+    openDocumentationPopup();
+  };
+
+  const openDocumentationPopup = () => {
+    setShowDocumentationPopup(true);
+    setIsAGIOpen(false);
+    setIsHoveredCode(false);
+  };
+
+  const handleDocumentationCancel = () => {
+    setShowDocumentationPopup(false);
+    setInspectedCodeReviewOrDocumentation(null);
+    setInspectedTask(null);
+    setInspectedColumn(null);
+  };
+
   const deleteCodeReviewOrDocumentation = async (
     codeReviewOrDocumentationToDelete
   ) => {
@@ -1613,6 +1642,9 @@ const Board = () => {
                                 parseInt(targetDiv.substr(3)) - 1
                               )
                             }
+                            generateDocumentationForTask={(task) =>
+                              generateDocumentationForTask(task)
+                            }
                             generateTasks={(task, column) =>
                               openGenerateTaskWithAGIPopup(task, column)
                             }
@@ -1680,6 +1712,23 @@ const Board = () => {
                     {craftIcon}
                   </span>
                   <span>Craft Prompt</span>
+                </li>
+                <li
+                  onMouseEnter={() => setIsHoveredDocumentation(true)}
+                  onMouseLeave={() => setIsHoveredDocumentation(false)}
+                  onClick={() => {
+                    openDocumentationPopup();
+                  }}
+                >
+                  <span
+                    className="code-button"
+                    style={{
+                      color: isHoveredDocumentation ? "var(--code)" : "",
+                    }}
+                  >
+                    {documentationIcon}
+                  </span>
+                  <span>Generate documentation for board</span>
                 </li>
                 <li
                   onMouseEnter={() => setIsHoveredCode(0)}
@@ -1752,6 +1801,24 @@ const Board = () => {
                   top: iconContainerPosition.y + "px",
                 }}
               >
+                <div
+                  className="option"
+                  onMouseEnter={() => setIsHoveredDocumentation(true)}
+                  onMouseLeave={() => setIsHoveredDocumentation(false)}
+                  onClick={() =>
+                    generateDocumentationForColumn(board.columns[columnIndex])
+                  }
+                >
+                  <span
+                    className="ai-button"
+                    style={{
+                      color: isHoveredDocumentation ? "var(--magic)" : "",
+                    }}
+                  >
+                    {documentationIcon}
+                  </span>
+                  <p>Generate documentation for column</p>
+                </div>
                 <div
                   className="option"
                   onMouseEnter={() => setIsHoveredAI(0)}
@@ -1834,6 +1901,14 @@ const Board = () => {
               codeReviewOrDocumentation={inspectedCodeReviewOrDocumentation}
               reloadCodeReviewOrDocumentation={reloadCodeReviewOrDocumentation}
               onCancel={handleCodeCancel}
+            />
+          )}
+          {showDocumentationPopup && (
+            <DocumentationPopup
+              board_id={board_id}
+              task={inspectedTask}
+              column={inspectedColumn}
+              onCancel={handleDocumentationCancel}
             />
           )}
           {showGenerateTaskWithAGIPopup && (

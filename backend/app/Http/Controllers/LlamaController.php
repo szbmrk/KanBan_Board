@@ -199,6 +199,7 @@ class LlamaController extends Controller
         $path = env('LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         $cleanData = trim($response);
+        $cleanData = Self::parseResponse($cleanData);
 
         return [
             'response' => $cleanData
@@ -230,6 +231,7 @@ class LlamaController extends Controller
         $path = env('LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         $cleanData = trim($response);
+        $cleanData = Self::parseResponse($cleanData);
 
         return [
             'response' => $cleanData
@@ -267,6 +269,7 @@ class LlamaController extends Controller
         $path = env('LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         $cleanData = trim($response);
+        $cleanData = Self::parseResponse($cleanData);
 
         return [
             'response' => $cleanData

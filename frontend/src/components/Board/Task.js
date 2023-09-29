@@ -12,7 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as faRegularStar } from "@fortawesome/free-regular-svg-icons";
 import Tag from "../Tag";
-import { aiIcon } from "./Board";
+import { aiIcon, documentationIcon } from "./Board";
 
 const ItemTypes = {
   CARD: "card",
@@ -43,13 +43,15 @@ export const Task = ({
   moveCardFrontend,
   moveCardBackend,
   setTaskAsInspectedTask,
+  generateDocumentationForTask,
   generateTasks,
   generateAttachmentLinks,
-  HandleCraftedPromptTaskClick
+  HandleCraftedPromptTaskClick,
 }) => {
   const [bouncingStarIcon, setBouncingStarIcon] = useState(regularStarIcon);
   const [isHoveredEdit, setIsHoveredEdit] = useState(false);
   const [isHoveredAI, setIsHoveredAI] = useState(-1);
+  const [isHoveredDocumentation, setIsHoveredDocumentation] = useState(false);
   const [isHoveredAttachmentLink, setIsHoveredAttachmentLink] = useState(false);
   const [isHoveredFavorite, setIsHoveredFavorite] = useState(false);
   const [isHoveredDelete, setIsHoveredDelete] = useState(false);
@@ -144,6 +146,10 @@ export const Task = ({
     setHoveredCardId(null);
   };
 
+  const handleDocumentation = () => {
+    generateDocumentationForTask(task);
+  };
+
   const handleAI = () => {
     generateTasks(task, column);
   };
@@ -206,8 +212,9 @@ export const Task = ({
                 key={tagIndex}
                 name={tag.name}
                 color={tag.color}
-                extraClassName={`tag-on-board ${activeTags.includes(task.tags) ? "clicked" : ""
-                  }`}
+                extraClassName={`tag-on-board ${
+                  activeTags.includes(task.tags) ? "clicked" : ""
+                }`}
                 enableClickBehavior={true}
                 onClick={() => handleTagClick(task.tags)}
               />
@@ -246,6 +253,22 @@ export const Task = ({
                 {pencilIcon}
               </span>
               <p>Edit Task</p>
+            </div>
+            <div
+              className="option"
+              onMouseEnter={() => setIsHoveredDocumentation(true)}
+              onMouseLeave={() => setIsHoveredDocumentation(false)}
+              onClick={() => handleDocumentation()}
+            >
+              <span
+                className="ai-button"
+                style={{
+                  color: isHoveredDocumentation ? "var(--magic)" : "",
+                }}
+              >
+                {documentationIcon}
+              </span>
+              <p>Generate documentation for task</p>
             </div>
             <div
               className="option"
