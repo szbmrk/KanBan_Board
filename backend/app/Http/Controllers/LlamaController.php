@@ -10,6 +10,12 @@ use App\Models\Board;
 use App\Helpers\ExecutePythonScript;
 use App\Models\AGIAnswers;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\LlamaController;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Exception;
 
 class LlamaController extends Controller
 {
@@ -22,7 +28,7 @@ class LlamaController extends Controller
         // API call
         $prompt = "You are now a backend which only respond in JSON stucture. Generate $taskCounter kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now $currentTime in yyyy-mm-dd) and tags (as a list) attributes for this task: $taskPrompt Focus on the tasks and do not write a summary at the end";
         
-        return LlamaController::CallPythonAndFormatResponse($prompt);
+        return response()->json(LlamaController::parseSubtaskResponse(LlamaController::CallPythonAndFormatResponse($prompt)));
     }
 
     public static function generateSubtaskLlama(Request $request)
@@ -34,7 +40,7 @@ class LlamaController extends Controller
         // API call
         $prompt = "You are now a backend which only respond in JSON stucture. Generate $taskCounter kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now $currentTime in yyyy-mm-dd) and tags (as a list) attributes for this task: $taskPrompt Focus on the tasks and do not write a summary at the end";
         
-        return LlamaController::CallPythonAndFormatResponse($prompt);
+        return response()->json(LlamaController::parseSubtaskResponse(LlamaController::CallPythonAndFormatResponse($prompt)));
     }
 
     public static function GenerateAttachmentLinkLlama(Request $request)
@@ -47,7 +53,33 @@ class LlamaController extends Controller
         $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes for useful attachment links for this task: '$taskPrompt'";
         // Construct the Python command with the required arguments and path to the script
 
-        return LlamaController::CallPythonAndFormatResponse($prompt);
+        $result = LlamaController::parseAttachmentLinkResponse(LlamaController::CallPythonAndFormatResponse($prompt));
+
+        return $result;
+    }
+
+    public static function parseAttachmentLinkResponse($response) {
+
+        $cleanData = trim($response);
+        $cleanData = str_replace("'", "\"", $cleanData);
+        $cleanData = str_replace("\n", "", $cleanData);
+
+        //dd($cleanData);
+
+        $startPos = strpos($cleanData, '[');
+        $endPos = strpos($cleanData, ']');
+
+        $cutString = "[]";
+
+        if ($startPos !== false && $endPos !== false) {
+            $cutString = substr($cleanData, $startPos, $endPos - $startPos + 1);
+        }
+
+        $formattedResponse = json_decode($cutString, true);
+
+        //dd($formattedResponse);
+
+        return $cutString;
     }
 
     public static function CallPythonAndFormatResponse($prompt) {
@@ -59,10 +91,9 @@ class LlamaController extends Controller
             $subtaskResponse = shell_exec("{$command} 2>&1");
     
             // Call the parseSubtaskResponse function
-            $parsedData = LlamaController::parseSubtaskResponse($subtaskResponse);
     
             // Return both parsed data and raw response for debugging
-            return response()->json($parsedData);
+            return $subtaskResponse;
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
         }
@@ -168,6 +199,7 @@ class LlamaController extends Controller
         $path = env('LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         $cleanData = trim($response);
+        $cleanData = Self::parseResponse($cleanData);
 
         return [
             'response' => $cleanData
@@ -199,6 +231,7 @@ class LlamaController extends Controller
         $path = env('LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         $cleanData = trim($response);
+        $cleanData = Self::parseResponse($cleanData);
 
         return [
             'response' => $cleanData
@@ -236,6 +269,7 @@ class LlamaController extends Controller
         $path = env('LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         $cleanData = trim($response);
+        $cleanData = Self::parseResponse($cleanData);
 
         return [
             'response' => $cleanData
@@ -286,11 +320,9 @@ class LlamaController extends Controller
 
         try {
             $answer = shell_exec($command);
-            if ($expectedType === 'Code review') {
-                $parsedData = Self::parseCodeReviewResponse($answer, $expectedType);
-            } elseif ($expectedType === 'Documentation') {
-                $parsedData = Self::parseDocResponse($answer, $expectedType);
-            }
+
+            $parsedData = Self::parseResponse($answer);
+
             $user = auth()->user();
             $board = Board::where('board_id', $boardId)->first();
             $chosenAI = request()->header('ChosenAI');
@@ -305,7 +337,7 @@ class LlamaController extends Controller
                 if ($agiAnswer) {
                     $agiAnswer->chosenAI = $chosenAI;
                     $agiAnswer->codeReviewOrDocumentationType = $expectedType;
-                    $agiAnswer->codeReviewOrDocumentation = $answer;
+                    $agiAnswer->codeReviewOrDocumentation = $parsedData;
                     $agiAnswer->codeReviewOrDocumentationText = $code;
             
                     $agiAnswer->save();
@@ -318,7 +350,7 @@ class LlamaController extends Controller
                 $agiAnswer = new AGIAnswers([
                     'chosenAI' => $chosenAI,
                     'codeReviewOrDocumentationType' => $expectedType,
-                    'codeReviewOrDocumentation' => $answer,
+                    'codeReviewOrDocumentation' => $parsedData,
                     'codeReviewOrDocumentationText' => $code,
                     'board_id' => $board->board_id,
                     'user_id' => $user->user_id,
@@ -326,8 +358,13 @@ class LlamaController extends Controller
         
                 $agiAnswer->save();
             }
-    
-            return $parsedData;
+
+            $response = response()->json([
+                'reviewType' => $expectedType,
+                'review' => $parsedData,
+            ]);
+
+            return $response;
         } catch (\Exception $e) {
             Log::error('Error executing shell command: ' . $e->getMessage());
 
@@ -335,47 +372,79 @@ class LlamaController extends Controller
         }
     }
 
-    public static function parseCodeReviewResponse($response, $expectedType)
+    public static function parseResponse($response)
     {
-        preg_match('/Code review:(.*)/s', $response, $matches);
+        $cleanData = trim($response);
+        $cleanData = str_replace("'", "\"", $response);
+        $cleanData = str_replace("\n", "", $cleanData);
 
-        if (isset($matches[1])) {
-            $review = trim($matches[1]);
-            $review = preg_replace('/\\\\n/', '', $review);
-            $review = preg_replace('/\\n/', '', $review);            
-            $review = preg_replace('/^!/', '', $review);
-            $review = preg_replace('/\s+/', ' ', $review);
-            $review = preg_replace('/\s?\'\s/', '\'', $review);            
-
-            return [
-                "expectedType" => $expectedType,
-                "review" => $review,
-            ];
-        }
-
-        return null;
+        return $cleanData;
     }
 
-    public static function parseDocResponse($response, $expectedType)
+    public static function generatePerformanceSummary(Request $request)
     {
-        preg_match('/Documentation:(.*)/s', $response, $matches);
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $boardId = $request->input('board_id');
 
-        if (isset($matches[1])) {
-            $review = trim($matches[1]);
-            $review = preg_replace('/\\\\n/', '', $review);
-            $review = preg_replace('/\\n/', '', $review);
-            $review = preg_replace('/^!/', '', $review);
-            $review = preg_replace('/\s+/', ' ', $review);
-            $review = preg_replace('/\s?\'\s/', '\'', $review);
-
-            return [
-                "expectedType" => $expectedType,
-                "review" => $review,
-            ];
+        $logsQuery = DB::table('logs')->select('action', 'details', 'created_at', 'task_id')->whereBetween('created_at', [$startDate, $endDate]);
+        if ($boardId) {
+            $logsQuery->where('board_id', $boardId);
         }
 
-        return null;
+        $logs = $logsQuery->get();
+
+        if (!$logs->count()) {
+            return response()->json(['error' => 'No logs found for the specified board_id and date range']);
+        }
+
+        $logEntries = [];
+        $tasksCreatedCount = 0;
+        $tasksFinishedCount = 0;
+
+        $finishedTasksSet = [];
+        $revertedTasksSet = [];
+
+        foreach ($logs as $log) {
+            $detailText = $log->details;
+            $logEntry = "On {$log->created_at}, {$log->action}, {$detailText}";
+            $logEntries[] = $logEntry;
+
+            if ($log->action == 'CREATED TASK') {
+                $tasksCreatedCount++;
+            }
+
+            if ($log->action == 'FINISHED TASK' && !in_array($log->task_id, $finishedTasksSet)) {
+                $tasksFinishedCount++;
+                $finishedTasksSet[] = $log->task_id;
+            }
+
+            if ($log->action == 'REVERTED FINISHED TASK' && in_array($log->task_id, $finishedTasksSet) && !in_array($log->task_id, $revertedTasksSet)) {
+                $tasksFinishedCount--;
+                $revertedTasksSet[] = $log->task_id;
+            }
+        }
+
+        $formattedLogs = implode("; ", $logEntries);
+        $prompt = "Based on the following log entries in a Kanban table: {$formattedLogs}, create a performance review by day and point out the most and least productive days.";
+
+        $pythonScriptPath = env('LLAMA_PYTHON_SCRIPT_PATH');
+        $command = "python {$pythonScriptPath} \"$prompt\"";
+        $response = shell_exec($command);
+        $response = Self::parseResponse($response);
+        $responseSummary = "\n\nSummary for the time between dates: Total tasks created: {$tasksCreatedCount}. Total tasks finished: {$tasksFinishedCount}.";
+        $response .= $responseSummary;
+
+        DB::table('summary_logs')->insert([
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'summary' => $response,
+            'tasks_created_count' => $tasksCreatedCount,
+            'tasks_finished_count' => $tasksFinishedCount,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        return response()->json(['response' => $response]);
     }
-
-
 }

@@ -1,0 +1,129 @@
+import React, { useState, useEffect } from "react";
+import Dropdown from "react-dropdown";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import axios from "../api/axios";
+import "../styles/popup.css";
+import "../styles/documentPopup.css";
+import hljs from "highlight.js";
+import ErrorWrapper from "../ErrorWrapper";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+const GeneratePerformanceSummaryPopup = ({ board_id, onCancel }) => {
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const aiOptions = [
+    { value: "chatgpt", label: "ChatGPT" },
+    { value: "llama", label: "Llama" },
+    { value: "bard", label: "Bard" },
+  ];
+  let [chosenAI, setChosenAI] = useState(aiOptions[0].value);
+
+  const [output, setOutput] = useState("");
+
+  const closeIcon = <FontAwesomeIcon icon={faXmark} />;
+
+  const [error, setError] = useState(null);
+
+  const handleRunClick = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+
+      const res = await axios.post(
+        `/AGI/generate-performance-summary`,
+        {
+          start_date: formatDate(startDate),
+          end_date: formatDate(endDate),
+          board_id: board_id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            ChosenAI: `${chosenAI}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log(res);
+      console.log(res.data.response);
+      setOutput(res.data.response);
+    } catch (e) {
+      setError(e.response.data);
+    }
+  };
+
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
+
+  useEffect(() => {
+    hljs.highlightAll();
+  });
+
+  return (
+    <div className="overlay">
+      <div className="popup agi-popup">
+        <span className="close-btn" onClick={onCancel}>
+          {closeIcon}
+        </span>
+        <div className="gt-popup-content">
+          <h2>Generate performance summary for board</h2>
+          <div className="gt-action-buttons">
+            <div className="dropdown-container">
+              <p>Start date:</p>
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                showTimeSelect
+                dateFormat="yyyy-MM-dd HH:mm:ss"
+                timeFormat="HH:mm:ss"
+              />
+            </div>
+            <div className="dropdown-container">
+              <p>End date:</p>
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+                showTimeSelect
+                dateFormat="yyyy-MM-dd HH:mm:ss"
+                timeFormat="HH:mm:ss"
+              />
+            </div>
+            <div className="dropdown-container">
+              <p>Which AI do you want to use?</p>
+              <Dropdown
+                className="code-dropdown"
+                options={aiOptions}
+                value={chosenAI}
+                onChange={(selectedOption) => setChosenAI(selectedOption.value)}
+              />
+            </div>
+            <button className="generate-button" onClick={handleRunClick}>
+              Run
+            </button>
+          </div>
+          <textarea className="output-textarea" value={output} disabled />
+        </div>
+      </div>
+      {error && (
+        <ErrorWrapper
+          originalError={error}
+          onClose={() => {
+            setError(null);
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+export default GeneratePerformanceSummaryPopup;

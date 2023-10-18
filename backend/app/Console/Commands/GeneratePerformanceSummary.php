@@ -15,7 +15,7 @@ class GeneratePerformanceSummary extends Command
     protected $description = 'Generate performance summary';
     
     
-    public function handle()
+    public function handleTest()
     {
         $data = [
             "start_date" => "2023-08-14 00:00:00",
@@ -31,7 +31,7 @@ class GeneratePerformanceSummary extends Command
         $this->info('Performance summary generated successfully.');
     }
 
-    public function handleGlobal()
+    public function handle()
     {
         $boardIds = DB::table('logs')->whereNotNull('board_id')->distinct()->pluck('board_id')->toArray();
     

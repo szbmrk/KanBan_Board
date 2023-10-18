@@ -118,6 +118,7 @@ class AGIController extends Controller
 
         return $response;
     }
+
     public function GenerateTaskDocumentationPerTask(Request $request, $boardId, $taskId)
     {
         $user = auth()->user();
@@ -134,9 +135,6 @@ class AGIController extends Controller
             default:
                 $response = ChatGPTController::GenerateTaskDocumentationPerTask($boardId, $taskId);
                 break;
-
-
-
         }
 
         return $response;
@@ -200,6 +198,30 @@ class AGIController extends Controller
                 break;
             case Str::lower("chatgpt"):
                 $response = ChatGPTController::GenerateCodeReviewOrDocumentation($request, $boardId, $chosenType);
+                break;
+            default:
+                $response = "No AI chosen";
+                break;
+        }  
+        return $response;
+    }
+
+    public function generatePerformanceSummary(Request $request)
+    {    
+        $user = auth()->user();
+    
+        $response;
+        $chosenType = $request->header('ChosenType');
+        
+        switch ($request->header('ChosenAI')) {
+            case Str::lower("llama"):
+                $response = LlamaController::generatePerformanceSummary($request);
+                break;
+            case Str::lower("bard"):
+                $response = BardController::generatePerformanceSummary($request);
+                break;
+            case Str::lower("chatgpt"):
+                $response = ChatGPTController::generatePerformanceSummary($request);
                 break;
             default:
                 $response = "No AI chosen";

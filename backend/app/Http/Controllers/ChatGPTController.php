@@ -469,7 +469,7 @@ class ChatGPTController extends Controller
     }
 
 
-    public function generatePerformanceSummary(Request $request)
+    public static function generatePerformanceSummary(Request $request)
     {
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
@@ -514,13 +514,13 @@ class ChatGPTController extends Controller
         }
 
         $formattedLogs = implode("; ", $logEntries);
-        $prompt = "Based on the following log entries in a Kanban table: {$formattedLogs}, create a performance review by day and point out the most and least productive days of the week.";
+        $prompt = "Based on the following log entries in a Kanban table: {$formattedLogs}, create a performance review by day and point out the most and least productive days.";
 
         $pythonScriptPath = env('PERFORMANCE_PYTHON_SCRIPT_PATH');
         $apiKey = env('OPENAI_API_KEY');
         $command = "python {$pythonScriptPath} " . escapeshellarg($prompt) . " " . escapeshellarg($apiKey);
         $response = shell_exec($command);
-        $responseSummary = "\n\nSummary for the week: Total tasks created: {$tasksCreatedCount}. Total tasks finished: {$tasksFinishedCount}.";
+        $responseSummary = "\n\nSummary for the time between dates: Total tasks created: {$tasksCreatedCount}. Total tasks finished: {$tasksFinishedCount}.";
         $response .= $responseSummary;
 
         DB::table('summary_logs')->insert([
