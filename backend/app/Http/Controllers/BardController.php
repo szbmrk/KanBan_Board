@@ -18,6 +18,7 @@ use App\Helpers\ExecutePythonScript;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\LlamaController;
+use Illuminate\Support\Facades\DB;
 
 
 class BardController extends Controller
@@ -155,7 +156,7 @@ class BardController extends Controller
     }
 
 
-    public static function GenerateTaskDocumentationPerTask($boardId,$taskId)
+    public static function GenerateTaskDocumentationPerTask($boardId, $taskId)
     {
         $user = auth()->user();
         if(!$user){
@@ -454,5 +455,75 @@ class BardController extends Controller
 
             return response()->json(['error' => $e->getMessage()]);
         }
+    }
+
+    public static function generatePerformanceSummary(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $boardId = $request->input('board_id');
+
+        $logsQuery = DB::table('logs')->select('action', 'details', 'created_at', 'task_id')->whereBetween('created_at', [$startDate, $endDate]);
+        if ($boardId) {
+            $logsQuery->where('board_id', $boardId);
+        }
+
+        $logs = $logsQuery->get();
+
+        if (!$logs->count()) {
+            return response()->json(['error' => 'No logs found for the specified board_id and date range']);
+        }
+
+        $logEntries = [];
+        $tasksCreatedCount = 0;
+        $tasksFinishedCount = 0;
+
+        $finishedTasksSet = [];
+        $revertedTasksSet = [];
+
+        foreach ($logs as $log) {
+            $detailText = $log->details;
+            $logEntry = "On {$log->created_at}, {$log->action}, {$detailText}";
+            $logEntries[] = $logEntry;
+
+            if ($log->action == 'CREATED TASK') {
+                $tasksCreatedCount++;
+            }
+
+            if ($log->action == 'FINISHED TASK' && !in_array($log->task_id, $finishedTasksSet)) {
+                $tasksFinishedCount++;
+                $finishedTasksSet[] = $log->task_id;
+            }
+
+            if ($log->action == 'REVERTED FINISHED TASK' && in_array($log->task_id, $finishedTasksSet) && !in_array($log->task_id, $revertedTasksSet)) {
+                $tasksFinishedCount--;
+                $revertedTasksSet[] = $log->task_id;
+            }
+        }
+
+        $formattedLogs = implode("; ", $logEntries);
+        $prompt = "Based on the following log entries in a Kanban table: {$formattedLogs}, create a performance review by day and point out the most and least productive days.";
+
+        $path = env('BARD_PYTHON_SCRIPT_PATH');
+        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
+        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
+        $command = "python {$path} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+        $response = shell_exec($command);
+        $response = trim($response);
+
+        $responseSummary = "\n\nSummary for the time between dates: Total tasks created: {$tasksCreatedCount}. Total tasks finished: {$tasksFinishedCount}.";
+        $response .= $responseSummary;
+
+        DB::table('summary_logs')->insert([
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'summary' => $response,
+            'tasks_created_count' => $tasksCreatedCount,
+            'tasks_finished_count' => $tasksFinishedCount,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        return response()->json(['response' => $response]);
     }
 }
