@@ -13,6 +13,8 @@ backend setupolása:
 - '.env.example' tartalmának átmásolása a '.env-be'
 - ezen belül: DB_DATABASE=kanban_board
 - php artisan key:generate
+- php artisan migrate:fresh
+- php artisan db:seed
 - php artisan serve
 
 backend elindítása:
