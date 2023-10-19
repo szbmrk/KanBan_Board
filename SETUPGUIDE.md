@@ -48,7 +48,7 @@ AGI setup:
 Nem kell idézőjelet használni az értékek megadásánál, csak bemásolni az értéket az = után
 
 Példa:
-OPENAI_API_KEY=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
+OPENAI_API_KEY=example_key
 
 OPENAI_API_KEY=
 OPENAI kulcs bemásolása mögé
