@@ -12,6 +12,7 @@ import {
     faTrash,
     faPenRuler,
     faCode,
+  faFileLines,
     faClipboard,
     faFilter,
     faFilterCircleXmark,
@@ -33,7 +34,10 @@ import CraftPromptPopup from '../CraftPromptPopup';
 import { useNavigate } from 'react-router-dom';
 import CodePopup from '../CodePopup';
 import IconContainer from './IconContainer';
+import DocumentationPopup from "../DocumentationPopup";
+import GeneratePerformanceSummaryPopup from "../GeneratePerformanceSummaryPopup";
 
+export const documentationIcon = <FontAwesomeIcon icon={faFileLines} />;
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
 export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
@@ -63,11 +67,19 @@ const Board = () => {
     });
     const [showIconContainer, setShowIconContainer] = useState(false);
     const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
+  const [
+    showGeneratePerformanceSummaryPopup,
+    setShowGeneratePerformanceSummaryPopup,
+  ] = useState(false);
     const [showCodePopup, setShowCodePopup] = useState(false);
+  const [showDocumentationPopup, setShowDocumentationPopup] = useState(false);
     const [isHoveredAI, setIsHoveredAI] = useState(-1);
     const [isHoveredClipboard, setIsHoveredClipboard] = useState(-1);
     const [isHoveredCode, setIsHoveredCode] = useState(false);
     const [isHoveredCraft, setIsHoveredCraft] = useState(false);
+  const [isHoveredPerformanceSummary, setIsHoveredPerformanceSummary] =
+    useState(false);
+  const [isHoveredDocumentation, setIsHoveredDocumentation] = useState(false);
     const [isHoveredX, setIsHoveredX] = useState(false);
     const [columnIndex, setColumnIndex] = useState(null);
     const [priorities, setPriorities] = useState([]);
@@ -964,8 +976,33 @@ const Board = () => {
         setShowCodePopup(false);
         setInspectedCodeReviewOrDocumentation(null);
     };
-    const deleteCodeReviewOrDocumentation = async (codeReviewOrDocumentationToDelete) => {
-        const deleteCodeReviewOrDocumentation = await axios.delete(
+
+  const generateDocumentationForTask = (task) => {
+    setInspectedTask(task);
+    openDocumentationPopup();
+  };
+
+  const generateDocumentationForColumn = (column) => {
+    setInspectedColumn(column);
+    openDocumentationPopup();
+  };
+
+  const openDocumentationPopup = () => {
+    setShowDocumentationPopup(true);
+    setIsAGIOpen(false);
+    setIsHoveredCode(false);
+  };
+
+  const handleDocumentationCancel = () => {
+    setShowDocumentationPopup(false);
+    setInspectedCodeReviewOrDocumentation(null);
+    setInspectedTask(null);
+    setInspectedColumn(null);
+  };
+
+  const deleteCodeReviewOrDocumentation = async (
+    codeReviewOrDocumentationToDelete
+  ) => {        const deleteCodeReviewOrDocumentation = await axios.delete(
             `/AGI/CodeReviewOrDocumentation/boards/${board_id}/agiAnswer/${codeReviewOrDocumentationToDelete.agi_answer_id}`,
             {
                 headers: {
@@ -1188,6 +1225,12 @@ const Board = () => {
         setIsAGIOpen(false);
         setIsHoveredCraft(false);
     };
+
+  const handleShowGeneratePerformanceSummaryPopup = () => {
+    setShowGeneratePerformanceSummaryPopup(true);
+    setIsAGIOpen(false);
+    setIsHoveredPerformanceSummary(false);
+  };
 
     const handleAddMember = async (task_id, column_id, member_id) => {
         try {
@@ -1528,6 +1571,9 @@ const Board = () => {
                                                                 parseInt(targetDiv.substr(3)) - 1
                                                             )
                                                         }
+                            generateDocumentationForTask={(task) =>
+                              generateDocumentationForTask(task)
+                            }
                                                         generateTasks={(task, column) =>
                                                             openGenerateTaskWithAGIPopup(task, column)
                                                         }
@@ -1563,6 +1609,23 @@ const Board = () => {
                             <p className='agi-menu-title'> AI menu </p>
                             <ul className='agi-menu'>
                                 <li
+                  onMouseEnter={() => setIsHoveredPerformanceSummary(true)}
+                  onMouseLeave={() => setIsHoveredPerformanceSummary(false)}
+                  onClick={() => {
+                    handleShowGeneratePerformanceSummaryPopup();
+                  }}
+                >
+                  <span
+                    className="craft-button"
+                    style={{
+                      color: isHoveredPerformanceSummary ? "var(--craft)" : "",
+                    }}
+                  >
+                    {craftIcon}
+                  </span>
+                  <span>Generate performance summary</span>
+                </li>
+                <li
                                     onMouseEnter={() => setIsHoveredCraft(true)}
                                     onMouseLeave={() => setIsHoveredCraft(false)}
                                     onClick={() => {
@@ -1580,6 +1643,23 @@ const Board = () => {
                                     <span>Craft Prompt</span>
                                 </li>
                                 <li
+                  onMouseEnter={() => setIsHoveredDocumentation(true)}
+                  onMouseLeave={() => setIsHoveredDocumentation(false)}
+                  onClick={() => {
+                    openDocumentationPopup();
+                  }}
+                >
+                  <span
+                    className="code-button"
+                    style={{
+                      color: isHoveredDocumentation ? "var(--code)" : "",
+                    }}
+                  >
+                    {documentationIcon}
+                  </span>
+                  <span>Generate documentation for board</span>
+                </li>
+                <li
                                     onMouseEnter={() => setIsHoveredCode(0)}
                                     onMouseLeave={() => setIsHoveredCode(false)}
                                     onClick={() => {
@@ -1656,6 +1736,24 @@ const Board = () => {
                             >
                                 <div
                                     className='option'
+                  onMouseEnter={() => setIsHoveredDocumentation(true)}
+                  onMouseLeave={() => setIsHoveredDocumentation(false)}
+                  onClick={() =>
+                    generateDocumentationForColumn(board.columns[columnIndex])
+                  }
+                >
+                  <span
+                    className="ai-button"
+                    style={{
+                      color: isHoveredDocumentation ? "var(--magic)" : "",
+                    }}
+                  >
+                    {documentationIcon}
+                  </span>
+                  <p>Generate documentation for column</p>
+                </div>
+                <div
+                  className="option"
                                     onMouseEnter={() => setIsHoveredAI(0)}
                                     onMouseLeave={() => setIsHoveredAI(-1)}
                                     onClick={() => openGenerateTaskWithAGIPopup(null, board.columns[columnIndex])}
@@ -1729,6 +1827,14 @@ const Board = () => {
                             onCancel={handleCodeCancel}
                         />
                     )}
+          {showDocumentationPopup && (
+            <DocumentationPopup
+              board_id={board_id}
+              task={inspectedTask}
+              column={inspectedColumn}
+              onCancel={handleDocumentationCancel}
+            />
+          )}
                     {showGenerateTaskWithAGIPopup && (
                         <GenerateTaskWithAGIPopup
                             board_id={board_id}
@@ -1752,6 +1858,12 @@ const Board = () => {
                             onCancel={() => setShowCraftPromptPopup(false)}
                         />
                     )}
+          {showGeneratePerformanceSummaryPopup && (
+            <GeneratePerformanceSummaryPopup
+              board_id={board.board_id}
+              onCancel={() => setShowGeneratePerformanceSummaryPopup(false)}
+            />
+          )}
                 </DndProvider>
             )}
             {showPopup && (

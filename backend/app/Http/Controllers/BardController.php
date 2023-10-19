@@ -18,6 +18,7 @@ use App\Helpers\ExecutePythonScript;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\LlamaController;
+use Illuminate\Support\Facades\DB;
 
 
 class BardController extends Controller
@@ -155,7 +156,7 @@ class BardController extends Controller
     }
 
 
-    public static function GenerateTaskDocumentationPerTask($boardId,$taskId)
+    public static function GenerateTaskDocumentationPerTask($boardId, $taskId)
     {
         $user = auth()->user();
         if(!$user){
@@ -177,7 +178,10 @@ class BardController extends Controller
         
         $prompt = "Generate documentation or a longer description for the task with the following title: {$task->title}, description: {$task->description}.";
         $path = env('BARD_PYTHON_SCRIPT_PATH');
-        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
+        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
+        $command = "python {$path} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+        $response = shell_exec($command);
         $cleanData = trim($response);
 
         return [
@@ -208,7 +212,10 @@ class BardController extends Controller
 
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
         $path = env('BARD_PYTHON_SCRIPT_PATH');
-        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
+        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
+        $command = "python {$path} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+        $response = shell_exec($command);
         $cleanData = trim($response);
 
         return [
@@ -244,7 +251,10 @@ class BardController extends Controller
 
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
         $path = env('BARD_PYTHON_SCRIPT_PATH');
-        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
+        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
+        $command = "python {$path} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+        $response = shell_exec($command);
         $cleanData = trim($response);
 
         return [
@@ -308,6 +318,12 @@ class BardController extends Controller
     {  
         $prompt = BardController::AssemblyPrompt($request, $craftedPrompt);
 
+        if(!$craftedPrompt) {
+            $taskPrompt = $request->header('TaskPrompt');
+            $taskCounter = $request->header('TaskCounter');
+            $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
+        }
+
         return BardController::CallPythonAndFormatResponseAttachment($prompt);
     }
 
@@ -369,64 +385,31 @@ class BardController extends Controller
     
         return BardController::CallPythonAndFormatCodeReviewOrDocResponse($prompt, $boardId, $expectedType, $code);
     }
-    
-    public static function parseCodeReviewResponse($response, $expectedType)
+
+    public static function parseResponse($response)
     {
-        preg_match('/Code review:(.*)/s', $response, $matches);
+        $cleanData = trim($response);
+        $cleanData = str_replace("'", "\"", $response);
+        $cleanData = str_replace("\n", "", $cleanData);
 
-        if (isset($matches[1])) {
-            $review = trim($matches[1]);
-            $review = str_replace("\n", '', $review);
-            $review = str_replace("*", '', $review);
-    
-            return [
-                "expectedType" => $expectedType,
-                "review" => $review,
-            ];
-        }
-
-        return null;
+        return $cleanData;
     }
 
-    public static function parseDocResponse($response, $expectedType)
-    {
-
-        preg_match('/Documentation:(.*)/s', $response, $matches);
-
-        if (isset($matches[1])) {
-            $review = trim($matches[1]);
-            $review = str_replace("\n", '', $review);
-            $review = str_replace("*", '', $review);
-    
-            return [
-                "expectedType" => $expectedType,
-                "review" => $review,
-            ];
-        }
-
-        return null;
-    }
-
-    public static function CallPythonAndFormatCodeReviewOrDocResponse($prompt,$boardId, $expectedType, $code)
+    public static function CallPythonAndFormatCodeReviewOrDocResponse($prompt, $boardId, $expectedType, $code)
     {
         $pythonScriptPath = env('BARD_PYTHON_SCRIPT_PATH_CODE_REVIEW_AND_DOCUMENTATION'); // Path to your Python script
-        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
-        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
         $command = "python {$pythonScriptPath} \"{$prompt}\"";
 
-                
         try {
-            $answer = shell_exec($command); 
-            if($expectedType === 'Code review') 
-                $parsedData = BardController::parseCodeReviewResponse($answer, $expectedType);
-            if($expectedType === 'Documentation') 
-                $parsedData = BardController::parseDocResponse($answer, $expectedType);
+            $answer = shell_exec($command);
 
-                $user = auth()->user();
-                $board = Board::where('board_id', $boardId)->first();
-                $chosenAI = request()->header('ChosenAI');
+            $parsedData = BardController::parseResponse($answer);
+
+            $user = auth()->user();
+            $board = Board::where('board_id', $boardId)->first();
+            $chosenAI = request()->header('ChosenAI');
             
-                $agiAnswerId = request()->header('agi_answer_id');
+            $agiAnswerId = request()->header('agi_answer_id');
         
             if (!empty($agiAnswerId)) {
                 $agiAnswer = AGIAnswers::where('board_id', $board->board_id)
@@ -437,7 +420,7 @@ class BardController extends Controller
                     if ($agiAnswer) {
                         $agiAnswer->chosenAI = $chosenAI;
                         $agiAnswer->codeReviewOrDocumentationType = $expectedType;
-                        $agiAnswer->codeReviewOrDocumentation = $answer;
+                        $agiAnswer->codeReviewOrDocumentation = $parsedData;
                         $agiAnswer->codeReviewOrDocumentationText = $code;
                 
                         $agiAnswer->save();
@@ -450,7 +433,7 @@ class BardController extends Controller
                     $agiAnswer = new AGIAnswers([
                         'chosenAI' => $chosenAI,
                         'codeReviewOrDocumentationType' => $expectedType,
-                        'codeReviewOrDocumentation' => $answer,
+                        'codeReviewOrDocumentation' => $parsedData,
                         'codeReviewOrDocumentationText' => $code,
                         'board_id' => $board->board_id,
                         'user_id' => $user->user_id,
@@ -459,11 +442,88 @@ class BardController extends Controller
             
                     $agiAnswer->save();
                 }
-            return $parsedData;
+            
+                
+            $response = response()->json([
+                'reviewType' => $expectedType,
+                'review' => $parsedData,
+            ]);
+
+            return $response;
         } catch (\Exception $e) {
             Log::error('Error executing shell command: ' . $e->getMessage());
 
             return response()->json(['error' => $e->getMessage()]);
         }
+    }
+
+    public static function generatePerformanceSummary(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $boardId = $request->input('board_id');
+
+        $logsQuery = DB::table('logs')->select('action', 'details', 'created_at', 'task_id')->whereBetween('created_at', [$startDate, $endDate]);
+        if ($boardId) {
+            $logsQuery->where('board_id', $boardId);
+        }
+
+        $logs = $logsQuery->get();
+
+        if (!$logs->count()) {
+            return response()->json(['error' => 'No logs found for the specified board_id and date range']);
+        }
+
+        $logEntries = [];
+        $tasksCreatedCount = 0;
+        $tasksFinishedCount = 0;
+
+        $finishedTasksSet = [];
+        $revertedTasksSet = [];
+
+        foreach ($logs as $log) {
+            $detailText = $log->details;
+            $logEntry = "On {$log->created_at}, {$log->action}, {$detailText}";
+            $logEntries[] = $logEntry;
+
+            if ($log->action == 'CREATED TASK') {
+                $tasksCreatedCount++;
+            }
+
+            if ($log->action == 'FINISHED TASK' && !in_array($log->task_id, $finishedTasksSet)) {
+                $tasksFinishedCount++;
+                $finishedTasksSet[] = $log->task_id;
+            }
+
+            if ($log->action == 'REVERTED FINISHED TASK' && in_array($log->task_id, $finishedTasksSet) && !in_array($log->task_id, $revertedTasksSet)) {
+                $tasksFinishedCount--;
+                $revertedTasksSet[] = $log->task_id;
+            }
+        }
+
+        $formattedLogs = implode("; ", $logEntries);
+        $prompt = "Based on the following log entries in a Kanban table: {$formattedLogs}, create a performance review by day and point out the most and least productive days.";
+
+        $path = env('BARD_PYTHON_SCRIPT_PATH');
+        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
+        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
+        $command = "python {$path} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+        $response = shell_exec($command);
+        $response = trim($response);
+
+        $responseSummary = "\n\nSummary for the time between dates: Total tasks created: {$tasksCreatedCount}. Total tasks finished: {$tasksFinishedCount}.";
+        $response .= $responseSummary;
+
+        DB::table('summary_logs')->insert([
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'summary' => $response,
+            'tasks_created_count' => $tasksCreatedCount,
+            'tasks_finished_count' => $tasksFinishedCount,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        return response()->json(['response' => $response]);
     }
 }
