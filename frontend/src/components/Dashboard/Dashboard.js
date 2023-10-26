@@ -25,6 +25,7 @@ export default function Dashboard() {
 
     const token = sessionStorage.getItem('token');
     const user_id = sessionStorage.getItem('user_id');
+    const permissions=JSON.parse(sessionStorage.getItem('permissions'));
 
     useEffect(() => {
         document.title = 'Dashboard';
@@ -33,6 +34,7 @@ export default function Dashboard() {
         }
         //backendről fetchelés
         fetchDashboardData();
+        console.log(permissions);
     }, []);
 
     async function ResetRoles() {
