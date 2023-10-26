@@ -33,14 +33,14 @@ cd backend
 - php artisan serve
 PHP Beállítások:
 
-## php.ini fájlban:
+php.ini fájlban:
 
-### EZEKET A SOROKAT KI KELL VENNI KOMMENTBŐL:
+EZEKET A SOROKAT KI KELL VENNI KOMMENTBŐL:
 - extension=fileinfo
 - extension=pdo_mysql
 - extension=zip
 
-### Idézőjelek között megadni ennek a sornak a végén a cacert.pem elérési útját statikusan:
+Idézőjelek között megadni ennek a sornak a végén a cacert.pem elérési útját statikusan:
 - curl.cainfo=
 
 
