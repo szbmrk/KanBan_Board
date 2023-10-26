@@ -1612,7 +1612,7 @@ const Board = () => {
                           </div>
                         </>
                       )}
-                      <div className="task-container">
+                      <div className="task-container" style={{minHeight:'15px'}}>
                         {column.tasks.map((task, taskIndex) => (
                           <Task
                             key={task.task_id}
