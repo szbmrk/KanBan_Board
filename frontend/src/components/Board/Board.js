@@ -105,6 +105,7 @@ const Board = () => {
 
   const token = sessionStorage.getItem("token");
   const team_member = JSON.parse(sessionStorage.getItem("team_members"));
+  const permissions= JSON.parse(sessionStorage.getItem("permissions"));
 
   useEffect(() => {
     document.title = "Board";
@@ -117,6 +118,8 @@ const Board = () => {
 
     reloadCodeReviewOrDocumentation();
     //setOwnPermissions(team_member.teams.filter(team => team.team_id === data.team_id).map(permission => permission.permission_data));
+
+    console.log(permissions);
   }, []);
 
   useEffect(() => {
