@@ -25,7 +25,7 @@ export default function Dashboard() {
 
     const token = sessionStorage.getItem('token');
     const user_id = sessionStorage.getItem('user_id');
-    const permissions=JSON.parse(sessionStorage.getItem('permissions'));
+    const permissions = JSON.parse(sessionStorage.getItem('permissions'));
 
     const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
 
@@ -388,7 +388,7 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
                 </form>
             )}
             {error && (
-                <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+                <ErrorWrapper originalError={error} onClose={() => { setError(null); }} />
             )}
         </>
     );
