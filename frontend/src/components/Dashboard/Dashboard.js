@@ -25,7 +25,7 @@ export default function Dashboard() {
 
     const token = sessionStorage.getItem('token');
     const user_id = sessionStorage.getItem('user_id');
-    const permissions=JSON.parse(sessionStorage.getItem('permissions'));
+    const permissions = JSON.parse(sessionStorage.getItem('permissions'));
 
     useEffect(() => {
         document.title = 'Dashboard';
@@ -216,7 +216,7 @@ export default function Dashboard() {
     };
 
     return (
-        <div className='content' date-theme={sessionStorage.getItem("darkMode")==true ? "dark" : "light"}>
+        <div className='content' data-theme={sessionStorage.getItem("darkMode") == true ? "dark" : "light"}>
             {teams === null ? (
                 error ? (
                     <Error error={error} redirect={redirect}></Error>
@@ -383,7 +383,7 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
                 </form>
             )}
             {error && (
-                <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+                <ErrorWrapper originalError={error} onClose={() => { setError(null); }} />
             )}
         </>
     );
