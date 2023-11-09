@@ -13,6 +13,7 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
   const [needLoader, setNeedLoader] = useState(false);
   const [search, setSearch] = useState('');
   const [searchedUserList, setSearchedUserList]=useState([]);
+  const [searchButtonClicked, setSearchButtonClicked] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -53,7 +54,7 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
     AddUsers(selectedUsers, teamID);
     OnClose();
   }
-  function handleSearchButton(){
+function handleSearchButton(){
     
     const tempSearchedUserList=(users.filter(
       user=>{
@@ -61,7 +62,8 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
       }
     )
     )
-    console.log(tempSearchedUserList);
+    setSearchedUserList(tempSearchedUserList);
+    setSearchButtonClicked(true);
   }
 
   return (
@@ -77,7 +79,8 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
             <div>
               <p>No users to add</p>
             </div>
-          ) : (
+          ) :
+           !searchButtonClicked ? (
             <div className='user-select'>
               <input name='searchInput' onChange={handleSearchUsers} placeholder='Search users...'/>
               <button onClick={handleSearchButton}>Search</button>
@@ -91,6 +94,21 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
                 </div>
               ))}
             </div>
+          ) :
+          (
+            <div className='user-select'>
+            <input name='searchInput' onChange={handleSearchUsers} placeholder='Search users...'/>
+            <button onClick={handleSearchButton}>Search</button>
+            {searchedUserList.map((user) => (
+              <div
+                key={user.user_id}
+                onClick={() => toggleUserSelection(user.user_id)}
+                className={selectedUsers.includes(user.user_id) ? 'selected' : ''}
+              >
+                <p>{user.username}</p>
+              </div>
+            ))}
+          </div>
           )
         }
         <button className='add-button' onClick={handleAddUsers}>
