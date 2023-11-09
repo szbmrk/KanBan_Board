@@ -1481,6 +1481,12 @@ const Board = () => {
 
     const sortByCardName = () => {
         console.log("cards sorted")
+        //frontend sorting
+        const newBoardData = [...board.columns];
+        newBoardData.map((column) => {
+            column.tasks.sort((a, b) => a.title.localeCompare(b.title));
+        });
+        setBoard({...board, columns: newBoardData});
     }
 
     return (
