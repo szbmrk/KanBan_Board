@@ -1487,6 +1487,30 @@ const Board = () => {
             column.tasks.sort((a, b) => a.title.localeCompare(b.title));
         });
         setBoard({...board, columns: newBoardData});
+
+        //backend sorting
+        board.columns.map((column) => {
+            const tasks = column.tasks.map((task, index) => {
+                axios.post(
+                    `/columns/${column.column_id}/tasks/positions`,
+                    {
+                        tasks: [
+                            {
+                                task_id: task.task_id,
+                                position: index,
+                                column_id: column.column_id
+                            },
+                        ],
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+            }
+            );
+        });
     }
 
     return (
