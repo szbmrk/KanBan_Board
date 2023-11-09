@@ -35,6 +35,7 @@ export default function Dashboard() {
         //backendről fetchelés
         fetchDashboardData();
         console.log(permissions);
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
     }, []);
 
     async function ResetRoles() {
@@ -215,7 +216,7 @@ export default function Dashboard() {
     };
 
     return (
-        <div className='content'>
+        <div className='content' date-theme={sessionStorage.getItem("darkMode")==true ? "dark" : "light"}>
             {teams === null ? (
                 error ? (
                     <Error error={error} redirect={redirect}></Error>

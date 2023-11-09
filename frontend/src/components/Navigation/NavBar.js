@@ -22,12 +22,17 @@ const editProfileIcon = <FontAwesomeIcon icon={faUserPen} />;
 const searchIcon = <FontAwesomeIcon icon={faMagnifyingGlass} />;
 const displayModeIcon = <FontAwesomeIcon icon={faCircleHalfStroke} />;
 
-function DarkMode() {
-    console.log("hallo");
-}
-
 const Navbar = () => {
     const { isLoggedIn, onLogout } = React.useContext(AuthContext);
+
+    function DarkMode() {
+        if (sessionStorage.getItem("darkMode") == true){
+            sessionStorage.setItem("darkMode", false);
+        }
+        else {
+            sessionStorage.setItem("darkMode", true);
+        }
+    }
 
     const hideSidebar = () => {
         const sidebar = document.querySelector('.sidebar');
