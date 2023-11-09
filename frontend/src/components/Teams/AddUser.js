@@ -12,7 +12,7 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [needLoader, setNeedLoader] = useState(false);
   const [search, setSearch] = useState('');
-
+  const [searchedUserList, setSearchedUserList]=useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -53,6 +53,16 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
     AddUsers(selectedUsers, teamID);
     OnClose();
   }
+  function handleSearchButton(){
+    
+    const tempSearchedUserList=(users.filter(
+      user=>{
+        return user.username.toLowerCase().includes(search.toLowerCase());
+      }
+    )
+    )
+    console.log(tempSearchedUserList);
+  }
 
   return (
     <div className='overlay'>
@@ -70,7 +80,7 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
           ) : (
             <div className='user-select'>
               <input name='searchInput' onChange={handleSearchUsers} placeholder='Search users...'/>
-              <button>Search</button>
+              <button onClick={handleSearchButton}>Search</button>
               {users.map((user) => (
                 <div
                   key={user.user_id}
