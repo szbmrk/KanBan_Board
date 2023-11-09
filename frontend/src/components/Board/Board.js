@@ -1479,6 +1479,10 @@ const Board = () => {
         }
     };
 
+    const sortByCardName = () => {
+        console.log("cards sorted")
+    }
+
     return (
         <>
             {permission === false ? (
@@ -1505,7 +1509,7 @@ const Board = () => {
                                             <span>{filterIcon}</span>
                                             <p>Filter</p>
                                         </li>
-                                        <li>
+                                        <li onClick={sortByCardName}>
                                             <span>{sortIcon}</span>
                                             <p>Sort by card name</p>
                                         </li>
