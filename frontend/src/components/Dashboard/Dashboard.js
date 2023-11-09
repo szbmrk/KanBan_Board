@@ -27,6 +27,8 @@ export default function Dashboard() {
     const user_id = sessionStorage.getItem('user_id');
     const permissions=JSON.parse(sessionStorage.getItem('permissions'));
 
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+
     useEffect(() => {
         document.title = 'Dashboard';
         if (user_id) {
@@ -36,6 +38,9 @@ export default function Dashboard() {
         fetchDashboardData();
         console.log(permissions);
         console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('storage', () => {
+            setTheme(sessionStorage.getItem("darkMode"));
+        });
     }, []);
 
     async function ResetRoles() {
@@ -216,7 +221,7 @@ export default function Dashboard() {
     };
 
     return (
-        <div className='content' date-theme={sessionStorage.getItem("darkMode")==true ? "dark" : "light"}>
+        <div className='content' data-theme={theme}>
             {teams === null ? (
                 error ? (
                     <Error error={error} redirect={redirect}></Error>

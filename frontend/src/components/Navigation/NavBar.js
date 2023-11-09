@@ -26,11 +26,14 @@ const Navbar = () => {
     const { isLoggedIn, onLogout } = React.useContext(AuthContext);
 
     function DarkMode() {
-        if (sessionStorage.getItem("darkMode") == true){
-            sessionStorage.setItem("darkMode", false);
+        console.log(sessionStorage.getItem("darkMode"))
+        if (sessionStorage.getItem("darkMode") == "dark"){
+            console.log("Switching to light mode")
+            sessionStorage.setItem("darkMode", "light");
         }
         else {
-            sessionStorage.setItem("darkMode", true);
+            console.log("Switching to dark mode")
+            sessionStorage.setItem("darkMode", "dark");
         }
     }
 
