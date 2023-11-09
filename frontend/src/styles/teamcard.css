@@ -297,3 +297,38 @@
   border: 1px solid var(--light-gray);
   outline: none;
 }
+
+.searchInputCard{
+  box-shadow: 5px 5px 8px 2px rgba(0,0,0,0.66);
+  border-radius: 5px;
+  background-color: var(--dark-gray);
+  font-weight: bold;
+  color: var(--light-gray);
+  border-color: var(--light-gray);
+}
+
+.searchButtonCard{
+  max-width: 50%;
+  padding: 10px;
+  border: 1px solid var(--light-blue);
+  border-radius: 5px;
+  background-color: transparent;
+  color: var(--light-blue);
+  transition: all 0.3s ease;
+  order: 1;
+  cursor: pointer;
+  flex: 1;
+}
+.searchButtonCard:hover{
+  max-width: 50%;
+  padding: 10px;
+  border: 1px solid var(--light-blue);
+  border-radius: 5px;
+  background-color: var(--light-blue);
+  color: var(--dark-gray);
+  transition: all 0.3s ease;
+  order: 1;
+  cursor: pointer;
+  flex: 1;
+  
+}

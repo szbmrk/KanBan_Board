@@ -82,8 +82,8 @@ function handleSearchButton(){
           ) :
            !searchButtonClicked ? (
             <div className='user-select'>
-              <input name='searchInput' onChange={handleSearchUsers} placeholder='Search users...'/>
-              <button onClick={handleSearchButton}>Search</button>
+              <input className='searchInputCard' name='searchInput' onChange={handleSearchUsers} placeholder='Search users...'/>
+              <button className='searchButtonCard' onClick={handleSearchButton}>Search</button>
               {users.map((user) => (
                 <div
                   key={user.user_id}
