@@ -11,6 +11,7 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [needLoader, setNeedLoader] = useState(false);
+  const [search, setSearch] = useState('');
 
   const [error, setError] = useState(null);
 
@@ -28,6 +29,7 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
         },
       });
       setUsers(response.data.users);
+      console.log(response.data.users);
       setNeedLoader(false);
     } catch (error) {
         setError(error.response.data);
@@ -40,6 +42,11 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
     } else {
       setSelectedUsers([...selectedUsers, user_id]);
     }
+  }
+
+  function handleSearchUsers(e){
+    setSearch(e.target.value);
+    console.log(e.target.value);
   }
 
   function handleAddUsers() {
@@ -62,6 +69,8 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
             </div>
           ) : (
             <div className='user-select'>
+              <input name='searchInput' onChange={handleSearchUsers} placeholder='Search users...'/>
+              <button>Search</button>
               {users.map((user) => (
                 <div
                   key={user.user_id}
