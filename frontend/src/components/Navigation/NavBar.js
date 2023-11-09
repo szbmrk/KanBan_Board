@@ -22,6 +22,10 @@ const editProfileIcon = <FontAwesomeIcon icon={faUserPen} />;
 const searchIcon = <FontAwesomeIcon icon={faMagnifyingGlass} />;
 const displayModeIcon = <FontAwesomeIcon icon={faCircleHalfStroke} />;
 
+function DarkMode() {
+    console.log("hallo");
+}
+
 const Navbar = () => {
     const { isLoggedIn, onLogout } = React.useContext(AuthContext);
 
@@ -73,7 +77,7 @@ const Navbar = () => {
                             </form>
                         </li>
                         <li>
-                            <span>{displayModeIcon}</span>
+                            <span onClick={DarkMode}>{displayModeIcon}</span>
                         </li>
                         <li>
                             <Link to='/notifications'>
