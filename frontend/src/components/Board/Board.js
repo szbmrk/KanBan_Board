@@ -17,7 +17,11 @@ import {
     faFilter,
     faFilterCircleXmark,
     faSort,
+    faArrowDownAZ,
+    faCalendarDays,
+    faCircleExclamation
 } from "@fortawesome/free-solid-svg-icons";
+
 import "../../styles/board.css";
 import "../../styles/popup.css";
 import "../../styles/titlebar.css";
@@ -67,18 +71,17 @@ const Board = () => {
     });
     const [showIconContainer, setShowIconContainer] = useState(false);
     const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
-    const [
-        showGeneratePerformanceSummaryPopup,
-        setShowGeneratePerformanceSummaryPopup,
-    ] = useState(false);
+    const [showGeneratePerformanceSummaryPopup, setShowGeneratePerformanceSummaryPopup] = useState(false);
     const [showCodePopup, setShowCodePopup] = useState(false);
     const [showDocumentationPopup, setShowDocumentationPopup] = useState(false);
     const [isHoveredAI, setIsHoveredAI] = useState(-1);
     const [isHoveredClipboard, setIsHoveredClipboard] = useState(-1);
     const [isHoveredCode, setIsHoveredCode] = useState(false);
     const [isHoveredCraft, setIsHoveredCraft] = useState(false);
-    const [isHoveredPerformanceSummary, setIsHoveredPerformanceSummary] =
-        useState(false);
+    const [isHoveredPerformanceSummary, setIsHoveredPerformanceSummary] = useState(false);
+    const [isHoveredName, setIsHoveredName] = useState(false);
+    const [isHoveredDeadline, setIsHoveredDeadline] = useState(false);
+    const [isHoveredPriority, setIsHoveredPriority] = useState(false);
     const [isHoveredDocumentation, setIsHoveredDocumentation] = useState(false);
     const [isHoveredX, setIsHoveredX] = useState(false);
     const [columnIndex, setColumnIndex] = useState(null);
@@ -88,9 +91,8 @@ const Board = () => {
     const [craftedPromptsBoard, setCraftedPromptsBoard] = useState([]);
     const [craftedPromptsTask, setCraftedPromptsTask] = useState([]);
     const [isHoveredAITitleBar, setIsHoveredAITitleBar] = useState([]);
-    const [codeReviewOrDocumentations, setCodeReviewOrDocumentation] = useState(
-        []
-    );
+    const [isHoveredSortByTitleBar, setIsHoveredSortByTitleBar] = useState([]);
+    const [codeReviewOrDocumentations, setCodeReviewOrDocumentation] = useState([]);
     const navigate = useNavigate();
     const [hoveredColumnId, setHoveredColumnId] = useState(null);
     const [isAGIOpen, setIsAGIOpen] = useState(false);
@@ -103,6 +105,9 @@ const Board = () => {
     const filterIcon = <FontAwesomeIcon icon={faFilter} />;
     const filterDeleteIcon = <FontAwesomeIcon icon={faFilterCircleXmark} />;
     const sortIcon = <FontAwesomeIcon icon={faSort} />;
+    const sortNameIcon = <FontAwesomeIcon icon={faArrowDownAZ} />;
+    const sortDeadlineIcon = <FontAwesomeIcon icon={faCalendarDays} />;
+    const sortPriorityIcon = <FontAwesomeIcon icon={faCircleExclamation} />;
 
     const token = sessionStorage.getItem("token");
     const team_member = JSON.parse(sessionStorage.getItem("team_members"));
@@ -1491,7 +1496,7 @@ const Board = () => {
         newBoardData.map((column) => {
             column.tasks.sort((a, b) => a.title.localeCompare(b.title));
         });
-        setBoard({...board, columns: newBoardData});
+        setBoard({ ...board, columns: newBoardData });
 
         //backend sorting
         board.columns.map((column) => {
@@ -1545,15 +1550,15 @@ const Board = () => {
                                             <p>Filter</p>
                                         </li>
                                         <li
-                                        onMouseEnter={() => setIsHoveredAITitleBar(true)}
-                                        onMouseLeave={() => setIsHoveredAITitleBar(false)}
-                                        onClick={toggleSortDropdown}
-                                        style={{
-                                            color:
-                                                isHoveredAITitleBar || isAGIOpen
-                                                    ? "var(--off-white)"
-                                                    : "var(--dark-gray)",
-                                        }}
+                                            onMouseEnter={() => setIsHoveredSortByTitleBar(true)}
+                                            onMouseLeave={() => setIsHoveredSortByTitleBar(false)}
+                                            onClick={toggleSortDropdown}
+                                            style={{
+                                                color:
+                                                    isHoveredSortByTitleBar || isSortOpen
+                                                        ? "var(--off-white)"
+                                                        : "var(--dark-gray)",
+                                            }}
                                         >
                                             <span>{sortIcon}</span>
                                             <p>Sort by</p>
@@ -1756,114 +1761,62 @@ const Board = () => {
                     )}
                     {isSortOpen && (
                         <div
-                            className="agi-submenu"
+                            className="sort-submenu"
                             onMouseLeave={() => setIsSortOpen(false)}
                         >
-                            <p className="agi-menu-title"> Sort menu </p>
-                            <ul className="agi-menu">
+                            <p className="sort-menu-title"> Sort menu </p>
+                            <ul className="sort-menu">
                                 <li
-                                    onMouseEnter={() => setIsHoveredPerformanceSummary(true)}
-                                    onMouseLeave={() => setIsHoveredPerformanceSummary(false)}
+                                    onMouseEnter={() => setIsHoveredName(true)}
+                                    onMouseLeave={() => setIsHoveredName(false)}
                                     onClick={() => {
-                                        handleShowGeneratePerformanceSummaryPopup();
+                                        sortByCardName();
                                     }}
                                 >
                                     <span
                                         className="craft-button"
                                         style={{
-                                            color: isHoveredPerformanceSummary ? "var(--craft)" : "",
+                                            color: isHoveredName ? "var(--magic)" : "",
                                         }}
                                     >
-                                        {craftIcon}
+                                        {sortNameIcon}
                                     </span>
-                                    <span>Generate performance summary</span>
+                                    <span>Sort by name</span>
                                 </li>
                                 <li
-                                    onMouseEnter={() => setIsHoveredCraft(true)}
-                                    onMouseLeave={() => setIsHoveredCraft(false)}
+                                    onMouseEnter={() => setIsHoveredDeadline(true)}
+                                    onMouseLeave={() => setIsHoveredDeadline(false)}
                                     onClick={() => {
-                                        handleShowCraftPromptPopup();
+                                        sortByCardName();
                                     }}
                                 >
                                     <span
                                         className="craft-button"
                                         style={{
-                                            color: isHoveredCraft ? "var(--craft)" : "",
+                                            color: isHoveredDeadline ? "var(--edit)" : "",
                                         }}
                                     >
-                                        {craftIcon}
+                                        {sortDeadlineIcon}
                                     </span>
-                                    <span>Craft Prompt</span>
+                                    <span>Sort by deadline</span>
                                 </li>
                                 <li
-                                    onMouseEnter={() => setIsHoveredDocumentation(true)}
-                                    onMouseLeave={() => setIsHoveredDocumentation(false)}
+                                    onMouseEnter={() => setIsHoveredPriority(true)}
+                                    onMouseLeave={() => setIsHoveredPriority(false)}
                                     onClick={() => {
-                                        openDocumentationPopup();
+                                        sortByCardName();
                                     }}
                                 >
                                     <span
-                                        className="code-button"
+                                        className="craft-button"
                                         style={{
-                                            color: isHoveredDocumentation ? "var(--code)" : "",
+                                            color: isHoveredPriority ? "var(--important)" : "",
                                         }}
                                     >
-                                        {documentationIcon}
+                                        {sortPriorityIcon}
                                     </span>
-                                    <span>Generate documentation for board</span>
+                                    <span>Sort by priority</span>
                                 </li>
-                                <li
-                                    onMouseEnter={() => setIsHoveredCode(0)}
-                                    onMouseLeave={() => setIsHoveredCode(false)}
-                                    onClick={() => {
-                                        openCodePopup();
-                                    }}
-                                >
-                                    <span
-                                        className="code-button"
-                                        style={{
-                                            color: isHoveredCode === 0 ? "var(--code)" : "",
-                                        }}
-                                    >
-                                        {codeIcon}
-                                    </span>
-                                    <span>Code Review</span>
-                                </li>
-                                {codeReviewOrDocumentations.map((element, index) => (
-                                    <ul
-                                        className="code-review-or-documentation-container"
-                                        key={index}
-                                    >
-                                        <li className="code-review-or-documentation-title">
-                                            <span
-                                                onMouseEnter={() => setIsHoveredCode(index + 1)}
-                                                onMouseLeave={() => setIsHoveredCode(null)}
-                                                onClick={() => {
-                                                    openCodePopup(element);
-                                                }}
-                                            >
-                                                <span
-                                                    className="code-button"
-                                                    style={{
-                                                        color:
-                                                            isHoveredCode === index + 1 ? "var(--code)" : "",
-                                                    }}
-                                                >
-                                                    {codeIcon}
-                                                </span>
-                                                Code review {index + 1}
-                                            </span>
-                                            <span
-                                                className="delete-code-review-or-documentation-button"
-                                                onClick={() => {
-                                                    deleteCodeReviewOrDocumentation(element);
-                                                }}
-                                            >
-                                                {xMarkIcon}
-                                            </span>
-                                        </li>
-                                    </ul>
-                                ))}
                             </ul>
                         </div>
                     )}
