@@ -94,6 +94,7 @@ const Board = () => {
     const navigate = useNavigate();
     const [hoveredColumnId, setHoveredColumnId] = useState(null);
     const [isAGIOpen, setIsAGIOpen] = useState(false);
+    const [isSortOpen, setIsSortOpen] = useState(false);
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
     const codeIcon = <FontAwesomeIcon icon={faCode} />;
@@ -1392,6 +1393,10 @@ const Board = () => {
         setIsAGIOpen(!isAGIOpen);
     };
 
+    const toggleSortDropdown = () => {
+        setIsSortOpen(!isSortOpen);
+    };
+
     const handleTransformMouseEnter = () => {
         const options = document.getElementsByClassName("option");
         for (const option of options) {
@@ -1539,9 +1544,19 @@ const Board = () => {
                                             <span>{filterIcon}</span>
                                             <p>Filter</p>
                                         </li>
-                                        <li onClick={sortByCardName}>
+                                        <li
+                                        onMouseEnter={() => setIsHoveredAITitleBar(true)}
+                                        onMouseLeave={() => setIsHoveredAITitleBar(false)}
+                                        onClick={toggleSortDropdown}
+                                        style={{
+                                            color:
+                                                isHoveredAITitleBar || isAGIOpen
+                                                    ? "var(--off-white)"
+                                                    : "var(--dark-gray)",
+                                        }}
+                                        >
                                             <span>{sortIcon}</span>
-                                            <p>Sort by card name</p>
+                                            <p>Sort by</p>
                                         </li>
                                         <li
                                             onMouseEnter={() => setIsHoveredAITitleBar(true)}
@@ -1737,6 +1752,119 @@ const Board = () => {
                                     </div>
                                 }
                             </div>
+                        </div>
+                    )}
+                    {isSortOpen && (
+                        <div
+                            className="agi-submenu"
+                            onMouseLeave={() => setIsSortOpen(false)}
+                        >
+                            <p className="agi-menu-title"> Sort menu </p>
+                            <ul className="agi-menu">
+                                <li
+                                    onMouseEnter={() => setIsHoveredPerformanceSummary(true)}
+                                    onMouseLeave={() => setIsHoveredPerformanceSummary(false)}
+                                    onClick={() => {
+                                        handleShowGeneratePerformanceSummaryPopup();
+                                    }}
+                                >
+                                    <span
+                                        className="craft-button"
+                                        style={{
+                                            color: isHoveredPerformanceSummary ? "var(--craft)" : "",
+                                        }}
+                                    >
+                                        {craftIcon}
+                                    </span>
+                                    <span>Generate performance summary</span>
+                                </li>
+                                <li
+                                    onMouseEnter={() => setIsHoveredCraft(true)}
+                                    onMouseLeave={() => setIsHoveredCraft(false)}
+                                    onClick={() => {
+                                        handleShowCraftPromptPopup();
+                                    }}
+                                >
+                                    <span
+                                        className="craft-button"
+                                        style={{
+                                            color: isHoveredCraft ? "var(--craft)" : "",
+                                        }}
+                                    >
+                                        {craftIcon}
+                                    </span>
+                                    <span>Craft Prompt</span>
+                                </li>
+                                <li
+                                    onMouseEnter={() => setIsHoveredDocumentation(true)}
+                                    onMouseLeave={() => setIsHoveredDocumentation(false)}
+                                    onClick={() => {
+                                        openDocumentationPopup();
+                                    }}
+                                >
+                                    <span
+                                        className="code-button"
+                                        style={{
+                                            color: isHoveredDocumentation ? "var(--code)" : "",
+                                        }}
+                                    >
+                                        {documentationIcon}
+                                    </span>
+                                    <span>Generate documentation for board</span>
+                                </li>
+                                <li
+                                    onMouseEnter={() => setIsHoveredCode(0)}
+                                    onMouseLeave={() => setIsHoveredCode(false)}
+                                    onClick={() => {
+                                        openCodePopup();
+                                    }}
+                                >
+                                    <span
+                                        className="code-button"
+                                        style={{
+                                            color: isHoveredCode === 0 ? "var(--code)" : "",
+                                        }}
+                                    >
+                                        {codeIcon}
+                                    </span>
+                                    <span>Code Review</span>
+                                </li>
+                                {codeReviewOrDocumentations.map((element, index) => (
+                                    <ul
+                                        className="code-review-or-documentation-container"
+                                        key={index}
+                                    >
+                                        <li className="code-review-or-documentation-title">
+                                            <span
+                                                onMouseEnter={() => setIsHoveredCode(index + 1)}
+                                                onMouseLeave={() => setIsHoveredCode(null)}
+                                                onClick={() => {
+                                                    openCodePopup(element);
+                                                }}
+                                            >
+                                                <span
+                                                    className="code-button"
+                                                    style={{
+                                                        color:
+                                                            isHoveredCode === index + 1 ? "var(--code)" : "",
+                                                    }}
+                                                >
+                                                    {codeIcon}
+                                                </span>
+                                                Code review {index + 1}
+                                            </span>
+                                            <span
+                                                className="delete-code-review-or-documentation-button"
+                                                onClick={() => {
+                                                    deleteCodeReviewOrDocumentation(element);
+                                                }}
+                                            >
+                                                {xMarkIcon}
+                                            </span>
+                                        </li>
+                                    </ul>
+                                ))}
+                            </ul>
                         </div>
                     )}
                     {isAGIOpen && (
