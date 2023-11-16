@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import "../../styles/card.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -176,11 +176,29 @@ export const Task = ({
     }
   };
 
+  const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    useEffect(() => {
+        //ez
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
+
+
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
+
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
+        //eddig
+    }, []);
+
   return (
     <>
       <div
         ref={(node) => drag(drop(node))}
         className="card"
+        data-theme={theme}
         style={{
           opacity,
           cursor: "grab",
