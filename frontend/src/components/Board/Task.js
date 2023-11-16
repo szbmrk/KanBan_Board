@@ -238,6 +238,7 @@ export const Task = ({
               top: iconContainerPosition.y + "px",
             }}
           >
+            {permissions.filter(permission => {return permission.permission==='task_management'}).length===1 &&
             <div
               className="option"
               onMouseEnter={() => setIsHoveredEdit(true)}
@@ -255,6 +256,7 @@ export const Task = ({
               </span>
               <p>Edit Task</p>
             </div>
+            }
             <div
               className="option"
               onMouseEnter={() => setIsHoveredDocumentation(true)}
@@ -369,7 +371,7 @@ export const Task = ({
                 </p>
               </div>
             )}
-            {permissions.filter(permission => permission.permission='task_management').length===1 && 
+            {permissions.filter(permission => {return permission.permission==='task_management'}).length===1 && 
             <div 
               className="option"
               onMouseEnter={() => setIsHoveredDelete(true)}
