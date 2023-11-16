@@ -1712,6 +1712,9 @@ const Board = () => {
                                                                 column
                                                             )
                                                         }
+                                                        permissions={
+                                                            permissions
+                                                        }
                                                     />
                                                 ))}
                                             </div>

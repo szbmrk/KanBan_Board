@@ -47,6 +47,7 @@ export const Task = ({
   generateTasks,
   generateAttachmentLinks,
   HandleCraftedPromptTaskClick,
+  permissions
 }) => {
   const [bouncingStarIcon, setBouncingStarIcon] = useState(regularStarIcon);
   const [isHoveredEdit, setIsHoveredEdit] = useState(false);
@@ -368,7 +369,8 @@ export const Task = ({
                 </p>
               </div>
             )}
-            <div
+            {permissions.filter(permission => permission.permission='task_management').length===1 && 
+            <div 
               className="option"
               onMouseEnter={() => setIsHoveredDelete(true)}
               onMouseLeave={() => setIsHoveredDelete(false)}
@@ -382,6 +384,7 @@ export const Task = ({
               </span>
               <p>Delete Task</p>
             </div>
+            }
           </div>
         </div>
       )}
