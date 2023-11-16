@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import '../../styles/popup.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -8,7 +8,18 @@ const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const ConfirmationPopup = ({ text, onCancel, onConfirm }) => {
     const popupRef = useRef(null);
 
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+
     useEffect(() => {
+        //ez
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
+
+
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
+
         const handleClickOutside = (event) => {
             if (popupRef.current && !popupRef.current.contains(event.target)) {
                 onCancel();
@@ -19,11 +30,12 @@ const ConfirmationPopup = ({ text, onCancel, onConfirm }) => {
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
+            window.removeEventListener('ChangingTheme', ResetTheme)
         };
     }, [onCancel]);
 
     return (
-        <div className='overlay'>
+        <div className='overlay' data-theme={theme}>
             <div className='popup popup-mini' ref={popupRef}>
                 <span className='close-btn' onClick={onCancel}>
                     {closeIcon}
