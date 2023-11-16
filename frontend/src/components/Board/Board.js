@@ -17,7 +17,11 @@ import {
     faFilter,
     faFilterCircleXmark,
     faSort,
+    faArrowDownAZ,
+    faCalendarDays,
+    faCircleExclamation
 } from "@fortawesome/free-solid-svg-icons";
+
 import "../../styles/board.css";
 import "../../styles/popup.css";
 import "../../styles/titlebar.css";
@@ -67,18 +71,17 @@ const Board = () => {
     });
     const [showIconContainer, setShowIconContainer] = useState(false);
     const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
-    const [
-        showGeneratePerformanceSummaryPopup,
-        setShowGeneratePerformanceSummaryPopup,
-    ] = useState(false);
+    const [showGeneratePerformanceSummaryPopup, setShowGeneratePerformanceSummaryPopup] = useState(false);
     const [showCodePopup, setShowCodePopup] = useState(false);
     const [showDocumentationPopup, setShowDocumentationPopup] = useState(false);
     const [isHoveredAI, setIsHoveredAI] = useState(-1);
     const [isHoveredClipboard, setIsHoveredClipboard] = useState(-1);
     const [isHoveredCode, setIsHoveredCode] = useState(false);
     const [isHoveredCraft, setIsHoveredCraft] = useState(false);
-    const [isHoveredPerformanceSummary, setIsHoveredPerformanceSummary] =
-        useState(false);
+    const [isHoveredPerformanceSummary, setIsHoveredPerformanceSummary] = useState(false);
+    const [isHoveredName, setIsHoveredName] = useState(false);
+    const [isHoveredDeadline, setIsHoveredDeadline] = useState(false);
+    const [isHoveredPriority, setIsHoveredPriority] = useState(false);
     const [isHoveredDocumentation, setIsHoveredDocumentation] = useState(false);
     const [isHoveredX, setIsHoveredX] = useState(false);
     const [columnIndex, setColumnIndex] = useState(null);
@@ -88,12 +91,12 @@ const Board = () => {
     const [craftedPromptsBoard, setCraftedPromptsBoard] = useState([]);
     const [craftedPromptsTask, setCraftedPromptsTask] = useState([]);
     const [isHoveredAITitleBar, setIsHoveredAITitleBar] = useState([]);
-    const [codeReviewOrDocumentations, setCodeReviewOrDocumentation] = useState(
-        []
-    );
+    const [isHoveredSortByTitleBar, setIsHoveredSortByTitleBar] = useState([]);
+    const [codeReviewOrDocumentations, setCodeReviewOrDocumentation] = useState([]);
     const navigate = useNavigate();
     const [hoveredColumnId, setHoveredColumnId] = useState(null);
     const [isAGIOpen, setIsAGIOpen] = useState(false);
+    const [isSortOpen, setIsSortOpen] = useState(false);
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
     const codeIcon = <FontAwesomeIcon icon={faCode} />;
@@ -102,6 +105,9 @@ const Board = () => {
     const filterIcon = <FontAwesomeIcon icon={faFilter} />;
     const filterDeleteIcon = <FontAwesomeIcon icon={faFilterCircleXmark} />;
     const sortIcon = <FontAwesomeIcon icon={faSort} />;
+    const sortNameIcon = <FontAwesomeIcon icon={faArrowDownAZ} />;
+    const sortDeadlineIcon = <FontAwesomeIcon icon={faCalendarDays} />;
+    const sortPriorityIcon = <FontAwesomeIcon icon={faCircleExclamation} />;
 
     const token = sessionStorage.getItem("token");
     const team_member = JSON.parse(sessionStorage.getItem("team_members"));
@@ -1392,6 +1398,10 @@ const Board = () => {
         setIsAGIOpen(!isAGIOpen);
     };
 
+    const toggleSortDropdown = () => {
+        setIsSortOpen(!isSortOpen);
+    };
+
     const handleTransformMouseEnter = () => {
         const options = document.getElementsByClassName("option");
         for (const option of options) {
@@ -1486,7 +1496,7 @@ const Board = () => {
         newBoardData.map((column) => {
             column.tasks.sort((a, b) => a.title.localeCompare(b.title));
         });
-        setBoard({...board, columns: newBoardData});
+        setBoard({ ...board, columns: newBoardData });
 
         //backend sorting
         board.columns.map((column) => {
@@ -1539,9 +1549,19 @@ const Board = () => {
                                             <span>{filterIcon}</span>
                                             <p>Filter</p>
                                         </li>
-                                        <li onClick={sortByCardName}>
+                                        <li
+                                            onMouseEnter={() => setIsHoveredSortByTitleBar(true)}
+                                            onMouseLeave={() => setIsHoveredSortByTitleBar(false)}
+                                            onClick={toggleSortDropdown}
+                                            style={{
+                                                color:
+                                                    isHoveredSortByTitleBar || isSortOpen
+                                                        ? "var(--off-white)"
+                                                        : "var(--dark-gray)",
+                                            }}
+                                        >
                                             <span>{sortIcon}</span>
-                                            <p>Sort by card name</p>
+                                            <p>Sort by</p>
                                         </li>
                                         <li
                                             onMouseEnter={() => setIsHoveredAITitleBar(true)}
@@ -1737,6 +1757,67 @@ const Board = () => {
                                     </div>
                                 }
                             </div>
+                        </div>
+                    )}
+                    {isSortOpen && (
+                        <div
+                            className="sort-submenu"
+                            onMouseLeave={() => setIsSortOpen(false)}
+                        >
+                            <p className="sort-menu-title"> Sort menu </p>
+                            <ul className="sort-menu">
+                                <li
+                                    onMouseEnter={() => setIsHoveredName(true)}
+                                    onMouseLeave={() => setIsHoveredName(false)}
+                                    onClick={() => {
+                                        sortByCardName();
+                                    }}
+                                >
+                                    <span
+                                        className="craft-button"
+                                        style={{
+                                            color: isHoveredName ? "var(--magic)" : "",
+                                        }}
+                                    >
+                                        {sortNameIcon}
+                                    </span>
+                                    <span>Sort by name</span>
+                                </li>
+                                <li
+                                    onMouseEnter={() => setIsHoveredDeadline(true)}
+                                    onMouseLeave={() => setIsHoveredDeadline(false)}
+                                    onClick={() => {
+                                        sortByCardName();
+                                    }}
+                                >
+                                    <span
+                                        className="craft-button"
+                                        style={{
+                                            color: isHoveredDeadline ? "var(--edit)" : "",
+                                        }}
+                                    >
+                                        {sortDeadlineIcon}
+                                    </span>
+                                    <span>Sort by deadline</span>
+                                </li>
+                                <li
+                                    onMouseEnter={() => setIsHoveredPriority(true)}
+                                    onMouseLeave={() => setIsHoveredPriority(false)}
+                                    onClick={() => {
+                                        sortByCardName();
+                                    }}
+                                >
+                                    <span
+                                        className="craft-button"
+                                        style={{
+                                            color: isHoveredPriority ? "var(--important)" : "",
+                                        }}
+                                    >
+                                        {sortPriorityIcon}
+                                    </span>
+                                    <span>Sort by priority</span>
+                                </li>
+                            </ul>
                         </div>
                     )}
                     {isAGIOpen && (
