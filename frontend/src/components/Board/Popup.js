@@ -61,7 +61,7 @@ const Popup = ({
     handleBoardTagDeletion,
 }) => {
     const popupRef = useRef(null);
-
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
     const [editedText, setEditedText] = useState(task.title);
     const [editedDescription, setEditedDescription] = useState(task.description);
     const [showAddToCard, setShowAddToCard] = useState(false);
@@ -126,6 +126,19 @@ const Popup = ({
                     setShowAddMember(false);
                 }
             }
+                //ez
+                const ResetTheme = () => {
+                    setTheme(sessionStorage.getItem("darkMode"))
+                }
+        
+        
+                console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+                window.addEventListener('ChangingTheme', ResetTheme)
+        
+                return () => {
+                    window.removeEventListener('ChangingTheme', ResetTheme)
+                }
+                //eddig
         };
 
         document.addEventListener('mousedown', handleOutsideClick);
@@ -357,7 +370,7 @@ const Popup = ({
     };
 
     return (
-        <div className='overlay'>
+        <div className='overlay' data-theme={theme}>
             <div className='popup' ref={popupRef}>
                 {/* Upper Part */}
                 <div className='upper-part'>
