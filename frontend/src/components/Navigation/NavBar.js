@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../auth/AuthContext';
 import '../../styles/navbar.css';
@@ -22,12 +22,31 @@ const editProfileIcon = <FontAwesomeIcon icon={faUserPen} />;
 const searchIcon = <FontAwesomeIcon icon={faMagnifyingGlass} />;
 const displayModeIcon = <FontAwesomeIcon icon={faCircleHalfStroke} />;
 
+
+
+
 const Navbar = () => {
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
     const { isLoggedIn, onLogout } = React.useContext(AuthContext);
+    useEffect(() => {
+        //ez
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
+
+
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
+
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
+        //eddig
+    }, []);
 
     function DarkMode() {
         console.log(sessionStorage.getItem("darkMode"))
-        if (sessionStorage.getItem("darkMode") == "dark"){
+        if (sessionStorage.getItem("darkMode") == "dark") {
             console.log("Switching to light mode")
             sessionStorage.setItem("darkMode", "light");
         }
@@ -35,7 +54,10 @@ const Navbar = () => {
             console.log("Switching to dark mode")
             sessionStorage.setItem("darkMode", "dark");
         }
+        const event = new Event("ChangingTheme")
+        window.dispatchEvent(event)
     }
+
 
     const hideSidebar = () => {
         const sidebar = document.querySelector('.sidebar');
@@ -68,7 +90,7 @@ const Navbar = () => {
 
     return (
         <>
-            <div className='navbar'>
+            <div className='navbar' data-theme={theme}>
                 <div className='navbar-menu col-12 col-s-12'>
                     <button id='menu-btn' onClick={hideSidebar}>
                         {menuIcon}

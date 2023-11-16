@@ -27,6 +27,7 @@ export default function Dashboard() {
     const user_id = sessionStorage.getItem('user_id');
     const permissions = JSON.parse(sessionStorage.getItem('permissions'));
 
+    //ez kell még
     const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
 
     useEffect(() => {
@@ -37,11 +38,22 @@ export default function Dashboard() {
         //backendről fetchelés
         fetchDashboardData();
         console.log(permissions);
+
+        //ez
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
+
+
         console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
-        window.addEventListener('storage', () => {
-            setTheme(sessionStorage.getItem("darkMode"));
-        });
+        window.addEventListener('ChangingTheme', ResetTheme)
+
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
+        //eddig
     }, []);
+
 
     async function ResetRoles() {
         await SetRoles(token);
