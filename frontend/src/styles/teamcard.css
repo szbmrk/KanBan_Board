@@ -315,7 +315,6 @@
   background-color: transparent;
   color: var(--light-blue);
   transition: all 0.3s ease;
-  order: 1;
   cursor: pointer;
   flex: 1;
 }
@@ -327,7 +326,6 @@
   background-color: var(--light-blue);
   color: var(--dark-gray);
   transition: all 0.3s ease;
-  order: 1;
   cursor: pointer;
   flex: 1;
   
