@@ -42,6 +42,8 @@ export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
 export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
 
 const Board = () => {
+  const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+  
   const { board_id, column_to_show_id, task_to_show_id } = useParams();
   const [permission, setPermission] = useState(false);
   const [error, setError] = useState(false);
@@ -120,6 +122,19 @@ const Board = () => {
     //setOwnPermissions(team_member.teams.filter(team => team.team_id === data.team_id).map(permission => permission.permission_data));
 
     console.log(permissions);
+    //ez
+    const ResetTheme = () => {
+      setTheme(sessionStorage.getItem("darkMode"))
+  }
+
+
+  console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+  window.addEventListener('ChangingTheme', ResetTheme)
+
+  return () => {
+      window.removeEventListener('ChangingTheme', ResetTheme)
+  }
+  //eddig
   }, []);
 
   useEffect(() => {
@@ -1485,7 +1500,7 @@ const Board = () => {
         error ? (
           <Error error={error} redirect={redirect}></Error>
         ) : (
-          <div className="content">
+          <div className="content" data-theme={theme}>
             <Loader />
           </div>
         )
