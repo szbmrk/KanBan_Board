@@ -105,7 +105,7 @@ const Board = () => {
 
     const token = sessionStorage.getItem("token");
     const team_member = JSON.parse(sessionStorage.getItem("team_members"));
-    const permissions = JSON.parse(sessionStorage.getItem("permissions"));
+    const permissions = JSON.parse(sessionStorage.getItem("permissions")).teams.filter(permission => parseInt(permission.board_id)===parseInt(board_id));
 
     useEffect(() => {
         document.title = "Board";
@@ -1715,7 +1715,7 @@ const Board = () => {
                                                     />
                                                 ))}
                                             </div>
-                                            {column.is_finished === 0 ? (
+                                            {column.is_finished === 0 && permissions.filter(permission => permission.permission='task_management').length===1 ? (
                                                 <div
                                                     className="card addbtn"
                                                     onClick={() => handleAddTask(index)}
