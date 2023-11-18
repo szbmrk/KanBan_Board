@@ -1,5 +1,5 @@
 import axios from "../api/axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 let teamPermissions = [];
 let ownPermissions = [];
 
@@ -16,6 +16,22 @@ export const SetRoles = async (token) => {
     } catch (error) {
         console.log(error);
     }
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    useEffect(() => {
+        //ez
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
+
+
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
+
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
+        //eddig
+    }, []);
 }
 
 export const checkPermisson = (team_id, permissionToCheck) => {
