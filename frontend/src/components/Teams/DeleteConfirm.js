@@ -6,7 +6,9 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
-const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+
+const DeleteConfirm = ({ teamID, OnClose, DeleteTeam }) => {
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
     useEffect(() => {
         //ez
         const ResetTheme = () => {
@@ -22,12 +24,11 @@ const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
         }
         //eddigS
     }, []);
-
-const DeleteConfirm = ({ teamID, OnClose, DeleteTeam }) => {
     function DeleteTeamConfirm(teamID) {
         DeleteTeam(teamID);
         OnClose();
     }
+
 
     return (
         <div className='overlay' data-theme={theme}>
@@ -46,3 +47,5 @@ const DeleteConfirm = ({ teamID, OnClose, DeleteTeam }) => {
 };
 
 export default DeleteConfirm;
+
+
