@@ -13,10 +13,24 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
   const [needLoader, setNeedLoader] = useState(false);
 
   const [error, setError] = useState(null);
+  const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
 
   useEffect(() => {
     setNeedLoader(true);
     getUsers();
+      //ez
+      const ResetTheme = () => {
+        setTheme(sessionStorage.getItem("darkMode"))
+    }
+
+
+    console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+    window.addEventListener('ChangingTheme', ResetTheme)
+
+    return () => {
+        window.removeEventListener('ChangingTheme', ResetTheme)
+    }
+    //eddig
   }, []);
 
   async function getUsers() {
@@ -48,7 +62,7 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
   }
 
   return (
-    <div className='overlay'>
+    <div className='overlay' data-theme={theme}>
       <div className='popup popup-mini'>
         <span className='close-btn' onClick={OnClose}>
           {closeIcon}
