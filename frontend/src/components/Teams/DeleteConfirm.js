@@ -1,9 +1,27 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import '../../styles/popup.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
+
+const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+useEffect(() => {
+    //ez
+    const ResetTheme = () => {
+        setTheme(sessionStorage.getItem("darkMode"))
+    }
+
+
+    console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+    window.addEventListener('ChangingTheme', ResetTheme)
+
+    return () => {
+        window.removeEventListener('ChangingTheme', ResetTheme)
+    }
+    //eddig
+}, []);
 
 const DeleteConfirm = ({ teamID, OnClose, DeleteTeam }) => {
     function DeleteTeamConfirm(teamID) {
@@ -12,7 +30,7 @@ const DeleteConfirm = ({ teamID, OnClose, DeleteTeam }) => {
     }
 
     return (
-        <div className='overlay'>
+        <div className='overlay' data-theme={theme}>
             <div className='popup popup-mini'>
                 <span className='close-btn' onClick={OnClose}>
                     {closeIcon}
