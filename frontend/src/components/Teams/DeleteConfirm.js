@@ -7,21 +7,21 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons';
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
 const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
-useEffect(() => {
-    //ez
-    const ResetTheme = () => {
-        setTheme(sessionStorage.getItem("darkMode"))
-    }
+    useEffect(() => {
+        //ez
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
 
 
-    console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
-    window.addEventListener('ChangingTheme', ResetTheme)
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
 
-    return () => {
-        window.removeEventListener('ChangingTheme', ResetTheme)
-    }
-    //eddig
-}, []);
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
+        //eddigS
+    }, []);
 
 const DeleteConfirm = ({ teamID, OnClose, DeleteTeam }) => {
     function DeleteTeamConfirm(teamID) {
