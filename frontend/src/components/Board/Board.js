@@ -111,7 +111,7 @@ const Board = () => {
 
     const token = sessionStorage.getItem("token");
     const team_member = JSON.parse(sessionStorage.getItem("team_members"));
-    const permissions = JSON.parse(sessionStorage.getItem("permissions")).teams.filter(permission => {return parseInt(permission.board_id)===parseInt(board_id)});
+    const permissions = JSON.parse(sessionStorage.getItem("permissions")).teams.filter(permission => { return parseInt(permission.board_id) === parseInt(board_id) });
 
     useEffect(() => {
         document.title = "Board";
@@ -1644,12 +1644,16 @@ const Board = () => {
                                                 <>
                                                     <div
                                                         className="column-title-container"
-                                                        onDoubleClick={() =>
-                                                            handleColumnTitleDoubleClick(index)
-                                                        }
+                                                        onDoubleClick={() => {
+                                                            const permissionsFilter = permissions.filter(permission => permission.permission === 'column_management');
+                                                            if (permissionsFilter.length === 1) {
+                                                                handleColumnTitleDoubleClick(index);
+                                                            }
+                                                        }}
                                                     >
                                                         <h2 className="card-title">{column.name}</h2>
                                                     </div>
+
                                                     <div
                                                         className="options"
                                                         style={{
@@ -1738,7 +1742,7 @@ const Board = () => {
                                                     />
                                                 ))}
                                             </div>
-                                            {column.is_finished === 0 && permissions.filter(permission => {return permission.permission==='task_management'}).length===1 ? (
+                                            {column.is_finished === 0 && permissions.filter(permission => { return permission.permission === 'task_management' }).length === 1 ? (
                                                 <div
                                                     className="card addbtn"
                                                     onClick={() => handleAddTask(index)}
@@ -1751,7 +1755,7 @@ const Board = () => {
                                         </div>
                                     </Column>
                                 ))}
-                                {permissions.filter(permission => {return permission.permission==='column_management'}).length===1 &&
+                                {permissions.filter(permission => { return permission.permission === 'column_management' }).length === 1 &&
                                     <div
                                         className="card-container addbtn-column"
                                         onClick={handleAddColumn}
@@ -2021,23 +2025,23 @@ const Board = () => {
                                         <p>{craftedPrompt.crafted_prompt_title}</p>
                                     </div>
                                 ))}
-                                {permissions.filter(permission => {return permission.permission==='column_management'}).length===1 &&
-                                <div
-                                    className="option"
-                                    onMouseEnter={() => setIsHoveredX(true)}
-                                    onMouseLeave={() => setIsHoveredX(false)}
-                                    onClick={(e) => handleDeleteButtonClick(e, columnIndex)}
-                                >
-                                    <span
-                                        className="delete-column-button"
-                                        style={{
-                                            color: isHoveredX ? "var(--important)" : "",
-                                        }}
+                                {permissions.filter(permission => { return permission.permission === 'column_management' }).length === 1 &&
+                                    <div
+                                        className="option"
+                                        onMouseEnter={() => setIsHoveredX(true)}
+                                        onMouseLeave={() => setIsHoveredX(false)}
+                                        onClick={(e) => handleDeleteButtonClick(e, columnIndex)}
                                     >
-                                        {trashIcon}
-                                    </span>
-                                    <p>Delete Column</p>
-                                </div>
+                                        <span
+                                            className="delete-column-button"
+                                            style={{
+                                                color: isHoveredX ? "var(--important)" : "",
+                                            }}
+                                        >
+                                            {trashIcon}
+                                        </span>
+                                        <p>Delete Column</p>
+                                    </div>
                                 }
                             </div>
                         </div>
