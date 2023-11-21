@@ -1523,6 +1523,86 @@ const Board = () => {
         });
     }
 
+    const sortByCardDeadline = () => {
+        //frontend sorting
+        const newBoardData = [...board.columns];
+        newBoardData.map((column) => {
+            column.tasks.sort((a, b) =>
+                a.due_date === null
+                    ? 1
+                    : b.due_date === null
+                        ? -1
+                        :
+                        a.due_date.localeCompare(b.due_date)
+            );
+        });
+        setBoard({ ...board, columns: newBoardData });
+
+        //backend sorting
+        board.columns.map((column) => {
+            const tasks = column.tasks.map((task, index) => {
+                axios.post(
+                    `/columns/${column.column_id}/tasks/positions`,
+                    {
+                        tasks: [
+                            {
+                                task_id: task.task_id,
+                                position: index,
+                                column_id: column.column_id
+                            },
+                        ],
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+            }
+            );
+        });
+    }
+
+    const sortByCardPriority = () => {
+        //frontend sorting
+        const newBoardData = [...board.columns];
+        newBoardData.map((column) => {
+            column.tasks.sort((a, b) =>
+                a.priority_id === null
+                    ? 1
+                    : b.priority_id === null
+                        ? -1
+                        :
+                        a.priority_id - b.priority_id
+            );
+        });
+        setBoard({ ...board, columns: newBoardData });
+
+        //backend sorting
+        board.columns.map((column) => {
+            const tasks = column.tasks.map((task, index) => {
+                axios.post(
+                    `/columns/${column.column_id}/tasks/positions`,
+                    {
+                        tasks: [
+                            {
+                                task_id: task.task_id,
+                                position: index,
+                                column_id: column.column_id
+                            },
+                        ],
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+            }
+            );
+        });
+    }
+
     return (
         <>
             {permission === false ? (
@@ -1794,7 +1874,7 @@ const Board = () => {
                                     onMouseEnter={() => setIsHoveredDeadline(true)}
                                     onMouseLeave={() => setIsHoveredDeadline(false)}
                                     onClick={() => {
-                                        sortByCardName();
+                                        sortByCardDeadline();
                                     }}
                                 >
                                     <span
@@ -1811,7 +1891,7 @@ const Board = () => {
                                     onMouseEnter={() => setIsHoveredPriority(true)}
                                     onMouseLeave={() => setIsHoveredPriority(false)}
                                     onClick={() => {
-                                        sortByCardName();
+                                        sortByCardPriority();
                                     }}
                                 >
                                     <span
