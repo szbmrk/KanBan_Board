@@ -13,6 +13,8 @@ export default function Permissiontable() {
     const [permissions, setPermissions] = useState([]);
     const [newRoleName, setNewRoleName] = useState('');
     const [needLoader, setNeedLoader] = useState(false);
+    const [renameIsActive, setRenameIsActive] = useState(false);
+    const [renameRoleName, setRenameRoleName] = useState('');
 
     const token = sessionStorage.getItem('token');
 
@@ -172,6 +174,10 @@ export default function Permissiontable() {
         }
     }
 
+    function handleRoleRename(e) {
+        setRenameRoleName(e.target.value);
+    }
+
     return (
         <div className='content'>
             {(roles.length === 0 && permissions.length === 0) || needLoader ? (
@@ -181,10 +187,23 @@ export default function Permissiontable() {
                     <div className='permission-table'>
                         <div className='permission-table-header'>
                             <div className='permission-table-header-cell'>Permissions</div>
-                            {roles.map((role) => (
+                            {roles.map((role, index) => (
                                 <div key={role.role_id} className='permission-table-header-cell'>
                                     <div className='role-header-div'>
-                                        <p>{role.name}</p>
+                                        {!renameIsActive ? (
+                                            <div className='role-rename-div'
+                                                onDoubleClick={() => {
+                                                    if (checkPermissionForBoard(board_id, team_id, 'role_management')) {
+                                                        setRenameIsActive(true);
+                                                    }
+                                                }}>
+                                                <p>{role.name}</p>
+                                            </div>) :
+                                            (
+                                                <div className='role-rename-input'>
+                                                    <input type='text' placeholder='Rename this role...' onChange={handleRoleRename} />
+                                                </div>
+                                            )}
                                         {checkPermissionForBoard(board_id, team_id, 'role_management') && (
                                             <button onClick={() => DeleteRole(role.role_id)} className='delete-role'>
                                                 Delete
@@ -193,6 +212,7 @@ export default function Permissiontable() {
                                     </div>
                                 </div>
                             ))}
+
                         </div>
                         <div className='permission-table-body'>
                             {permissions.map(
@@ -246,7 +266,7 @@ export default function Permissiontable() {
                 </div>
             )}
             {error && (
-                <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+                <ErrorWrapper originalError={error} onClose={() => { setError(null); }} />
             )}
         </div>
     );
