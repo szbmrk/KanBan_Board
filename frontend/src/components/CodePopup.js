@@ -14,6 +14,22 @@ const CodePopup = ({
   reloadCodeReviewOrDocumentation,
   onCancel,
 }) => {
+  const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+  useEffect(() => {
+    //ez
+    const ResetTheme = () => {
+      setTheme(sessionStorage.getItem("darkMode"))
+    }
+
+
+    console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+    window.addEventListener('ChangingTheme', ResetTheme)
+
+    return () => {
+      window.removeEventListener('ChangingTheme', ResetTheme)
+    }
+    //eddig
+  }, []);
   const SearchListForValue = (list, searchValue) => {
     return list.find(
       (option) => option.value.toLowerCase() === searchValue.toLowerCase()
@@ -27,9 +43,9 @@ const CodePopup = ({
   const [selectedOption, setSelectedOption] = useState(
     codeReviewOrDocumentation
       ? SearchListForValue(
-          codeOptions,
-          codeReviewOrDocumentation.codeReviewOrDocumentationType
-        ).value
+        codeOptions,
+        codeReviewOrDocumentation.codeReviewOrDocumentationType
+      ).value
       : codeOptions[0].value
   );
 
@@ -97,7 +113,7 @@ const CodePopup = ({
   });
 
   return (
-    <div className="overlay">
+    <div className="overlay" data-theme={theme}>
       <div className="popup agi-popup">
         <span className="close-btn" onClick={onCancel}>
           {closeIcon}

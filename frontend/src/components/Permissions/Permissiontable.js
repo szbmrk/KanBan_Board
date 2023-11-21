@@ -19,12 +19,26 @@ export default function Permissiontable() {
     const token = sessionStorage.getItem('token');
 
     const [error, setError] = useState(null);
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
 
     useEffect(() => {
         document.title = 'Permission Table';
         ResetRoles();
         fetchBoardPermissions();
         getAllPermissions();
+        //ez
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
+
+
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
+
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
+        //eddig
     }, []);
 
     async function fetchBoardPermissions() {
@@ -203,7 +217,7 @@ export default function Permissiontable() {
     }
 
     return (
-        <div className='content'>
+        <div className='content' data-theme={theme}>
             {(roles.length === 0 && permissions.length === 0) || needLoader ? (
                 <Loader />
             ) : (

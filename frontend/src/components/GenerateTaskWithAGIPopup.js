@@ -148,12 +148,25 @@ const GenerateTaskWithAGIPopup = ({
     );
   };
 
-
+  const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (popupRef.current && !popupRef.current.contains(event.target)) {
         onCancel();
       }
+      //ez
+      const ResetTheme = () => {
+        setTheme(sessionStorage.getItem("darkMode"))
+      }
+
+
+      console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+      window.addEventListener('ChangingTheme', ResetTheme)
+
+      return () => {
+        window.removeEventListener('ChangingTheme', ResetTheme)
+      }
+      //eddig
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -200,7 +213,7 @@ const GenerateTaskWithAGIPopup = ({
 
   return (
 
-    <div className="overlay">
+    <div className="overlay" data-theme={theme}>
       <div className="popup agi-popup">
         <span className="close-btn" onClick={onCancel}>
           {closeIcon}
@@ -289,7 +302,7 @@ const GenerateTaskWithAGIPopup = ({
         </div>
       </div>
       {error && (
-          <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+        <ErrorWrapper originalError={error} onClose={() => { setError(null); }} />
       )}
     </div>
   );

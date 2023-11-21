@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Tag from '../Tag';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil, faTrash, faEllipsis, faStar as faSolidStar } from '@fortawesome/free-solid-svg-icons';
@@ -58,11 +58,28 @@ export default function Subtask({
 
         subtaskZIndex === 1 ? setSubtaskZIndex(100) : setSubtaskZIndex(1);
     };
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    useEffect(() => {
+        //ez
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
+
+
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
+
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
+        //eddig
+    }, []);
 
     return (
         <>
             <div
                 className='card subtask-card'
+                data-theme={theme}
                 onMouseEnter={() => handleMouseEnterOnSubtask(subTask.task_id)}
                 onMouseLeave={handleMouseLeaveOnSubtask}
                 style={{ zIndex: subtaskZIndex }}

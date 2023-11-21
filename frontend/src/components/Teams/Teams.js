@@ -16,10 +16,24 @@ const Teams = () => {
 
     const [teams, setTeams] = useState(null);
     const [manageIsClicked, setManage] = useState(false);
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
 
     useEffect(() => {
         document.title = 'Teams';
         getTeams();
+        //ez
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
+
+
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
+
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
+        //eddig
     }, []);
 
     useEffect(() => {
@@ -246,7 +260,7 @@ const Teams = () => {
     }
 
     return (
-        <div className='content'>
+        <div className='content' data-theme={theme}>
             {(teams === null) ? (
                 error ? (
                     <Error error={error} redirect={redirect} />
