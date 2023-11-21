@@ -28,7 +28,7 @@ const TagDropdown = ({
         }),
         control: (base) => ({
             ...base,
-            backgroundColor: 'var(--light-gray)',
+            backgroundColor: 'var(--bg-dark)',
             border: 'none',
             borderRadius: '5px',
         }),
@@ -64,17 +64,17 @@ const TagDropdown = ({
         }),
         indicatorSeparator: (base) => ({
             ...base,
-            backgroundColor: 'var(--dark-gray)',
+            backgroundColor: 'var(--light-gray)',
         }),
         dropdownIndicator: (base) => ({
             ...base,
-            color: 'var(--dark-gray)',
+            color: 'var(--bg-dark)',
         }),
         menuList: (base) => ({
             ...base,
             padding: '0 5px',
             borderRadius: '5px',
-            backgroundColor: 'var(--light-gray)',
+            backgroundColor: 'var(--bg-dark)',
         }),
     };
     const [darkTheme, setTheme] = useState(sessionStorage.getItem("darkMode"));

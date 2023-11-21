@@ -255,8 +255,8 @@
     cursor: pointer;
     font-family: var(--basic-font);
     font-size: 0.95em;
-    background-color: var(--light-gray);
-    color: var(--dark-gray);
+    background-color: var(--bg-dark);
+    color: var(--light-dark);
     transition: 0.1s ease;
 }
 

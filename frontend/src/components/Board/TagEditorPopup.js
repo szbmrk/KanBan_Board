@@ -61,8 +61,9 @@ const TagEditorPopup = ({ onClose, onSave, tagToEdit }) => {
                     {closeIcon}
                 </span>
                 <div className='tag-editor-content'>
-                    <div className='tag-editor-name-container'>
-                        <input
+                    <div className='tag-editor-name-container' >
+                        <input 
+                            style={{backgroundColor: "var(--dark-gray)", color: "var(--light)"}}
                             type='text'
                             value={tagName}
                             onChange={(e) => setTagName(e.target.value)}
