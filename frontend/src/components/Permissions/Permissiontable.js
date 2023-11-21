@@ -5,7 +5,7 @@ import Loader from '../Loader';
 import '../../styles/permissions.css';
 import '../../styles/teamcard.css';
 import { SetRoles, checkPermissionForBoard } from '../../roles/Roles';
-import ErrorWrapper from "../../ErrorWrapper";
+import ErrorWrapper from '../../ErrorWrapper';
 
 export default function Permissiontable() {
     const { board_id, team_id } = useParams();
@@ -116,7 +116,7 @@ export default function Permissiontable() {
             });
             console.log(response);
             const newRoles = [...roles];
-            for (let i = 0; i < newRoles.length; i++) {
+            for (let i = 0; newRoles.length; i++) {
                 if (parseInt(newRoles[i].role_id) === parseInt(role_id)) {
                     newRoles[i].permissions.splice(
                         newRoles[i].permissions.findIndex(
@@ -178,6 +178,30 @@ export default function Permissiontable() {
         setRenameRoleName(e.target.value);
     }
 
+    async function handleRoleRenameSubmit(role_id) {
+        setRenameIsActive(false);
+        try {
+            const response = await axios.put(`/boards/${board_id}/roles/${role_id}`,
+                { name: renameRoleName },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            const newRoleData = [...roles];
+            newRoleData.forEach((role) => {
+                if (parseInt(role.role_id) === parseInt(role_id)) {
+                    role.name = renameRoleName;
+                }
+            });
+            setRoles(newRoleData);
+            setRenameRoleName('');
+        } catch (error) {
+            setError(error.response.data);
+        }
+    }
+
     return (
         <div className='content'>
             {(roles.length === 0 && permissions.length === 0) || needLoader ? (
@@ -202,6 +226,7 @@ export default function Permissiontable() {
                                             (
                                                 <div className='role-rename-input'>
                                                     <input type='text' placeholder='Rename this role...' onChange={handleRoleRename} />
+                                                    <button className='role-rename-button' onClick={() => handleRoleRenameSubmit(role.role_id)}>Rename</button>
                                                 </div>
                                             )}
                                         {checkPermissionForBoard(board_id, team_id, 'role_management') && (
@@ -212,7 +237,6 @@ export default function Permissiontable() {
                                     </div>
                                 </div>
                             ))}
-
                         </div>
                         <div className='permission-table-body'>
                             {permissions.map(
