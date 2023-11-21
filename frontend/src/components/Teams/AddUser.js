@@ -15,24 +15,10 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
   const [searchedUserList, setSearchedUserList]=useState([]);
   const [searchButtonClicked, setSearchButtonClicked] = useState(false);
   const [error, setError] = useState(null);
-  const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
 
   useEffect(() => {
     setNeedLoader(true);
     getUsers();
-      //ez
-      const ResetTheme = () => {
-        setTheme(sessionStorage.getItem("darkMode"))
-    }
-
-
-    console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
-    window.addEventListener('ChangingTheme', ResetTheme)
-
-    return () => {
-        window.removeEventListener('ChangingTheme', ResetTheme)
-    }
-    //eddig
   }, []);
 
   async function getUsers() {
@@ -81,7 +67,7 @@ function handleSearchButton(){
   }
 
   return (
-    <div className='overlay' data-theme={theme}>
+    <div className='overlay'>
       <div className='popup popup-mini'>
         <span className='close-btn' onClick={OnClose}>
           {closeIcon}

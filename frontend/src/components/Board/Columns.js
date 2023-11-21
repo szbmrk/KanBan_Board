@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 
 export const Column = ({
@@ -48,28 +48,10 @@ export const Column = ({
 
     const opacity = isDragging ? 0.75 : 1;
     const display = 'flex';
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
-    useEffect(() => {
-        //ez
-        const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
-        }
-
-
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-        //eddig
-    }, []);
-
 
     return (
         <div
             className='column'
-            data-theme={theme}
             ref={(node) => drag(drop(node))}
             style={{ opacity, display, zIndex: zIndex }}
             onMouseEnter={onMouseEnter}

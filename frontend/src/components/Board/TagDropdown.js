@@ -28,7 +28,7 @@ const TagDropdown = ({
         }),
         control: (base) => ({
             ...base,
-            backgroundColor: 'var(--bg-dark)',
+            backgroundColor: 'var(--light-gray)',
             border: 'none',
             borderRadius: '5px',
         }),
@@ -64,31 +64,21 @@ const TagDropdown = ({
         }),
         indicatorSeparator: (base) => ({
             ...base,
-            backgroundColor: 'var(--light-gray)',
+            backgroundColor: 'var(--dark-gray)',
         }),
         dropdownIndicator: (base) => ({
             ...base,
-            color: 'var(--bg-dark)',
+            color: 'var(--dark-gray)',
         }),
         menuList: (base) => ({
             ...base,
             padding: '0 5px',
             borderRadius: '5px',
-            backgroundColor: 'var(--bg-dark)',
+            backgroundColor: 'var(--light-gray)',
         }),
     };
-    const [darkTheme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+
     useEffect(() => {
-        //ez
-        const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
-        }
-
-
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-
         const tagsAsOptions = allTags.map((option) => ({
             tagId: option.tag_id,
             value: option.name,
@@ -104,9 +94,6 @@ const TagDropdown = ({
             color: tag.color,
         }));
         setSelectedTags(selectedTagsArray);
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
     }, [allTags]);
 
     const theme = (theme) => ({
@@ -185,7 +172,7 @@ const TagDropdown = ({
         MultiValueRemove: (props) => {
             return (
                 <components.MultiValueRemove {...props}>
-                    <div onClick={() => handleMultiValueRemove(props.data)} data-theme={darkTheme}>
+                    <div onClick={() => handleMultiValueRemove(props.data)}>
                         <span>{closeIcon}</span>
                     </div>
                 </components.MultiValueRemove>

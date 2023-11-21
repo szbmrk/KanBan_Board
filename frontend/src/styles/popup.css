@@ -150,7 +150,7 @@
     resize: none;
     border: 1px solid var(--light-gray);
     border-radius: 5px;
-    background-color: var(--dark-Navbar);
+    background-color: var(--light-gray);
     font-family: var(--basic-font);
 }
 
@@ -255,8 +255,8 @@
     cursor: pointer;
     font-family: var(--basic-font);
     font-size: 0.95em;
-    background-color: var(--bg-dark);
-    color: var(--light-dark);
+    background-color: var(--light-gray);
+    color: var(--dark-gray);
     transition: 0.1s ease;
 }
 

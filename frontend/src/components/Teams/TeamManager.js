@@ -10,25 +10,11 @@ const TeamManager = ({ teamData, onClose, ChangeTeamName, addTeam }) => {
     const [addedUsers, setAddedUsers] = useState([]);
 
     const closeIcon = <FontAwesomeIcon icon={faXmark} />;
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
 
     useEffect(() => {
         if (teamData.length !== 0) {
             setTeamName(teamData.name);
         }
-                //ez
-                const ResetTheme = () => {
-                    setTheme(sessionStorage.getItem("darkMode"))
-                }
-        
-        
-                console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
-                window.addEventListener('ChangingTheme', ResetTheme)
-        
-                return () => {
-                    window.removeEventListener('ChangingTheme', ResetTheme)
-                }
-                //eddig
     }, []);
 
     async function SubmitTeamName(e) {
@@ -50,7 +36,7 @@ const TeamManager = ({ teamData, onClose, ChangeTeamName, addTeam }) => {
     return (
         <>
             {teamData.length !== 0 ? (
-                <div className='overlay darken' data-theme={theme}>
+                <div className='overlay darken'>
                     <div className='popup popup-mini'>
                         <form className='popup-content-form-mini' onSubmit={SubmitTeamName}>
                             <span className='close-btn' onClick={onClose}>

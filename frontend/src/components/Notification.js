@@ -16,25 +16,9 @@ export default function Notification() {
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
 
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
-
-
     useEffect(() => {
         document.title = 'Notification';
         getNotifications();
-        //ez
-        const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
-        }
-
-
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-        //eddig
     }, []);
 
     const getNotifications = async () => {
@@ -141,7 +125,7 @@ export default function Notification() {
     };
 
     return (
-        <div className='content' data-theme={theme}>
+        <div className='content'>
             {notifications === null ? (
                 error ? (
                     <Error error={error} redirect={redirect} />

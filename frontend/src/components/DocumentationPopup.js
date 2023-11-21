@@ -22,24 +22,6 @@ const DocumentationPopup = ({ board_id, task, column, onCancel }) => {
 
   const [error, setError] = useState(null);
 
-  const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
-  useEffect(() => {
-    //ez
-    const ResetTheme = () => {
-      setTheme(sessionStorage.getItem("darkMode"))
-    }
-
-
-    console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
-    window.addEventListener('ChangingTheme', ResetTheme)
-
-    return () => {
-      window.removeEventListener('ChangingTheme', ResetTheme)
-    }
-    //eddig
-  }, []);
-
-
   const handleRunClick = async () => {
     if (task) {
       GenerateTaskDocumentationPerTask();
@@ -124,7 +106,7 @@ const DocumentationPopup = ({ board_id, task, column, onCancel }) => {
   });
 
   return (
-    <div className="overlay" data-theme={theme}>
+    <div className="overlay">
       <div className="popup agi-popup">
         <span className="close-btn" onClick={onCancel}>
           {closeIcon}
@@ -135,8 +117,8 @@ const DocumentationPopup = ({ board_id, task, column, onCancel }) => {
               (task
                 ? "task: " + task.title
                 : column
-                  ? "column: " + column.name
-                  : "the board")}
+                ? "column: " + column.name
+                : "the board")}
           </h2>
           <div className="gt-action-buttons">
             <div className="dropdown-container">

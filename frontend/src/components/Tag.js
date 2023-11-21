@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import '../styles/tag.css';
 
 const Tag = ({ name, color, extraClassName, enableClickBehavior, onClick }) => {
@@ -17,25 +17,9 @@ const Tag = ({ name, color, extraClassName, enableClickBehavior, onClick }) => {
             setIsClicked(!isClicked);
         }
     };
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
-    useEffect(() => {
-        //ez
-        const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
-        }
-
-
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-        //eddig
-    }, []);
 
     return (
-        <div className={'tag ' + extraClassName} style={tagStyle} onClick={onClick} data-theme={theme}>
+        <div className={'tag ' + extraClassName} style={tagStyle} onClick={onClick}>
             <p
 
             /* TODO: enableClickbehavior === false ? név szerkesztése : semmi */

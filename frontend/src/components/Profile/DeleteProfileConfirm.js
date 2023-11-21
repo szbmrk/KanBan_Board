@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/editprofile.css';
@@ -13,23 +13,6 @@ const DeleteProfileConfirm = ({ OnClose }) => {
     const [display, setDisplay] = useState('none');
 
     const navigate = useNavigate();
-
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
-    useEffect(() => {
-        //ez
-        const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
-        }
-
-
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-        //eddig
-    }, []);
 
     async function DeleteUser() {
         try {
@@ -58,7 +41,7 @@ const DeleteProfileConfirm = ({ OnClose }) => {
     }
 
     return (
-        <div className='overlay' data-theme={theme}>
+        <div className='overlay'>
             <div className='popup popup-mini'>
                 <span className='close-btn' onClick={OnClose}>
                     {closeIcon}

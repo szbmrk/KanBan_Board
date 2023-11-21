@@ -1,5 +1,5 @@
 import axios from "../api/axios";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 let teamPermissions = [];
 let ownPermissions = [];
 

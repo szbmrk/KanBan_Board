@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 
 export default function Error({ error, redirect }) {
     const [canBeRedirected, setCanBeRedirected] = useState(false);
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
 
     useEffect(() => {
         const onPageLoad = () => {
@@ -14,19 +13,6 @@ export default function Error({ error, redirect }) {
         };
 
         document.readyState === 'complete' ? onPageLoad() : window.addEventListener('load', onPageLoad);
-        //ez
-        const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
-        }
-
-
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-        //eddig
     }, []);
 
     return <>{canBeRedirected ? <Navigate to='/login' /> : <h1 style={{ textAlign: 'center' }}>{error}</h1>}</>;

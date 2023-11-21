@@ -12,8 +12,6 @@ import ErrorWrapper from "../ErrorWrapper";
 
 const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
   const [error, setError] = useState(null);
-  const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
-
 
   useEffect(() => {
     // This code will run when the component is mounted
@@ -23,19 +21,6 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
 
     // For example, fetching data from an API
     fetchBehaviours();
-    //ez
-    const ResetTheme = () => {
-      setTheme(sessionStorage.getItem("darkMode"))
-    }
-
-
-    console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
-    window.addEventListener('ChangingTheme', ResetTheme)
-
-    return () => {
-      window.removeEventListener('ChangingTheme', ResetTheme)
-    }
-    //eddig
   }, []);
 
   const fetchBehaviours = async () => {
@@ -158,7 +143,7 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
   }, [onCancel]);
 
   return (
-    <div className="overlay" data-theme={theme}>
+    <div className="overlay">
       <div className="popup agi-popup">
         <span className="close-btn" onClick={onCancel}>
           {closeIcon}
@@ -240,7 +225,7 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
         </div>
       </div>
       {error && (
-        <ErrorWrapper originalError={error} onClose={() => { setError(null); }} />
+          <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
       )}
     </div>
   );
