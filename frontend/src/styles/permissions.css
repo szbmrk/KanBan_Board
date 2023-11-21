@@ -183,10 +183,14 @@
 }
 
 .role-rename-input-field {
-    border: 1px solid var(--dark-gray);
+    padding: 5px;
+    border: 1px solid var(--gray);
+    border-color: var(--gray);
     border-radius: 4px;
-    background-color: var(--bg-mostly-black);
-    color: var(--light-gray);
+    width: 300px;
+    color: azure;
+    background-color: var(--dark-gray);
+    margin-right: 5px;
 }
 
 .role-rename-button {
