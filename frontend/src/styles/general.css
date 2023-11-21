@@ -2,6 +2,7 @@
 
 :root {
   --dark-gray: #404040;
+  --dark-Navbar: rgba(156, 156, 156, 0.767);
   --dark-grayRGB: 64, 64, 64;
   --light-gray: #cbcbcb;
   --light-grayRGB: 203, 203, 203;
@@ -27,24 +28,24 @@
 }
 [data-theme='light']
 {
-  --dark-gray: white;
-  --dark-grayRGB: 64, 64, 64;
-  --light-gray: white;
+  --dark-gray: rgba(255, 255, 255, 0.767);
+  --dark-Navbar: rgba(203, 203, 203, 0.767);
+  --light-gray: rgb(20, 20, 20);
   --light-grayRGB: 203, 203, 203;
   --off-white: #f0f0f0;
   --button: #7699ca;
-  --important: rgba(255, 0, 0, 0.4);
-  --important-light: rgba(255, 0, 0, 0.6);
+  --important: rgb(255, 130, 130);
+  --important-light: rgba(255, 103, 103, 0.6);
   --basic-font: "Raleway", sans-serif;
-  --confirm: rgba(148, 255, 148, 0.515);
+  --confirm: rgb(186, 255, 186);
   --starred: #f5d142;
   --magic: #cfc4ff;
   --edit: #ffd9aa;
   --attachment-link: #49b6ff;
   --scrollbar-hover: #d1d1d1;
-  --bg-dark: rgba(var(--dark-grayRGB), 0.7);
-  --bg-light: rgba(var(--light-grayRGB), 0.5);
-  --bg-mostly-black: #1f1f1f;
+  --bg-dark: rgba(206, 206, 206, 0.485);
+  --bg-light: rgba(206, 206, 206, 0.485);
+  --bg-mostly-black: #ffffff;
   --notification-type: #7a7a7a;
   --title-bar: rgba(255, 255, 255, 0.64);
   --code: #ff8c00;
@@ -54,7 +55,7 @@
 [data-theme='dark']
 {
   --dark-gray: #404040;
-  --dark-grayRGB: 64, 64, 64;
+  --dark-Navbar:rgb(64, 64, 64);
   --light-gray: #cbcbcb;
   --light-grayRGB: 203, 203, 203;
   --off-white: #f0f0f0;

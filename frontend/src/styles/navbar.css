@@ -1,5 +1,5 @@
 .navbar {
-    background-color: rgba(var(--dark-grayRGB), 0.7);
+    background-color: var(--dark-Navbar);
     color: var(--light-gray);
     padding: 5px 10px;
     width: 100%;
