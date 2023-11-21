@@ -225,7 +225,7 @@ export default function Permissiontable() {
                                             </div>) :
                                             (
                                                 <div className='role-rename-input'>
-                                                    <input type='text' placeholder='Rename this role...' onChange={handleRoleRename} />
+                                                    <input className='role-rename-input-field' type='text' placeholder='Rename this role...' onChange={handleRoleRename} />
                                                     <button className='role-rename-button' onClick={() => handleRoleRenameSubmit(role.role_id)}>Rename</button>
                                                 </div>
                                             )}
