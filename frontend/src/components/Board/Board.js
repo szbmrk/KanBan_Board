@@ -1751,7 +1751,7 @@ const Board = () => {
                                         </div>
                                     </Column>
                                 ))}
-                                {
+                                {permissions.filter(permission => {return permission.permission==='column_management'}).length===1 &&
                                     <div
                                         className="card-container addbtn-column"
                                         onClick={handleAddColumn}
@@ -2021,6 +2021,7 @@ const Board = () => {
                                         <p>{craftedPrompt.crafted_prompt_title}</p>
                                     </div>
                                 ))}
+                                {permissions.filter(permission => {return permission.permission==='column_management'}).length===1 &&
                                 <div
                                     className="option"
                                     onMouseEnter={() => setIsHoveredX(true)}
@@ -2037,6 +2038,7 @@ const Board = () => {
                                     </span>
                                     <p>Delete Column</p>
                                 </div>
+                                }
                             </div>
                         </div>
                     )}
