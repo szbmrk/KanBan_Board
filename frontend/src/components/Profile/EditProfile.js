@@ -11,10 +11,25 @@ const deleteIcon = <FontAwesomeIcon icon={faXmark} />;
 
 export default function EditProfile() {
     const token = sessionStorage.getItem('token');
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
 
     useEffect(() => {
         document.title = 'Profile';
         getProfileData();
+
+        //ez
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
+
+
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
+
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
+        //eddig
     }, []);
 
     const [formData, setFormData] = useState({
@@ -130,7 +145,7 @@ export default function EditProfile() {
     }
 
     return (
-        <div className='content'>
+        <div className='content' data-theme={theme}>
             {formData.username === '' ? (
                 error ? (
                     <Error error={error} redirect={redirect} />

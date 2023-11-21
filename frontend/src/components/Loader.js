@@ -4,16 +4,27 @@ import "../styles/loader.css";
 const Loader = ({ data_to_load, text_if_cant_load }) => {
     const [loading, setLoading] = useState(true);
 
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+
     useEffect(() => {
         setTimeout(() => {
             setLoading(false);
         }, 15000);
     }, [data_to_load]);
+    //ez
+    const ResetTheme = () => {
+        setTheme(sessionStorage.getItem("darkMode"))
+    }
 
+
+    console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+    window.addEventListener('ChangingTheme', ResetTheme)
+    //eddig
     return loading ? (
         Loading_component
     ) : (
-        Loading_component_with_text({ text: text_if_cant_load })
+        Loading_component_with_text({ text: text_if_cant_load }),
+        window.removeEventListener('ChangingTheme', ResetTheme)
     );
 };
 

@@ -5,6 +5,7 @@ import Loader from '../Loader';
 import Error from '../Error';
 
 const AssignedTasks = () => {
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
     const [tasks, setTasks] = useState(null);
     const [redirect, setRedirect] = useState(false);
     const [error, setError] = useState(false);
@@ -13,6 +14,17 @@ const AssignedTasks = () => {
     const user_id = sessionStorage.getItem('user_id');
 
     useEffect(() => {
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
+
+
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
+
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
         document.title = 'Assigned Tasks';
         getAssignedTasks();
     }, []);
@@ -49,7 +61,7 @@ const AssignedTasks = () => {
     };
 
     return (
-        <div className='content'>
+        <div className='content' data-theme={theme}>
             {tasks === null ? (
                 error ? (
 

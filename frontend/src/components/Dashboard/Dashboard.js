@@ -25,7 +25,10 @@ export default function Dashboard() {
 
     const token = sessionStorage.getItem('token');
     const user_id = sessionStorage.getItem('user_id');
-    const permissions=JSON.parse(sessionStorage.getItem('permissions'));
+    const permissions = JSON.parse(sessionStorage.getItem('permissions'));
+
+    //ez kell még
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
 
     useEffect(() => {
         document.title = 'Dashboard';
@@ -35,7 +38,22 @@ export default function Dashboard() {
         //backendről fetchelés
         fetchDashboardData();
         console.log(permissions);
+
+        //ez
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
+
+
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
+
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
+        //eddig
     }, []);
+
 
     async function ResetRoles() {
         await SetRoles(token);
@@ -215,7 +233,7 @@ export default function Dashboard() {
     };
 
     return (
-        <div className='content'>
+        <div className='content' data-theme={theme}>
             {teams === null ? (
                 error ? (
                     <Error error={error} redirect={redirect}></Error>
@@ -382,7 +400,7 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
                 </form>
             )}
             {error && (
-                <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+                <ErrorWrapper originalError={error} onClose={() => { setError(null); }} />
             )}
         </>
     );

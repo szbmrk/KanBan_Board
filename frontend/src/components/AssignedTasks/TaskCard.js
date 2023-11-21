@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../styles/taskcard.css';
 import Tag from '../Tag';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -24,11 +24,23 @@ const commentsIcon = <FontAwesomeIcon icon={faComments} />;
 const subtaskIcon = <FontAwesomeIcon icon={faListCheck} />;
 
 const TaskCard = ({ task }) => {
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
     useEffect(() => {
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
+
+
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
+
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
         console.log(task);
     });
     return (
-        <div className='task-card'>
+        <div className='task-card' data-theme={theme}>
             <Link to={`/board/${task.board_id}/${task.column_id}/${task.task_id}`}>
                 <h2 className='card-title'>{task.title}</h2>
             </Link>
