@@ -19,3 +19,5 @@
     2.3.1 Komplex projektmenedzsment funkciókat, mint például erőforráskezelés.
 
     2.3.2 Teljesítménymérési és analitikai eszközöket.  
+
+    2.3.3 Egyéb fejlett szervezési és tervezési funkciókat, amelyek túlmutatnak a Kanban filozófián. 
