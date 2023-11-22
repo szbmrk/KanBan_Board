@@ -7,3 +7,5 @@
 1.3	A Kanban Board egy digitális megvalósítása ennek a módszernek. A projektmenedzsmentben és a szoftverfejlesztésben gyakran alkalmazzák. Néhány alapvető tulajdonsága: 
 
         1.3.1	Feladatok vizualizálása: A Kanban Boardon minden feladat egy kártyaként 	jelenik meg. Ezek a kártyák tartalmazzák a feladat leírását, státuszát, felelősét 	stb. A 	kártyák mozgatása a táblán tükrözi a feladatok előrehaladását. 
+
+        1.3.2 Átláthatóság: A tábla segítségével mindenki láthatja, hogy mely feladatok 	vannak folyamatban, melyek készen vannak, és melyek még várnak. 
