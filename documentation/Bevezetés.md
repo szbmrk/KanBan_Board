@@ -13,3 +13,5 @@
         1.3.3 Prioritások kezelése: A Kanban Board lehetővé teszi a feladatok prioritásainak beállítását. A sürgős feladatokat előrébb lehet hozni a táblán. 
 
         1.3.4 Csapatmunka támogatása: A csapat tagjai könnyen együttműködhetnek a feladatokon, és láthatják egymás munkáját. 
+
+1.4	A projekt esetében a Kanban Board célja, hogy egy hatékony és felhasználóbarát 	felületen keresztül segítse a felhasználókat a feladatok kezelésében. A dokumentáció további részeiben részletesen olvashat a rendszer funkcióiról, architektúrájáról és megtekintheti az adatbázistervet. 
