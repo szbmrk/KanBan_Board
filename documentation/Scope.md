@@ -7,3 +7,5 @@
     2.2.1 Feladatok kezelése: A felhasználók képesek lesznek létrehozni, szerkeszteni és törölni feladatokat a Kanban táblán. A feladatoknak tartalmazniuk kell a címet, leírást, felelőst és határidőt. 
 
     2.2.2 Állapotok követése: A Kanban táblán lévő feladatokat különböző állapotokba lehet mozgatni, például "Új", "Folyamatban", "Kész". A felhasználóknak lehetőségük van az állapotok testre szabására az alkalmazkodás érdekében a 	projektek egyedi igényeihez.
+
+    2.2.3 Prioritások beállítása: A feladatokat prioritások alapján lehet rendezni, és a felhasználók képesek lesznek megadni az egyes feladatok fontosságát és sürgősségét.
