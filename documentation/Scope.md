@@ -11,3 +11,5 @@
     2.2.3 Prioritások beállítása: A feladatokat prioritások alapján lehet rendezni, és a felhasználók képesek lesznek megadni az egyes feladatok fontosságát és sürgősségét.
 
     2.2.4 Kommentek és mellékletek: A felhasználóknak lehetőségük van kommentek írására minden egyes feladathoz, valamint mellékletek csatolására, hogy könnyen megoszthassák az információkat a csapat többi tagjával.  
+
+    2.2.5 Felhasználói jogosultságok: Az alkalmazás tartalmazni fog egy felhasználókezelési rendszert, amely lehetővé teszi a projektvezetőknek és csapattagoknak különböző jogosultságok beállítását az adott projektben.
