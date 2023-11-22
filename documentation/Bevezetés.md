@@ -10,4 +10,6 @@
 
         1.3.2 Átláthatóság: A tábla segítségével mindenki láthatja, hogy mely feladatok vannak folyamatban, melyek készen vannak, és melyek még várnak. 
 
-        1.3.3	Prioritások kezelése: A Kanban Board lehetővé teszi a feladatok prioritásainak beállítását. A sürgős feladatokat előrébb lehet hozni a táblán. 
+        1.3.3 Prioritások kezelése: A Kanban Board lehetővé teszi a feladatok prioritásainak beállítását. A sürgős feladatokat előrébb lehet hozni a táblán. 
+
+        1.3.4 Csapatmunka támogatása: A csapat tagjai könnyen együttműködhetnek a feladatokon, és láthatják egymás munkáját. 
