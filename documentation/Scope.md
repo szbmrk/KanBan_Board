@@ -17,3 +17,5 @@
 2.3	Ezenkívül, a projekt nem foglalja magában az alábbiakat:  
 
     2.3.1 Komplex projektmenedzsment funkciókat, mint például erőforráskezelés.
+
+    2.3.2 Teljesítménymérési és analitikai eszközöket.  
