@@ -1,4 +1,5 @@
 ## 1. Jelenlegi helyzet leírása
+### A projekt kiindulási pontja a mindennapi szükséglet, hogy egy hatékony, könnyen kezelhető digitális feladatkezelő rendszerre van szükség a projektmenedzsment területén. A jelenlegi helyzetben felmerült az igény egy olyan platformra, amely lehetővé teszi a felhasználók számára, hogy átláthatóan és hatékonyan kövessék a projektek fejlődését, és könnyedén kommunikáljanak a csapatukkal.
 
 ## 2. Vágyálomrendszer leírása
 
