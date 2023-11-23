@@ -1,4 +1,5 @@
 ## 1. Áttekintés
+### A Kanban Board projekt célja egy webes alapú feladatkezelő rendszer kialakítása. A rendszer lehetővé teszi a felhasználók számára, hogy könnyedén kezeljék és kövessék a projekteket a digitális táblák segítségével. A rendszer alapvetően ingyenesen használható, de csak a regisztrált felhasználók számára biztosítja a projektek létrehozását és adataik tárolását.
 
 ## 2. Jelenlegi helyzet
 
