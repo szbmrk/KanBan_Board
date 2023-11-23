@@ -92,11 +92,13 @@ const Board = () => {
     const [craftedPromptsTask, setCraftedPromptsTask] = useState([]);
     const [isHoveredAITitleBar, setIsHoveredAITitleBar] = useState([]);
     const [isHoveredSortByTitleBar, setIsHoveredSortByTitleBar] = useState([]);
+    const [isHoveredFilterTitleBar, setIsHoveredFilterTitleBar] = useState([]);
     const [codeReviewOrDocumentations, setCodeReviewOrDocumentation] = useState([]);
     const navigate = useNavigate();
     const [hoveredColumnId, setHoveredColumnId] = useState(null);
     const [isAGIOpen, setIsAGIOpen] = useState(false);
     const [isSortOpen, setIsSortOpen] = useState(false);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
     const codeIcon = <FontAwesomeIcon icon={faCode} />;
@@ -1402,6 +1404,10 @@ const Board = () => {
         setIsSortOpen(!isSortOpen);
     };
 
+     const toggleFilterDropdown = () => {
+        setIsFilterOpen(!isFilterOpen);
+    };
+
     const handleTransformMouseEnter = () => {
         const options = document.getElementsByClassName("option");
         for (const option of options) {
@@ -1626,6 +1632,15 @@ const Board = () => {
                                 <div className="title-bar-buttons">
                                     <ul>
                                         <li>
+                                            onMouseEnter={() => setIsHoveredFilterTitleBar(true)}
+                                            onMouseLeave={() => setIsHoveredFilterTitleBar(false)}
+                                            onClick={toggleFilterDropdown}
+                                            style={{
+                                                color:
+                                                    isHoveredFilterTitleBar || isSortOpen
+                                                        ? "var(--off-white)"
+                                                        : "var(--dark-gray)",
+                                            }}
                                             <span>{filterIcon}</span>
                                             <p>Filter</p>
                                         </li>
@@ -1837,6 +1852,67 @@ const Board = () => {
                                     </div>
                                 }
                             </div>
+                        </div>
+                    )}
+                    {isFilterOpen && (
+                        <div
+                            className="filter-submenu"
+                            onMouseLeave={() => setIsFilterOpen(false)}
+                        >
+                            <p className="filter-menu-title"> Filter menu </p>
+                            <ul className="filter-menu">
+                                <li
+                                    onMouseEnter={() => setIsHoveredName(true)}
+                                    onMouseLeave={() => setIsHoveredName(false)}
+                                    onClick={() => {
+                                        sortByCardName();
+                                    }}
+                                >
+                                    <span
+                                        className="craft-button"
+                                        style={{
+                                            color: isHoveredName ? "var(--magic)" : "",
+                                        }}
+                                    >
+                                        {sortNameIcon}
+                                    </span>
+                                    <span>Sort by name</span>
+                                </li>
+                                <li
+                                    onMouseEnter={() => setIsHoveredDeadline(true)}
+                                    onMouseLeave={() => setIsHoveredDeadline(false)}
+                                    onClick={() => {
+                                        sortByCardDeadline();
+                                    }}
+                                >
+                                    <span
+                                        className="craft-button"
+                                        style={{
+                                            color: isHoveredDeadline ? "var(--edit)" : "",
+                                        }}
+                                    >
+                                        {sortDeadlineIcon}
+                                    </span>
+                                    <span>Sort by deadline</span>
+                                </li>
+                                <li
+                                    onMouseEnter={() => setIsHoveredPriority(true)}
+                                    onMouseLeave={() => setIsHoveredPriority(false)}
+                                    onClick={() => {
+                                        sortByCardPriority();
+                                    }}
+                                >
+                                    <span
+                                        className="craft-button"
+                                        style={{
+                                            color: isHoveredPriority ? "var(--important)" : "",
+                                        }}
+                                    >
+                                        {sortPriorityIcon}
+                                    </span>
+                                    <span>Sort by priority</span>
+                                </li>
+                            </ul>
                         </div>
                     )}
                     {isSortOpen && (
