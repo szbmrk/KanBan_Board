@@ -8,6 +8,7 @@
 ### A KanBan Board projekt új üzleti folyamatai egy digitális projektmenedzsment eszközt hoznak létre, amely átláthatóságot, hatékonyságot és könnyű együttműködést biztosít a csapatok számára. A projekt célja, hogy felülmúlja a jelenlegi módszerek korlátait és javítsa a projektkezelés hatékonyságát.
 
 ## 4. Igényelt üzleti folyamatok modellje
+### A projekt igényelt üzleti folyamatai egy mobilis és rugalmas projektmenedzsment alkalmazást eredményeznek, amely ötvözi a projektkezelés funkcionalitását és a szórakozást a felhasználók számára. A rendszer tervezése során kiemelten kezeljük a könnyű elérhetőséget, a kollaborációt és a bővíthetőséget.
 
 ## 5. Követelménylista
 
