@@ -116,9 +116,9 @@ const Board = () => {
     const team_member = JSON.parse(sessionStorage.getItem("team_members"));
     const permissions = JSON.parse(sessionStorage.getItem("permissions")).teams.filter(permission => { return parseInt(permission.board_id) === parseInt(board_id) });
 
-    const [priorityFilter, setPriorityFilter] = useState("ALL")
-    const [memberFilter, setMemberFilter] = useState("ALL")
-    const [tagFilter, setTagFilter] = useState("ALL")
+    const [priorityFilter, setPriorityFilter] = useState(-1)
+    const [memberFilter, setMemberFilter] = useState(-1)
+    const [tagFilter, setTagFilter] = useState(-1)
     const [deadlineFilter, setDeadlineFilter] = useState(null)
 
     useEffect(() => {
@@ -1937,7 +1937,15 @@ const Board = () => {
                             <ul className="filter-menu">
                                 <li
                                 >
-                                    <span>Priority:</span>
+                                    <div>
+                                        <span>Priority:</span>
+                                        <select defaultValue={-1} value={priorityFilter}>
+                                            <option value={-1}>ALL</option>
+                                            {priorities.map((priority) => {
+                                                return <option value={priority.priority_id}>{priority.priority}</option>
+                                            })}
+                                        </select>
+                                    </div>
                                 </li>
                                 <li
                                 >
