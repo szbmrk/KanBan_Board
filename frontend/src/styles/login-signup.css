@@ -1,6 +1,8 @@
-.auth-container{
+.auth-container {
     width: 60vw;
     max-width: 450px;
+    max-height: 80vh;
+    /* Set the max-height value according to your needs */
     min-height: 450px;
     position: relative;
     top: 10vh;
@@ -15,7 +17,9 @@
     justify-content: space-around;
     align-items: center;
     gap: 20px;
+    overflow-y: auto;
 }
+
 
 .auth-container h2 {
     text-align: center;
@@ -59,7 +63,7 @@
     outline: none;
 }
 
-#checkbox{
+#checkbox {
     display: block;
 }
 
@@ -104,7 +108,8 @@ a {
 }
 
 /* Tablets and under */
-@media(max-width: 768px){
+@media(max-width: 768px) {
+
     .signup-form,
     .login-form {
         width: 70vw;
@@ -115,6 +120,7 @@ a {
 
 /* Mobile */
 @media(max-width: 480px) {
+
     .signup-form,
     .login-form {
         width: 100%;
@@ -125,7 +131,8 @@ a {
     }
 }
 
-@media(max-width: 480px){
+@media(max-width: 480px) {
+
     .signup-form,
     .login-form {
         width: 100%;
