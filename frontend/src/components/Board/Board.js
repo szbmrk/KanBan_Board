@@ -115,6 +115,11 @@ const Board = () => {
     const team_member = JSON.parse(sessionStorage.getItem("team_members"));
     const permissions = JSON.parse(sessionStorage.getItem("permissions")).teams.filter(permission => { return parseInt(permission.board_id) === parseInt(board_id) });
 
+    const [priorityFilter, setPriorityFilter] = useState("ALL")
+    const [memberFilter, setMemberFilter] = useState("ALL")
+    const [tagFilter, setTagFilter] = useState("ALL")
+    const [deadlineFilter, setDeadlineFilter] = useState(null)
+
     useEffect(() => {
         document.title = "Board";
 
@@ -1925,7 +1930,7 @@ const Board = () => {
                     {isFilterOpen && (
                         <div
                             className="filter-submenu"
-                            onMouseLeave={() => setIsSortOpen(false)}
+                            onMouseLeave={() => setIsFilterOpen(false)}
                         >
                             <p className="filter-menu-title"> Filter menu </p>
                             <ul className="filter-menu">
