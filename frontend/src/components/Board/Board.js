@@ -195,6 +195,36 @@ const Board = () => {
             let tempColumnPositions = tempBoard.columns.map(
                 (column) => column.column_id
             );
+
+            //filter the tasks
+            if (parseInt(priorityFilter) !== -1) {
+                tempBoard.columns.map((column) => {
+                    column.tasks = column.tasks.filter(task => parseInt(task.priority_id) === parseInt(priorityFilter));
+                }
+                )
+            }
+
+            if (parseInt(memberFilter) !== -1) {
+                tempBoard.columns.map((column) => {
+                    column.tasks = column.tasks.filter(task => task.members.contains(member => member.user_id == memberFilter));
+                }
+                )
+            }
+
+            if (parseInt(tagFilter) !== -1) {
+                tempBoard.columns.map((column) => {
+                    column.tasks = column.tasks.filter(task => task.tags.contains(tag => tag.tag_id == tagFilter));
+                }
+                )
+            }
+
+            if (deadlineFilter !== null) {
+                tempBoard.columns.map((column) => {
+                    column.tasks = column.tasks.filter(task => task.deadline <= deadlineFilter);
+                }
+                )
+            }
+
             setColumnPositions(tempColumnPositions);
 
             console.log("Columns: ", tempBoard.columns);
@@ -1636,6 +1666,28 @@ const Board = () => {
         });
     }
 
+    const changePriorityFilter = (e) => {
+        console.log(e.target.value)
+        setPriorityFilter(e.target.value);
+        filterBoard();
+    }
+
+    const changeTagFilter = (e) => {
+        setTagFilter(e.target.value);
+        filterBoard();
+    }
+
+    const changeMemberFilter = (e) => {
+        setMemberFilter(e.target.value);
+        filterBoard();
+    }
+
+    const filterBoard = async () => {
+        setBoard([]);
+        await fetchBoardData();
+    }
+
+
     return (
         <>
             {permission === false ? (
@@ -1960,7 +2012,7 @@ const Board = () => {
                                 >
                                     <div>
                                         <span>Priority:</span>
-                                        <select defaultValue={-1} value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
+                                        <select defaultValue={-1} value={priorityFilter} onChange={(e) => changePriorityFilter(e)}>
                                             <option value={-1}>ALL</option>
                                             {priorities.map((priority) => {
                                                 return <option value={priority.priority_id}>{priority.priority}</option>
@@ -1972,7 +2024,7 @@ const Board = () => {
                                 >
                                     <div>
                                         <span>Tag:</span>
-                                        <select defaultValue={-1} value={tagFilter} onChange={(e) => setTagFilter(e.target.value)}>
+                                        <select defaultValue={-1} value={tagFilter} onChange={(e) => changeTagFilter(e)}>
                                             <option value={-1}>ALL</option>
                                             {tags.map((tag) => {
                                                 return <option value={tag.tag_id}>{tag.name}</option>
