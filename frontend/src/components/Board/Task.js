@@ -196,24 +196,7 @@ export const Task = ({
 
   return (
     <>
-    {task===null ? 
-    (
-      <div
-      ref={(node) => drag(drop(node))}
-        className="card"
-        data-theme={theme}
-        style={{
-          opacity,
-          
-          zIndex: cardIndex === index ? cardZIndex : () => setCardZIndex(9999999999),
-        }}
-        onMouseEnter={() => handleMouseEnterOnCard(id)}
-        onMouseLeave={handleMouseLeaveOnCard}
-      >
-
-      </div>
-    ) :
-      (<div
+    <div
         ref={(node) => drag(drop(node))}
         className="card"
         data-theme={theme}
@@ -259,7 +242,7 @@ export const Task = ({
             ))}
         </div>
       
-      </div>)}
+      </div>
       {showIconContainer && (
         <div
           className="overlay"
