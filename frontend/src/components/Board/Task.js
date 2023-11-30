@@ -198,7 +198,18 @@ export const Task = ({
     <>
     {task===null ? 
     (
-      <div>
+      <div
+      ref={(node) => drag(drop(node))}
+        className="card"
+        data-theme={theme}
+        style={{
+          opacity,
+          
+          zIndex: cardIndex === index ? cardZIndex : () => setCardZIndex(9999999999),
+        }}
+        onMouseEnter={() => handleMouseEnterOnCard(id)}
+        onMouseLeave={handleMouseLeaveOnCard}
+      >
 
       </div>
     ) :

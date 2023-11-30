@@ -1842,7 +1842,7 @@ const Board = () => {
                                                             dragIndex,
                                                             hoverIndex,
                                                             sourceDiv,
-                                                            targetDiv
+                                                            
                                                         ) =>
                                                             moveCardFrontend(
                                                                 dragIndex,
@@ -1850,7 +1850,7 @@ const Board = () => {
                                                                 parseInt(sourceDiv.substr(3)) - 1,
                                                                 parseInt(sourceDiv.substr(3)) - 1
                                                             )
-                                                        }/*
+                                                        }
                                                         moveCardBackend={(
                                                             dragIndex,
                                                             hoverIndex,
@@ -1863,7 +1863,7 @@ const Board = () => {
                                                                 parseInt(sourceDiv.substr(3)) - 1,
                                                                 parseInt(targetDiv.substr(3)) - 1
                                                             )
-                                                        }*/
+                                                        }
                                                         generateDocumentationForTask={(task) =>
                                                             generateDocumentationForTask(task)
                                                         }
