@@ -1,7 +1,6 @@
 ## 1. Rendszer célja
 
-
-A Kanban alapú projektvágyálom rendszer egy interaktív webes felülettel rendelkező bejegyzésrendszert hoz létre. A csapat egy átlátható táblát használ a projekt folyamatának követésére, ahol a feladatok kártyákon jelennek meg. A fejlesztés során a csapat fókuszál a felhasználói felület, az adatbázisintegráció és a funkcionalitás tesztelése területeire.
+### A Kanban alapú projektvágyálom rendszer egy interaktív webes felülettel rendelkező bejegyzésrendszert hoz létre. A csapat egy átlátható táblát használ a projekt folyamatának követésére, ahol a feladatok kártyákon jelennek meg. A fejlesztés során a csapat fókuszál a felhasználói felület, az adatbázisintegráció és a funkcionalitás tesztelése területeire.
 
 ## 2. Projektterv
 
@@ -32,3 +31,5 @@ A Kanban alapú projektvágyálom rendszer egy interaktív webes felülettel ren
 ### A webszerverre közvetlenül az internetről kapcsolódnak rá a kliensek. A weboldal URL címét szükséges ismerni és ezt beírni a böngésző címsorába.
 
 ## 11. Karbantartási terv
+
+### A felhasználók az oldalon megadott elérhetőségen jelenthetik be az esetlegesen felmerülő problémákat, hibákat, melyeket fejlesztőink javítanak.
