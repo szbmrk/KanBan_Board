@@ -21,14 +21,14 @@ A Kanban alapú projektvágyálom rendszer egy interaktív webes felülettel ren
 
 ## 10. Telepítési terv
 
-###A szoftver webes felületéhez csak egy böngésző telepítése szükséges.
+### A szoftver webes felületéhez csak egy böngésző telepítése szükséges.
 
-Windows - Microsoft Edge
+### Windows - Microsoft Edge
 
-Linux - Mozilla Firefox
+### Linux - Mozilla Firefox
 
-Mac - Safari
+### Mac - Safari
 
-A webszerverre közvetlenül az internetről kapcsolódnak rá a kliensek. A weboldal URL címét szükséges ismerni és ezt beírni a böngésző címsorába.
+### A webszerverre közvetlenül az internetről kapcsolódnak rá a kliensek. A weboldal URL címét szükséges ismerni és ezt beírni a böngésző címsorába.
 
 ## 11. Karbantartási terv
