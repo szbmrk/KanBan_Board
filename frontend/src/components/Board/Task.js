@@ -196,7 +196,7 @@ export const Task = ({
 
   return (
     <>
-      <div
+    <div
         ref={(node) => drag(drop(node))}
         className="card"
         data-theme={theme}
@@ -208,6 +208,8 @@ export const Task = ({
         onMouseEnter={() => handleMouseEnterOnCard(id)}
         onMouseLeave={handleMouseLeaveOnCard}
       >
+        
+        
         <div className="task-title">{task.title}</div>
         <div
           className="options"
@@ -239,6 +241,7 @@ export const Task = ({
               />
             ))}
         </div>
+      
       </div>
       {showIconContainer && (
         <div

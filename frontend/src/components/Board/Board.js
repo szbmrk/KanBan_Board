@@ -1754,6 +1754,7 @@ const Board = () => {
                                                 </>
                                             )}
                                             <div className="task-container">
+                                                {/*get tasks*/}
                                                 {column.tasks.map((task, taskIndex) => (
                                                     <Task
                                                         key={task.task_id}
@@ -1821,6 +1822,7 @@ const Board = () => {
                                                         }
                                                     />
                                                 ))}
+                                                
                                             </div>
                                             {column.is_finished === 0 && permissions.filter(permission => { return permission.permission === 'task_management' }).length === 1 ? (
                                                 <div
@@ -1835,6 +1837,7 @@ const Board = () => {
                                         </div>
                                     </Column>
                                 ))}
+                                {/*check permission for loumn magamegemt*/}
                                 {permissions.filter(permission => { return permission.permission === 'column_management' }).length === 1 &&
                                     <div
                                         className="card-container addbtn-column"
