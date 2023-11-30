@@ -92,11 +92,13 @@ const Board = () => {
     const [craftedPromptsTask, setCraftedPromptsTask] = useState([]);
     const [isHoveredAITitleBar, setIsHoveredAITitleBar] = useState([]);
     const [isHoveredSortByTitleBar, setIsHoveredSortByTitleBar] = useState([]);
+    const [isHoveredFilterByTitleBar, setIsHoveredFilterByTitleBar] = useState([]);
     const [codeReviewOrDocumentations, setCodeReviewOrDocumentation] = useState([]);
     const navigate = useNavigate();
     const [hoveredColumnId, setHoveredColumnId] = useState(null);
     const [isAGIOpen, setIsAGIOpen] = useState(false);
     const [isSortOpen, setIsSortOpen] = useState(false);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
     const codeIcon = <FontAwesomeIcon icon={faCode} />;
@@ -1402,6 +1404,10 @@ const Board = () => {
         setIsSortOpen(!isSortOpen);
     };
 
+    const toggleFilterDropdown = () => {
+        setIsFilterOpen(!isFilterOpen);
+    };
+
     const handleTransformMouseEnter = () => {
         const options = document.getElementsByClassName("option");
         for (const option of options) {
@@ -1625,7 +1631,16 @@ const Board = () => {
                                 <h1 className="title-name">{board.name}</h1>
                                 <div className="title-bar-buttons">
                                     <ul>
-                                        <li>
+                                        <li
+                                            onMouseEnter={() => setIsHoveredFilterByTitleBar(true)}
+                                            onMouseLeave={() => setIsHoveredFilterByTitleBar(false)}
+                                            onClick={toggleFilterDropdown}
+                                            style={{
+                                                color:
+                                                    isHoveredFilterByTitleBar || isFilterOpen
+                                                        ? "var(--off-white)"
+                                                        : "var(--dark-gray)",
+                                            }}>
                                             <span>{filterIcon}</span>
                                             <p>Filter</p>
                                         </li>
@@ -1903,6 +1918,32 @@ const Board = () => {
                                         {sortPriorityIcon}
                                     </span>
                                     <span>Sort by priority</span>
+                                </li>
+                            </ul>
+                        </div>
+                    )}
+                    {isFilterOpen && (
+                        <div
+                            className="filter-submenu"
+                            onMouseLeave={() => setIsSortOpen(false)}
+                        >
+                            <p className="filter-menu-title"> Filter menu </p>
+                            <ul className="filter-menu">
+                                <li
+                                >
+                                    <span>Priority:</span>
+                                </li>
+                                <li
+                                >
+                                    <span>Tag:</span>
+                                </li>
+                                <li
+                                >
+                                    <span>Deadline:</span>
+                                </li>
+                                <li
+                                >
+                                    <span>Member:</span>
                                 </li>
                             </ul>
                         </div>
