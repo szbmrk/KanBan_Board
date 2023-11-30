@@ -14,6 +14,7 @@
     height: 100vh;
     max-width: 220px;
     background-color: var(--dark-Navbar);
+    overflow-y: auto;
 }
 
 .sidebar-menu a {
@@ -45,18 +46,18 @@
     width: 100%;
     text-align: left;
     color: var(--light-gray);
-  }
-  
-  .sidebar-menu li:hover {
-    background-color: var(--dark-gray);
-  }
+}
 
-  .sidebar-hidden {
+.sidebar-menu li:hover {
+    background-color: var(--dark-gray);
+}
+
+.sidebar-hidden {
     transform: translateX(-220px);
     transition: transform 0.5s ease-in-out;
-  }
-  
-  .sidebar-visible {
+}
+
+.sidebar-visible {
     transform: translateX(0);
     transition: transform 0.5s ease-in-out;
-  }
+}
