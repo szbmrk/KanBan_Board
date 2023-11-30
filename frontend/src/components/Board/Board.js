@@ -51,6 +51,7 @@ const Board = () => {
     const [permission, setPermission] = useState(false);
     const [error, setError] = useState(false);
     const [board, setBoard] = useState([]);
+    const [tags, setTags] = useState([]);
     const [columnPositions, setColumnPositions] = useState([]);
     const [editingColumnIndex, setEditingColumnIndex] = useState(null);
     const [columnToDeleteIndex, setColumnToDeleteIndex] = useState(null);
@@ -201,6 +202,14 @@ const Board = () => {
             console.log("tempBoard");
             console.log(tempBoard);
 
+            const response1 = await axios.get(`/boards/${board_id}/tags`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            setTags(response1.data.tags)
+
             if (task_to_show_id) {
                 const columnIndex = tempBoard.columns.findIndex(
                     (column) => column.column_id === parseInt(column_to_show_id)
@@ -214,6 +223,8 @@ const Board = () => {
                 }
                 navigate(`/board/${board_id}`);
             }
+
+
         } catch (e) {
             console.error(e);
             if (e.response.status === 401 || e.response.status === 500) {
@@ -1949,7 +1960,15 @@ const Board = () => {
                                 </li>
                                 <li
                                 >
-                                    <span>Tag:</span>
+                                    <div>
+                                        <span>Tag:</span>
+                                        <select defaultValue={-1} value={tagFilter} onChange={(e) => setTagFilter(e.target.value)}>
+                                            <option value={-1}>ALL</option>
+                                            {tags.map((tag) => {
+                                                return <option value={tag.tag_id}>{tag.name}</option>
+                                            })}
+                                        </select>
+                                    </div>
                                 </li>
                                 <li
                                 >
