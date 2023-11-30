@@ -26,6 +26,12 @@
     font-weight: bold;
 }
 
+.teamsLink {
+    color: var(--light-gray);
+    text-decoration: none;
+
+}
+
 /* CSS for the boards container inside each team card */
 .boards {
     display: flex;
