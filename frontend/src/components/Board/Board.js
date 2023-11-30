@@ -52,6 +52,7 @@ const Board = () => {
     const [error, setError] = useState(false);
     const [board, setBoard] = useState([]);
     const [tags, setTags] = useState([]);
+    const [members, setMembers] = useState([]);
     const [columnPositions, setColumnPositions] = useState([]);
     const [editingColumnIndex, setEditingColumnIndex] = useState(null);
     const [columnToDeleteIndex, setColumnToDeleteIndex] = useState(null);
@@ -209,6 +210,15 @@ const Board = () => {
             });
 
             setTags(response1.data.tags)
+
+
+            /*const response2 = await axios.get(`/boards/${board_id}/members`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            setMembers(response2.data.members)*/
 
             if (task_to_show_id) {
                 const columnIndex = tempBoard.columns.findIndex(
@@ -1972,12 +1982,21 @@ const Board = () => {
                                 </li>
                                 <li
                                 >
-                                    <span>Deadline:</span>
+                                    <div>
+                                        <span>Member:</span>
+                                        <select defaultValue={-1} value={memberFilter} onChange={(e) => setMemberFilter(e.target.value)}>
+                                            <option value={-1}>ALL</option>
+                                            {members.map((member) => {
+                                                return <option value={member.member_id}>{member.name}</option>
+                                            })}
+                                        </select>
+                                    </div>
                                 </li>
                                 <li
                                 >
-                                    <span>Member:</span>
+                                    <span>Deadline:</span>
                                 </li>
+
                             </ul>
                         </div>
                     )}
