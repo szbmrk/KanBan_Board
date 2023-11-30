@@ -28,7 +28,7 @@
 
 ### Mac - Safari
 
-### A webszerverre közvetlenül az internetről kapcsolódnak rá a kliensek. A weboldal URL címét szükséges ismerni és ezt beírni a böngésző címsorába.
+### A webszerverre közvetlenül az internetről kapcsolódnak rá a kliensek. A weboldal URL címét szükséges ismerni és ezt beírni a böngésző címsorába, majd a meglévő fiókba bejelentkezni, vagy regisztrálni.
 
 ## 11. Karbantartási terv
 
