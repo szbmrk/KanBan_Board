@@ -190,7 +190,7 @@
     width: 300px;
     color: azure;
     background-color: var(--dark-gray);
-    margin-right: 5px;
+    margin-right: 10px;
 }
 
 .role-rename-button {
