@@ -27,4 +27,4 @@ bootstrap:
 
 serve:
 	cd backend
-	php artisan serve
+	php artisan serve --host=$(shell hostname -I | cut -d ' ' -f 1)
