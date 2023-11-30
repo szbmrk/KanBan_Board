@@ -191,7 +191,7 @@ export const Task = ({
         return () => {
             window.removeEventListener('ChangingTheme', ResetTheme)
         }
-        //eddig
+        //eddig ennyi
     }, []);
 
   return (
