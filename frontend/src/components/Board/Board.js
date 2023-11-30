@@ -39,6 +39,7 @@ import { useNavigate } from "react-router-dom";
 import CodePopup from "../CodePopup";
 import DocumentationPopup from "../DocumentationPopup";
 import GeneratePerformanceSummaryPopup from "../GeneratePerformanceSummaryPopup";
+import DatePicker from 'react-datepicker';
 
 export const documentationIcon = <FontAwesomeIcon icon={faFileLines} />;
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
