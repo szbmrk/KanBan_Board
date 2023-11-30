@@ -244,7 +244,7 @@ export default function Dashboard() {
                 <>
                     <h1 className='header'>Dashboard</h1>
                     {teams.length === 0 ?
-                        (<div>
+                        (<div className='no-teams-div'>
                             <p>You don't have any teams yet!</p>
                             Link to <Link to='/teams'>Teams</Link> page.
                         </div>
