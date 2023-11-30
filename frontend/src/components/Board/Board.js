@@ -1754,6 +1754,7 @@ const Board = () => {
                                                 </>
                                             )}
                                             <div className="task-container">
+                                                
                                                 {column.tasks.map((task, taskIndex) => (
                                                     <Task
                                                         key={task.task_id}
@@ -1821,6 +1822,71 @@ const Board = () => {
                                                         }
                                                     />
                                                 ))}
+                                                {/*empty task for drag&drop*/}
+                                                <Task key={null}
+                                                        id={null}
+                                                        index={null}
+                                                        task={null}/*is null==>problem*/
+                                                        column={column}
+                                                        craftedPromptsTask={craftedPromptsTask}
+                                                        divName={`div${"empty_task"}`}
+                                                        /*
+                                                        favouriteTask={handleFavouriteTask}
+                                                        unFavouriteTask={handleUnFavouriteTask}
+                                                        deleteTask={handleDeleteTask}
+                                                        setTaskAsInspectedTask={setTaskAsInspectedTask}*/
+                                                        openGenerateTaskWithAGIPopup={
+                                                            openGenerateTaskWithAGIPopup
+                                                        }
+                                                        moveCardFrontend={(
+                                                            dragIndex,
+                                                            hoverIndex,
+                                                            sourceDiv,
+                                                            targetDiv
+                                                        ) =>
+                                                            moveCardFrontend(
+                                                                dragIndex,
+                                                                hoverIndex,
+                                                                parseInt(sourceDiv.substr(3)) - 1,
+                                                                parseInt(sourceDiv.substr(3)) - 1
+                                                            )
+                                                        }/*
+                                                        moveCardBackend={(
+                                                            dragIndex,
+                                                            hoverIndex,
+                                                            sourceDiv,
+                                                            targetDiv
+                                                        ) =>
+                                                            moveCardBackend(
+                                                                dragIndex,
+                                                                hoverIndex,
+                                                                parseInt(sourceDiv.substr(3)) - 1,
+                                                                parseInt(targetDiv.substr(3)) - 1
+                                                            )
+                                                        }*/
+                                                        generateDocumentationForTask={(task) =>
+                                                            generateDocumentationForTask(task)
+                                                        }
+                                                        generateTasks={(task, column) =>
+                                                            openGenerateTaskWithAGIPopup(task, column)
+                                                        }
+                                                        generateAttachmentLinks={(task) =>
+                                                            openGenerateAttachmentLinkWithAGIPopup(task)
+                                                        }
+                                                        HandleCraftedPromptTaskClick={(
+                                                            craftedPrompt,
+                                                            task,
+                                                            column
+                                                        ) =>
+                                                            HandleCraftedPromptTaskClick(
+                                                                craftedPrompt,
+                                                                task,
+                                                                column
+                                                            )
+                                                        }
+                                                        permissions={
+                                                            permissions
+                                                        }/>
                                             </div>
                                             {column.is_finished === 0 && permissions.filter(permission => { return permission.permission === 'task_management' }).length === 1 ? (
                                                 <div
