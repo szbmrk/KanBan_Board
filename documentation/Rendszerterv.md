@@ -13,7 +13,7 @@
 ## 6. Architekturális terv
 
 ## 7. Adatbázis terv
-<img src="KanBanDB.png>
+![Adatbási-terv](KanBanDB.png)
 
 ## 8. Implementációs terv
 
