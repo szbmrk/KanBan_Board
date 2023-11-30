@@ -1939,7 +1939,7 @@ const Board = () => {
                                 >
                                     <div>
                                         <span>Priority:</span>
-                                        <select defaultValue={-1} value={priorityFilter}>
+                                        <select defaultValue={-1} value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
                                             <option value={-1}>ALL</option>
                                             {priorities.map((priority) => {
                                                 return <option value={priority.priority_id}>{priority.priority}</option>
