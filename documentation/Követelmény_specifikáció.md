@@ -11,6 +11,8 @@
 
 ## 5. Rendszerre vonatkozó törvények, szabványok, ajánlások
 
+Az alkalmazásunk nyílt forráskódú, bárki letöltheti/használhatja. Értékesítése szigorúan tilos!
+
 ## 6. Jelenlegi üzleti folyamatok modellje
 
 ## 7. Igényelt üzleti folyamatok modellje
