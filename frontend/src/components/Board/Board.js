@@ -279,7 +279,7 @@ const Board = () => {
 
         if (parseInt(tagFilter) !== -1) {
             tempColumns.map((column) => {
-                column.tasks = column.tasks.filter(task => task.tags !== [] && task.tags.find(tag => parseInt(tag.tag_id) == parseInt(tagFilter)));
+                column.tasks = column.tasks.filter(task => task.tags !== undefined && task.tags.find(tag => parseInt(tag.tag_id) == parseInt(tagFilter)));
             }
             )
         }
@@ -2045,6 +2045,7 @@ const Board = () => {
                                         </select>
                                     </div>
                                 </li>
+                                {/*
                                 <li
                                 >
                                     <div>
@@ -2061,6 +2062,7 @@ const Board = () => {
                                 >
                                     <span>Deadline:</span>
                                 </li>
+                                        */}
 
                             </ul>
                         </div>
