@@ -268,7 +268,6 @@ const Board = () => {
                 column.tasks = column.tasks.filter(task => parseInt(task.priority_id) == parseInt(priorityFilter));
             }
             )
-            console.log("Filtered by priority")
         }
 
         if (parseInt(memberFilter) !== -1) {
@@ -280,7 +279,7 @@ const Board = () => {
 
         if (parseInt(tagFilter) !== -1) {
             tempColumns.map((column) => {
-                column.tasks = column.tasks.filter(task => task.tags.contains(tag => tag.tag_id == tagFilter));
+                column.tasks = column.tasks.filter(task => task.tags !== [] && task.tags.find(tag => parseInt(tag.tag_id) == parseInt(tagFilter)));
             }
             )
         }
