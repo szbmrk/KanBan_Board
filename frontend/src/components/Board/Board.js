@@ -125,6 +125,9 @@ const Board = () => {
     let deadlineFilter = null
 
     const [priorityDropDownValue, setPriorityDropDownValue] = useState(-1)
+    const [memberDropDownValue, setMemberDropDownValue] = useState(-1)
+    const [tagDropDownValue, setTagDropDownValue] = useState(-1)
+    const [deadlineDropDownValue, setDeadlineDropDownValue] = useState(null)
 
     useEffect(() => {
         document.title = "Board";
@@ -1683,16 +1686,19 @@ const Board = () => {
     const changePriorityFilter = (e) => {
         console.log("priorityid " + e.target.value)
         priorityFilter = e.target.value;
+        setPriorityDropDownValue(e.target.value)
         FilterBoard();
     }
 
     const changeTagFilter = (e) => {
         tagFilter = e.target.value;
+        setTagDropDownValue(e.target.value)
         FilterBoard();
     }
 
     const changeMemberFilter = (e) => {
         memberFilter = e.target.value;
+        setMemberDropDownValue(e.target.value)
         FilterBoard();
     }
 
@@ -2020,7 +2026,7 @@ const Board = () => {
                                 >
                                     <div>
                                         <span>Priority:</span>
-                                        <select defaultValue={parseInt(-1)} value={priorityFilter} onChange={(e) => changePriorityFilter(e)}>
+                                        <select defaultValue={parseInt(-1)} value={priorityDropDownValue} onChange={(e) => changePriorityFilter(e)}>
                                             <option value={parseInt(-1)}>ALL</option>
                                             {priorities.map((priority) => {
                                                 return <option value={parseInt(priority.priority_id)}>{priority.priority}</option>
@@ -2032,7 +2038,7 @@ const Board = () => {
                                 >
                                     <div>
                                         <span>Tag:</span>
-                                        <select defaultValue={-1} value={tagFilter} onChange={(e) => changeTagFilter(e)}>
+                                        <select defaultValue={-1} value={tagDropDownValue} onChange={(e) => changeTagFilter(e)}>
                                             <option value={-1}>ALL</option>
                                             {tags.map((tag) => {
                                                 return <option value={parseInt(tag.tag_id)}>{tag.name}</option>
@@ -2044,7 +2050,7 @@ const Board = () => {
                                 >
                                     <div>
                                         <span>Member:</span>
-                                        <select defaultValue={-1} value={memberFilter} onChange={(e) => changeTagFilter(e)}>
+                                        <select defaultValue={-1} value={memberDropDownValue} onChange={(e) => changeTagFilter(e)}>
                                             <option value={-1}>ALL</option>
                                             {members.map((member) => {
                                                 return <option value={parseInt(member.member_id)}>{member.name}</option>
