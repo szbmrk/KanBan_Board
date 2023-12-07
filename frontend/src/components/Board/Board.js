@@ -255,8 +255,8 @@ const Board = () => {
     const FilterBoard = () => {
         setBoardToShow([])
         const tempBoard =  cloneDeep(board)
-        const tempColumns = [...tempBoard.columns]
-        console.log(tempColumns)
+        const tempColumns = cloneDeep([...tempBoard.columns])
+        console.log(board.columns[0].tasks)
 
         if (parseInt(priorityFilter) !== -1) {
             tempColumns.map((column) => {
@@ -1678,7 +1678,7 @@ const Board = () => {
     }
 
     const changePriorityFilter = (e) => {
-        console.log(e.target.value)
+        console.log("priorityid " + e.target.value)
         setPriorityFilter(e.target.value);
         FilterBoard();
     }
@@ -2017,8 +2017,8 @@ const Board = () => {
                                 >
                                     <div>
                                         <span>Priority:</span>
-                                        <select defaultValue={-1} value={priorityFilter} onChange={(e) => changePriorityFilter(e)}>
-                                            <option value={-1}>ALL</option>
+                                        <select defaultValue={parseInt(-1)} value={priorityFilter} onChange={(e) => changePriorityFilter(e)}>
+                                            <option value={parseInt(-1)}>ALL</option>
                                             {priorities.map((priority) => {
                                                 return <option value={parseInt(priority.priority_id)}>{priority.priority}</option>
                                             })}
