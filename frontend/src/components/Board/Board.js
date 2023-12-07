@@ -51,6 +51,7 @@ const Board = () => {
     const [permission, setPermission] = useState(false);
     const [error, setError] = useState(false);
     const [board, setBoard] = useState([]);
+    const [boardToShow, setBoardToShow] = useState([]);
     const [tags, setTags] = useState([]);
     const [members, setMembers] = useState([]);
     const [columnPositions, setColumnPositions] = useState([]);
@@ -196,35 +197,6 @@ const Board = () => {
                 (column) => column.column_id
             );
 
-            //filter the tasks
-            if (parseInt(priorityFilter) !== -1) {
-                tempBoard.columns.map((column) => {
-                    column.tasks = column.tasks.filter(task => parseInt(task.priority_id) === parseInt(priorityFilter));
-                }
-                )
-            }
-
-            if (parseInt(memberFilter) !== -1) {
-                tempBoard.columns.map((column) => {
-                    column.tasks = column.tasks.filter(task => task.members.contains(member => member.user_id == memberFilter));
-                }
-                )
-            }
-
-            if (parseInt(tagFilter) !== -1) {
-                tempBoard.columns.map((column) => {
-                    column.tasks = column.tasks.filter(task => task.tags.contains(tag => tag.tag_id == tagFilter));
-                }
-                )
-            }
-
-            if (deadlineFilter !== null) {
-                tempBoard.columns.map((column) => {
-                    column.tasks = column.tasks.filter(task => task.deadline <= deadlineFilter);
-                }
-                )
-            }
-
             setColumnPositions(tempColumnPositions);
 
             console.log("Columns: ", tempBoard.columns);
@@ -278,6 +250,39 @@ const Board = () => {
             setPermission(false);
         }
     };
+
+    const FilterBoard = () => {
+        
+        const tempColumns = [...board.columns]
+
+        if (parseInt(priorityFilter) !== -1) {
+            tempColumns.map((column) => {
+                column.tasks = column.tasks.filter(task => parseInt(task.priority_id) === parseInt(priorityFilter));
+            }
+            )
+        }
+
+        if (parseInt(memberFilter) !== -1) {
+            tempColumns.map((column) => {
+                column.tasks = column.tasks.filter(task => task.members.contains(member => member.user_id == memberFilter));
+            }
+            )
+        }
+
+        if (parseInt(tagFilter) !== -1) {
+            tempColumns.map((column) => {
+                column.tasks = column.tasks.filter(task => task.tags.contains(tag => tag.tag_id == tagFilter));
+            }
+            )
+        }
+
+        if (deadlineFilter !== null) {
+            tempColumns.map((column) => {
+                column.tasks = column.tasks.filter(task => task.deadline <= deadlineFilter);
+            }
+            )
+        }
+    }
 
     const handleAddColumn = async () => {
         try {
