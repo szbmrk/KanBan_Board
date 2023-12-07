@@ -9,3 +9,27 @@
 | 12:05 | /register útvonal | Sikeres | Sikeresen behozza a regisztrációs felületet. | 
 | 12:05 | Register gomb | Sikeres | Sikeres regisztráció. |
 | 12:06 | Register gomb | Sikeres | Sikertelen regisztrációnál hiba üzenet. |
+| 12:13 | Switch Light/Dark mode gomb | Sikeres | Sikeresen átváltot a Dark és Light mode között. |
+| 12:14 | Profile gomb | Sikeres | Sikeresen megjelenik a lenyíló |
+| 12:14 | Edit profile link és /profile útvonal | Sikeres | Sikeresen behozza a profil szerkesztő felületet. |
+| 12:15 | Save gomb | Sikeres | Sikeresen megváltozatja a profil adatait. |
+| 12:17 | Save gomb | Sikeres | Hiba üzenet jelszavak meg nem adása esetén. |
+| 12:19 | Delete account gomb | Sikeres | Megnyitja a Delete account pop up-ot. |
+| 12:20 | Delete gomb | Sikeres | Jelszó beírása esetén törli a profilt. |
+| 12:22 | Delete gomb | Sikeres | Helytelen Jelszó beírása esetén hibaüzenet. |
+| 12:25 | Log out gomb | Sikeres | Az oldal sikeresen kijelentkeztet. |
+| 12:25 | Notifications gomb és /notifications útvonal | Sikeres | Az oldal sikeresen átnavigál a /notifications oldalra. |
+| 12:28 | Dashboard gomb és /dashboard útvonal | Sikeres | Az oldal sikeresen átnavigál a /dashboard oldalra. |
+| 12:28 | /dashboard | Sikeres | Az oldal megjeleníti a csapatokhoz tartozó kártyákat. |
+| 12:30 | /dashboard | Sikeres | Az oldal megjeleníti a csapatokhoz tartozó kártyákat. |
+| 12:32 | /dashboard | Sikeres | A csapatokhoz tartozó kártyákon megjelennek a csapatokhoz tartozó board-ok. |
+| 12:33 | /dashboard | Sikeres | Csak az afelhasználó tudja módosítani, törölni, létrehozni kártyákat, akinek van rá permission-e. |
+| 12:30 | /board útvonal és board card-ok | Sikeres | Egy board-ra való kattintás után sikeresen megjelenik /board felület. |
+| 12:40 | /board kártyák mozgatása nem üres oszlopok között | Sikeres | Egy kártya sikeresen átkerül a másik oszlopba. |
+| 12:43 | /board kártyák mozgatása nem üres oszlopból üres oszlopba | Sikertelen | A kártya nem kerül át az üres oszlopba. |
+| 12:44 | /board kártyán menü kinyitása | Sikeres | Sikeresen megjeleníti a menüt a gombokkal. |
+| 12:45 | /board kártyán menüben Edit Task button | Sikeres | Sikeresen megjeleníti a Task tulajdonságait. |
+| 12:45 | /board kártyán Save button | Sikeres | Sikeresen menti a Task tulajdonságait. |
+| 12:48 | /board kártyán menüben Generate documentation button | Sikeres | Sikeresen megnyitja a dokumentáció popup-ot. |
+| 12:48 | /board kártyán menüben AI dropdown | Sikeres | Sikeresen kiválasztja a modellt. |
+| 12:49 | /board kártyán Run button | Sikeres | Sikeresen legenerálja a dokumentációt a kiválasztott modellel. |
