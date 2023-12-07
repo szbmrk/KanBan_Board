@@ -25,3 +25,11 @@
 | 12:32 | /dashboard | Sikeres | A csapatokhoz tartozó kártyákon megjelennek a csapatokhoz tartozó board-ok. |
 | 12:33 | /dashboard | Sikeres | Csak az afelhasználó tudja módosítani, törölni, létrehozni kártyákat, akinek van rá permission-e. |
 | 12:30 | /board útvonal és board card-ok | Sikeres | Egy board-ra való kattintás után sikeresen megjelenik /board felület. |
+| 12:40 | /board kártyák mozgatása nem üres oszlopok között | Sikeres | Egy kártya sikeresen átkerül a másik oszlopba. |
+| 12:43 | /board kártyák mozgatása nem üres oszlopból üres oszlopba | Sikertelen | A kártya nem kerül át az üres oszlopba. |
+| 12:44 | /board kártyán menü kinyitása | Sikeres | Sikeresen megjeleníti a menüt a gombokkal. |
+| 12:45 | /board kártyán menüben Edit Task button | Sikeres | Sikeresen megjeleníti a Task tulajdonságait. |
+| 12:45 | /board kártyán Save button | Sikeres | Sikeresen menti a Task tulajdonságait. |
+| 12:48 | /board kártyán menüben Generate documentation button | Sikeres | Sikeresen megnyitja a dokumentáció popup-ot. |
+| 12:48 | /board kártyán menüben AI dropdown | Sikeres | Sikeresen kiválasztja a modellt. |
+| 12:49 | /board kártyán Run button | Sikeres | Sikeresen legenerálja a dokumentációt a kiválasztott modellel. |
