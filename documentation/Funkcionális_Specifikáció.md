@@ -23,34 +23,35 @@
 ## 10. Funckió - követelmény megfeleltetése
 
 ## 11. Fogalomszótár
-1. Kanban Board:
+
+### 1. Kanban Board:
 
 A Kanban Board egy projektmenedzsment eszköz, amely vizuális táblázatokat használ a feladatok követésére és kezelésére. A projekt folyamatai oszlopokba vannak szervezve, és a feladatok kártyákként jelennek meg, amelyek az oszlopok között mozognak az előrehaladás során.
 
-2. UI (Felhasználói Felület):
+### 2. UI (Felhasználói Felület):
 
 A Kanban Board projekt UI (felhasználói felülete) a rendszer által nyújtott vizuális felület, amely lehetővé teszi a felhasználók számára a projektjeik és feladataik hatékony kezelését. A UI feladata, hogy felhasználóbarát és könnyen navigálható legyen.
 
-3. Reszponzív:
+### 3. Reszponzív:
 
 A Kanban Board projekt reszponzív tervezése lehetővé teszi, hogy a felület mérete automatikusan alkalmazkodjon az eszköz képernyőjéhez. Így biztosítva a felhasználók számára optimális megjelenést és használhatóságot különböző eszközökön, például számítógépen, táblagépen vagy mobiltelefonon.
 
-4. Free of Charge (Ingyenesen Használható):
+### 4. Free of Charge (Ingyenesen Használható):
 
 A Kanban Board projekt ingyenesen használható, ami azt jelenti, hogy a felhasználóknak nem kell fizetniük a szolgáltatásért. Az alapvető funkcionalitások, mint például a projekt- és feladatkezelés, elérhetőek ingyenesen a felhasználók számára.
 
-5. Kártya:
+### 5. Kártya:
 
 A Kanban Board projektben a kártyák a feladatokat vagy projekteket reprezentálják. Ezek a kártyák mozognak az oszlopok között, tükrözve a feladatok állapotait és folyamatát.
 
-6. Osztályozás és Szűrés:
+### 6. Osztályozás és Szűrés:
 
 A Kanban Board projekt lehetőséget biztosít a feladatok és projektek könnyű kategorizálására és szűrésére. Ez segíti a felhasználókat abban, hogy könnyen megtalálják a számukra releváns információkat.
 
-7. Kollaboráció:
+### 7. Kollaboráció:
 
 A projekt csapattagjai közötti hatékony kommunikáció lehetővé teszi a feladatokról és projektekről szóló információk megosztását. A kollaborációs eszközök segítik a csapatok együttműködését a projekt teljesítése érdekében.
 
-8. Rugalmasság és Testreszabhatóság:
+### 8. Rugalmasság és Testreszabhatóság:
 
 A Kanban Board projekt rugalmasságot és testreszabhatóságot kínál a felhasználóknak. Az oszlopok és kártyák személyre szabhatók a projekt egyedi igényei szerint, így alkalmazkodva a különböző projektekhez és csapatokhoz.
