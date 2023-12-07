@@ -33,3 +33,13 @@
 | 12:48 | /board kártyán menüben Generate documentation button | Sikeres | Sikeresen megnyitja a dokumentáció popup-ot. |
 | 12:48 | /board kártyán menüben AI dropdown | Sikeres | Sikeresen kiválasztja a modellt. |
 | 12:49 | /board kártyán Run button | Sikeres | Sikeresen legenerálja a dokumentációt a kiválasztott modellel. |
+| 12:52 | /board kártyán menüben Generate Subtasks button | Sikeres | Sikeresen megnyitja a Generate Subtask pop up-ot. |
+| 12:54 | /board kártyán Subtasks dropdown | Sikeres | Sikeresen kiválasztja, hogy hány darab Subtaskot szeretnék generálni. |
+| 12:55 | /board kártyán AI dropdown | Sikeres | Sikeresen kiválasztja a modellt. |
+| 12:56 | /board kártyán Save button | Sikeres | Sikeresen létrehozza a subtask-okat. |
+| 12:57 | /board kártyán menüben Create attachment links button | Sikeres | Sikeresen megnyitja a Create attachment links pop up-ot. |
+| 12:58 | /board kártyán attachment links dropdown | Sikeres | Sikeresen kiválasztja, hogy hány darab attachment-et szeretnék generálni. |
+| 12:58 | /board kártyán AI dropdown | Sikeres | Sikeresen kiválasztja a modellt. |
+| 12:59 | /board kártyán Generate attachment(s) button | Sikeres | Sikeresen létrehozza az attachment linkeket. |
+| 13:00 | /board kártyán menüben Add favourite button | Sikeres | Sikeresen kedvencek közé helyezi a task-ot. |
+| 13:01 | /board kártyán menüben Delete button | Sikeres | Sikeresen törli a task-ot. |
