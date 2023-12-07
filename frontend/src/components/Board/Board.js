@@ -282,6 +282,9 @@ const Board = () => {
             }
             )
         }
+
+        setBoardToShow({ ...board, columns: tempColumns });
+
     }
 
     const handleAddColumn = async () => {
