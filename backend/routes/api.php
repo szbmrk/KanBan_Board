@@ -196,4 +196,3 @@ Route::get('/AGI/CodeReviewOrDocumentation/boards/{boardId}', [AGIAnswersControl
 Route::post('/AGI/CodeReviewOrDocumentation/boards/{boardId}', [AGIAnswersController::class, 'storeCodeReviewOrDocumentation'])->middleware('api');
 Route::put('/AGI/CodeReviewOrDocumentation/boards/{boardId}/agiAnswer/{agiAnswerId}', [AGIAnswersController::class, 'updateCodeReviewOrDocumentation'])->middleware('api');
 Route::delete('/AGI/CodeReviewOrDocumentation/boards/{boardId}/agiAnswer/{agiAnswerId}', [AGIAnswersController::class, 'destroyCodeReviewOrDocumentation'])->middleware('api');
-

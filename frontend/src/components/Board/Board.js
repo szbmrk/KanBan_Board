@@ -39,6 +39,7 @@ import { useNavigate } from "react-router-dom";
 import CodePopup from "../CodePopup";
 import DocumentationPopup from "../DocumentationPopup";
 import GeneratePerformanceSummaryPopup from "../GeneratePerformanceSummaryPopup";
+import DatePicker from 'react-datepicker';
 
 export const documentationIcon = <FontAwesomeIcon icon={faFileLines} />;
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
@@ -50,6 +51,9 @@ const Board = () => {
     const [permission, setPermission] = useState(false);
     const [error, setError] = useState(false);
     const [board, setBoard] = useState([]);
+    const [boardToShow, setBoardToShow] = useState([]);
+    const [tags, setTags] = useState([]);
+    const [members, setMembers] = useState([]);
     const [columnPositions, setColumnPositions] = useState([]);
     const [editingColumnIndex, setEditingColumnIndex] = useState(null);
     const [columnToDeleteIndex, setColumnToDeleteIndex] = useState(null);
@@ -92,11 +96,13 @@ const Board = () => {
     const [craftedPromptsTask, setCraftedPromptsTask] = useState([]);
     const [isHoveredAITitleBar, setIsHoveredAITitleBar] = useState([]);
     const [isHoveredSortByTitleBar, setIsHoveredSortByTitleBar] = useState([]);
+    const [isHoveredFilterByTitleBar, setIsHoveredFilterByTitleBar] = useState([]);
     const [codeReviewOrDocumentations, setCodeReviewOrDocumentation] = useState([]);
     const navigate = useNavigate();
     const [hoveredColumnId, setHoveredColumnId] = useState(null);
     const [isAGIOpen, setIsAGIOpen] = useState(false);
     const [isSortOpen, setIsSortOpen] = useState(false);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
     const codeIcon = <FontAwesomeIcon icon={faCode} />;
@@ -112,6 +118,16 @@ const Board = () => {
     const token = sessionStorage.getItem("token");
     const team_member = JSON.parse(sessionStorage.getItem("team_members"));
     const permissions = JSON.parse(sessionStorage.getItem("permissions")).teams.filter(permission => { return parseInt(permission.board_id) === parseInt(board_id) });
+
+    let priorityFilter = -1
+    let memberFilter = -1
+    let tagFilter = -1
+    let deadlineFilter = null
+
+    const [priorityDropDownValue, setPriorityDropDownValue] = useState(-1)
+    const [memberDropDownValue, setMemberDropDownValue] = useState(-1)
+    const [tagDropDownValue, setTagDropDownValue] = useState(-1)
+    const [deadlineDropDownValue, setDeadlineDropDownValue] = useState(null)
 
     useEffect(() => {
         document.title = "Board";
@@ -185,13 +201,32 @@ const Board = () => {
             let tempColumnPositions = tempBoard.columns.map(
                 (column) => column.column_id
             );
+
             setColumnPositions(tempColumnPositions);
 
             console.log("Columns: ", tempBoard.columns);
 
             setBoard(tempBoard);
+            setBoardToShow(tempBoard);
             console.log("tempBoard");
             console.log(tempBoard);
+
+            const response1 = await axios.get(`/boards/${board_id}/tags`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            setTags(response1.data.tags)
+
+
+            /*const response2 = await axios.get(`/boards/${board_id}/members`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            setMembers(response2.data.members)*/
 
             if (task_to_show_id) {
                 const columnIndex = tempBoard.columns.findIndex(
@@ -206,6 +241,8 @@ const Board = () => {
                 }
                 navigate(`/board/${board_id}`);
             }
+
+
         } catch (e) {
             console.error(e);
             if (e.response.status === 401 || e.response.status === 500) {
@@ -219,6 +256,43 @@ const Board = () => {
             setPermission(false);
         }
     };
+
+    const FilterBoard = () => {
+        setBoardToShow([])
+        const tempBoard =  cloneDeep(board)
+        let tempColumns = cloneDeep([...tempBoard.columns])
+
+        if (priorityFilter != -1) {
+            tempColumns.map((column) => {
+                column.tasks = column.tasks.filter(task => parseInt(task.priority_id) == parseInt(priorityFilter));
+            }
+            )
+        }
+
+        if (memberFilter != -1) {
+            tempColumns.map((column) => {
+                column.tasks = column.tasks.filter(task => task.members.contains(member => member.user_id == memberFilter));
+            }
+            )
+        }
+
+        if (tagFilter != -1) {
+            tempColumns.map((column) => {
+                column.tasks = column.tasks.filter(task => task.tags !== undefined && task.tags.find(tag => parseInt(tag.tag_id) == parseInt(tagFilter)));
+            }
+            )
+        }
+
+        if (deadlineFilter !== null) {
+            tempColumns.map((column) => {
+                column.tasks = column.tasks.filter(task => task.deadline <= deadlineFilter);
+            }
+            )
+        }
+
+        setBoardToShow({ ...board, columns: tempColumns });
+
+    }
 
     const handleAddColumn = async () => {
         try {
@@ -1402,6 +1476,10 @@ const Board = () => {
         setIsSortOpen(!isSortOpen);
     };
 
+    const toggleFilterDropdown = () => {
+        setIsFilterOpen(!isFilterOpen);
+    };
+
     const handleTransformMouseEnter = () => {
         const options = document.getElementsByClassName("option");
         for (const option of options) {
@@ -1603,6 +1681,29 @@ const Board = () => {
         });
     }
 
+    const changePriorityFilter = (e) => {
+        console.log("priorityid " + e.target.value)
+        priorityFilter = e.target.value;
+        setPriorityDropDownValue(e.target.value)
+        setTagDropDownValue(-1)
+        tagFilter = -1
+        FilterBoard();
+    }
+
+    const changeTagFilter = (e) => {
+        tagFilter = e.target.value;
+        setTagDropDownValue(e.target.value)
+        setPriorityDropDownValue(-1)
+        priorityFilter = -1
+        FilterBoard();
+    }
+
+    const changeMemberFilter = (e) => {
+        memberFilter = e.target.value;
+        setMemberDropDownValue(e.target.value)
+        FilterBoard();
+    }
+
     return (
         <>
             {permission === false ? (
@@ -1615,7 +1716,7 @@ const Board = () => {
                 )
             ) : (
                 <DndProvider backend={HTML5Backend}>
-                    {board.columns === undefined ? (
+                    {boardToShow.columns === undefined ? (
                         <div className="content">
                             <Loader />
                         </div>
@@ -1625,7 +1726,16 @@ const Board = () => {
                                 <h1 className="title-name">{board.name}</h1>
                                 <div className="title-bar-buttons">
                                     <ul>
-                                        <li>
+                                        <li
+                                            onMouseEnter={() => setIsHoveredFilterByTitleBar(true)}
+                                            onMouseLeave={() => setIsHoveredFilterByTitleBar(false)}
+                                            onClick={toggleFilterDropdown}
+                                            style={{
+                                                color:
+                                                    isHoveredFilterByTitleBar || isFilterOpen
+                                                        ? "var(--off-white)"
+                                                        : "var(--dark-gray)",
+                                            }}>
                                             <span>{filterIcon}</span>
                                             <p>Filter</p>
                                         </li>
@@ -1671,7 +1781,7 @@ const Board = () => {
                                 </div>
                             </div>
                             <div className="div-container">
-                                {board.columns.map((column, index) => (
+                                {boardToShow.columns.map((column, index) => (
                                     <Column
                                         key={index}
                                         divIndex={index}
@@ -1907,6 +2017,59 @@ const Board = () => {
                                     </span>
                                     <span>Sort by priority</span>
                                 </li>
+                            </ul>
+                        </div>
+                    )}
+                    {isFilterOpen && (
+                        <div
+                            className="filter-submenu"
+                            onMouseLeave={() => setIsFilterOpen(false)}
+                        >
+                            <p className="filter-menu-title"> Filter menu </p>
+                            <ul className="filter-menu">
+                                <li
+                                >
+                                    <div>
+                                        <span>Priority:</span>
+                                        <select defaultValue={parseInt(-1)} value={priorityDropDownValue} onChange={(e) => changePriorityFilter(e)}>
+                                            <option value={parseInt(-1)}>ALL</option>
+                                            {priorities.map((priority) => {
+                                                return <option value={parseInt(priority.priority_id)}>{priority.priority}</option>
+                                            })}
+                                        </select>
+                                    </div>
+                                </li>
+                                <li
+                                >
+                                    <div>
+                                        <span>Tag:</span>
+                                        <select defaultValue={-1} value={tagDropDownValue} onChange={(e) => changeTagFilter(e)}>
+                                            <option value={-1}>ALL</option>
+                                            {tags.map((tag) => {
+                                                return <option value={parseInt(tag.tag_id)}>{tag.name}</option>
+                                            })}
+                                        </select>
+                                    </div>
+                                </li>
+                                {/*
+                                <li
+                                >
+                                    <div>
+                                        <span>Member:</span>
+                                        <select defaultValue={-1} value={memberDropDownValue} onChange={(e) => changeTagFilter(e)}>
+                                            <option value={-1}>ALL</option>
+                                            {members.map((member) => {
+                                                return <option value={parseInt(member.member_id)}>{member.name}</option>
+                                            })}
+                                        </select>
+                                    </div>
+                                </li>
+                                <li
+                                >
+                                    <span>Deadline:</span>
+                                </li>
+                                        */}
+
                             </ul>
                         </div>
                     )}

@@ -376,6 +376,79 @@
     color: var(--off-white);
 }
 
+.filter-submenu {
+    width: max-content;
+    min-width: 200px;
+    position: absolute;
+    top: 100px;
+    right: 0;
+    background-color: var(--dark-gray);
+    border: 1px solid var(--dark-gray);
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    margin: 5px;
+    padding: 5px;
+    z-index: 100;
+}
+
+.filter-menu-title {
+    color: var(--light-gray);
+    margin: 0 20px 20px;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.filter-menu {
+    list-style-type: none;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-menu li {
+    width: 100%;
+    padding: 5px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-menu li:hover {
+    color: var(--off-white);
+}
+
+.filter-menu li span {
+    color: var(--light-gray);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-menu>li span:first-child {
+    width: 20%;
+}
+
+.filter-menu>li span:first-child:hover {
+    color: var(--off-white);
+}
+
+.filter-menu>li span:nth-child(2) {
+    width: 70%;
+}
+
+.filter-menu>li span:nth-child(2):hover {
+    color: var(--off-white);
+}
+
+
 
 .code-review-or-documentation-title span:hover {
     color: var(--off-white);
