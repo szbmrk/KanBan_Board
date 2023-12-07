@@ -16,8 +16,11 @@ init_backend: init_database
 
 init_database:
 	enable -n echo
-	! [[ -v MYSQLPASSWD ]] && echo -e "\033[1;32mPlease export \$$MYSQLPASSWD\033[0m" && exit 1
-	mysql -u root --password=${MYSQLPASSWD} < <(echo "CREATE DATABASE IF NOT EXISTS kanban_board;")
+	if ! [[ -v MYSQLPASSWD ]]; then
+		echo -e "\033[1;32mPlease export \$$MYSQLPASSWD\033[0m"
+	else
+		mysql -u root --password=${MYSQLPASSWD} < <(echo "CREATE DATABASE IF NOT EXISTS kanban_board;")
+	fi
 
 bootstrap:
 	cd backend
@@ -26,5 +29,4 @@ bootstrap:
 	php artisan db:seed
 
 serve:
-	cd backend
-	php artisan serve --host=$(shell hostname -I | cut -d ' ' -f 1)
+	(cd backend/; php artisan serve --host=$(shell hostname -I | cut -d ' ' -f 1)) & (cd frontend/; npm start)
