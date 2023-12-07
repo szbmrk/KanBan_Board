@@ -19,9 +19,10 @@
 |12:53| Add task to column| Sikeres|Sikeresen hozzáadja a columnhoz a taskot|
 |12:54| Rename Column| Sikeres| Sikeresen átnevezi a column-ot|
 |12:54| Delete column| Sikeres| Sikeresen törli a column-ot|
-|12:56| Rename task| Sikeres| sikeresen átnevezi a taskot|
+|12:56| Rename task| Sikeres| Sikeresen átnevezi a taskot|
 |12:56| Create tag| Sikeres| Sikeresen létrehozza a taget|
 |12:56| Add tag| Sikeres| Hozzáadja a tag-et a taskhoz|
 |12:56|Change description| Sikeres| Descriptiont beállítja|
 |12:59| Add user to task| Sikeres|Hozzáadja|
- 
+|13:03| Generate subtask| Sikertelen| Errort dob|
+|13:04| View asigned tasks| Sikeres| Betölt, igaz elég lassan| 
