@@ -254,7 +254,9 @@ const Board = () => {
 
     const FilterBoard = () => {
         setBoardToShow([])
-        const tempColumns = [...board.columns]
+        const tempBoard =  cloneDeep(board)
+        const tempColumns = [...tempBoard.columns]
+        console.log(tempColumns)
 
         if (parseInt(priorityFilter) !== -1) {
             tempColumns.map((column) => {
@@ -2018,7 +2020,7 @@ const Board = () => {
                                         <select defaultValue={-1} value={priorityFilter} onChange={(e) => changePriorityFilter(e)}>
                                             <option value={-1}>ALL</option>
                                             {priorities.map((priority) => {
-                                                return <option value={priority.priority_id}>{priority.priority}</option>
+                                                return <option value={parseInt(priority.priority_id)}>{priority.priority}</option>
                                             })}
                                         </select>
                                     </div>
@@ -2030,7 +2032,7 @@ const Board = () => {
                                         <select defaultValue={-1} value={tagFilter} onChange={(e) => changeTagFilter(e)}>
                                             <option value={-1}>ALL</option>
                                             {tags.map((tag) => {
-                                                return <option value={tag.tag_id}>{tag.name}</option>
+                                                return <option value={parseInt(tag.tag_id)}>{tag.name}</option>
                                             })}
                                         </select>
                                     </div>
@@ -2042,7 +2044,7 @@ const Board = () => {
                                         <select defaultValue={-1} value={memberFilter} onChange={(e) => setMemberFilter(e.target.value)}>
                                             <option value={-1}>ALL</option>
                                             {members.map((member) => {
-                                                return <option value={member.member_id}>{member.name}</option>
+                                                return <option value={parseInt(member.member_id)}>{member.name}</option>
                                             })}
                                         </select>
                                     </div>
