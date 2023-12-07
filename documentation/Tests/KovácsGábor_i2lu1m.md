@@ -17,3 +17,11 @@
 | 12:19 | Delete account gomb | Sikeres | Megnyitja a Delete account pop up-ot. |
 | 12:20 | Delete gomb | Sikeres | Jelszó beírása esetén törli a profilt. |
 | 12:22 | Delete gomb | Sikeres | Helytelen Jelszó beírása esetén hibaüzenet. |
+| 12:25 | Log out gomb | Sikeres | Az oldal sikeresen kijelentkeztet. |
+| 12:25 | Notifications gomb és /notifications útvonal | Sikeres | Az oldal sikeresen átnavigál a /notifications oldalra. |
+| 12:28 | Dashboard gomb és /dashboard útvonal | Sikeres | Az oldal sikeresen átnavigál a /dashboard oldalra. |
+| 12:28 | /dashboard | Sikeres | Az oldal megjeleníti a csapatokhoz tartozó kártyákat. |
+| 12:30 | /dashboard | Sikeres | Az oldal megjeleníti a csapatokhoz tartozó kártyákat. |
+| 12:32 | /dashboard | Sikeres | A csapatokhoz tartozó kártyákon megjelennek a csapatokhoz tartozó board-ok. |
+| 12:33 | /dashboard | Sikeres | Csak az afelhasználó tudja módosítani, törölni, létrehozni kártyákat, akinek van rá permission-e. |
+| 12:30 | /board útvonal és board card-ok | Sikeres | Egy board-ra való kattintás után sikeresen megjelenik /board felület. |
