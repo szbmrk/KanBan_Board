@@ -260,8 +260,7 @@ const Board = () => {
     const FilterBoard = () => {
         setBoardToShow([])
         const tempBoard =  cloneDeep(board)
-        const tempColumns = cloneDeep([...tempBoard.columns])
-        console.log(board.columns[0].tasks)
+        let tempColumns = cloneDeep([...tempBoard.columns])
 
         if (priorityFilter != -1) {
             tempColumns.map((column) => {
@@ -270,14 +269,14 @@ const Board = () => {
             )
         }
 
-        if (parseInt(memberFilter) !== -1) {
+        if (memberFilter != -1) {
             tempColumns.map((column) => {
                 column.tasks = column.tasks.filter(task => task.members.contains(member => member.user_id == memberFilter));
             }
             )
         }
 
-        if (parseInt(tagFilter) !== -1) {
+        if (tagFilter != -1) {
             tempColumns.map((column) => {
                 column.tasks = column.tasks.filter(task => task.tags !== undefined && task.tags.find(tag => parseInt(tag.tag_id) == parseInt(tagFilter)));
             }
@@ -1686,12 +1685,16 @@ const Board = () => {
         console.log("priorityid " + e.target.value)
         priorityFilter = e.target.value;
         setPriorityDropDownValue(e.target.value)
+        setTagDropDownValue(-1)
+        tagFilter = -1
         FilterBoard();
     }
 
     const changeTagFilter = (e) => {
         tagFilter = e.target.value;
         setTagDropDownValue(e.target.value)
+        setPriorityDropDownValue(-1)
+        priorityFilter = -1
         FilterBoard();
     }
 
