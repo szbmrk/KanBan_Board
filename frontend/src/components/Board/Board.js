@@ -202,6 +202,7 @@ const Board = () => {
             console.log("Columns: ", tempBoard.columns);
 
             setBoard(tempBoard);
+            setBoardToShow(tempBoard);
             console.log("tempBoard");
             console.log(tempBoard);
 
@@ -252,7 +253,7 @@ const Board = () => {
     };
 
     const FilterBoard = () => {
-        
+        setBoardToShow([])
         const tempColumns = [...board.columns]
 
         if (parseInt(priorityFilter) !== -1) {
@@ -1677,24 +1678,18 @@ const Board = () => {
     const changePriorityFilter = (e) => {
         console.log(e.target.value)
         setPriorityFilter(e.target.value);
-        filterBoard();
+        FilterBoard();
     }
 
     const changeTagFilter = (e) => {
         setTagFilter(e.target.value);
-        filterBoard();
+        FilterBoard();
     }
 
     const changeMemberFilter = (e) => {
         setMemberFilter(e.target.value);
-        filterBoard();
+        FilterBoard();
     }
-
-    const filterBoard = async () => {
-        setBoard([]);
-        await fetchBoardData();
-    }
-
 
     return (
         <>
@@ -1708,7 +1703,7 @@ const Board = () => {
                 )
             ) : (
                 <DndProvider backend={HTML5Backend}>
-                    {board.columns === undefined ? (
+                    {boardToShow.columns === undefined ? (
                         <div className="content">
                             <Loader />
                         </div>
@@ -1773,7 +1768,7 @@ const Board = () => {
                                 </div>
                             </div>
                             <div className="div-container">
-                                {board.columns.map((column, index) => (
+                                {boardToShow.columns.map((column, index) => (
                                     <Column
                                         key={index}
                                         divIndex={index}
