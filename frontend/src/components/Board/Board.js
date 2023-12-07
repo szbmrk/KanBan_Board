@@ -119,10 +119,12 @@ const Board = () => {
     const team_member = JSON.parse(sessionStorage.getItem("team_members"));
     const permissions = JSON.parse(sessionStorage.getItem("permissions")).teams.filter(permission => { return parseInt(permission.board_id) === parseInt(board_id) });
 
-    const [priorityFilter, setPriorityFilter] = useState(-1)
-    const [memberFilter, setMemberFilter] = useState(-1)
-    const [tagFilter, setTagFilter] = useState(-1)
-    const [deadlineFilter, setDeadlineFilter] = useState(null)
+    let priorityFilter = -1
+    let memberFilter = -1
+    let tagFilter = -1
+    let deadlineFilter = null
+
+    const [priorityDropDownValue, setPriorityDropDownValue] = useState(-1)
 
     useEffect(() => {
         document.title = "Board";
@@ -258,11 +260,12 @@ const Board = () => {
         const tempColumns = cloneDeep([...tempBoard.columns])
         console.log(board.columns[0].tasks)
 
-        if (parseInt(priorityFilter) !== -1) {
+        if (priorityFilter != -1) {
             tempColumns.map((column) => {
-                column.tasks = column.tasks.filter(task => parseInt(task.priority_id) === parseInt(priorityFilter));
+                column.tasks = column.tasks.filter(task => parseInt(task.priority_id) == parseInt(priorityFilter));
             }
             )
+            console.log("Filtered by priority")
         }
 
         if (parseInt(memberFilter) !== -1) {
@@ -1679,17 +1682,17 @@ const Board = () => {
 
     const changePriorityFilter = (e) => {
         console.log("priorityid " + e.target.value)
-        setPriorityFilter(e.target.value);
+        priorityFilter = e.target.value;
         FilterBoard();
     }
 
     const changeTagFilter = (e) => {
-        setTagFilter(e.target.value);
+        tagFilter = e.target.value;
         FilterBoard();
     }
 
     const changeMemberFilter = (e) => {
-        setMemberFilter(e.target.value);
+        memberFilter = e.target.value;
         FilterBoard();
     }
 
@@ -2041,7 +2044,7 @@ const Board = () => {
                                 >
                                     <div>
                                         <span>Member:</span>
-                                        <select defaultValue={-1} value={memberFilter} onChange={(e) => setMemberFilter(e.target.value)}>
+                                        <select defaultValue={-1} value={memberFilter} onChange={(e) => changeTagFilter(e)}>
                                             <option value={-1}>ALL</option>
                                             {members.map((member) => {
                                                 return <option value={parseInt(member.member_id)}>{member.name}</option>
