@@ -54,4 +54,7 @@
 | 22:48 | /board Column menü Generate tasks gomb| Sikeres | Sikeresen létre lehet hozni a task-okat. |
 | 22:49 | /board Column menü Delete column gomb| Sikeres | Sikeresen törölni lehet az oszlopot. |
 | 22:49 | /board Column menü Delete column gomb jogosultság| Sikeres | Aki nem jogosult az oszlop törlésre, annak nem jelenik meg. |
+| 22:51 | /board Column névre dupla kattintás | Sikeres | Dupla kattintás hatására át lehet nevezni az oszlopot. |
+| 22:52 | /board Add new column | Sikeres | A gomb megnyomására létrejön az új column az oldal újratöltése után. |
+| 22:54 | /board Add new column jogosultság | Sikeres | Aki nem jogosult az oszlop létrehozására, annak nem jelenik meg. |
 
