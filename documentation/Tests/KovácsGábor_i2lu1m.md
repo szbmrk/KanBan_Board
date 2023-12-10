@@ -57,4 +57,14 @@
 | 22:51 | /board Column névre dupla kattintás | Sikeres | Dupla kattintás hatására át lehet nevezni az oszlopot. |
 | 22:52 | /board Add new column | Sikeres | A gomb megnyomására létrejön az új column az oldal újratöltése után. |
 | 22:54 | /board Add new column jogosultság | Sikeres | Aki nem jogosult az oszlop létrehozására, annak nem jelenik meg. |
-
+| 22:55 | /teams útvonal| Sikeres | Sikeresen megjelenik a teams felület. |
+| 22:56 | Add new team gomb| Sikeres | Sikeresen megnyitja a pop up ot. |
+| 22:58 | Add new team Save gomb| Sikeres | Sikeresen létrehozza az új csapatot. |
+| 23:00 | Team menü| Sikeres | Sikeresen kinyitja a menüt. |
+| 23:01 | Team menü edit name| Sikeres | Sikeresen megnyitja a pop up ot. |
+| 23:03 | Team menü edit name Save gomb| Sikeres | Sikeresen átnevezi a csapatot. |
+| 23:04 | Team menü add users | Sikeres | Sikeresen megnyitja a pop up-ot. |
+| 23:04 | Team menü add users search bar | Sikeres | Sikeresen lehet keresni a regisztrált userek-re username alapján. |
+| 23:05 | Team menü add users Add users gomb| Sikeres | Sikeresen hozzáadja a kijelölt user-eket a team-hez. |
+| 23:06 | Team menü Delete team | Sikeres | Sikeresen megnyitja a pop up-ot. |
+| 23:06 | Team menü Delete team pop up delete gomb | Sikeres | Sikeresen törli a team-et. |
