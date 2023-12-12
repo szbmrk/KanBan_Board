@@ -20,3 +20,9 @@
 | 15:53 | Bejelentkezésnél email helytelen kitöltése | Sikeres | Kiírja, hogy töltsük ki a mezőt. |
 | 15:54 | Bejelentkezésnél helytelen adatok megadása | Sikeres | Kiírja, hogy helytelenek az adatok. |
 | 15:55 | Bejelentkezés | Sikeres | Sikeres bejelentkezésnél bedob a megfelelő oldalra. |
+
+| 16:05 | Board létrehozása | Sikeres | A board sikeresen létrejön. |
+| 16:06 | Column létrehozása | Sikeres | Egy column sikeresen létrejön. |
+| 16:08 | Task létrehozása | Sikeres | Egy task sikeresen létrejön. |
+| 16:10 | Task editelése| Sikeres | Task editelése rendben működik. |
+| 16:10 | Task drag and drop| Sikertelen | Task üres oszlopra húzásakor nem működik. |
