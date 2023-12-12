@@ -18,7 +18,13 @@
 
 ## 8. Képernyőtervek
 Belépés
+
 ![KanBan projekt - login page](./loginPage.png)
+
+Regisztráció
+
+![KanBan projekt - register page](./registerPage.png)
+
 
 ## 9. Forgatókönyvek
 
