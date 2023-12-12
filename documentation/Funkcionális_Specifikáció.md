@@ -27,11 +27,15 @@ Regisztráció
 
 Dashboard
 
-![KanBan projekt - register page](./dashboardPage.png)
+![KanBan projekt - dashboard page](./dashboardPage.png)
 
 Board
 
-![KanBan projekt - register page](./boardPage.png)
+![KanBan projekt - board page](./boardPage.png)
+
+Teams
+
+![KanBan projekt - teams page](./teamsPage.png)
 
 
 ## 9. Forgatókönyvek
