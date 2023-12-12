@@ -42,3 +42,9 @@
 | 17:43 | Permission table oldalon add role mező üresen | Sikeres | Üres rolet nem lehet hozzáadni. |
 | 17:43 | Permission table oldalon add role mező | Sikeres | Létrehoz egy új role-t. |
 | 17:45 | Permission table oldalon add permission adás role-nak | Sikeres | Az adott role megkapja az adott permission-t. |
+
+| 17:47 | Edit profile gomb | Sikeres | Átvisz az edit profile oldalra. |
+| 17:49 | Felhasználónév változtatása | Sikeres | A felhasználónév megváltozik. |
+| 17:50 | Email cím változtatása | Sikeres | Az email cím megváltozik. |
+| 17:52 | Jelszó megváltoztatása | Sikeres | A jelszó megváltozik. |
+| 17:54 | Delete Account gomb | Sikeres | A felhasználó törlődik és átdob a login oldalra. |
