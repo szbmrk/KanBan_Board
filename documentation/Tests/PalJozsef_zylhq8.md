@@ -26,3 +26,11 @@
 | 16:08 | Task létrehozása | Sikeres | Egy task sikeresen létrejön. |
 | 16:10 | Task editelése| Sikeres | Task editelése rendben működik. |
 | 16:10 | Task drag and drop| Sikertelen | Task üres oszlopra húzásakor nem működik. |
+
+| 17:28 | Assigned tasks gomb | Sikeres | Átvisz az assigned tasks oldalra. |
+| 17:30 | Teams gomb | Sikeres | Átvisz a teams oldalra. |
+| 17:32 | Teams oldalon edit name gomb | Sikeres | Átnevezhető a csapat neve. |
+| 17:33 | Teams oldalon add users gomb | Sikeres | Hozzáadhatók felhasználók a csapathoz. |
+| 17:34 | Teams oldalon add role gomb | Sikeres | Roleok adhatók a csapatban lévő felhasználóknak. |
+| 17:34 | Teams oldalon remove user gomb | Sikeres | Egy felhasználó eltávolítható egy csapatból. |
+| 17:34 | Teams oldalon delete team gomb | Sikeres | A csapat törlődik. |
