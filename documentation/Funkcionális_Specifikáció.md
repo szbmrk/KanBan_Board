@@ -39,9 +39,11 @@ Teams
 
 Permission table
 
-![KanBan projekt - teams page](./permissonPage.png)
+![KanBan projekt - permission table page](./permissonPage.png)
 
+Edit profile
 
+![KanBan projekt - permission table page](./editProfilPage.png)
 
 ## 9. Forgatókönyvek
 
