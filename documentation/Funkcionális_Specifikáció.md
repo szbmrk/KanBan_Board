@@ -37,6 +37,11 @@ Teams
 
 ![KanBan projekt - teams page](./teamsPage.png)
 
+Permission table
+
+![KanBan projekt - teams page](./permissonPage.png)
+
+
 
 ## 9. Forgatókönyvek
 
