@@ -4,7 +4,7 @@
 | Időpont | Teszt                | Eredmény | Megjegyzés                                                            |
 |:-------:|----------------------|----------|-----------------------------------------------------------------------|
 | 12:07 | Light-darkmode gomb dashboard felületén | Sikeres | Sikeresen vált a light- darkmode közt. | 
-| 12:09| Light-darkmode gomb assigned tasks felületén | Sikeres | Sikeresen vált a light- darkmode közt. |
+| 12:09 | Light-darkmode gomb assigned tasks felületén | Sikeres | Sikeresen vált a light- darkmode közt. |
 | 12:11 | Light-darkmode gomb teams felületén | Sikeres | Sikeresen vált a light- darkmode közt. |
 | 12:12 | Light-darkmode gomb permissiontable felületén | Sikeres | Sikeresen vált a light- darkmode közt. | 
 | 12:14 | Light-darkmode gomb profile felületén | Sikeres | Sikeresen vált a light- darkmode közt. |
@@ -34,3 +34,11 @@
 | 17:34 | Teams oldalon add role gomb | Sikeres | Roleok adhatók a csapatban lévő felhasználóknak. |
 | 17:34 | Teams oldalon remove user gomb | Sikeres | Egy felhasználó eltávolítható egy csapatból. |
 | 17:34 | Teams oldalon delete team gomb | Sikeres | A csapat törlődik. |
+
+| 17:39 | Permission table gomb | Sikeres | Átvisz az assigned tasks oldalra. |
+| 17:40 | Permission table megjelenés | Sikeres | Ha van boardunk akkor az megjelenik. |
+| 17:42 | Permission table gomb | Sikeres | Átvisz az assigned tasks oldalra. |
+| 17:42 | Permission table oldalon egy boardra kattintás | Sikeres | Átvisz a permissionok kezeléséhez. |
+| 17:43 | Permission table oldalon add role mező üresen | Sikeres | Üres rolet nem lehet hozzáadni. |
+| 17:43 | Permission table oldalon add role mező | Sikeres | Létrehoz egy új role-t. |
+| 17:45 | Permission table oldalon add permission adás role-nak | Sikeres | Az adott role megkapja az adott permission-t. |
