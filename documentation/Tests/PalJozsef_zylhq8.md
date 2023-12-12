@@ -14,4 +14,9 @@
 | 15:45 | Regisztrációnál email helytelen kitöltése | Sikeres | Kiírja, hogy hogyan kell kitölteni az email mezőt. | 
 | 15:47 | Regisztrációnál feltételek nem elfogadása | Sikeres | Kiírja, hogy elkell fogadni a feltételeket. |
 | 15:49 | Regisztráció | Sikeres | A regisztrált felhasználó létrejön. |
-| 15:47 | Már van fiókod gomb | Sikeres | Átvisz a bejelentkező oldalra. | 
+| 15:50 | Már van fiókod gomb | Sikeres | Átvisz a bejelentkező oldalra. |
+
+| 15:52 | Bejelentkezésnél adatok nem kitöltése | Sikeres | Kiírja, hogy töltsük ki a mezőt. |
+| 15:53 | Bejelentkezésnél email helytelen kitöltése | Sikeres | Kiírja, hogy töltsük ki a mezőt. |
+| 15:54 | Bejelentkezésnél helytelen adatok megadása | Sikeres | Kiírja, hogy helytelenek az adatok. |
+| 15:55 | Bejelentkezés | Sikeres | Sikeres bejelentkezésnél bedob a megfelelő oldalra. |
