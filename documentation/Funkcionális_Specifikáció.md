@@ -43,9 +43,20 @@ Permission table
 
 Edit profile
 
-![KanBan projekt - permission table page](./editProfilPage.png)
+![KanBan projekt - edit profile page](./editProfilPage.png)
 
 ## 9. Forgatókönyvek
+
+1. A felhasználó bejelentkezés után a főoldalon találja magát, ahol alapértelmezetten a dashboard jelenik meg, ahol az általa hozzáférhető táblákat látja.
+2. Egy board kártyára kattintva az oldal átnavigál a /board útvonalra.
+3. Az add new card-ra kattintva új oszlopot hoz létre.
+4. Az oszlop nevére duplán kattintva át tudja nevezni.
+5. Az add new task gombra kattintva tud új task-ot létrehozni.
+6. A navbar-on található profile gombra kattintva megjelenik egy dropdown.
+7. Az Edit profil menüre kattintva átnavigál a /editprofile page-re.
+8. A /editprofile page-n tudja szerkeszteni az adatait.
+9. A navbar-on található harang gombbal átnavigál a /notifications page-re.
+10. A /notifiactions page-nláthatók az értesítések.
 
 ## 10. Funckió - követelmény megfeleltetése
 
