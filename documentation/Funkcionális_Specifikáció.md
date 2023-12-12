@@ -25,6 +25,10 @@ Regisztráció
 
 ![KanBan projekt - register page](./registerPage.png)
 
+Dashboard
+
+![KanBan projekt - register page](./dashboardPage.png)
+
 
 ## 9. Forgatókönyvek
 
