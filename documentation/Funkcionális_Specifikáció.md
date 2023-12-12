@@ -17,6 +17,8 @@
 ## 7. Megfeleltetés
 
 ## 8. Képernyőtervek
+Belépés
+![KanBan projekt - login page](./loginPage.png)
 
 ## 9. Forgatókönyvek
 
