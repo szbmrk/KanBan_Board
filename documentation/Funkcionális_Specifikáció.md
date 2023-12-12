@@ -29,6 +29,10 @@ Dashboard
 
 ![KanBan projekt - register page](./dashboardPage.png)
 
+Board
+
+![KanBan projekt - register page](./boardPage.png)
+
 
 ## 9. Forgatókönyvek
 
