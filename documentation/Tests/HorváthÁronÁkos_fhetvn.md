@@ -17,3 +17,23 @@
 | 11:12 | Priority filter(All) | Sikeres | Minden task megjelenik. | 
 | 11:15 | Tag filter | Sikeres | Minden hozzárendelt tag megkjelenik kiválasztás után csak az adott taggel rendelkező taskok jelennek meg. |
 | 11:17 | Tag filter(All) | Sikeres | Minden task megjelenik. |
+
+| Tesztelő: Horváth Áron Ákos | Időpont: 2023.12.13. 11:28 | Böngésző: Opera GX |
+| -------------------------------------|----------|-------------------------|
+
+| Időpont | Teszt                | Eredmény | Megjegyzés                                                            |
+|:-------:|----------------------|----------|-----------------------------------------------------------------------|
+| 11:29 | Login | Sikeres | Sikeres bejelentkezés. |
+| 11:29 | Login | Sikeres | Sikertelen bejelentkezés esetén hibaüzenet. |
+| 11:30 | Register | Sikeres | Sikeres regisztráció. |
+| 11:30 | Register | Sikeres | Sikertelen regisztráció esetén esetén üzenet. |
+| 11:31 | Light/Dark mode | Sikeres | Sikeres váltás a Dark és Light mode között. |
+| 11:32 | Profile | Sikeres | A lenyíló menü sikeresen megjelenik |
+| 11:33 | Edit profile | Sikeres | A profil szerkesztő felületet megjelenik. |
+| 11:34 | Save | Sikeres | A profil adatai megváltoznak. |
+| 11:34 | Save | Sikeres | A jelszavak meg nem adása esetén hiba üzenet. |
+| 11:35 | Delete account | Sikeres | A delete account pop up megjelenik. |
+| 11:35 | Delete | Sikeres | Jelszó beírása esetén a profil törlődik. |
+| 11:36 | Delete  | Sikeres | Helytelen Jelszó beírása esetén hibaüzenet. |
+| 11:38 | Log out | Sikeres | A kijelentkezés sikeres. |
+| 11:39 | Notifications | Sikeres | A notifications oldal megjelenik. |
