@@ -1,5 +1,6 @@
 | Tesztelő: Bárdos Botond | Időpont: 2023.12.12. 17:03 | Böngésző: Google Chrome |
 | -------------------------------------|----------|-------------------------|
+
 | Időpont | Teszt                | Eredmény | Megjegyzés                                                            |
 |:-------:|----------------------|----------|-----------------------------------------------------------------------|
 | 17:03 | /login útvonal és / útvonal | Sikeres | Sikeresen behozza a bejelentkező felületet. | 
@@ -38,4 +39,4 @@
 | 22:47 | Leírás megváltoztatása | Sikeres| Leírást beállítja |
 | 22:49 | Felhasználó hozzáadása feladathoz | Sikeres | Hozzáadja |
 | 22:54 | Alfeladat kreálása | Sikertelen | Errort dob |
-| 22:57 | Hozzárendelt feladatok megtekintése | Sikeres | Betölti a feladaotkatt | 
+| 22:57 | Hozzárendelt feladatok megtekintése | Sikeres | Betölti a feladatokat | 
