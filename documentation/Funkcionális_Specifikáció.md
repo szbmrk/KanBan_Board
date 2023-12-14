@@ -56,7 +56,11 @@ Edit profile
 7. Az Edit profil menüre kattintva átnavigál a /editprofile page-re.
 8. A /editprofile page-n tudja szerkeszteni az adatait.
 9. A navbar-on található harang gombbal átnavigál a /notifications page-re.
-10. A /notifiactions page-nláthatók az értesítések.
+10. A /notifiactions page-n láthatók az értesítések.
+11. A sidebar-on a /teams menüben tud új csapatot létrehozni.
+12. A csapat neve melletti menüben tudja a csapat nevét, a csapat tagokat módosítani és a csapatot törölni, ha van ehhez joga.
+13. A sidebar-on Permission table menüben tudja megtekinteni azokat a táblákat, amin joga van módosítani a jogosultságot és a szerepköröket.
+14. A táblára kattintva jelennek meg a szerepkörök és a hozzájuk tartozó jogosultságok.
 
 ## 10. Funckió - követelmény megfeleltetése
 
