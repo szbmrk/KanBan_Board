@@ -39,3 +39,10 @@
 - Uizard prototype vagy egyéb UI Mockup eszközök (a képernyőtervekhez)
 
 ## 9. Fogalomszótár
+
+- publikálás: nyilvánossá tétel
+- regisztráció: jelentkezés, beiratkozás
+- formázott szöveg: szöveg, ami írható vastagon, dőlten vagy áthúzva.
+- navbar: az oldal tetején található sáv
+- sidebar: az oldal bal oldalán található sáv
+- bemenet: a szövegdobozokba átadott információ
