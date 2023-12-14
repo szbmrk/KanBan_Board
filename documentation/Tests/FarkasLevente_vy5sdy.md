@@ -26,3 +26,12 @@
 |12:59| Add user to task| Sikeres|Hozzáadja|
 |13:03| Generate subtask| Sikertelen| Errort dob|
 |13:04| View asigned tasks| Sikeres| Betölt, igaz elég lassan| 
+
+||Időpont:2023.12.14 11:58|Böngésző: Firefox|
+| -------------------------------------|----------|-------------------------|
+
+| Időpont | Teszt                | Eredmény | Megjegyzés                                                            |
+|:-------:|----------------------|----------|-----------------------------------------------------------------------|
+|11:59| Delete role from user| Sikeres | Sikeresen törli a rolet|
+|12:01| Edit profile - change password| Sikeres | Sikeresen változtat jelszót, viszont erről nem értesíti a felhasználót|
+|12:11| Delete profile | Sikeres | Sikeresen töröl|
