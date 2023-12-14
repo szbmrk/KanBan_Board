@@ -43,3 +43,28 @@
 | 12:59 | /board kártyán Generate attachment(s) button | Sikeres | Sikeresen létrehozza az attachment linkeket. |
 | 13:00 | /board kártyán menüben Add favourite button | Sikeres | Sikeresen kedvencek közé helyezi a task-ot. |
 | 13:01 | /board kártyán menüben Delete button | Sikeres | Sikeresen törli a task-ot. |
+| 22:37 | /board kártyán menüben Delete button jogosultság | Sikeres | Aki nem jogosult kártya törlésre, annak nem jelenik meg.|
+| 22:38 | /board Column menü | Sikeres | Sikeresen megnyitja a menüt. |
+| 22:40 | /board Column menü Generate documentation for column | Sikeres | Sikeresen megnyitja a Generate documentation for column-t. |
+| 22:41 | /board Column menü Generate documentation for column model choose | Sikeres | Sikeresen ki lehet választani az AI modellt. |
+| 22:41 | /board Column menü Generate documentation for column Run gomb | Sikeres | Sikeresen ki lehet futtatni a dokumentálást. |
+| 22:43 | /board Column menü Generate tasks | Sikeres | Meg lehet nyitni a pop upot. |
+| 22:45 | /board Column menü Generate tasks model choose | Sikeres | Sikeresen ki lehet választani az AI modellt. |
+| 22:47 | /board Column menü Generate tasks task mennyiség lenyíló | Sikeres | Sikeresen ki lehet választani az generálandó task-ok darabszámát. |
+| 22:48 | /board Column menü Generate tasks gomb| Sikeres | Sikeresen létre lehet hozni a task-okat. |
+| 22:49 | /board Column menü Delete column gomb| Sikeres | Sikeresen törölni lehet az oszlopot. |
+| 22:49 | /board Column menü Delete column gomb jogosultság| Sikeres | Aki nem jogosult az oszlop törlésre, annak nem jelenik meg. |
+| 22:51 | /board Column névre dupla kattintás | Sikeres | Dupla kattintás hatására át lehet nevezni az oszlopot. |
+| 22:52 | /board Add new column | Sikeres | A gomb megnyomására létrejön az új column az oldal újratöltése után. |
+| 22:54 | /board Add new column jogosultság | Sikeres | Aki nem jogosult az oszlop létrehozására, annak nem jelenik meg. |
+| 22:55 | /teams útvonal| Sikeres | Sikeresen megjelenik a teams felület. |
+| 22:56 | Add new team gomb| Sikeres | Sikeresen megnyitja a pop up ot. |
+| 22:58 | Add new team Save gomb| Sikeres | Sikeresen létrehozza az új csapatot. |
+| 23:00 | Team menü| Sikeres | Sikeresen kinyitja a menüt. |
+| 23:01 | Team menü edit name| Sikeres | Sikeresen megnyitja a pop up ot. |
+| 23:03 | Team menü edit name Save gomb| Sikeres | Sikeresen átnevezi a csapatot. |
+| 23:04 | Team menü add users | Sikeres | Sikeresen megnyitja a pop up-ot. |
+| 23:04 | Team menü add users search bar | Sikeres | Sikeresen lehet keresni a regisztrált userek-re username alapján. |
+| 23:05 | Team menü add users Add users gomb| Sikeres | Sikeresen hozzáadja a kijelölt user-eket a team-hez. |
+| 23:06 | Team menü Delete team | Sikeres | Sikeresen megnyitja a pop up-ot. |
+| 23:06 | Team menü Delete team pop up delete gomb | Sikeres | Sikeresen törli a team-et. |
