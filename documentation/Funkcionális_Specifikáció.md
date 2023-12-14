@@ -64,7 +64,14 @@ Edit profile
 
 ## 10. Funckió - követelmény megfeleltetése
 
-## 11. Fogalomszótár
+## 11. Fogalomszótár:
+
+- publikálás: nyilvánossá tétel
+- regisztráció: jelentkezés, beiratkozás
+- formázott szöveg: szöveg, ami írható vastagon, dőlten vagy áthúzva.
+- navbar: az oldal tetején található sáv
+- sidebar: az oldal bal oldalán található sáv
+- bemenet: a szövegdobozokba átadott információ
 
 ### 1. Kanban Board:
 
