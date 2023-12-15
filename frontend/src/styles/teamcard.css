@@ -149,8 +149,8 @@
   gap: 5px;
 }
 
-.team-member-card-body-roles-container>p,
-.team-member-card-body-actions-container>p {
+.team-member-card-body-roles-container > p,
+.team-member-card-body-actions-container > p {
   font-size: 1.5em;
   text-align: left;
 }
@@ -165,7 +165,7 @@
 }
 
 .team-member-card-body-roles p {
-  margin-left: 20px!important;
+  margin-left: 20px !important;
 }
 
 .role {
@@ -232,7 +232,6 @@
   z-index: 100000000;
 }
 
-
 .delete-button {
   max-width: 50% !important;
   margin-top: 0 !important;
@@ -258,6 +257,12 @@
   color: var(--light-gray);
 }
 
+.add-button:disabled {
+  background-color: transparent;
+  border: 1px solid var(--light-gray);
+  color: var(--light-gray);
+}
+
 .user-select {
   width: 100%;
   display: flex;
@@ -266,7 +271,6 @@
   justify-content: center;
   align-items: center;
   gap: 15px;
-
 }
 
 .user-select div {

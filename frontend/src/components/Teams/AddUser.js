@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import axios from '../../api/axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import Loader from '../Loader';
+import React, { useEffect, useState } from "react";
+import axios from "../../api/axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import Loader from "../Loader";
 import ErrorWrapper from "../../ErrorWrapper";
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
@@ -20,7 +20,7 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
   }, []);
 
   async function getUsers() {
-    const token = sessionStorage.getItem('token');
+    const token = sessionStorage.getItem("token");
     try {
       const response = await axios.get(`team/${teamID}/management/no_members`, {
         headers: {
@@ -30,7 +30,7 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
       setUsers(response.data.users);
       setNeedLoader(false);
     } catch (error) {
-        setError(error.response.data);
+      setError(error.response.data);
     }
   }
 
@@ -48,38 +48,48 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
   }
 
   return (
-    <div className='overlay'>
-      <div className='popup popup-mini'>
-        <span className='close-btn' onClick={OnClose}>
+    <div className="overlay">
+      <div className="popup popup-mini">
+        <span className="close-btn" onClick={OnClose}>
           {closeIcon}
         </span>
-        <p className='confirmation-text'>Select Users to Add: </p>
-        {needLoader ?
-          <Loader /> :
-          users.length === 0 ? (
-            <div>
-              <p>No users to add</p>
-            </div>
-          ) : (
-            <div className='user-select'>
-              {users.map((user) => (
-                <div
-                  key={user.user_id}
-                  onClick={() => toggleUserSelection(user.user_id)}
-                  className={selectedUsers.includes(user.user_id) ? 'selected' : ''}
-                >
-                  <p>{user.username}</p>
-                </div>
-              ))}
-            </div>
-          )
-        }
-        <button className='add-button' onClick={handleAddUsers}>
+        <p className="confirmation-text">Select Users to Add: </p>
+        {needLoader ? (
+          <Loader />
+        ) : users.length === 0 ? (
+          <div>
+            <p>No users to add</p>
+          </div>
+        ) : (
+          <div className="user-select">
+            {users.map((user) => (
+              <div
+                key={user.user_id}
+                onClick={() => toggleUserSelection(user.user_id)}
+                className={
+                  selectedUsers.includes(user.user_id) ? "selected" : ""
+                }
+              >
+                <p>{user.username}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        <button
+          className="add-button"
+          disabled={selectedUsers.length === 0}
+          onClick={handleAddUsers}
+        >
           Add Users
         </button>
       </div>
       {error && (
-        <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+        <ErrorWrapper
+          originalError={error}
+          onClose={() => {
+            setError(null);
+          }}
+        />
       )}
     </div>
   );

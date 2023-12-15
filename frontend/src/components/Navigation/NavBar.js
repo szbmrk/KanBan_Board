@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { AuthContext } from '../../auth/AuthContext';
-import '../../styles/navbar.css';
-import '../../styles/popup.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { AuthContext } from "../../auth/AuthContext";
+import "../../styles/navbar.css";
+import "../../styles/popup.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    faBell,
-    faUser,
-    faBars,
-    faSignOutAlt,
-    faUserPen,
-    faMagnifyingGlass,
-    faCircleHalfStroke,
-} from '@fortawesome/free-solid-svg-icons';
+  faBell,
+  faUser,
+  faBars,
+  faSignOutAlt,
+  faUserPen,
+  faMagnifyingGlass,
+  faCircleHalfStroke,
+} from "@fortawesome/free-solid-svg-icons";
 
 const notificationIcon = <FontAwesomeIcon icon={faBell} />;
 const profileIcon = <FontAwesomeIcon icon={faUser} />;
@@ -23,137 +23,139 @@ const searchIcon = <FontAwesomeIcon icon={faMagnifyingGlass} />;
 const displayModeIcon = <FontAwesomeIcon icon={faCircleHalfStroke} />;
 
 const Navbar = () => {
-    const { isLoggedIn, onLogout } = React.useContext(AuthContext);
-    const [isSidebarClosable, setIsSidebarClosable] = useState(false);
-    const [isSidebarVisible, setIsSidebarVisible] = useState(true);
-    const [menuIconClicked, setMenuIconClicked] = useState(false);
-    const [isSidebarOnTop, setIsSidebarOnTop] = useState(false);
+  const { isLoggedIn, onLogout } = React.useContext(AuthContext);
+  const [isSidebarClosable, setIsSidebarClosable] = useState(false);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  const [menuIconClicked, setMenuIconClicked] = useState(false);
+  const [isSidebarOnTop, setIsSidebarOnTop] = useState(false);
 
-    const toggleSidebar = () => {
-        const sidebar = document.querySelector('.sidebar');
-        const content = document.querySelector('.content');
+  const toggleSidebar = () => {
+    const sidebar = document.querySelector(".sidebar");
+    const content = document.querySelector(".content");
 
-        sidebar.classList.toggle('sidebar-hidden');
-        sidebar.classList.toggle('sidebar-visible');
-        if (sidebar.classList.contains('sidebar-hidden')) {
-            sidebar.style.transform = isSidebarOnTop ? 'translateY(-253px)' : 'translateX(-231px)';
-            sidebar.style.transition = 'transform 0.5s ease-in-out';
-            setIsSidebarVisible(false);
-            setTimeout(() => {
-                sidebar.classList.remove('col-2');
-                content.classList.remove('col-10');
-                content.classList.add('col-12');
-                content.style.maxWidth = '100%';
-                sidebar.style.display = 'none';
-            }, 500);
-        } else {
-            sidebar.classList.add('col-2');
-            content.classList.remove('col-12');
-            content.classList.add('col-10');
-            content.style.maxWidth = isSidebarOnTop ? '100%' : 'calc(100% - 231px)';
-            content.style.transition = 'max-width 0.5s ease-in-out';
-            setIsSidebarVisible(true);
-            setTimeout(() => {
-                sidebar.style.display = 'block';
-                sidebar.style.transform = 'translateX(0px)';
-                sidebar.style.transition = 'transform 0.5s ease-in-out';
-            }, 500);
-        }
-        setMenuIconClicked(false);
+    sidebar.classList.toggle("sidebar-hidden");
+    sidebar.classList.toggle("sidebar-visible");
+    if (sidebar.classList.contains("sidebar-hidden")) {
+      sidebar.style.transform = isSidebarOnTop
+        ? "translateY(-253px)"
+        : "translateX(-231px)";
+      sidebar.style.transition = "transform 0.5s ease-in-out";
+      setIsSidebarVisible(false);
+      setTimeout(() => {
+        sidebar.classList.remove("col-2");
+        content.classList.remove("col-10");
+        content.classList.add("col-12");
+        content.style.maxWidth = "100%";
+        sidebar.style.display = "none";
+      }, 500);
+    } else {
+      sidebar.classList.add("col-2");
+      content.classList.remove("col-12");
+      content.classList.add("col-10");
+      content.style.maxWidth = isSidebarOnTop ? "100%" : "calc(100% - 231px)";
+      content.style.transition = "max-width 0.5s ease-in-out";
+      setIsSidebarVisible(true);
+      setTimeout(() => {
+        sidebar.style.display = "block";
+        sidebar.style.transform = "translateX(0px)";
+        sidebar.style.transition = "transform 0.5s ease-in-out";
+      }, 500);
+    }
+    setMenuIconClicked(false);
+  };
+
+  useEffect(() => {
+    const maxWidth = window.matchMedia("(min-width: 980px)");
+
+    const closeSidebar = (e) => {
+      setIsSidebarClosable(!e.matches);
+      toggleSidebar();
     };
 
-    useEffect(() => {
-        const maxWidth = window.matchMedia('(min-width: 980px)');
+    maxWidth.addEventListener("change", closeSidebar);
 
-        const closeSidebar = (e) => {
-            setIsSidebarClosable(!e.matches);
-            toggleSidebar();
-        };
+    return () => {
+      maxWidth.removeEventListener("change", closeSidebar);
+    };
+  }, [isSidebarClosable]);
 
-        maxWidth.addEventListener('change', closeSidebar);
+  useEffect(() => {
+    const sidebarVisibleOnTop = window.matchMedia("(max-width: 600px)");
 
-        return () => {
-            maxWidth.removeEventListener('change', closeSidebar);
-        };
-    }, [isSidebarClosable]);
+    const content = document.querySelector(".content");
 
-    useEffect(() => {
-        const sidebarVisibleOnTop = window.matchMedia('(max-width: 600px)');
-
-        const content = document.querySelector('.content');
-
-        const setSidebarOnTop = (e) => {
-            if (e.matches) {
-                content.style.maxWidth = '100%';
-                content.style.transition = 'max-width 0.5s ease-in-out';
-            } else {
-                content.style.maxWidth = 'calc(100% - 231px)';
-                content.style.transition = 'max-width 0.5s ease-in-out';
-            }
-            setIsSidebarOnTop(e.matches);
-        };
-
-        sidebarVisibleOnTop.addEventListener('change', setSidebarOnTop);
-
-        return () => {
-            sidebarVisibleOnTop.removeEventListener('change', setSidebarOnTop);
-        };
-    }, [isSidebarOnTop]);
-
-    const [isOpen, setIsOpen] = useState(false);
-
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
+    const setSidebarOnTop = (e) => {
+      if (e.matches) {
+        content.style.maxWidth = "100%";
+        content.style.transition = "max-width 0.5s ease-in-out";
+      } else {
+        content.style.maxWidth = "calc(100% - 231px)";
+        content.style.transition = "max-width 0.5s ease-in-out";
+      }
+      setIsSidebarOnTop(e.matches);
     };
 
-    const handleClick = () => {
-        setMenuIconClicked(true);
-        toggleSidebar();
-    };
+    sidebarVisibleOnTop.addEventListener("change", setSidebarOnTop);
 
-    return (
-        <>
-            <div className='navbar col-12'>
-                <div className='navbar-menu'>
-                    <button id='menu-btn' onClick={handleClick}>
-                        {menuIcon}
-                    </button>
-                    <ul>
-                        <li>
-                            <span>{displayModeIcon}</span>
-                        </li>
-                        <li>
-                            <Link to='/notifications'>
-                                <span>{notificationIcon}</span>
-                            </Link>
-                        </li>
-                        <li>
-                            <span onClick={toggleDropdown}>{profileIcon}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            {isOpen && (
-                <div className='profile-submenu' onMouseLeave={() => setIsOpen(false)}>
-                    <p className='profile-menu-title'> Profile </p>
-                    <ul className='profile-menu'>
-                        <li>
-                            <Link to='/profile' onClick={toggleDropdown}>
-                                <span>{editProfileIcon}</span>
-                                <span>Edit Profile</span>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to='/login' onClick={onLogout} className='logout'>
-                                <span>{signOutIcon}</span>
-                                <span>Sign Out</span>
-                            </Link>
-                        </li>
-                    </ul>
-                </div>
-            )}
-        </>
-    );
+    return () => {
+      sidebarVisibleOnTop.removeEventListener("change", setSidebarOnTop);
+    };
+  }, [isSidebarOnTop]);
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleClick = () => {
+    setMenuIconClicked(true);
+    toggleSidebar();
+  };
+
+  return (
+    <>
+      <div className="navbar col-12">
+        <div className="navbar-menu">
+          <button id="menu-btn" onClick={handleClick}>
+            {menuIcon}
+          </button>
+          <ul>
+            <li>
+              <span>{displayModeIcon}</span>
+            </li>
+            <li>
+              <Link to="/notifications">
+                <span>{notificationIcon}</span>
+              </Link>
+            </li>
+            <li>
+              <span onClick={toggleDropdown}>{profileIcon}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      {isOpen && (
+        <div className="profile-submenu" onMouseLeave={() => setIsOpen(false)}>
+          <p className="profile-menu-title"> Profile </p>
+          <ul className="profile-menu">
+            <li>
+              <Link to="/profile" onClick={toggleDropdown}>
+                <span>{editProfileIcon}</span>
+                <span>Edit Profile</span>
+              </Link>
+            </li>
+            <li>
+              <Link to="/login" onClick={onLogout} className="logout">
+                <span>{signOutIcon}</span>
+                <span>Sign Out</span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+      )}
+    </>
+  );
 };
 
 export default Navbar;
