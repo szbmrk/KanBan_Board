@@ -178,9 +178,7 @@ class BardController extends Controller
         
         $prompt = "Generate documentation or a longer description for the task with the following title: {$task->title}, description: {$task->description}.";
         $path = env('BARD_PYTHON_SCRIPT_PATH');
-        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
-        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
-        $command = "python {$path} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+        $command = "python {$path} \"{$prompt}\"";
         $response = shell_exec($command);
         $cleanData = trim($response);
 
@@ -212,9 +210,7 @@ class BardController extends Controller
 
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
         $path = env('BARD_PYTHON_SCRIPT_PATH');
-        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
-        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
-        $command = "python {$path} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+        $command = "python {$path} \"{$prompt}\"";
         $response = shell_exec($command);
         $cleanData = trim($response);
 
@@ -251,9 +247,7 @@ class BardController extends Controller
 
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
         $path = env('BARD_PYTHON_SCRIPT_PATH');
-        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
-        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
-        $command = "python {$path} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+        $command = "python {$path} \"{$prompt}\"";
         $response = shell_exec($command);
         $cleanData = trim($response);
 
@@ -265,12 +259,10 @@ class BardController extends Controller
     public static function CallPythonAndFormatResponseDraft($prompt, $responseCounter)
     {
         $pythonScriptPath = env('BARD_PYTHON_SCRIPT_PATH'); // Path to your Python script
-        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
-        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
         $responseArrays = [];
 
         for ($i = 1; $i <= $responseCounter; $i++) {
-            $command = "python {$pythonScriptPath} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+            $command = "python {$pythonScriptPath} \"{$prompt}\"";
                 $answer = shell_exec($command);
             
                 $answer = BardController::parseTaskResponseDraft($answer);
@@ -285,9 +277,7 @@ class BardController extends Controller
     public static function CallPythonAndFormatResponse($prompt)
     {
         $pythonScriptPath = env('BARD_PYTHON_SCRIPT_PATH'); // Path to your Python script
-        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
-        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
-        $command = "python {$pythonScriptPath} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+        $command = "python {$pythonScriptPath} \"{$prompt}\"";
         
         try {
             $answer = shell_exec($command);   
@@ -301,9 +291,7 @@ class BardController extends Controller
     public static function CallPythonAndFormatResponseAttachment($prompt)
     {
         $pythonScriptPath = env('BARD_PYTHON_SCRIPT_PATH'); // Path to your Python script
-        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
-        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
-        $command = "python {$pythonScriptPath} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+        $command = "python {$pythonScriptPath} \"{$prompt}\"";
 
         try {
             $answer = shell_exec($command);   
@@ -397,7 +385,7 @@ class BardController extends Controller
 
     public static function CallPythonAndFormatCodeReviewOrDocResponse($prompt, $boardId, $expectedType, $code)
     {
-        $pythonScriptPath = env('BARD_PYTHON_SCRIPT_PATH_CODE_REVIEW_AND_DOCUMENTATION'); // Path to your Python script
+        $pythonScriptPath = env('BARD_PYTHON_SCRIPT_PATH'); // Path to your Python script
         $command = "python {$pythonScriptPath} \"{$prompt}\"";
 
         try {
@@ -505,9 +493,7 @@ class BardController extends Controller
         $prompt = "Based on the following log entries in a Kanban table: {$formattedLogs}, create a performance review by day and point out the most and least productive days.";
 
         $path = env('BARD_PYTHON_SCRIPT_PATH');
-        $token = env('BARD_TOKEN'); // Get your Bard token from environment variables
-        $token2 = env('BARD_TOKEN2'); // Get your second Bard token from environment variables
-        $command = "python {$path} \"{$prompt}\" \"{$token}\" \"{$token2}\"";
+        $command = "python {$path} \"{$prompt}\"";
         $response = shell_exec($command);
         $response = trim($response);
 

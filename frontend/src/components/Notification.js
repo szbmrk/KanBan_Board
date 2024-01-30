@@ -157,7 +157,7 @@ export default function Notification() {
                 <>
                   <div className="notification-container">
                     <div className="container-header">
-                      <p>Notification History</p>
+                      <p>Notification history</p>
                       <button
                         className="mark-all-button"
                         onClick={markAllAsSeen}
@@ -165,7 +165,7 @@ export default function Notification() {
                           display: countOfUnseen > 0 ? "block" : "none",
                         }}
                       >
-                        {checkIcon} Mark All as Seen
+                        {checkIcon} Mark all as seen
                       </button>
                     </div>
                     {countOfUnseen > 0 ? (
@@ -197,7 +197,7 @@ export default function Notification() {
                                   className="mark-seen-button"
                                   onClick={() => markAsSeen(notification)}
                                 >
-                                  {checkIcon} Mark as Seen
+                                  {checkIcon} Mark as seen
                                 </button>
                               </div>
                             )
@@ -214,7 +214,7 @@ export default function Notification() {
                 <>
                   <div className="notification-container">
                     <div className="container-header">
-                      <p>Notification History</p>
+                      <p>Notification history</p>
                     </div>
                     {countOfseen > 0 ? (
                       <>

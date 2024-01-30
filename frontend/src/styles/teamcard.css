@@ -271,6 +271,9 @@
   justify-content: center;
   align-items: center;
   gap: 15px;
+  max-height: 80vh;
+  overflow: auto;
+  padding: 15px;
 }
 
 .user-select div {
@@ -282,6 +285,9 @@
   cursor: pointer;
   transition: box-shadow 0.1s ease;
   transition: transform 0.005s ease;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .selected {
@@ -299,5 +305,15 @@
   background-color: var(--dark-gray);
   color: var(--light-gray);
   border: 1px solid var(--light-gray);
+  outline: none;
+}
+
+.filter-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--light-gray);
+  border-radius: 5px;
+  background-color: var(--dark-gray);
+  color: var(--light-gray);
   outline: none;
 }

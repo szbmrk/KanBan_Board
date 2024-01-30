@@ -1551,7 +1551,7 @@ const Board = () => {
       hoverColor: "var(--magic)",
       icon: aiIcon,
       hoveredIcon: aiIcon,
-      label: "Generate Tasks",
+      label: "Generate tasks",
     },
     ...craftedPromptsBoard.map((craftedPrompt, index) => ({
       onMouseEnter: () => setIsHoveredClipboard(index + 1),
@@ -1579,7 +1579,7 @@ const Board = () => {
       hoverColor: "var(--important)",
       icon: trashIcon,
       hoveredIcon: trashIcon,
-      label: "Delete Column",
+      label: "Delete column",
     },
   ];
 
@@ -1850,7 +1850,7 @@ const Board = () => {
                   >
                     {craftIcon}
                   </span>
-                  <span>Craft Prompt</span>
+                  <span>Craft prompt</span>
                 </li>
                 <li
                   onMouseEnter={() => setIsHoveredDocumentation(true)}
@@ -1884,7 +1884,7 @@ const Board = () => {
                   >
                     {codeIcon}
                   </span>
-                  <span>Code Review</span>
+                  <span>Code review</span>
                 </li>
                 {codeReviewOrDocumentations.map((element, index) => (
                   <ul

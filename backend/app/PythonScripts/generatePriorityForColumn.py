@@ -20,7 +20,7 @@ def generate_priority():
         'max_tokens': max_tokens,
     }
 
-    response = requests.post('https://api.openai.com/v1/engines/text-davinci-003/completions', headers=headers, json=data)
+    response = requests.post('https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct/completions', headers=headers, json=data)
 
     if response.status_code == 200:
         try:

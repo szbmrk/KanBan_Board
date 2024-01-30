@@ -2,9 +2,12 @@ import requests
 from bardapi.constants import SESSION_HEADERS
 from bardapi import Bard
 import sys
+import os
 
-def get_bard_answer(prompt, token, token2):
+def get_bard_answer(prompt):
     try:
+        token = os.environ.get('BARD_TOKEN')
+        token2 = os.environ.get('BARD_TOKEN2')
         session = requests.Session()
         session.headers = SESSION_HEADERS
         session.cookies.set("__Secure-1PSID", token)
@@ -19,7 +22,5 @@ def get_bard_answer(prompt, token, token2):
 
 if __name__ == "__main__":
     prompt = sys.argv[1]
-    token = sys.argv[2]
-    token2 = sys.argv[3]
-    answer = get_bard_answer(prompt, token, token2)
+    answer = get_bard_answer(prompt)
     print(answer)

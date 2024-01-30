@@ -75,7 +75,9 @@ const GenerateAttachmentLinkWithAGIPopup = ({
 
       console.log("task");
       console.log(task);
+      console.log(task.title);
       console.log(counter);
+      console.log(ai);
       const res = await axios.get(`/AGI/GenerateAttachmentLink`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -120,7 +122,7 @@ const GenerateAttachmentLinkWithAGIPopup = ({
   const handleLoader = (editedTask, chosenAI, taskCounter) => {
     //setNeedLoader(true);
     generateAttachment(editedTask, chosenAI, taskCounter);
-  }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -155,9 +157,7 @@ const GenerateAttachmentLinkWithAGIPopup = ({
             </div>
             <div className="dropdown-container">
               <p>Select an AI:</p>
-              <div
-                style={{ overflowY: "auto", height: "100px" }}
-              >
+              <div style={{ overflowY: "auto", height: "100px" }}>
                 <Dropdown
                   options={aiOptions}
                   value={chosenAI}
@@ -168,11 +168,7 @@ const GenerateAttachmentLinkWithAGIPopup = ({
             <button
               className="generate-button"
               onClick={() =>
-                handleLoader(
-                  editedTask,
-                  chosenAI.value,
-                  taskCounter.value
-                )
+                handleLoader(editedTask, chosenAI.value, taskCounter.value)
               }
             >
               Generate Attachment(s)
@@ -216,7 +212,12 @@ const GenerateAttachmentLinkWithAGIPopup = ({
         </div>
       </div>
       {error && (
-          <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+        <ErrorWrapper
+          originalError={error}
+          onClose={() => {
+            setError(null);
+          }}
+        />
       )}
     </div>
   );

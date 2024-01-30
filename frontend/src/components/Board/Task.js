@@ -242,7 +242,7 @@ export const Task = forwardRef(
         hoverColor: "var(--edit)",
         icon: pencilIcon,
         hoveredIcon: pencilIcon,
-        label: "Edit Task",
+        label: "Edit task",
       },
       {
         onClick: () => handleDocumentation(),
@@ -259,7 +259,7 @@ export const Task = forwardRef(
         hoverColor: "var(--magic)",
         icon: aiIcon,
         hoveredIcon: aiIcon,
-        label: "Generate Subtasks",
+        label: "Generate subtasks",
       },
       {
         onClick: () => handleAttachmentLinks(),
@@ -267,7 +267,7 @@ export const Task = forwardRef(
         hoverColor: "var(--attachment-link)",
         icon: attachmentLinkIcon,
         hoveredIcon: attachmentLinkIcon,
-        label: "Generate Attachment Links",
+        label: "Generate attachment links",
       },
       ...craftedPromptsTask.map((craftedPromptsTaskItem, index) => ({
         onClick: () =>
@@ -285,7 +285,7 @@ export const Task = forwardRef(
             hoverColor: "var(--light-gray)",
             icon: solidStarIcon,
             hoveredIcon: regularStarIcon,
-            label: "Remove from Favourites",
+            label: "Remove from favourites",
           }
         : {
             onClick: () => favouriteTask(id, task.column_id),
@@ -293,7 +293,7 @@ export const Task = forwardRef(
             hoverColor: "var(--starred)",
             icon: regularStarIcon,
             hoveredIcon: regularStarIconBouncing,
-            label: "Add to Favourites",
+            label: "Add to favourites",
           },
       {
         onClick: () => deleteTask(id, task.column_id),
@@ -301,7 +301,7 @@ export const Task = forwardRef(
         hoverColor: "var(--important)",
         icon: trashIcon,
         hoveredIcon: trashIcon,
-        label: "Delete Task",
+        label: "Delete task",
       },
     ];
 

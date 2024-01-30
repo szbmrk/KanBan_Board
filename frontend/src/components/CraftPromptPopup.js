@@ -148,7 +148,7 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
         <span className="close-btn" onClick={onCancel}>
           {closeIcon}
         </span>
-        <h2>Craft Prompt Popup</h2>
+        <h2>Craft prompt popup</h2>
         <div className="gt-popup-content">
           <div className="gt-input-container">
             <div className="gt-input-title">
@@ -178,9 +178,7 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
               </div>
               <div className="dropdown-container">
                 <p>Choose an AI you want to fulfill your prompt with:</p>
-                <div
-                  style={{ overflowY: "auto", height: "100px" }}
-                >
+                <div style={{ overflowY: "auto", height: "100px" }}>
                   <Dropdown
                     options={aiOptions}
                     value={chosenAI}
@@ -225,7 +223,12 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
         </div>
       </div>
       {error && (
-          <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+        <ErrorWrapper
+          originalError={error}
+          onClose={() => {
+            setError(null);
+          }}
+        />
       )}
     </div>
   );
