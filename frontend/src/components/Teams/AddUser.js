@@ -12,7 +12,7 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [needLoader, setNeedLoader] = useState(false);
   const [search, setSearch] = useState('');
-  const [searchedUserList, setSearchedUserList]=useState([]);
+  const [searchedUserList, setSearchedUserList] = useState([]);
   const [searchButtonClicked, setSearchButtonClicked] = useState(false);
   const [error, setError] = useState(null);
   const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
@@ -20,9 +20,9 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
   useEffect(() => {
     setNeedLoader(true);
     getUsers();
-      //ez
-      const ResetTheme = () => {
-        setTheme(sessionStorage.getItem("darkMode"))
+    //ez
+    const ResetTheme = () => {
+      setTheme(sessionStorage.getItem("darkMode"))
     }
 
 
@@ -30,7 +30,7 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
     window.addEventListener('ChangingTheme', ResetTheme)
 
     return () => {
-        window.removeEventListener('ChangingTheme', ResetTheme)
+      window.removeEventListener('ChangingTheme', ResetTheme)
     }
     //eddig
   }, []);
@@ -47,7 +47,7 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
       console.log(response.data.users);
       setNeedLoader(false);
     } catch (error) {
-        setError(error.response.data);
+      setError(error.response.data);
     }
   }
 
@@ -59,7 +59,7 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
     }
   }
 
-  function handleSearchUsers(e){
+  function handleSearchUsers(e) {
     setSearch(e.target.value);
     console.log(e.target.value);
   }
@@ -68,10 +68,23 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
     AddUsers(selectedUsers, teamID);
     OnClose();
   }
-function handleSearchButton(){
-    
-    const tempSearchedUserList=(users.filter(
-      user=>{
+  function handleSearchButton() {
+    let tempSearchedUserList = [];
+    for (let i = 0; i < search.length; i++) {
+      if (search[i] === '@') {
+        tempSearchedUserList = (users.filter(
+          user => {
+            return user.email.toLowerCase().includes(search.toLowerCase());
+          }
+        )
+        )
+        setSearchedUserList(tempSearchedUserList);
+        setSearchButtonClicked(true);
+        return;
+      }
+    }
+    tempSearchedUserList = (users.filter(
+      user => {
         return user.username.toLowerCase().includes(search.toLowerCase());
       }
     )
@@ -94,43 +107,43 @@ function handleSearchButton(){
               <p>No users to add</p>
             </div>
           ) :
-           !searchButtonClicked ? (
-            <div className='user-select'>
-              <input className='searchInputCard' name='searchInput' onChange={handleSearchUsers} placeholder='Search users...'/>
-              <button className='searchButtonCard' onClick={handleSearchButton}>Search</button>
-              {users.map((user) => (
-                <div
-                  key={user.user_id}
-                  onClick={() => toggleUserSelection(user.user_id)}
-                  className={selectedUsers.includes(user.user_id) ? 'selected' : ''}
-                >
-                  <p>{user.username}</p>
-                </div>
-              ))}
-            </div>
-          ) :
-          (
-            <div className='user-select'>
-            <input name='searchInput' onChange={handleSearchUsers} placeholder='Search users...'/>
-            <button onClick={handleSearchButton}>Search</button>
-            {searchedUserList.map((user) => (
-              <div
-                key={user.user_id}
-                onClick={() => toggleUserSelection(user.user_id)}
-                className={selectedUsers.includes(user.user_id) ? 'selected' : ''}
-              >
-                <p>{user.username}</p>
+            !searchButtonClicked ? (
+              <div className='user-select'>
+                <input className='searchInputCard' name='searchInput' onChange={handleSearchUsers} placeholder='Search users...' />
+                <button className='searchButtonCard' onClick={handleSearchButton}>Search</button>
+                {users.map((user) => (
+                  <div
+                    key={user.user_id}
+                    onClick={() => toggleUserSelection(user.user_id)}
+                    className={selectedUsers.includes(user.user_id) ? 'selected' : ''}
+                  >
+                    <p>{user.username}</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          )
+            ) :
+              (
+                <div className='user-select'>
+                  <input name='searchInput' onChange={handleSearchUsers} placeholder='Search users...' />
+                  <button onClick={handleSearchButton}>Search</button>
+                  {searchedUserList.map((user) => (
+                    <div
+                      key={user.user_id}
+                      onClick={() => toggleUserSelection(user.user_id)}
+                      className={selectedUsers.includes(user.user_id) ? 'selected' : ''}
+                    >
+                      <p>{user.username}</p>
+                    </div>
+                  ))}
+                </div>
+              )
         }
         <button className='add-button' onClick={handleAddUsers}>
           Add Users
         </button>
       </div>
       {error && (
-        <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+        <ErrorWrapper originalError={error} onClose={() => { setError(null); }} />
       )}
     </div>
   );

@@ -8,6 +8,15 @@ import AuthForm from './AuthForm';
 const Signup = () => {
     const navigate = useNavigate();
 
+    function EmailValid(email) {
+        const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        console.log(email);
+        if (re.test(email)) {
+            return true;
+        }
+        return false;
+    }
+
     const {
         error: err,
         display,
@@ -18,6 +27,19 @@ const Signup = () => {
     } = useAuthForm(
         { username: '', email: '', password: '', confirmPassword: '', acceptedTerms: false },
         async (formData) => {
+            if (!EmailValid(formData.email)) {
+                setError('Invalid email');
+                console.log('Invalid email');
+                return;
+            }
+            if (formData.password.length < 8) {
+                setError('Password must be at least 8 characters long');
+                return;
+            }
+            if (formData.username.length < 3) {
+                setError('Username must be at least 3 characters long');
+                return;
+            }
             if (formData.password !== formData.confirmPassword) {
                 {
                     setError('Passwords do not match');
@@ -28,7 +50,6 @@ const Signup = () => {
             navigate('/login');
         }
     );
-
     const [error, setError] = useState(err);
 
     return (
