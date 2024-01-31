@@ -78,6 +78,7 @@ const Board = () => {
         y: 0,
     });
     const [showIconContainer, setShowIconContainer] = useState(false);
+    const [showIconContainer1, setShowIconContainer1] = useState(false);
     const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
     const [
         showGeneratePerformanceSummaryPopup,
@@ -344,7 +345,7 @@ const Board = () => {
             const formData = new FormData();
             formData.append("name", data.columnName);
             formData.append("is_finished", data.isFinished ? 1 : 0);
-            formData.append("task_limit", data.taskLimit);
+            if (data.taskLimit > 0) formData.append("task_limit", data.taskLimit);
             const res = await axios.post(`/boards/${board_id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -361,6 +362,7 @@ const Board = () => {
             tempPositions.push(newColumn.column_id);
             setColumnPositions(tempPositions);
             setBoard({ ...board, columns: newBoardData });
+            setBoardToShow({ ...board, columns: newBoardData });
             setShowColumnNamePopup(false);
         } catch (e) {
             console.error(e);
@@ -435,7 +437,7 @@ const Board = () => {
         event.stopPropagation();
         setShowDeleteColumnConfirmation(true);
         setColumnToDeleteIndex(columnIndex);
-        setShowIconContainer(false);
+        setShowIconContainer1(false);
     };
 
     const handleColumnDeleteConfirm = () => {
@@ -455,6 +457,7 @@ const Board = () => {
             newBoardData.splice(columnToDeleteIndex, 1);
             setColumnPositions(newBoardData.map((column) => column.column_id));
             setBoard({ ...board, columns: newBoardData });
+            setBoardToShow({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
             if (e.response.status === 401 || e.response.status === 500) {
@@ -561,14 +564,20 @@ const Board = () => {
     };
 
     const handleAddTask = async (divIndex) => {
+        console.log("handle add task");
+        setShowTaskNamePopup(true);
+        setCurrentDivIndex(divIndex);
+    };
+
+    const handleTaskNameConfirm = async (name) => {
         try {
             const newTask = {
-                column_id: board.columns[divIndex].column_id,
-                title: `New Task`,
-                description: `Description of New Card in ${board.columns[divIndex].name}`,
+                column_id: board.columns[currentDivIndex].column_id,
+                title: name,
+                description: `Description of New Card in ${board.columns[currentDivIndex].name}`,
             };
 
-            const board_id = board.columns[divIndex].board_id;
+            const board_id = board.columns[currentDivIndex].board_id;
             const res = await axios.post(`/boards/${board_id}/task`, newTask, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -578,8 +587,9 @@ const Board = () => {
             const createdTask = res.data.task;
             createdTask.board_id = board_id;
             const newBoardData = [...board.columns];
-            newBoardData[divIndex].tasks.push(createdTask);
+            newBoardData[currentDivIndex].tasks.push(createdTask);
             setBoard({ ...board, columns: newBoardData });
+            handleTaskNameCancel();
         } catch (e) {
             console.log(e.response.status);
             alert(e.response.data.error);
@@ -590,6 +600,10 @@ const Board = () => {
                 setError(e.message);
             }
         }
+    };
+
+    const handleTaskNameCancel = () => {
+        setShowTaskNamePopup(false);
     };
 
     const moveCardFrontend = (
@@ -1339,10 +1353,9 @@ const Board = () => {
         const buttonRect = event.target.getBoundingClientRect();
         const newX = buttonRect.right + 20;
         const newY = buttonRect.top;
-
         setColumnIndex(columnIndex);
         setIconContainerPosition({ x: newX, y: newY });
-        setShowIconContainer(!showIconContainer);
+        setShowIconContainer1(!showIconContainer1);
         columnZIndex === 1 ? setColumnZIndex(100) : setColumnZIndex(1);
     };
 
@@ -2271,6 +2284,19 @@ const Board = () => {
                                 setColumnZIndex(1);
                             }}
                         >
+                            <IconContainer
+                                iconContainerPosition={iconContainerPosition}
+                                options={iconContainerOptions}
+                            />
+                        </div>)}
+                    {showIconContainer1 && (
+                        <div
+                            className="overlay"
+                            onClick={() => {
+                                setShowIconContainer1(false);
+                                setColumnZIndex(1);
+                            }}
+                        >
                             <div
                                 className="icon-container"
                                 style={{
@@ -2367,8 +2393,7 @@ const Board = () => {
                                     </div>
                                 }
                             </div>
-                        </div>
-                    )}
+                        </div>)}
                     {showGenerateAttachmentLinkWithAGIPopup && (
                         <GenerateAttachmentLinkWithAGIPopup
                             task={inspectedTask}
@@ -2400,6 +2425,19 @@ const Board = () => {
                             onCancel={handleGenerateTaskCancel}
                         />
                     )}
+                    {showTaskNamePopup && (
+                        <SimpleTextPopup
+                            title={"Task name:"}
+                            onConfirm={handleTaskNameConfirm}
+                            onCancel={handleTaskNameCancel}
+                        />
+                    )}
+                    {showColumnNamePopup && (
+                        <AddColumnPopup
+                            onConfirm={handleColumnNameConfirm}
+                            onCancel={handleColumnNameCancel}
+                        />
+                    )}
                     {showDeleteConfirmation && (
                         <ConfirmationPopup
                             text={board.columns[columnToDeleteIndex]?.title}
@@ -2420,33 +2458,35 @@ const Board = () => {
                             onCancel={() => setShowGeneratePerformanceSummaryPopup(false)}
                         />
                     )}
-                </DndProvider>
+                </DndProvider >
             )}
-            {showPopup && (
-                <Popup
-                    task={inspectedTask}
-                    onClose={handleClosePopup}
-                    onSave={handleSavePopup}
-                    board_id={board_id}
-                    addSubtask={handleAddSubtask}
-                    deleteSubtask={handleDeleteSubtask}
-                    favouriteSubtask={handleFavouriteSubtask}
-                    unFavouriteSubtask={handleUnFavouriteSubtask}
-                    handlePostComment={postComment}
-                    setTaskAsInspectedTask={setTaskAsInspectedTask}
-                    onPreviousTask={handleOpenPreviousTask}
-                    priorities={priorities}
-                    modifyPriority={handleModifyPriority}
-                    modifyDeadline={handleModifyDeadline}
-                    addAttachment={handleAddAttachment}
-                    deleteAttachment={handleDeleteAttachment}
-                    addMember={handleAddMember}
-                    deleteMember={handleDeleteMember}
-                    tags={inspectedTask.tags}
-                    placeTagOnTask={handlePlaceTagOnTask}
-                    removeTagFromTask={handleRemoveTagFromTask}
-                />
-            )}
+            {
+                showPopup && (
+                    <Popup
+                        task={inspectedTask}
+                        onClose={handleClosePopup}
+                        onSave={handleSavePopup}
+                        board_id={board_id}
+                        addSubtask={handleAddSubtask}
+                        deleteSubtask={handleDeleteSubtask}
+                        favouriteSubtask={handleFavouriteSubtask}
+                        unFavouriteSubtask={handleUnFavouriteSubtask}
+                        handlePostComment={postComment}
+                        setTaskAsInspectedTask={setTaskAsInspectedTask}
+                        onPreviousTask={handleOpenPreviousTask}
+                        priorities={priorities}
+                        modifyPriority={handleModifyPriority}
+                        modifyDeadline={handleModifyDeadline}
+                        addAttachment={handleAddAttachment}
+                        deleteAttachment={handleDeleteAttachment}
+                        addMember={handleAddMember}
+                        deleteMember={handleDeleteMember}
+                        tags={inspectedTask.tags}
+                        placeTagOnTask={handlePlaceTagOnTask}
+                        removeTagFromTask={handleRemoveTagFromTask}
+                    />
+                )
+            }
         </>
     );
 };
