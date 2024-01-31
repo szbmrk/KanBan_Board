@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 export default function Error({ error, redirect }) {
     const [canBeRedirected, setCanBeRedirected] = useState(false);
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
 
     useEffect(() => {
         const onPageLoad = () => {
@@ -16,11 +16,11 @@ export default function Error({ error, redirect }) {
         document.readyState === 'complete' ? onPageLoad() : window.addEventListener('load', onPageLoad);
         //ez
         const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
+            setTheme(localStorage.getItem("darkMode"))
         }
 
 
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        console.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {

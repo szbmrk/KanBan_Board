@@ -48,7 +48,7 @@ const TeamCard = ({
     const [profileImageUrl, setProfileImageUrl] = useState(
         'https://www.pngitem.com/pimgs/m/30-307416_profile-icon-png-image-free-download-searchpng-employee.png'
     );
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
 
     useEffect(() => {
         document.title = 'Teams';
@@ -61,11 +61,11 @@ const TeamCard = ({
         }
         //ez
         const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
+            setTheme(localStorage.getItem("darkMode"))
         }
 
 
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        console.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {

@@ -29,15 +29,15 @@ const Navbar = () => {
     const [menuIconClicked, setMenuIconClicked] = useState(false);
     const [isSidebarOnTop, setIsSidebarOnTop] = useState(false);
 
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
     useEffect(() => {
         //ez
         const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
+            setTheme(localStorage.getItem("darkMode"))
         }
 
 
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        console.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {
@@ -47,14 +47,14 @@ const Navbar = () => {
     }, []);
 
     function DarkMode() {
-        console.log(sessionStorage.getItem("darkMode"))
-        if (sessionStorage.getItem("darkMode") == "dark") {
+        console.log(localStorage.getItem("darkMode"))
+        if (localStorage.getItem("darkMode") == "dark") {
             console.log("Switching to light mode")
-            sessionStorage.setItem("darkMode", "light");
+            localStorage.setItem("darkMode", "light");
         }
         else {
             console.log("Switching to dark mode")
-            sessionStorage.setItem("darkMode", "dark");
+            localStorage.setItem("darkMode", "dark");
         }
         const event = new Event("ChangingTheme")
         window.dispatchEvent(event)

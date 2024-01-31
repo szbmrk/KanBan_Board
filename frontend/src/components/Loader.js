@@ -4,7 +4,7 @@ import '../styles/loader.css';
 const Loader = ({ data_to_load, text_if_cant_load }) => {
     const [loading, setLoading] = useState(true);
 
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
 
     useEffect(() => {
         setTimeout(() => {
@@ -13,11 +13,11 @@ const Loader = ({ data_to_load, text_if_cant_load }) => {
     }, [data_to_load]);
     //ez
     const ResetTheme = () => {
-        setTheme(sessionStorage.getItem("darkMode"))
+        setTheme(localStorage.getItem("darkMode"))
     }
 
 
-    console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+    console.log("Darkmode: " + localStorage.getItem("darkMode"))
     window.addEventListener('ChangingTheme', ResetTheme)
     //eddig
     return loading ? (

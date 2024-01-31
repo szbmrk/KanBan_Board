@@ -151,7 +151,7 @@ const Board = () => {
     const [memberDropDownValue, setMemberDropDownValue] = useState(-1)
     const [tagDropDownValue, setTagDropDownValue] = useState(-1)
     const [deadlineDropDownValue, setDeadlineDropDownValue] = useState(null)
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
     const sidebar = document.querySelector(".sidebar");
 
     useEffect(() => {
@@ -175,11 +175,11 @@ const Board = () => {
         console.log(permissions);
 
         const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
+            setTheme(localStorage.getItem("darkMode"))
         }
 
 
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        console.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {

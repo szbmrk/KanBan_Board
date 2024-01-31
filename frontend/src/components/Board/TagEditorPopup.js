@@ -7,7 +7,7 @@ const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const TagEditorPopup = ({ onClose, onSave, tagToEdit }) => {
     const [tagName, setTagName] = useState(''); // State for tag name
     const [tagColor, setTagColor] = useState(''); // State for tag color
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
     const colors = [
         '#bb0000',
         '#008000',
@@ -28,11 +28,11 @@ const TagEditorPopup = ({ onClose, onSave, tagToEdit }) => {
         }
         //ez
         const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
+            setTheme(localStorage.getItem("darkMode"))
         }
 
 
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        console.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {
@@ -62,8 +62,8 @@ const TagEditorPopup = ({ onClose, onSave, tagToEdit }) => {
                 </span>
                 <div className='tag-editor-content'>
                     <div className='tag-editor-name-container' >
-                        <input 
-                            style={{backgroundColor: "var(--dark-gray)", color: "var(--light)"}}
+                        <input
+                            style={{ backgroundColor: "var(--dark-gray)", color: "var(--light)" }}
                             type='text'
                             value={tagName}
                             onChange={(e) => setTagName(e.target.value)}

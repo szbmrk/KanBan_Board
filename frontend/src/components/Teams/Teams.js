@@ -16,18 +16,18 @@ const Teams = () => {
 
     const [teams, setTeams] = useState(null);
     const [manageIsClicked, setManage] = useState(false);
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
 
     useEffect(() => {
         document.title = 'Teams';
         getTeams();
         //ez
         const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
+            setTheme(localStorage.getItem("darkMode"))
         }
 
 
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        console.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {

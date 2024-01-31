@@ -16,17 +16,17 @@ export default function RolesManager({ OnClose, team_id, team_member_id, AddRole
     const [board_id, setBoardID] = useState();
 
     const [error, setError] = useState(null);
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
 
     useEffect(() => {
         getBoards();
         //ez
         const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
+            setTheme(localStorage.getItem("darkMode"))
         }
 
 
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        console.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {
@@ -123,7 +123,7 @@ export default function RolesManager({ OnClose, team_id, team_member_id, AddRole
                 </button>
             </div>
             {error && (
-                <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+                <ErrorWrapper originalError={error} onClose={() => { setError(null); }} />
             )}
         </div>
     );

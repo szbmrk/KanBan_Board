@@ -17,15 +17,15 @@ export default function Comment({ comments, handlePostComment }) {
         handlePostComment(addComment);
         setAddComment('');
     };
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
     useEffect(() => {
         //ez
         const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
+            setTheme(localStorage.getItem("darkMode"))
         }
 
 
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        console.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {
@@ -41,8 +41,8 @@ export default function Comment({ comments, handlePostComment }) {
                     {comments.map((comment, index) => (
                         <div
                             className={`comment ${sessionStorage.getItem('username') === comment.user.username
-                                    ? 'own-comment'
-                                    : 'other-comment'
+                                ? 'own-comment'
+                                : 'other-comment'
                                 }`}
                             key={index}
                         >

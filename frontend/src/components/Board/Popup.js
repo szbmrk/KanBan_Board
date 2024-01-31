@@ -61,7 +61,7 @@ const Popup = ({
     handleBoardTagDeletion,
 }) => {
     const popupRef = useRef(null);
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
     const [editedText, setEditedText] = useState(task.title);
     const [editedDescription, setEditedDescription] = useState(task.description);
     const [showAddToCard, setShowAddToCard] = useState(false);
@@ -126,19 +126,19 @@ const Popup = ({
                     setShowAddMember(false);
                 }
             }
-                //ez
-                const ResetTheme = () => {
-                    setTheme(sessionStorage.getItem("darkMode"))
-                }
-        
-        
-                console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
-                window.addEventListener('ChangingTheme', ResetTheme)
-        
-                return () => {
-                    window.removeEventListener('ChangingTheme', ResetTheme)
-                }
-                //eddig
+            //ez
+            const ResetTheme = () => {
+                setTheme(localStorage.getItem("darkMode"))
+            }
+
+
+            console.log("Darkmode: " + localStorage.getItem("darkMode"))
+            window.addEventListener('ChangingTheme', ResetTheme)
+
+            return () => {
+                window.removeEventListener('ChangingTheme', ResetTheme)
+            }
+            //eddig
         };
 
         document.addEventListener('mousedown', handleOutsideClick);
@@ -711,7 +711,7 @@ const Popup = ({
                 </div>
             )}
             {error && (
-                <ErrorWrapper originalError={error} onClose={() => {setError(null);}}/>
+                <ErrorWrapper originalError={error} onClose={() => { setError(null); }} />
             )}
         </div>
     );

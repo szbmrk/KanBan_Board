@@ -25,7 +25,7 @@ const AuthForm = ({
             prevKeyState === "login" ? "signup" : "login"
         );
     };
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
     useEffect(() => {
         const onPageLoad = () => {
             setTimeout(() => {
@@ -38,11 +38,11 @@ const AuthForm = ({
 
         //ez
         const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
+            setTheme(localStorage.getItem("darkMode"))
         }
 
 
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        console.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {
@@ -52,7 +52,7 @@ const AuthForm = ({
     }, []);
 
     return (
-        <div className="auth-content" data-theme={theme}>
+        <div className="auth-content">
             <div
                 className="auth-container"
                 style={{

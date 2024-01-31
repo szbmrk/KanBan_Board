@@ -16,7 +16,7 @@ export default function Notification() {
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
 
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
 
 
     useEffect(() => {
@@ -24,11 +24,11 @@ export default function Notification() {
         getNotifications();
         //ez
         const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
+            setTheme(localStorage.getItem("darkMode"))
         }
 
 
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        console.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {

@@ -5,7 +5,7 @@ import Loader from '../Loader';
 import Error from '../Error';
 
 const AssignedTasks = () => {
-    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
     const [tasks, setTasks] = useState(null);
     const [redirect, setRedirect] = useState(false);
     const [error, setError] = useState(false);
@@ -15,11 +15,11 @@ const AssignedTasks = () => {
 
     useEffect(() => {
         const ResetTheme = () => {
-            setTheme(sessionStorage.getItem("darkMode"))
+            setTheme(localStorage.getItem("darkMode"))
         }
 
 
-        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        console.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {
