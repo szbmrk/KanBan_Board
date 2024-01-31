@@ -1,143 +1,143 @@
 @import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,400;1,100;1,400&display=swap");
 
 :root {
-  --dark-gray: #404040;
-  --dark-Navbar: rgba(156, 156, 156, 0.767);
-  --dark-grayRGB: 64, 64, 64;
-  --light-gray: #cbcbcb;
-  --light-grayRGB: 203, 203, 203;
-  --off-white: #f0f0f0;
-  --button: #3d506b;
-  --important: rgba(255, 0, 0, 0.4);
-  --important-light: rgba(255, 0, 0, 0.6);
-  --basic-font: "Raleway", sans-serif;
-  --confirm: rgba(0, 230, 0, 0.4);
-  --starred: #f5d142;
-  --magic: #937bff;
-  --edit: #fab45f;
-  --attachment-link: #49b6ff;
-  --scrollbar-hover: #555;
-  --bg-dark: rgba(var(--dark-grayRGB), 0.7);
-  --bg-light: rgba(var(--light-grayRGB), 0.5);
-  --bg-mostly-black: #1f1f1f;
-  --notification-type: #7a7a7a;
-  --title-bar: rgba(112, 104, 106, 0.3);
-  --code: #ff8c00;
-  --craft: #5bffc8;
-  --light-blue: #00bfff;
+    --dark-gray: #404040;
+    --dark-Navbar: rgba(156, 156, 156, 0.767);
+    --dark-grayRGB: 64, 64, 64;
+    --light-gray: #cbcbcb;
+    --light-grayRGB: 203, 203, 203;
+    --off-white: #f0f0f0;
+    --button: #3d506b;
+    --important: rgba(255, 0, 0, 0.4);
+    --important-light: rgba(255, 0, 0, 0.6);
+    --basic-font: "Raleway", sans-serif;
+    --confirm: rgba(0, 230, 0, 0.4);
+    --starred: #f5d142;
+    --magic: #937bff;
+    --edit: #fab45f;
+    --attachment-link: #49b6ff;
+    --scrollbar-hover: #555;
+    --bg-dark: rgba(var(--dark-grayRGB), 0.7);
+    --bg-light: rgba(var(--light-grayRGB), 0.5);
+    --bg-mostly-black: #1f1f1f;
+    --notification-type: #7a7a7a;
+    --title-bar: rgba(112, 104, 106, 0.3);
+    --code: #ff8c00;
+    --craft: #5bffc8;
+    --light-blue: #00bfff;
 }
-[data-theme='light']
-{
-  --dark-gray: rgba(255, 255, 255, 0.767);
-  --dark-Navbar: rgba(203, 203, 203, 0.767);
-  --light-gray: rgb(20, 20, 20);
-  --light-grayRGB: 203, 203, 203;
-  --off-white: #f0f0f0;
-  --button: #7699ca;
-  --important: rgb(255, 130, 130);
-  --important-light: rgba(255, 103, 103, 0.6);
-  --basic-font: "Raleway", sans-serif;
-  --confirm: rgb(118, 255, 118);
-  --starred: #f5d142;
-  --magic: #cfc4ff;
-  --edit: #ffd9aa;
-  --attachment-link: #49b6ff;
-  --scrollbar-hover: #d1d1d1;
-  --bg-dark: rgba(94, 94, 94, 0.485);
-  --bg-light: rgba(206, 206, 206, 0.485);
-  --bg-mostly-black: #ffffff;
-  --notification-type: #7a7a7a;
-  --title-bar: rgba(255, 255, 255, 0.64);
-  --code: #ff8c00;
-  --craft: #5bffc8;
-  --light-blue: #00bfff;
+
+[data-theme='light'] {
+    --dark-gray: rgba(255, 255, 255, 0.767);
+    --dark-Navbar: rgba(203, 203, 203, 0.767);
+    --light-gray: rgb(20, 20, 20);
+    --light-grayRGB: 203, 203, 203;
+    --off-white: #f0f0f0;
+    --button: #7699ca;
+    --important: rgb(255, 130, 130);
+    --important-light: rgba(255, 103, 103, 0.6);
+    --basic-font: "Raleway", sans-serif;
+    --confirm: rgb(118, 255, 118);
+    --starred: #f5d142;
+    --magic: #cfc4ff;
+    --edit: #ffd9aa;
+    --attachment-link: #49b6ff;
+    --scrollbar-hover: #d1d1d1;
+    --bg-dark: rgba(94, 94, 94, 0.485);
+    --bg-light: rgba(206, 206, 206, 0.485);
+    --bg-mostly-black: #ffffff;
+    --notification-type: #7a7a7a;
+    --title-bar: rgba(255, 255, 255, 0.64);
+    --code: #ff8c00;
+    --craft: #5bffc8;
+    --light-blue: #00bfff;
 }
-[data-theme='dark']
-{
-  --dark-gray: #404040;
-  --dark-Navbar:rgb(64, 64, 64);
-  --light-gray: #cbcbcb;
-  --light-grayRGB: 203, 203, 203;
-  --off-white: #f0f0f0;
-  --button: #3d506b;
-  --important: rgba(255, 0, 0, 0.4);
-  --important-light: rgba(255, 0, 0, 0.6);
-  --basic-font: "Raleway", sans-serif;
-  --confirm: rgba(0, 230, 0, 0.4);
-  --starred: #f5d142;
-  --magic: #937bff;
-  --edit: #fab45f;
-  --attachment-link: #49b6ff;
-  --scrollbar-hover: #555;
-  --bg-dark: rgba(var(--dark-grayRGB), 0.7);
-  --bg-light: rgba(var(--light-grayRGB), 0.5);
-  --bg-mostly-black: #1f1f1f;
-  --notification-type: #7a7a7a;
-  --title-bar: rgba(112, 104, 106, 0.3);
-  --code: #ff8c00;
-  --craft: #5bffc8;
-  --light-blue: #00bfff;
+
+[data-theme='dark'] {
+    --dark-gray: #404040;
+    --dark-Navbar: rgb(64, 64, 64);
+    --light-gray: #cbcbcb;
+    --light-grayRGB: 203, 203, 203;
+    --off-white: #f0f0f0;
+    --button: #3d506b;
+    --important: rgba(255, 0, 0, 0.4);
+    --important-light: rgba(255, 0, 0, 0.6);
+    --basic-font: "Raleway", sans-serif;
+    --confirm: rgba(0, 230, 0, 0.4);
+    --starred: #f5d142;
+    --magic: #937bff;
+    --edit: #fab45f;
+    --attachment-link: #49b6ff;
+    --scrollbar-hover: #555;
+    --bg-dark: rgba(var(--dark-grayRGB), 0.7);
+    --bg-light: rgba(var(--light-grayRGB), 0.5);
+    --bg-mostly-black: #1f1f1f;
+    --notification-type: #7a7a7a;
+    --title-bar: rgba(112, 104, 106, 0.3);
+    --code: #ff8c00;
+    --craft: #5bffc8;
+    --light-blue: #00bfff;
 }
 
 * {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
 }
 
 html {
-  font-family: var(--basic-font);
+    font-family: var(--basic-font);
 }
 
 body {
-  color: var(--dark-gray);
-  line-height: 1.6;
-  background: url("./imgs/background-regular-small.jpg") no-repeat center;
-  background-size: cover;
-  height: 100vh;
-  width: 100vw;
+    color: var(--dark-gray);
+    line-height: 1.6;
+    background: url("./imgs/background-regular-small.jpg") no-repeat center;
+    background-size: cover;
+    height: 100vh;
+    width: 100vw;
 }
 
 .background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: url("./imgs/background-regular.jpg") no-repeat center;
-  background-size: cover;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: url("./imgs/background-regular.jpg") no-repeat center;
+    background-size: cover;
 }
 
 #root {
-  height: 100vh;
-  width: 100vw;
+    height: 100vh;
+    width: 100vw;
 }
 
 .content {
-  position: relative;
-  text-align: center;
-  margin: 0 auto;
-  height: calc(100vh - 50px);
-  overflow: auto;
-  float: right !important;
-  max-width: calc(100% - 231px);
+    position: relative;
+    text-align: center;
+    margin: 0 auto;
+    height: calc(100vh - 50px);
+    overflow: auto;
+    float: right !important;
+    max-width: calc(100% - 231px);
 }
 
 @media screen and (max-width: 600px) {
-  .content {
-    max-width: 100%;
-  }
+    .content {
+        max-width: 100%;
+    }
 }
 
 .card-title {
-  color: var(--light-gray);
-  margin: 0 20px 30px;
-  border-bottom: 1px solid var(--light-gray);
+    color: var(--light-gray);
+    margin: 0 20px 30px;
+    border-bottom: 1px solid var(--light-gray);
 }
 
 .trash-icon {
-  cursor: pointer;
-  color: var(--light-gray);
+    cursor: pointer;
+    color: var(--light-gray);
 }
 
 .delete-icon {
@@ -179,87 +179,100 @@ body {
 
 
 ::selection {
-  background: var(--important);
-  color: var(--dark-gray);
+    background: var(--important);
+    color: var(--dark-gray);
 }
 
 /* <Scrollbar> */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-  overflow: hidden;
+    width: 10px;
+    height: 10px;
+    overflow: hidden;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
-  margin: 5px 0;
+    background: transparent;
+    margin: 5px 0;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--dark-gray);
-  border-radius: 4px;
+    background: var(--dark-gray);
+    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-hover);
+    background: var(--scrollbar-hover);
 }
 
 ::-webkit-scrollbar-button {
-  display: none;
+    display: none;
 }
+
 /* </Scrollbar> */
 
 
 /* Declaring classNames for responsiveness */
 
 @media only screen and (min-width: 768px) {
-  /* For desktop: */
-  .col-1 {
-    width: 6%;
-    transition: width 0.3s ease-in-out;
-  }
-  .col-2 {
-    width: 12%;
-    transition: width 0.3s ease-in-out;
-  }
-  .col-3 {
-    width: 25%;
-    transition: width 0.3s ease-in-out;
-  }
-  .col-4 {
-    width: 33.33%;
-    transition: width 0.3s ease-in-out;
-  }
-  .col-5 {
-    width: 41.66%;
-    transition: width 0.3s ease-in-out;
-  }
-  .col-6 {
-    width: 50%;
-    transition: width 0.3s ease-in-out;
-  }
-  .col-7 {
-    width: 58.33%;
-    transition: width 0.3s ease-in-out;
-  }
-  .col-8 {
-    width: 66.66%;
-    transition: width 0.3s ease-in-out;
-  }
-  .col-9 {
-    width: 75%;
-    transition: width 0.3s ease-in-out;
-  }
-  .col-10 {
-    width: 88%;
-    transition: width 0.3s ease-in-out;
-  }
-  .col-11 {
-    width: 94%;
-    transition: width 0.3s ease-in-out;
-  }
-  .col-12 {
-    width: 100%;
-    transition: width 0.3s ease-in-out;
-  }
+
+    /* For desktop: */
+    .col-1 {
+        width: 6%;
+        transition: width 0.3s ease-in-out;
+    }
+
+    .col-2 {
+        width: 12%;
+        transition: width 0.3s ease-in-out;
+    }
+
+    .col-3 {
+        width: 25%;
+        transition: width 0.3s ease-in-out;
+    }
+
+    .col-4 {
+        width: 33.33%;
+        transition: width 0.3s ease-in-out;
+    }
+
+    .col-5 {
+        width: 41.66%;
+        transition: width 0.3s ease-in-out;
+    }
+
+    .col-6 {
+        width: 50%;
+        transition: width 0.3s ease-in-out;
+    }
+
+    .col-7 {
+        width: 58.33%;
+        transition: width 0.3s ease-in-out;
+    }
+
+    .col-8 {
+        width: 66.66%;
+        transition: width 0.3s ease-in-out;
+    }
+
+    .col-9 {
+        width: 75%;
+        transition: width 0.3s ease-in-out;
+    }
+
+    .col-10 {
+        width: 88%;
+        transition: width 0.3s ease-in-out;
+    }
+
+    .col-11 {
+        width: 94%;
+        transition: width 0.3s ease-in-out;
+    }
+
+    .col-12 {
+        width: 100%;
+        transition: width 0.3s ease-in-out;
+    }
 }

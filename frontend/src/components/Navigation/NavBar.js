@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { AuthContext } from '../../auth/AuthContext';
-import '../../styles/navbar.css';
-import '../../styles/popup.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { AuthContext } from "../../auth/AuthContext";
+import "../../styles/navbar.css";
+import "../../styles/popup.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faBell,
     faUser,
@@ -22,14 +22,13 @@ const editProfileIcon = <FontAwesomeIcon icon={faUserPen} />;
 const searchIcon = <FontAwesomeIcon icon={faMagnifyingGlass} />;
 const displayModeIcon = <FontAwesomeIcon icon={faCircleHalfStroke} />;
 
-function DarkMode() {
-    console.log("Hallo");
-}
-
 const Navbar = () => {
     const { isLoggedIn, onLogout } = React.useContext(AuthContext);
     const [isSidebarClosable, setIsSidebarClosable] = useState(false);
+    const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+    const [menuIconClicked, setMenuIconClicked] = useState(false);
     const [isSidebarOnTop, setIsSidebarOnTop] = useState(false);
+
     const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
     useEffect(() => {
         //ez
@@ -61,7 +60,6 @@ const Navbar = () => {
         window.dispatchEvent(event)
     }
 
-
     const toggleSidebar = () => {
         const sidebar = document.querySelector(".sidebar");
         const content = document.querySelector(".content");
@@ -73,23 +71,29 @@ const Navbar = () => {
                 ? "translateY(-253px)"
                 : "translateX(-231px)";
             sidebar.style.transition = "transform 0.5s ease-in-out";
+            content.style.transition = "max-width 0.5s ease-in-out";
+            setIsSidebarVisible(false);
             setTimeout(() => {
+                content.style.maxWidth = "100%";
                 content.classList.remove("col-10");
                 content.classList.add("col-12");
-                content.style.maxWidth = "100%";
+                sidebar.classList.remove("col-2");
                 sidebar.style.display = "none";
             }, 500);
         } else {
-            content.style.maxWidth = isSidebarOnTop ? "100%" : "calc(100% - 231px)";
-            content.style.transition = "max-width 0.5s ease-in-out";
             sidebar.style.transition = "transform 0.5s ease-in-out";
+            content.style.transition = "max-width 0.5s ease-in-out";
+            setIsSidebarVisible(true);
             sidebar.style.display = "block";
             setTimeout(() => {
+                sidebar.classList.add("col-2");
                 content.classList.remove("col-12");
                 content.classList.add("col-10");
+                content.style.maxWidth = isSidebarOnTop ? "100%" : "calc(100% - 231px)";
                 sidebar.style.transform = "translateX(0px)";
-            }, 100);
+            }, 0);
         }
+        setMenuIconClicked(false);
     };
 
     useEffect(() => {
@@ -137,6 +141,7 @@ const Navbar = () => {
     };
 
     const handleClick = () => {
+        setMenuIconClicked(true);
         toggleSidebar();
     };
 

@@ -7,7 +7,7 @@
     left: 0;
     top: 50px;
     margin: 0;
-    min-width: 231px;
+    min-width: 220px;
 }
 
 .sidebar-menu {
@@ -51,14 +51,4 @@
 
 .sidebar-menu li:hover {
     background-color: var(--dark-gray);
-}
-
-.sidebar-hidden {
-    transform: translateX(-220px);
-    transition: transform 0.5s ease-in-out;
-}
-
-.sidebar-visible {
-    transform: translateX(0);
-    transition: transform 0.5s ease-in-out;
 }

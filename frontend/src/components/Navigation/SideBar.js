@@ -32,7 +32,7 @@ const Sidebar = () => {
     }, []);
 
     return (
-        <div className='sidebar sidebar-visible' data-theme={theme}>
+        <div className='sidebar col-2 sidebar-visible' data-theme={theme}>
             <div className='sidebar-menu'>
                 <ul>
                     <li>
