@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 
@@ -8,6 +8,25 @@ const TagDropdownItem = ({ data, onEdit, onDelete, onToggle, selectedTags }) => 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
     const trashIcon = <FontAwesomeIcon icon={faTrash} />;
     const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
+
+
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    useEffect(() => {
+        //ez
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
+
+
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
+
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
+        //eddig
+    }, []);
+
 
     const itemStyle = {
         color: 'var(--off-white)',
@@ -39,7 +58,7 @@ const TagDropdownItem = ({ data, onEdit, onDelete, onToggle, selectedTags }) => 
                 {checkIcon}
             </span>
             <span style={{ backgroundColor: color, color: 'var(--off-white)' }}>{label}</span>
-            <div style={buttonStyle}>
+            <div style={buttonStyle} data-theme={theme}>
                 <span
                     onClick={(e) => {
                         e.stopPropagation();

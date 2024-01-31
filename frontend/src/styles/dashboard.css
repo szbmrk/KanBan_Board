@@ -15,6 +15,23 @@
     color: var(--light-gray);
 }
 
+.no-teams-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    color: var(--dark-gray);
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.teamsLink {
+    color: var(--light-gray);
+    text-decoration: none;
+
+}
+
 /* CSS for the boards container inside each team card */
 .boards {
     display: flex;

@@ -64,13 +64,26 @@ const GeneratePerformanceSummaryPopup = ({ board_id, onCancel }) => {
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   };
-
+  const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
   useEffect(() => {
     hljs.highlightAll();
+    //ez
+    const ResetTheme = () => {
+      setTheme(sessionStorage.getItem("darkMode"))
+    }
+
+
+    console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+    window.addEventListener('ChangingTheme', ResetTheme)
+
+    return () => {
+      window.removeEventListener('ChangingTheme', ResetTheme)
+    }
+    //eddig
   });
 
   return (
-    <div className="overlay">
+    <div className="overlay" data-theme={theme}>
       <div className="popup agi-popup">
         <span className="close-btn" onClick={onCancel}>
           {closeIcon}

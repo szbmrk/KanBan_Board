@@ -2,7 +2,60 @@
 
 :root {
   --dark-gray: #404040;
+  --dark-Navbar: rgba(156, 156, 156, 0.767);
   --dark-grayRGB: 64, 64, 64;
+  --light-gray: #cbcbcb;
+  --light-grayRGB: 203, 203, 203;
+  --off-white: #f0f0f0;
+  --button: #3d506b;
+  --important: rgba(255, 0, 0, 0.4);
+  --important-light: rgba(255, 0, 0, 0.6);
+  --basic-font: "Raleway", sans-serif;
+  --confirm: rgba(0, 230, 0, 0.4);
+  --starred: #f5d142;
+  --magic: #937bff;
+  --edit: #fab45f;
+  --attachment-link: #49b6ff;
+  --scrollbar-hover: #555;
+  --bg-dark: rgba(var(--dark-grayRGB), 0.7);
+  --bg-light: rgba(var(--light-grayRGB), 0.5);
+  --bg-mostly-black: #1f1f1f;
+  --notification-type: #7a7a7a;
+  --title-bar: rgba(112, 104, 106, 0.3);
+  --code: #ff8c00;
+  --craft: #5bffc8;
+  --light-blue: #00bfff;
+}
+[data-theme='light']
+{
+  --dark-gray: rgba(255, 255, 255, 0.767);
+  --dark-Navbar: rgba(203, 203, 203, 0.767);
+  --light-gray: rgb(20, 20, 20);
+  --light-grayRGB: 203, 203, 203;
+  --off-white: #f0f0f0;
+  --button: #7699ca;
+  --important: rgb(255, 130, 130);
+  --important-light: rgba(255, 103, 103, 0.6);
+  --basic-font: "Raleway", sans-serif;
+  --confirm: rgb(118, 255, 118);
+  --starred: #f5d142;
+  --magic: #cfc4ff;
+  --edit: #ffd9aa;
+  --attachment-link: #49b6ff;
+  --scrollbar-hover: #d1d1d1;
+  --bg-dark: rgba(94, 94, 94, 0.485);
+  --bg-light: rgba(206, 206, 206, 0.485);
+  --bg-mostly-black: #ffffff;
+  --notification-type: #7a7a7a;
+  --title-bar: rgba(255, 255, 255, 0.64);
+  --code: #ff8c00;
+  --craft: #5bffc8;
+  --light-blue: #00bfff;
+}
+[data-theme='dark']
+{
+  --dark-gray: #404040;
+  --dark-Navbar:rgb(64, 64, 64);
   --light-gray: #cbcbcb;
   --light-grayRGB: 203, 203, 203;
   --off-white: #f0f0f0;

@@ -1,146 +1,143 @@
-.auth-content {
-  height: 100vh;
-  max-width: 100vw;
+.auth-container {
+    width: 60vw;
+    max-width: 450px;
+    max-height: 80vh;
+    /* Set the max-height value according to your needs */
+    min-height: 450px;
+    position: relative;
+    top: 10vh;
+    background: rgba(255, 255, 255, 0.4);
+    margin: 0 auto;
+    padding: 20px 50px;
+    border: 1px solid var(--dark-gray);
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    gap: 20px;
+    overflow-y: auto;
 }
 
-.auth-container {
-  width: 60vw;
-  max-width: 450px;
-  /* min-height: 450px; */
-  max-height: 80vh;
-  position: relative;
-  top: 5vh;
-  background: rgba(255, 255, 255, 0.4);
-  margin: 0 auto;
-  padding: 20px 50px;
-  border: 1px solid var(--dark-gray);
-  border-radius: 10px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.6);
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  gap: 20px;
-  overflow-y: auto;
-}
 
 .auth-container h2 {
-  text-align: center;
-  margin-bottom: 40px;
-  font-size: 36px;
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 36px;
 }
 
 .auth-form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 40px;
-  transition: height 0.5s ease;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 40px;
+    transition: height 0.5s ease;
 }
 
 .form-group {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
 }
 
 .form-group label {
-  display: none;
+    display: none;
 }
 
 .form-group input[type="text"],
 .form-group input[type="email"],
 .form-group input[type="password"] {
-  width: 100%;
-  padding: 10px;
-  font-family: var(--basic-font);
-  font-size: 16px;
-  background: transparent;
-  border-top: 0;
-  border-left: 0;
-  border-right: 0;
-  border-bottom: 1px solid var(--dark-gray);
-  outline: none;
+    width: 100%;
+    padding: 10px;
+    font-family: var(--basic-font);
+    font-size: 16px;
+    background: transparent;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--dark-gray);
+    outline: none;
 }
 
 #checkbox {
-  display: block;
+    display: block;
 }
 
 .form-group input[type="checkbox"] {
-  padding: 20px 0;
-  text-align: left;
-  display: inline-block;
-  margin-right: 5px;
+    padding: 20px 0;
+    text-align: left;
+    display: inline-block;
+    margin-right: 5px;
 }
 
 .submit-button {
-  width: 100%;
-  padding: 10px;
-  font-family: var(--basic-font);
-  font-size: 16px;
-  background-color: var(--light-gray);
-  color: var(--dark-gray);
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+    width: 100%;
+    padding: 10px;
+    font-family: var(--basic-font);
+    font-size: 16px;
+    background-color: var(--light-gray);
+    color: var(--dark-gray);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 .submit-button:hover {
-  background-color: var(--button);
-  color: var(--light-gray);
-  transition: background-color 0.3s ease;
+    background-color: var(--button);
+    color: var(--light-gray);
+    transition: background-color 0.3s ease;
 }
 
 a {
-  text-decoration: none;
-  color: var(--dark-gray);
+    text-decoration: none;
+    color: var(--dark-gray);
 }
 
 .errorBox {
-  background-color: var(--important);
-  color: var(--dark-gray);
-  text-align: center;
-  padding: 5px;
-  border: solid 1px var(--dark-gray);
-  border-radius: 5px;
+    background-color: var(--important);
+    color: var(--dark-gray);
+    text-align: center;
+    padding: 5px;
+    border: solid 1px var(--dark-gray);
+    border-radius: 5px;
 }
 
 /* Tablets and under */
-@media only screen and (max-width: 768px) and (orientation: portrait) {
-  .auth-container {
-    width: 80vw;
-    margin: 0 auto;
-  }
-}
+@media(max-width: 768px) {
 
-@media only screen and (max-height: 640px) and (orientation: landscape) {
-  .auth-content {
-    overflow: auto;
-  }
-}
-
-@media only screen and (max-height: 560px) and (orientation: landscape) {
-  .auth-container {
-    top: 10vh;
-    margin-bottom: 10vh;
-  }
-}
-
-@media only screen and (max-height: 480px) and (orientation: landscape) {
-  .auth-container {
-    top: 5vh;
-  }
+    .signup-form,
+    .login-form {
+        width: 70vw;
+        top: 5vh;
+        margin: 0 auto;
+    }
 }
 
 /* Mobile */
-@media (max-width: 512px) {
-  .auth-container {
-    width: 100%;
-    max-height: 100vh;
-    padding: 20px 20px;
-    margin: 0 auto;
-  }
+@media(max-width: 480px) {
+
+    .signup-form,
+    .login-form {
+        width: 100%;
+        max-height: 100vh;
+        top: 0;
+        padding: 20px 20px;
+        margin: 0 auto;
+    }
+}
+
+@media(max-width: 480px) {
+
+    .signup-form,
+    .login-form {
+        width: 100%;
+        max-height: 100vh;
+        top: 0;
+        padding: 20px 20px;
+        margin: 0 auto;
+    }
 }

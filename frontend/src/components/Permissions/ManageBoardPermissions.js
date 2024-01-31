@@ -16,6 +16,8 @@ export default function ManageBoardPermissions() {
     const token = sessionStorage.getItem('token');
     const user_id = sessionStorage.getItem('user_id');
 
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+
     useEffect(() => {
         document.title = 'Permissions';
         if (user_id) {
@@ -23,6 +25,19 @@ export default function ManageBoardPermissions() {
         }
         //backendről fetchelés
         fetchDashboardData();
+        //ez
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
+
+
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
+
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
+        //eddig
     }, []);
 
     async function ResetRoles() {
@@ -53,7 +68,7 @@ export default function ManageBoardPermissions() {
     };
 
     return (
-        <div className='content col-10'>
+        <div className='content col-10' data-theme={theme}>
             {teams === null ? (
                 error ? (
                     <Error error={error} redirect={redirect}></Error>

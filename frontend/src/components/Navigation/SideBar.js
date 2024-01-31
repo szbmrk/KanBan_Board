@@ -1,5 +1,5 @@
 // Sidebar component that using among the application
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/sidebar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -12,13 +12,27 @@ const AssignedTasksIcon = <FontAwesomeIcon icon={faListCheck} />;
 const PeopleGroup = <FontAwesomeIcon icon={faPeopleGroup} />;
 const permissions = JSON.parse(sessionStorage.getItem('permissions'));
 const Sidebar = () => {
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
     const { isLoggedIn, onLogout } = React.useContext(AuthContext);
     useEffect(() => {
+        //ez
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
+
+
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
+
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
+        //eddig
         console.log(permissions);
     }, []);
 
     return (
-        <div className='sidebar col-2 sidebar-visible'>
+        <div className='sidebar sidebar-visible' data-theme={theme}>
             <div className='sidebar-menu'>
                 <ul>
                     <li>

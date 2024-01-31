@@ -1,319 +1,343 @@
 .teams-container {
-  width: 90%;
-  margin: 20px auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+    width: 90%;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
 }
 
 .teamcard {
-  width: 100%;
-  background-color: var(--bg-dark);
-  border: 1px solid var(--dark-gray);
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  overflow: hidden;
+    width: 100%;
+    background-color: var(--bg-dark);
+    border: 1px solid var(--dark-gray);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: hidden;
 }
 
 .teamcard-header {
-  width: 100%;
-  padding: 20px;
-  background-color: var(--dark-gray);
-  border-bottom: 1px solid var(--dark-gray);
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  color: var(--light-gray);
-  gap: 20px;
+    width: 100%;
+    padding: 20px;
+    background-color: var(--dark-gray);
+    border-bottom: 1px solid var(--dark-gray);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    color: var(--light-gray);
+    gap: 20px;
 }
 
 .dots {
-  align-self: center;
-  cursor: pointer;
+    align-self: center;
+    cursor: pointer;
 }
 
 .teamcard-subheader {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-start;
-  margin-left: auto;
-  float: right;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+    margin-left: auto;
+    float: right;
 }
 
 .teamcard-body {
-  width: 100%;
-  padding: 20px;
+    width: 100%;
+    padding: 20px;
 }
 
 .teamcard-body h3 {
-  color: var(--light-gray);
-  text-align: left;
+    color: var(--light-gray);
+    text-align: left;
 }
 
 .team-members {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
 }
 
 .team-member-card {
-  position: relative;
-  width: 33%;
-  max-width: 300px;
-  height: 100%;
-  background-color: var(--dark-gray);
-  border: 1px solid var(--dark-gray);
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 5px;
-  padding: 20px;
-  color: var(--light-gray);
+    position: relative;
+    width: 33%;
+    max-width: 300px;
+    height: 100%;
+    background-color: var(--dark-gray);
+    border: 1px solid var(--dark-gray);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
+    padding: 20px;
+    color: var(--light-gray);
 }
 
 .team-member-image-container {
-  width: 100px;
-  height: 100px;
-  border: 3px solid var(--dark-gray);
-  border-radius: 50%;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
+    width: 100px;
+    height: 100px;
+    border: 3px solid var(--dark-gray);
+    border-radius: 50%;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 
 .team-member-image {
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-  object-position: center;
-  cursor: pointer;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+    cursor: pointer;
 }
 
 .team-member-card-body {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 30px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 30px;
 }
 
 .team-member-card-body-data {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 
 .data {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
 }
 
 .data p {
-  font-size: 0.9em;
+    font-size: 0.9em;
 }
 
 .data p:nth-child(1) {
-  width: 50%;
-  text-align: left;
+    width: 50%;
+    text-align: left;
 }
 
 .team-member-card-body-roles-container,
 .team-member-card-body-actions-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 5px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 5px;
 }
 
-.team-member-card-body-roles-container > p,
-.team-member-card-body-actions-container > p {
-  font-size: 1.5em;
-  text-align: left;
+.team-member-card-body-roles-container>p,
+.team-member-card-body-actions-container>p {
+    font-size: 1.5em;
+    text-align: left;
 }
 
 .team-member-card-body-roles {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 10px;
 }
 
 .team-member-card-body-roles p {
-  margin-left: 20px !important;
+    margin-left: 20px !important;
 }
 
 .role {
-  width: 100%;
-  padding-left: 20px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
+    width: 100%;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
 }
 
 .role li {
-  font-size: 0.9em;
-  text-align: left;
-  list-style-type: disc;
-  color: var(--light-gray);
+    font-size: 0.9em;
+    text-align: left;
+    list-style-type: disc;
+    color: var(--light-gray);
 }
 
 .teamcard-actions {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
 }
 
 .add-user-button {
-  color: var(--light-gray);
+    color: var(--light-gray);
 }
 
 .trash-icon {
-  font-size: 0.9em;
-  position: relative;
+    font-size: 0.9em;
+    position: relative;
 }
 
 .trash-icon:hover {
-  color: var(--important);
+    color: var(--important);
 }
 
 .trash-icon::before {
-  content: attr(data-hover);
-  position: absolute;
-  top: 0;
-  left: 20px;
-  padding: 5px;
-  width: max-content;
-  font-family: var(--basic-font);
-  font-size: 0.8em;
-  color: var(--light-gray);
-  background-color: var(--scrollbar-hover);
-  transition: opacity 0.3s ease;
-  border-radius: 5px;
-  visibility: hidden;
-  opacity: 0;
+    content: attr(data-hover);
+    position: absolute;
+    top: 0;
+    left: 20px;
+    padding: 5px;
+    width: max-content;
+    font-family: var(--basic-font);
+    font-size: 0.8em;
+    color: var(--light-gray);
+    background-color: var(--scrollbar-hover);
+    transition: opacity 0.3s ease;
+    border-radius: 5px;
+    visibility: hidden;
+    opacity: 0;
 }
 
 .trash-icon:hover::before {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.3s ease;
-  z-index: 100000000;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease;
+    z-index: 100000000;
 }
 
 .delete-button {
-  max-width: 50% !important;
-  margin-top: 0 !important;
-  order: 2;
-  flex: 1;
+    max-width: 50% !important;
+    margin-top: 0 !important;
+    order: 2;
+    flex: 1;
 }
 
 .add-button {
-  max-width: 50%;
-  padding: 10px;
-  border: 1px solid var(--confirm);
-  border-radius: 5px;
-  background-color: transparent;
-  color: var(--confirm);
-  transition: all 0.3s ease;
-  order: 1;
-  cursor: pointer;
-  flex: 1;
+    max-width: 50%;
+    padding: 10px;
+    border: 1px solid var(--confirm);
+    border-radius: 5px;
+    background-color: transparent;
+    color: var(--confirm);
+    transition: all 0.3s ease;
+    order: 1;
+    cursor: pointer;
+    flex: 1;
 }
 
 .add-button:hover {
-  background-color: var(--confirm);
-  color: var(--light-gray);
+    background-color: var(--confirm);
+    color: var(--light-gray);
 }
 
 .add-button:disabled {
-  background-color: transparent;
-  border: 1px solid var(--light-gray);
-  color: var(--light-gray);
+    background-color: transparent;
+    border: 1px solid var(--light-gray);
+    color: var(--light-gray);
 }
 
 .user-select {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  max-height: 80vh;
-  overflow: auto;
-  padding: 15px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    max-height: 80vh;
+    overflow: auto;
+    padding: 15px;
 }
 
 .user-select div {
-  width: 25%;
-  border: 1px solid var(--light-gray);
-  border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
-  padding: 5px 10px;
-  cursor: pointer;
-  transition: box-shadow 0.1s ease;
-  transition: transform 0.005s ease;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+    width: 25%;
+    border: 1px solid var(--light-gray);
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: box-shadow 0.1s ease;
+    transition: transform 0.005s ease;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .selected {
-  border: 1px solid var(--light-blue) !important;
-  color: var(--light-blue);
-  box-shadow: 0 0 5px rgba(255, 255, 255, 0.1) !important;
-  transform: translate(0, 1px);
+    border: 1px solid var(--light-blue) !important;
+    color: var(--light-blue);
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.1) !important;
+    transform: translate(0, 1px);
 }
 
 .selector-container {
-  width: 80%;
+    width: 80%;
 }
 
 .selector-container select {
-  background-color: var(--dark-gray);
-  color: var(--light-gray);
-  border: 1px solid var(--light-gray);
-  outline: none;
+    background-color: var(--dark-gray);
+    color: var(--light-gray);
+    border: 1px solid var(--light-gray);
+    outline: none;
 }
 
-.filter-input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid var(--light-gray);
-  border-radius: 5px;
-  background-color: var(--dark-gray);
-  color: var(--light-gray);
-  outline: none;
+.searchInputCard {
+    box-shadow: 5px 5px 8px 2px rgba(0, 0, 0, 0.66);
+    border-radius: 5px;
+    background-color: var(--dark-gray);
+    font-weight: bold;
+    color: var(--light-gray);
+    border-color: var(--light-gray);
+}
+
+.searchButtonCard {
+    max-width: 50%;
+    padding: 10px;
+    border: 1px solid var(--light-blue);
+    border-radius: 5px;
+    background-color: transparent;
+    color: var(--light-blue);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    flex: 1;
+}
+
+.searchButtonCard:hover {
+    max-width: 50%;
+    padding: 10px;
+    border: 1px solid var(--light-blue);
+    border-radius: 5px;
+    background-color: var(--light-blue);
+    color: var(--dark-gray);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    flex: 1;
+
 }

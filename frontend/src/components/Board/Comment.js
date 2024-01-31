@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComments } from '@fortawesome/free-solid-svg-icons';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
@@ -17,18 +17,33 @@ export default function Comment({ comments, handlePostComment }) {
         handlePostComment(addComment);
         setAddComment('');
     };
+    const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    useEffect(() => {
+        //ez
+        const ResetTheme = () => {
+            setTheme(sessionStorage.getItem("darkMode"))
+        }
+
+
+        console.log("Darkmode: " + sessionStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
+
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
+        //eddig
+    }, []);
 
     return comments && comments.length > 0 ? (
         <>
-            <div className='comments'>
-                <div className='previous-comments'>
+            <div className='comments' data-theme={theme}>
+                <div class='previous-comments'>
                     {comments.map((comment, index) => (
                         <div
-                            className={`comment ${
-                                sessionStorage.getItem('username') === comment.user.username
+                            className={`comment ${sessionStorage.getItem('username') === comment.user.username
                                     ? 'own-comment'
                                     : 'other-comment'
-                            }`}
+                                }`}
                             key={index}
                         >
                             <div className='comment-header'>
