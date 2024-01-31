@@ -259,7 +259,7 @@ const Board = () => {
 
     const FilterBoard = () => {
         setBoardToShow([])
-        const tempBoard =  cloneDeep(board)
+        const tempBoard = cloneDeep(board)
         let tempColumns = cloneDeep([...tempBoard.columns])
 
         if (priorityFilter != -1) {
@@ -1726,7 +1726,9 @@ const Board = () => {
                                 <h1 className="title-name">{board.name}</h1>
                                 <div className="title-bar-buttons">
                                     <ul>
-                                        <li
+                                        {/*
+
+                                            <li
                                             onMouseEnter={() => setIsHoveredFilterByTitleBar(true)}
                                             onMouseLeave={() => setIsHoveredFilterByTitleBar(false)}
                                             onClick={toggleFilterDropdown}
@@ -1753,6 +1755,7 @@ const Board = () => {
                                             <span>{sortIcon}</span>
                                             <p>Sort by</p>
                                         </li>
+                                        */}
                                         <li
                                             onMouseEnter={() => setIsHoveredAITitleBar(true)}
                                             onMouseLeave={() => setIsHoveredAITitleBar(false)}
@@ -1932,7 +1935,7 @@ const Board = () => {
                                                         }
                                                     />
                                                 ))}
-                                                
+
                                             </div>
                                             {column.is_finished === 0 && permissions.filter(permission => { return permission.permission === 'task_management' }).length === 1 ? (
                                                 <div
