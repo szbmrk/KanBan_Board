@@ -152,6 +152,7 @@ const Board = () => {
     const [tagDropDownValue, setTagDropDownValue] = useState(-1)
     const [deadlineDropDownValue, setDeadlineDropDownValue] = useState(null)
     const [theme, setTheme] = useState(sessionStorage.getItem("darkMode"));
+    const sidebar = document.querySelector(".sidebar");
 
     useEffect(() => {
         document.title = "Board";
@@ -1787,7 +1788,7 @@ const Board = () => {
             ) : (
                 <DndProvider backend={HTML5Backend}>
                     {boardToShow.columns === undefined ? (
-                        <div className="content">
+                        <div className="content col-10">
                             <Loader />
                         </div>
                     ) : (
