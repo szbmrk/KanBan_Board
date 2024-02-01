@@ -143,9 +143,9 @@ const Board = () => {
     const team_member = JSON.parse(sessionStorage.getItem("team_members"));
     const permissions = JSON.parse(sessionStorage.getItem("permissions")).teams.filter(permission => { return parseInt(permission.board_id) === parseInt(board_id) });
 
-    const [priorityFilter, setPriorityFilter] = useState(-1)
-    const [memberFilter, setMemberFilter] = useState(-1)
-    const [tagFilter, setTagFilter] = useState(-1)
+    const [priorityFilter, setPriorityFilter] = useState([])
+    const [tagFilter, setTagFilter] = useState([])
+    const [memberFilter, setMemberFilter] = useState([])
     const [deadlineFilter, setDeadlineFilter] = useState(null)
     const [isFilterActive, setIsFilterActive] = useState(false)
     const [filterCount, setFilterCount] = useState(0)
@@ -218,6 +218,14 @@ const Board = () => {
 
     const fetchBoardData = async () => {
         try {
+            const response1 = await axios.get(`/boards/${board_id}/tags`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setTags(response1.data.tags)
+
+
             const response = await axios.get(`/boards/${board_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -241,25 +249,10 @@ const Board = () => {
 
             console.log("Columns: ", tempBoard.columns);
 
+
             setBoard(tempBoard);
             console.log("tempBoard");
             console.log(tempBoard);
-
-            const response1 = await axios.get(`/boards/${board_id}/tags`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            setTags(response1.data.tags)
-
-            /*const response2 = await axios.get(`/boards/${board_id}/members`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
- 
-            setMembers(response2.data.members)*/
 
             if (task_to_show_id) {
                 const columnIndex = tempBoard.columns.findIndex(
@@ -1704,66 +1697,75 @@ const Board = () => {
         });
     }
 
-    const changePriorityFilter = (e) => {
-        setPriorityFilter(e.target.value);
-        // set is filter active
-        if (e.target.value == -1 && tagFilter == -1 && memberFilter == -1) {
-            setIsFilterActive(false)
-        }
-        else {
-            setIsFilterActive(true)
-        }
-        // set filter count
-        if (e.target.value == -1) {
-            setFilterCount(filterCount - 1)
-        }
-        else {
-            setFilterCount(filterCount + 1)
-        }
+    const selectAllPriorityFilter = () => {
+        let newPriorityFilter = []
+        priorities.map((priority) => {
+            newPriorityFilter.push(priority.priority_id)
+        })
+        setPriorityFilter(newPriorityFilter)
+        countFilterCounts(newPriorityFilter, tagFilter)
     }
 
-    const changeTagFilter = (e) => {
-        setTagFilter(e.target.value)
-        // set is filter active
-        if (e.target.value == -1 && priorityFilter == -1 && memberFilter == -1) {
-            setIsFilterActive(false)
-        }
-        else {
-            setIsFilterActive(true)
-        }
-        // set filter count
-        if (e.target.value == -1) {
-            setFilterCount(filterCount - 1)
-        }
-        else {
-            setFilterCount(filterCount + 1)
-        }
+    const selectAllTagFilter = () => {
+        let newTagFilter = []
+        tags.map((tag) => {
+            newTagFilter.push(tag.tag_id)
+        })
+        setTagFilter(newTagFilter)
+        countFilterCounts(priorityFilter, newTagFilter)
     }
 
-    const changeMemberFilter = (e) => {
-        setMemberFilter(e.target.value)
-        // set is filter active
-        if (e.target.value == -1 && priorityFilter == -1 && tagFilter == -1) {
-            setIsFilterActive(false)
+    const deSelectAllPriorityFilter = () => {
+        setPriorityFilter([])
+        countFilterCounts([], tagFilter)
+    }
+
+    const deSelectAllTagFilter = () => {
+        setTagFilter([])
+        countFilterCounts(priorityFilter, [])
+    }
+
+    const checkPriorityFilter = (priority_id) => {
+        let newPriorityFilter = [...priorityFilter]
+        if (newPriorityFilter.includes(priority_id)) {
+            newPriorityFilter = newPriorityFilter.filter((priority) => priority !== priority_id)
         }
         else {
+            newPriorityFilter = [...newPriorityFilter, priority_id]
+        }
+
+        setPriorityFilter(newPriorityFilter)
+        countFilterCounts(newPriorityFilter, tagFilter)
+    }
+
+    const changeTagFilter = (tag_id) => {
+        let newTagFilter = [...tagFilter]
+        if (newTagFilter.includes(tag_id)) {
+            newTagFilter = newTagFilter.filter((tag) => tag !== tag_id)
+        }
+        else {
+            newTagFilter = [...newTagFilter, tag_id]
+        }
+
+        setTagFilter(newTagFilter)
+        countFilterCounts(priorityFilter, newTagFilter)
+    }
+
+    const countFilterCounts = (priorityFilter, tagFilter) => {
+        let count = priorityFilter.length + tagFilter.length
+        setFilterCount(count)
+        if (count > 0) {
             setIsFilterActive(true)
-        }
-        // set filter count
-        if (e.target.value == -1) {
-            setFilterCount(filterCount - 1)
-        }
-        else {
-            setFilterCount(filterCount + 1)
+        } else {
+            setIsFilterActive(false)
         }
     }
 
     const clearFilters = () => {
-        setPriorityFilter(-1)
-        setTagFilter(-1)
-        setMemberFilter(-1)
-        setFilterCount(0)
+        deSelectAllPriorityFilter()
+        deSelectAllTagFilter()
         setIsFilterActive(false)
+        setFilterCount(0)
         setIsHoveredClearFilterByTitleBar(false)
     }
 
@@ -1966,28 +1968,17 @@ const Board = () => {
                                             <div className="task-container">
                                                 {/*get tasks that match the filters*/}
                                                 {column.tasks.filter(task => {
-                                                    if (priorityFilter == -1 && tagFilter == -1 && memberFilter == -1) {
+                                                    if (priorityFilter.length == 0 && tagFilter.length == 0) {
                                                         return true
-                                                    } else if (priorityFilter == -1 && tagFilter == -1) {
-                                                        return task.members.some(member => member.user_id == memberFilter)
                                                     }
-                                                    else if (priorityFilter == -1 && memberFilter == -1) {
-                                                        return task.tags.some(tag => tag.tag_id == tagFilter)
+                                                    else if (priorityFilter.length == 0) {
+                                                        return task.tags.some(tag => tagFilter.includes(tag.tag_id))
                                                     }
-                                                    else if (tagFilter == -1 && memberFilter == -1) {
-                                                        return task.priority_id == priorityFilter
-                                                    }
-                                                    else if (priorityFilter == -1) {
-                                                        return task.tags.some(tag => tag.tag_id == tagFilter) && task.members.some(member => member.user_id == memberFilter)
-                                                    }
-                                                    else if (tagFilter == -1) {
-                                                        return task.priority_id == priorityFilter && task.members.some(member => member.user_id == memberFilter)
-                                                    }
-                                                    else if (memberFilter == -1) {
-                                                        return task.priority_id == priorityFilter && task.tags.some(tag => tag.tag_id == tagFilter)
+                                                    else if (tagFilter.length == 0) {
+                                                        return priorityFilter.includes(task.priority_id)
                                                     }
                                                     else {
-                                                        return task.priority_id == priorityFilter && task.tags.some(tag => tag.tag_id == tagFilter) && task.members.some(member => member.user_id == memberFilter)
+                                                        return priorityFilter.includes(task.priority_id) && task.tags.some(tag => tagFilter.includes(tag.tag_id))
                                                     }
                                                 }
                                                 ).map((task, taskIndex) => (
@@ -2099,6 +2090,7 @@ const Board = () => {
                             </div>
                             <div
                                 className="sort-submenu"
+                                data-theme={theme}
                             >
                                 <p className="sort-menu-title"> Sort menu </p>
                                 <ul className="sort-menu">
@@ -2159,7 +2151,6 @@ const Board = () => {
                     )}
                     {isFilterOpen && (
                         <>
-
                             <div
                                 className="overlay3"
                                 onClick={() => {
@@ -2169,53 +2160,55 @@ const Board = () => {
                             </div>
                             <div
                                 className="filter-submenu"
+                                data-theme={theme}
                             >
                                 <p className="filter-menu-title"> Filter menu </p>
-                                <ul className="filter-menu">
-                                    <li
-                                    >
-                                        <div>
-                                            <span>Priority:</span>
-                                            <select defaultValue={parseInt(-1)} value={priorityFilter} onChange={(e) => changePriorityFilter(e)}>
-                                                <option value={parseInt(-1)}>ALL</option>
-                                                {priorities.map((priority) => {
-                                                    return <option value={parseInt(priority.priority_id)}>{priority.priority}</option>
-                                                })}
-                                            </select>
+                                <div className="filter-menu">
+                                    <div className="filter-category">
+                                        <p>Priority:</p>
+                                        <div style={{ display: "flex", justifyContent: "start", gap: "10px", marginTop: "20px" }}>
+                                            <button className="select-all-button" onClick={selectAllPriorityFilter}>select all</button>
+                                            <button className="select-all-button" onClick={deSelectAllPriorityFilter}>unselect all</button>
                                         </div>
-                                    </li>
-                                    <li
-                                    >
-                                        <div>
-                                            <span>Tag:</span>
-                                            <select defaultValue={-1} value={tagFilter} onChange={(e) => changeTagFilter(e)}>
-                                                <option value={-1}>ALL</option>
-                                                {tags.map((tag) => {
-                                                    return <option value={parseInt(tag.tag_id)}>{tag.name}</option>
-                                                })}
-                                            </select>
+                                        <div className="filter-checkbox-container">
+                                            {priorities.map((priority) => (
+                                                <div key={priority.priority_id} className="filter-checkbox-item">
+                                                    <input
+                                                        type="checkbox"
+                                                        id={priority.priority_id}
+                                                        onChange={() => checkPriorityFilter(priority.priority_id)}
+                                                        checked={priorityFilter.includes(priority.priority_id)}
+                                                    />
+                                                    <label htmlFor={priority.priority_id}>
+                                                        {priority.priority}
+                                                    </label>
+                                                </div>
+                                            ))}
                                         </div>
-                                    </li>
-                                    {/*
-                                <li
-                                >
-                                    <div>
-                                        <span>Member:</span>
-                                        <select defaultValue={-1} value={memberFilter} onChange={(e) => changeTagFilter(e)}>
-                                            <option value={-1}>ALL</option>
-                                            {members.map((member) => {
-                                                return <option value={parseInt(member.member_id)}>{member.name}</option>
-                                            })}
-                                        </select>
                                     </div>
-                                </li>
-                                <li
-                                >
-                                    <span>Deadline:</span>
-                                </li>
-                                        */}
-
-                                </ul>
+                                    <div className="filter-category">
+                                        <p>Tag:</p>
+                                        <div style={{ display: "flex", justifyContent: "start", gap: "10px", marginTop: "20px" }}>
+                                            <button className="select-all-button" onClick={selectAllTagFilter}>select all</button>
+                                            <button className="select-all-button" onClick={deSelectAllTagFilter}>unselect all</button>
+                                        </div>
+                                        <div className="filter-checkbox-container">
+                                            {tags.map((tag) => (
+                                                <div key={tag.tag_id} className="filter-checkbox-item">
+                                                    <input
+                                                        type="checkbox"
+                                                        id={tag.tag_id}
+                                                        onChange={() => changeTagFilter(tag.tag_id)}
+                                                        checked={tagFilter.includes(tag.tag_id)}
+                                                    />
+                                                    <label className="tag-filter-label" htmlFor={tag.tag_id} style={{ backgroundColor: tag.color }}>
+                                                        {tag.name}
+                                                    </label>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </>
                     )}
@@ -2230,6 +2223,7 @@ const Board = () => {
                             </div>
                             <div
                                 className="agi-submenu"
+                                data-theme={theme}
                             >
                                 <p className="agi-menu-title"> AI menu </p>
                                 <ul className="agi-menu">
