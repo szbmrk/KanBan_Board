@@ -80,7 +80,7 @@ const TaskCard = ({ task }) => {
                 <span className='icon'>{priorityIcon}</span>
                 <h3>Priority:</h3>
             </div>
-            <div className='priority'>{task.priority && <p>{task.priority.priority}</p>}</div>
+            <div className='priority' style={{ cursor: "default" }}>{task.priority && <p>{task.priority.priority}</p>}</div>
 
             {task.attachments && task.attachments.length > 0 && (
                 <>
