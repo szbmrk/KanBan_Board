@@ -118,6 +118,19 @@ const Popup = ({
     }, [task]);
 
     useEffect(() => {
+        const ResetTheme = () => {
+            setTheme(localStorage.getItem("darkMode"))
+        }
+
+        console.log("Darkmode: " + localStorage.getItem("darkMode"))
+        window.addEventListener('ChangingTheme', ResetTheme)
+
+        return () => {
+            window.removeEventListener('ChangingTheme', ResetTheme)
+        }
+    }, []);
+
+    useEffect(() => {
         const handleOutsideClick = (event) => {
             if (popupRef.current && !popupRef.current.contains(event.target)) {
                 if (event.target.className === 'overlay') onClose();
@@ -126,26 +139,13 @@ const Popup = ({
                     setShowAddMember(false);
                 }
             }
-            //ez
-            const ResetTheme = () => {
-                setTheme(localStorage.getItem("darkMode"))
-            }
-
-
-            console.log("Darkmode: " + localStorage.getItem("darkMode"))
-            window.addEventListener('ChangingTheme', ResetTheme)
-
-            return () => {
-                window.removeEventListener('ChangingTheme', ResetTheme)
-            }
-            //eddig
         };
 
         document.addEventListener('mousedown', handleOutsideClick);
 
         return () => {
             document.removeEventListener('mousedown', handleOutsideClick);
-        };
+        }
     }, [onClose]);
 
     const getNotMembers = async () => {
@@ -424,6 +424,7 @@ const Popup = ({
                                             tags={task.tags}
                                             allTags={boardTags}
                                             taskId={task.task_id}
+                                            columnId={task.column_id}
                                             placeTagOnTask={placeTagOnTask}
                                             removeTagFromTask={removeTagFromTask}
                                             tagEditHandler={handleTagEditing}

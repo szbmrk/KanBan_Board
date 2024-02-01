@@ -126,14 +126,14 @@ const Board = () => {
     const filterIcon = <FontAwesomeIcon icon={faFilter} />;
     const filterDeleteIcon = <FontAwesomeIcon icon={faFilterCircleXmark} />;
     const sortIcon = <FontAwesomeIcon icon={faSort} />;
-    const [boardToShow, setBoardToShow] = useState([]);
     const [tags, setTags] = useState([]);
     const [members, setMembers] = useState([]);
     const [isHoveredName, setIsHoveredName] = useState(false);
     const [isHoveredDeadline, setIsHoveredDeadline] = useState(false);
     const [isHoveredPriority, setIsHoveredPriority] = useState(false);
-    const [isHoveredSortByTitleBar, setIsHoveredSortByTitleBar] = useState([]);
-    const [isHoveredFilterByTitleBar, setIsHoveredFilterByTitleBar] = useState([]);
+    const [isHoveredSortByTitleBar, setIsHoveredSortByTitleBar] = useState(false);
+    const [isHoveredFilterByTitleBar, setIsHoveredFilterByTitleBar] = useState(false);
+    const [isHoveredClearFilterByTitleBar, setIsHoveredClearFilterByTitleBar] = useState(false);
     const [isSortOpen, setIsSortOpen] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const sortNameIcon = <FontAwesomeIcon icon={faArrowDownAZ} />;
@@ -143,17 +143,14 @@ const Board = () => {
     const team_member = JSON.parse(sessionStorage.getItem("team_members"));
     const permissions = JSON.parse(sessionStorage.getItem("permissions")).teams.filter(permission => { return parseInt(permission.board_id) === parseInt(board_id) });
 
-    let priorityFilter = -1
-    let memberFilter = -1
-    let tagFilter = -1
-    let deadlineFilter = null
+    const [priorityFilter, setPriorityFilter] = useState(-1)
+    const [memberFilter, setMemberFilter] = useState(-1)
+    const [tagFilter, setTagFilter] = useState(-1)
+    const [deadlineFilter, setDeadlineFilter] = useState(null)
+    const [isFilterActive, setIsFilterActive] = useState(false)
+    const [filterCount, setFilterCount] = useState(0)
 
-    const [priorityDropDownValue, setPriorityDropDownValue] = useState(-1)
-    const [memberDropDownValue, setMemberDropDownValue] = useState(-1)
-    const [tagDropDownValue, setTagDropDownValue] = useState(-1)
-    const [deadlineDropDownValue, setDeadlineDropDownValue] = useState(null)
     const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
-    const sidebar = document.querySelector(".sidebar");
 
     useEffect(() => {
         document.title = "Board";
@@ -161,13 +158,6 @@ const Board = () => {
         reloadPriorities();
 
         fetchBoardData();
-
-        const handleClickOutside = (event) => {
-            // Check if the click was outside the title edit input box
-            if (editBoxRef.current && !editBoxRef.current.contains(event.target)) {
-                handleColumnTitleBlur(editingColumnIndex, true);
-            }
-        };
 
         reloadCodeReviewOrDocumentation();
         reloadCraftedPrompts();
@@ -252,7 +242,6 @@ const Board = () => {
             console.log("Columns: ", tempBoard.columns);
 
             setBoard(tempBoard);
-            setBoardToShow(tempBoard);
             console.log("tempBoard");
             console.log(tempBoard);
 
@@ -263,7 +252,6 @@ const Board = () => {
             });
 
             setTags(response1.data.tags)
-
 
             /*const response2 = await axios.get(`/boards/${board_id}/members`, {
                 headers: {
@@ -302,43 +290,6 @@ const Board = () => {
         }
     };
 
-    const FilterBoard = () => {
-        setBoardToShow([])
-        const tempBoard = cloneDeep(board)
-        let tempColumns = cloneDeep([...tempBoard.columns])
-
-        if (priorityFilter != -1) {
-            tempColumns.map((column) => {
-                column.tasks = column.tasks.filter(task => parseInt(task.priority_id) == parseInt(priorityFilter));
-            }
-            )
-        }
-
-        if (memberFilter != -1) {
-            tempColumns.map((column) => {
-                column.tasks = column.tasks.filter(task => task.members.contains(member => member.user_id == memberFilter));
-            }
-            )
-        }
-
-        if (tagFilter != -1) {
-            tempColumns.map((column) => {
-                column.tasks = column.tasks.filter(task => task.tags !== undefined && task.tags.find(tag => parseInt(tag.tag_id) == parseInt(tagFilter)));
-            }
-            )
-        }
-
-        if (deadlineFilter !== null) {
-            tempColumns.map((column) => {
-                column.tasks = column.tasks.filter(task => task.deadline <= deadlineFilter);
-            }
-            )
-        }
-
-        setBoardToShow({ ...board, columns: tempColumns });
-
-    }
-
     const handleColumnNameConfirm = async (data) => {
         console.log(data);
         try {
@@ -362,7 +313,6 @@ const Board = () => {
             tempPositions.push(newColumn.column_id);
             setColumnPositions(tempPositions);
             setBoard({ ...board, columns: newBoardData });
-            setBoardToShow({ ...board, columns: newBoardData });
             setShowColumnNamePopup(false);
         } catch (e) {
             console.error(e);
@@ -457,7 +407,6 @@ const Board = () => {
             newBoardData.splice(columnToDeleteIndex, 1);
             setColumnPositions(newBoardData.map((column) => column.column_id));
             setBoard({ ...board, columns: newBoardData });
-            setBoardToShow({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
             if (e.response.status === 401 || e.response.status === 500) {
@@ -1561,7 +1510,7 @@ const Board = () => {
         }
     };
 
-    const handlePlaceTagOnTask = async (task_id, tag) => {
+    const handlePlaceTagOnTask = async (task_id, tag, column_id) => {
         try {
             await axios.post(
                 `/boards/${board_id}/tasks/${task_id}/tags/${tag.tag_id}`,
@@ -1569,14 +1518,21 @@ const Board = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            const updatedBoard = { ...board };
-            const updatedTask = updatedBoard.columns
-                .flatMap((column) => column.tasks)
-                .find((task) => task.task_id === task_id);
+            const newBoardData = [...board.columns];
+            const columnIndex = newBoardData.findIndex(
+                (column) => column.column_id === column_id
+            );
+            const updatedTask = findTaskById(
+                newBoardData[columnIndex].tasks,
+                task_id
+            );
+            if (updatedTask.tags === undefined) {
+                updatedTask.tags = [];
+            }
             updatedTask.tags.push(tag);
             updatedTask.tags.sort((a, b) => a.tag_id - b.tag_id);
 
-            setBoard(updatedBoard);
+            setBoard({ ...board, columns: newBoardData });
         } catch (e) {
             console.error(e);
             if (e.response.status === 401 || e.response.status === 500) {
@@ -1749,26 +1705,66 @@ const Board = () => {
     }
 
     const changePriorityFilter = (e) => {
-        console.log("priorityid " + e.target.value)
-        priorityFilter = e.target.value;
-        setPriorityDropDownValue(e.target.value)
-        setTagDropDownValue(-1)
-        tagFilter = -1
-        FilterBoard();
+        setPriorityFilter(e.target.value);
+        // set is filter active
+        if (e.target.value == -1 && tagFilter == -1 && memberFilter == -1) {
+            setIsFilterActive(false)
+        }
+        else {
+            setIsFilterActive(true)
+        }
+        // set filter count
+        if (e.target.value == -1) {
+            setFilterCount(filterCount - 1)
+        }
+        else {
+            setFilterCount(filterCount + 1)
+        }
     }
 
     const changeTagFilter = (e) => {
-        tagFilter = e.target.value;
-        setTagDropDownValue(e.target.value)
-        setPriorityDropDownValue(-1)
-        priorityFilter = -1
-        FilterBoard();
+        setTagFilter(e.target.value)
+        // set is filter active
+        if (e.target.value == -1 && priorityFilter == -1 && memberFilter == -1) {
+            setIsFilterActive(false)
+        }
+        else {
+            setIsFilterActive(true)
+        }
+        // set filter count
+        if (e.target.value == -1) {
+            setFilterCount(filterCount - 1)
+        }
+        else {
+            setFilterCount(filterCount + 1)
+        }
     }
 
     const changeMemberFilter = (e) => {
-        memberFilter = e.target.value;
-        setMemberDropDownValue(e.target.value)
-        FilterBoard();
+        setMemberFilter(e.target.value)
+        // set is filter active
+        if (e.target.value == -1 && priorityFilter == -1 && tagFilter == -1) {
+            setIsFilterActive(false)
+        }
+        else {
+            setIsFilterActive(true)
+        }
+        // set filter count
+        if (e.target.value == -1) {
+            setFilterCount(filterCount - 1)
+        }
+        else {
+            setFilterCount(filterCount + 1)
+        }
+    }
+
+    const clearFilters = () => {
+        setPriorityFilter(-1)
+        setTagFilter(-1)
+        setMemberFilter(-1)
+        setFilterCount(0)
+        setIsFilterActive(false)
+        setIsHoveredClearFilterByTitleBar(false)
     }
 
     const handleChildData = (
@@ -1800,7 +1796,7 @@ const Board = () => {
                 )
             ) : (
                 <DndProvider backend={HTML5Backend}>
-                    {boardToShow.columns === undefined ? (
+                    {board.columns === undefined ? (
                         <div className="content col-10">
                             <Loader />
                         </div>
@@ -1810,9 +1806,20 @@ const Board = () => {
                                 <h1 className="title-name">{board.name}</h1>
                                 <div className="title-bar-buttons">
                                     <ul>
-                                        {/*
-
-                                            <li
+                                        {isFilterActive && <li
+                                            onMouseEnter={() => setIsHoveredClearFilterByTitleBar(true)}
+                                            onMouseLeave={() => setIsHoveredClearFilterByTitleBar(false)}
+                                            onClick={clearFilters}
+                                            style={{
+                                                color:
+                                                    isHoveredClearFilterByTitleBar
+                                                        ? "var(--off-white)"
+                                                        : "var(--dark-gray)",
+                                            }}>
+                                            <span>{filterDeleteIcon}</span>
+                                            <p>Clear filters</p>
+                                        </li>}
+                                        <li
                                             onMouseEnter={() => setIsHoveredFilterByTitleBar(true)}
                                             onMouseLeave={() => setIsHoveredFilterByTitleBar(false)}
                                             onClick={toggleFilterDropdown}
@@ -1823,9 +1830,9 @@ const Board = () => {
                                                         : "var(--dark-gray)",
                                             }}>
                                             <span>{filterIcon}</span>
-                                            <p>Filter</p>
+                                            <p>Filter {filterCount > 0 ? "(" + filterCount + ")" : ""}</p>
                                         </li>
-                                        <li
+                                        {isFilterActive === false ? <li
                                             onMouseEnter={() => setIsHoveredSortByTitleBar(true)}
                                             onMouseLeave={() => setIsHoveredSortByTitleBar(false)}
                                             onClick={toggleSortDropdown}
@@ -1838,8 +1845,14 @@ const Board = () => {
                                         >
                                             <span>{sortIcon}</span>
                                             <p>Sort by</p>
-                                        </li>
-                                        */}
+                                        </li> : <li style={{
+                                            color:
+                                                "rgba(var(--dark-grayRGB), 0.3)",
+                                            cursor: "not-allowed"
+                                        }}>
+                                            <span>{sortIcon}</span>
+                                            <p>Sort by</p></li>
+                                        }
                                         <li
                                             onMouseEnter={() => setIsHoveredAITitleBar(true)}
                                             onMouseLeave={() => setIsHoveredAITitleBar(false)}
@@ -1868,7 +1881,7 @@ const Board = () => {
                                 </div>
                             </div>
                             <div className="div-container">
-                                {boardToShow.columns.map((column, index) => (
+                                {board.columns.map((column, index) => (
                                     <Column
                                         key={index}
                                         divIndex={index}
@@ -1951,8 +1964,33 @@ const Board = () => {
                                                 </>
                                             )}
                                             <div className="task-container">
-                                                {/*get tasks*/}
-                                                {column.tasks.map((task, taskIndex) => (
+                                                {/*get tasks that match the filters*/}
+                                                {column.tasks.filter(task => {
+                                                    if (priorityFilter == -1 && tagFilter == -1 && memberFilter == -1) {
+                                                        return true
+                                                    } else if (priorityFilter == -1 && tagFilter == -1) {
+                                                        return task.members.some(member => member.user_id == memberFilter)
+                                                    }
+                                                    else if (priorityFilter == -1 && memberFilter == -1) {
+                                                        return task.tags.some(tag => tag.tag_id == tagFilter)
+                                                    }
+                                                    else if (tagFilter == -1 && memberFilter == -1) {
+                                                        return task.priority_id == priorityFilter
+                                                    }
+                                                    else if (priorityFilter == -1) {
+                                                        return task.tags.some(tag => tag.tag_id == tagFilter) && task.members.some(member => member.user_id == memberFilter)
+                                                    }
+                                                    else if (tagFilter == -1) {
+                                                        return task.priority_id == priorityFilter && task.members.some(member => member.user_id == memberFilter)
+                                                    }
+                                                    else if (memberFilter == -1) {
+                                                        return task.priority_id == priorityFilter && task.tags.some(tag => tag.tag_id == tagFilter)
+                                                    }
+                                                    else {
+                                                        return task.priority_id == priorityFilter && task.tags.some(tag => tag.tag_id == tagFilter) && task.members.some(member => member.user_id == memberFilter)
+                                                    }
+                                                }
+                                                ).map((task, taskIndex) => (
                                                     <Task
                                                         permissions={permissions}
                                                         key={task.task_id}
@@ -1974,6 +2012,7 @@ const Board = () => {
                                                         onChildData={handleChildData}
                                                         showIconContainer={showIconContainer}
                                                         zIndex={cardZIndex}
+                                                        isFilterActive={isFilterActive}
                                                         moveCardFrontend={(
                                                             dragIndex,
                                                             hoverIndex,
@@ -2050,103 +2089,119 @@ const Board = () => {
                         </div>
                     )}
                     {isSortOpen && (
-                        <div
-                            className="sort-submenu"
-                            onMouseLeave={() => setIsSortOpen(false)}
-                        >
-                            <p className="sort-menu-title"> Sort menu </p>
-                            <ul className="sort-menu">
-                                <li
-                                    onMouseEnter={() => setIsHoveredName(true)}
-                                    onMouseLeave={() => setIsHoveredName(false)}
-                                    onClick={() => {
-                                        sortByCardName();
-                                    }}
-                                >
-                                    <span
-                                        className="craft-button"
-                                        style={{
-                                            color: isHoveredName ? "var(--magic)" : "",
+                        <>
+                            <div
+                                className="overlay3"
+                                onClick={() => {
+                                    setIsSortOpen(false);
+                                }}
+                            >
+                            </div>
+                            <div
+                                className="sort-submenu"
+                            >
+                                <p className="sort-menu-title"> Sort menu </p>
+                                <ul className="sort-menu">
+                                    <li
+                                        onMouseEnter={() => setIsHoveredName(true)}
+                                        onMouseLeave={() => setIsHoveredName(false)}
+                                        onClick={() => {
+                                            sortByCardName();
                                         }}
                                     >
-                                        {sortNameIcon}
-                                    </span>
-                                    <span>Sort by name</span>
-                                </li>
-                                <li
-                                    onMouseEnter={() => setIsHoveredDeadline(true)}
-                                    onMouseLeave={() => setIsHoveredDeadline(false)}
-                                    onClick={() => {
-                                        sortByCardDeadline();
-                                    }}
-                                >
-                                    <span
-                                        className="craft-button"
-                                        style={{
-                                            color: isHoveredDeadline ? "var(--edit)" : "",
+                                        <span
+                                            className="craft-button"
+                                            style={{
+                                                color: isHoveredName ? "var(--magic)" : "",
+                                            }}
+                                        >
+                                            {sortNameIcon}
+                                        </span>
+                                        <span>Sort by name</span>
+                                    </li>
+                                    <li
+                                        onMouseEnter={() => setIsHoveredDeadline(true)}
+                                        onMouseLeave={() => setIsHoveredDeadline(false)}
+                                        onClick={() => {
+                                            sortByCardDeadline();
                                         }}
                                     >
-                                        {sortDeadlineIcon}
-                                    </span>
-                                    <span>Sort by deadline</span>
-                                </li>
-                                <li
-                                    onMouseEnter={() => setIsHoveredPriority(true)}
-                                    onMouseLeave={() => setIsHoveredPriority(false)}
-                                    onClick={() => {
-                                        sortByCardPriority();
-                                    }}
-                                >
-                                    <span
-                                        className="craft-button"
-                                        style={{
-                                            color: isHoveredPriority ? "var(--important)" : "",
+                                        <span
+                                            className="craft-button"
+                                            style={{
+                                                color: isHoveredDeadline ? "var(--edit)" : "",
+                                            }}
+                                        >
+                                            {sortDeadlineIcon}
+                                        </span>
+                                        <span>Sort by deadline</span>
+                                    </li>
+                                    <li
+                                        onMouseEnter={() => setIsHoveredPriority(true)}
+                                        onMouseLeave={() => setIsHoveredPriority(false)}
+                                        onClick={() => {
+                                            sortByCardPriority();
                                         }}
                                     >
-                                        {sortPriorityIcon}
-                                    </span>
-                                    <span>Sort by priority</span>
-                                </li>
-                            </ul>
-                        </div>
+                                        <span
+                                            className="craft-button"
+                                            style={{
+                                                color: isHoveredPriority ? "var(--important)" : "",
+                                            }}
+                                        >
+                                            {sortPriorityIcon}
+                                        </span>
+                                        <span>Sort by priority</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </>
                     )}
                     {isFilterOpen && (
-                        <div
-                            className="filter-submenu"
-                            onMouseLeave={() => setIsFilterOpen(false)}
-                        >
-                            <p className="filter-menu-title"> Filter menu </p>
-                            <ul className="filter-menu">
-                                <li
-                                >
-                                    <div>
-                                        <span>Priority:</span>
-                                        <select defaultValue={parseInt(-1)} value={priorityDropDownValue} onChange={(e) => changePriorityFilter(e)}>
-                                            <option value={parseInt(-1)}>ALL</option>
-                                            {priorities.map((priority) => {
-                                                return <option value={parseInt(priority.priority_id)}>{priority.priority}</option>
-                                            })}
-                                        </select>
-                                    </div>
-                                </li>
-                                <li
-                                >
-                                    <div>
-                                        <span>Tag:</span>
-                                        <select defaultValue={-1} value={tagDropDownValue} onChange={(e) => changeTagFilter(e)}>
-                                            <option value={-1}>ALL</option>
-                                            {tags.map((tag) => {
-                                                return <option value={parseInt(tag.tag_id)}>{tag.name}</option>
-                                            })}
-                                        </select>
-                                    </div>
-                                </li>
-                                {/*
+                        <>
+
+                            <div
+                                className="overlay3"
+                                onClick={() => {
+                                    setIsFilterOpen(false);
+                                }}
+                            >
+                            </div>
+                            <div
+                                className="filter-submenu"
+                            >
+                                <p className="filter-menu-title"> Filter menu </p>
+                                <ul className="filter-menu">
+                                    <li
+                                    >
+                                        <div>
+                                            <span>Priority:</span>
+                                            <select defaultValue={parseInt(-1)} value={priorityFilter} onChange={(e) => changePriorityFilter(e)}>
+                                                <option value={parseInt(-1)}>ALL</option>
+                                                {priorities.map((priority) => {
+                                                    return <option value={parseInt(priority.priority_id)}>{priority.priority}</option>
+                                                })}
+                                            </select>
+                                        </div>
+                                    </li>
+                                    <li
+                                    >
+                                        <div>
+                                            <span>Tag:</span>
+                                            <select defaultValue={-1} value={tagFilter} onChange={(e) => changeTagFilter(e)}>
+                                                <option value={-1}>ALL</option>
+                                                {tags.map((tag) => {
+                                                    return <option value={parseInt(tag.tag_id)}>{tag.name}</option>
+                                                })}
+                                            </select>
+                                        </div>
+                                    </li>
+                                    {/*
                                 <li
                                 >
                                     <div>
                                         <span>Member:</span>
-                                        <select defaultValue={-1} value={memberDropDownValue} onChange={(e) => changeTagFilter(e)}>
+                                        <select defaultValue={-1} value={memberFilter} onChange={(e) => changeTagFilter(e)}>
                                             <option value={-1}>ALL</option>
                                             {members.map((member) => {
                                                 return <option value={parseInt(member.member_id)}>{member.name}</option>
@@ -2160,121 +2215,131 @@ const Board = () => {
                                 </li>
                                         */}
 
-                            </ul>
-                        </div>
+                                </ul>
+                            </div>
+                        </>
                     )}
                     {isAGIOpen && (
-                        <div
-                            className="agi-submenu"
-                            onMouseLeave={() => setIsAGIOpen(false)}
-                        >
-                            <p className="agi-menu-title"> AI menu </p>
-                            <ul className="agi-menu">
-                                <li
-                                    onMouseEnter={() => setIsHoveredPerformanceSummary(true)}
-                                    onMouseLeave={() => setIsHoveredPerformanceSummary(false)}
-                                    onClick={() => {
-                                        handleShowGeneratePerformanceSummaryPopup();
-                                    }}
-                                >
-                                    <span
-                                        className="craft-button"
-                                        style={{
-                                            color: isHoveredPerformanceSummary ? "var(--craft)" : "",
+                        <>
+                            <div
+                                className="overlay3"
+                                onClick={() => {
+                                    setIsAGIOpen(false);
+                                }}
+                            >
+                            </div>
+                            <div
+                                className="agi-submenu"
+                            >
+                                <p className="agi-menu-title"> AI menu </p>
+                                <ul className="agi-menu">
+                                    <li
+                                        onMouseEnter={() => setIsHoveredPerformanceSummary(true)}
+                                        onMouseLeave={() => setIsHoveredPerformanceSummary(false)}
+                                        onClick={() => {
+                                            handleShowGeneratePerformanceSummaryPopup();
                                         }}
                                     >
-                                        {craftIcon}
-                                    </span>
-                                    <span>Generate performance summary</span>
-                                </li>
-                                <li
-                                    onMouseEnter={() => setIsHoveredCraft(true)}
-                                    onMouseLeave={() => setIsHoveredCraft(false)}
-                                    onClick={() => {
-                                        handleShowCraftPromptPopup();
-                                    }}
-                                >
-                                    <span
-                                        className="craft-button"
-                                        style={{
-                                            color: isHoveredCraft ? "var(--craft)" : "",
+                                        <span
+                                            className="craft-button"
+                                            style={{
+                                                color: isHoveredPerformanceSummary ? "var(--craft)" : "",
+                                            }}
+                                        >
+                                            {craftIcon}
+                                        </span>
+                                        <span>Generate performance summary</span>
+                                    </li>
+                                    <li
+                                        onMouseEnter={() => setIsHoveredCraft(true)}
+                                        onMouseLeave={() => setIsHoveredCraft(false)}
+                                        onClick={() => {
+                                            handleShowCraftPromptPopup();
                                         }}
                                     >
-                                        {craftIcon}
-                                    </span>
-                                    <span>Craft Prompt</span>
-                                </li>
-                                <li
-                                    onMouseEnter={() => setIsHoveredDocumentation(true)}
-                                    onMouseLeave={() => setIsHoveredDocumentation(false)}
-                                    onClick={() => {
-                                        openDocumentationPopup();
-                                    }}
-                                >
-                                    <span
-                                        className="code-button"
-                                        style={{
-                                            color: isHoveredDocumentation ? "var(--code)" : "",
+                                        <span
+                                            className="craft-button"
+                                            style={{
+                                                color: isHoveredCraft ? "var(--craft)" : "",
+                                            }}
+                                        >
+                                            {craftIcon}
+                                        </span>
+                                        <span>Craft Prompt</span>
+                                    </li>
+                                    <li
+                                        onMouseEnter={() => setIsHoveredDocumentation(true)}
+                                        onMouseLeave={() => setIsHoveredDocumentation(false)}
+                                        onClick={() => {
+                                            openDocumentationPopup();
                                         }}
                                     >
-                                        {documentationIcon}
-                                    </span>
-                                    <span>Generate documentation for board</span>
-                                </li>
-                                <li
-                                    onMouseEnter={() => setIsHoveredCode(0)}
-                                    onMouseLeave={() => setIsHoveredCode(false)}
-                                    onClick={() => {
-                                        openCodePopup();
-                                    }}
-                                >
-                                    <span
-                                        className="code-button"
-                                        style={{
-                                            color: isHoveredCode === 0 ? "var(--code)" : "",
+                                        <span
+                                            className="code-button"
+                                            style={{
+                                                color: isHoveredDocumentation ? "var(--code)" : "",
+                                            }}
+                                        >
+                                            {documentationIcon}
+                                        </span>
+                                        <span>Generate documentation for board</span>
+                                    </li>
+                                    <li
+                                        onMouseEnter={() => setIsHoveredCode(0)}
+                                        onMouseLeave={() => setIsHoveredCode(false)}
+                                        onClick={() => {
+                                            openCodePopup();
                                         }}
                                     >
-                                        {codeIcon}
-                                    </span>
-                                    <span>Code Review</span>
-                                </li>
-                                {codeReviewOrDocumentations.map((element, index) => (
-                                    <ul
-                                        className="code-review-or-documentation-container"
-                                        key={index}
-                                    >
-                                        <li className="code-review-or-documentation-title">
-                                            <span
-                                                onMouseEnter={() => setIsHoveredCode(index + 1)}
-                                                onMouseLeave={() => setIsHoveredCode(null)}
-                                                onClick={() => {
-                                                    openCodePopup(element);
-                                                }}
-                                            >
+                                        <span
+                                            className="code-button"
+                                            style={{
+                                                color: isHoveredCode === 0 ? "var(--code)" : "",
+                                            }}
+                                        >
+                                            {codeIcon}
+                                        </span>
+                                        <span>Code Review</span>
+                                    </li>
+                                    {codeReviewOrDocumentations.map((element, index) => (
+                                        <ul
+                                            className="code-review-or-documentation-container"
+                                            key={index}
+                                        >
+                                            <li className="code-review-or-documentation-title">
                                                 <span
-                                                    className="code-button"
-                                                    style={{
-                                                        color:
-                                                            isHoveredCode === index + 1 ? "var(--code)" : "",
+                                                    onMouseEnter={() => setIsHoveredCode(index + 1)}
+                                                    onMouseLeave={() => setIsHoveredCode(null)}
+                                                    onClick={() => {
+                                                        openCodePopup(element);
                                                     }}
                                                 >
-                                                    {codeIcon}
+                                                    <span
+                                                        className="code-button"
+                                                        style={{
+                                                            color:
+                                                                isHoveredCode === index + 1 ? "var(--code)" : "",
+                                                        }}
+                                                    >
+                                                        {codeIcon}
+                                                    </span>
+                                                    Code review {index + 1}
                                                 </span>
-                                                Code review {index + 1}
-                                            </span>
-                                            <span
-                                                className="delete-code-review-or-documentation-button"
-                                                onClick={() => {
-                                                    deleteCodeReviewOrDocumentation(element);
-                                                }}
-                                            >
-                                                {xMarkIcon}
-                                            </span>
-                                        </li>
-                                    </ul>
-                                ))}
-                            </ul>
-                        </div>
+                                                <span
+                                                    className="delete-code-review-or-documentation-button"
+                                                    onClick={() => {
+                                                        deleteCodeReviewOrDocumentation(element);
+                                                    }}
+                                                >
+                                                    {xMarkIcon}
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    ))}
+                                </ul>
+                            </div>
+                        </>
+
                     )}
                     {showIconContainer && (
                         <div

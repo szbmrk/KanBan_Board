@@ -14,6 +14,8 @@ const AssignedTasks = () => {
     const user_id = sessionStorage.getItem('user_id');
 
     useEffect(() => {
+        document.title = 'Assigned Tasks';
+        getAssignedTasks();
         const ResetTheme = () => {
             setTheme(localStorage.getItem("darkMode"))
         }
@@ -25,8 +27,6 @@ const AssignedTasks = () => {
         return () => {
             window.removeEventListener('ChangingTheme', ResetTheme)
         }
-        document.title = 'Assigned Tasks';
-        getAssignedTasks();
     }, []);
 
     const getAssignedTasks = async () => {

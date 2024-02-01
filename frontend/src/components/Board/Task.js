@@ -54,6 +54,7 @@ export const Task = forwardRef(
             onChildData,
             iconContainer,
             zIndex,
+            isFilterActive,
         },
         ref
     ) => {
@@ -68,15 +69,6 @@ export const Task = forwardRef(
         const [showIconContainer, setShowIconContainer] = useState(iconContainer);
         const [cardZIndex, setCardZIndex] = useState(zIndex);
         const [cardIndex, setCardIndex] = useState(null);
-        const [taskToShow, setTaskToShow] = useState(null);
-        const [bouncingStarIcon, setBouncingStarIcon] = useState(regularStarIcon);
-        const [isHoveredEdit, setIsHoveredEdit] = useState(false);
-        const [isHoveredAI, setIsHoveredAI] = useState(-1);
-        const [isHoveredDocumentation, setIsHoveredDocumentation] = useState(false);
-        const [isHoveredAttachmentLink, setIsHoveredAttachmentLink] =
-            useState(false);
-        const [isHoveredFavorite, setIsHoveredFavorite] = useState(false);
-        const [isHoveredDelete, setIsHoveredDelete] = useState(false);
 
         const [{ isDragging: dragging }, drag] = useDrag({
             type: ItemTypes.CARD,
@@ -85,7 +77,7 @@ export const Task = forwardRef(
                 isDragging: monitor.isDragging(),
             }),
             end: (item, monitor) => {
-                if (item) {
+                if (item && isFilterActive === false) {
                     const dragIndex = index;
                     const hoverIndex = item.index;
                     const sourceDiv = item.divName;
@@ -139,7 +131,6 @@ export const Task = forwardRef(
                 showIconContainer,
                 cardZIndex,
                 taskPosition,
-                taskToShow,
                 ref
             );
         }, [
@@ -147,8 +138,7 @@ export const Task = forwardRef(
             showIconContainer,
             cardZIndex,
             taskPosition,
-            taskToShow,
-            ref,
+            ref
         ]);
 
         const [activeTags, setActiveTags] = useState([]);
@@ -206,7 +196,6 @@ export const Task = forwardRef(
             for (let i = 0; i < tasks.length; i++) {
                 if (i === index) {
                     handlePosition(tasks[i].getBoundingClientRect());
-                    setTaskToShow(tasks[i]);
                 }
             }
         };
@@ -295,15 +284,14 @@ export const Task = forwardRef(
             showIconContainer,
             cardZIndex,
             taskPosition,
-            taskToShow,
             ref
         ) => {
             onChildData(
                 options,
                 iconContainerPosition,
+                showIconContainer,
                 cardZIndex,
                 taskPosition,
-                taskToShow,
                 ref
             );
         };
@@ -313,11 +301,11 @@ export const Task = forwardRef(
         return (
             <>
                 <div
-                    ref={(node) => drag(drop(node))}
+                    ref={!isFilterActive ? (node) => drag(drop(node)) : null}
                     className="card"
                     style={{
                         opacity,
-                        cursor: "grab",
+                        cursor: isFilterActive ? "default" : "grab",
                         zIndex: cardIndex === index ? cardZIndex : 1,
                     }}
                     onMouseEnter={() => handleMouseEnterOnCard(id)}
@@ -354,160 +342,6 @@ export const Task = forwardRef(
                             ))}
                     </div>
                 </div>
-                {/*{showIconContainer && (
-                <div
-                    className='overlay'
-                    onClick={() => {
-                        setShowIconContainer(false);
-                        setCardZIndex(1);
-                    }}
-                >
-                    <div
-                        className='icon-container'
-                        style={{
-                            position: 'fixed',
-                            left: iconContainerPosition.x + 'px',
-                            top: iconContainerPosition.y + 'px',
-                        }}
-                    >
-                        <div
-                            className='option'
-                            onMouseEnter={() => setIsHoveredEdit(true)}
-                            onMouseLeave={() => setIsHoveredEdit(false)}
-                            onClick={() => setTaskAsInspectedTask(task)}
-                        >
-                            <span
-                                className='edit-button'
-                                style={{
-                                    color: isHoveredEdit ? 'var(--edit)' : '',
-                                    animation: isHoveredEdit ? 'rotate 0.5s' : 'none',
-                                }}
-                            >
-                                {pencilIcon}
-                            </span>
-                            <p>Edit Task</p>
-                        </div>
-                        <div
-                            className='option'
-              onMouseEnter={() => setIsHoveredDocumentation(true)}
-              onMouseLeave={() => setIsHoveredDocumentation(false)}
-              onClick={() => handleDocumentation()}
-            >
-              <span
-                className="ai-button"
-                style={{
-                  color: isHoveredDocumentation ? "var(--magic)" : "",
-                }}
-              >
-                {documentationIcon}
-              </span>
-              <p>Generate documentation for task</p>
-            </div>
-            <div
-              className="option"
-                            onMouseEnter={() => setIsHoveredAI(0)}
-                            onMouseLeave={() => setIsHoveredAI(-1)}
-                            onClick={() => handleAI()}
-                        >
-                            <span
-                                className='ai-button'
-                                style={{
-                                    color: isHoveredAI === 0 ? 'var(--magic)' : '',
-                                }}
-                            >
-                                {aiIcon}
-                            </span>
-                            <p>Generate Subtasks</p>
-                        </div>
-                        <div
-                            className='option'
-                            onMouseEnter={() => setIsHoveredAttachmentLink(true)}
-                            onMouseLeave={() => setIsHoveredAttachmentLink(false)}
-                            onClick={() => handleAttachmentLinks()}
-                        >
-                            <span
-                                className='ai-button'
-                                style={{
-                                    color: isHoveredAttachmentLink ? 'var(--attachment-link)' : '',
-                                }}
-                            >
-                                {attachmentLinkIcon}2
-                            </span>
-                            <p>Generate Attachment Links</p>
-                        </div>
-                        {craftedPromptsTask.map((craftedPrompt, index) => (
-                            <div
-                                key={index}
-                                className='option'
-                                onMouseEnter={() => setIsHoveredAI(index + 1)}
-                                onMouseLeave={() => setIsHoveredAI(-1)}
-                                onClick={() => HandleCraftedPromptTaskClick(craftedPrompt, task, column)}
-                            >
-                                <span
-                                    className='ai-button'
-                                    style={{
-                                        color: isHoveredAI === index + 1 ? getCSSForCraftedPrompt(craftedPrompt) : '',
-                                    }}
-                                >
-                                    {getIconforCraftedPrompt(craftedPrompt)}
-                                </span>
-                                <p>{craftedPrompt.crafted_prompt_title}</p>
-                            </div>
-                        ))}
-                        {task.is_favourite ? (
-                            <div
-                                className='option'
-                                onMouseEnter={() => setIsHoveredFavorite(true)}
-                                onMouseLeave={() => setIsHoveredFavorite(false)}
-                                onClick={() => unFavouriteTask(id, task.column_id)}
-                            >
-                                <span
-                                    className='favourite-button solid-icon'
-                                    style={{
-                                        color: isHoveredFavorite ? 'var(--light-gray)' : '',
-                                    }}
-                                >
-                                    {isHoveredFavorite ? regularStarIcon : solidStarIcon}
-                                </span>
-                                <p>Remove from Favourites</p>
-                            </div>
-                        ) : (
-                            <div
-                                className='option'
-                                onMouseEnter={() => setIsHoveredFavorite(true)}
-                                onMouseLeave={() => setIsHoveredFavorite(false)}
-                                onClick={() => favouriteTask(id, task.column_id)}
-                            >
-                                <span
-                                    className='favourite-button regular-icon'
-                                    onMouseEnter={handleMouseEnterOnStarIcon}
-                                    onMouseLeave={handleMouseLeaveOnStarIcon}
-                                    style={{ color: isHoveredFavorite ? 'var(--starred)' : '' }}
-                                >
-                                    {bouncingStarIcon}
-                                </span>
-                                <p onMouseEnter={handleMouseEnterOnStarIcon} onMouseLeave={handleMouseLeaveOnStarIcon}>
-                                    Add to Favourites
-                                </p>
-                            </div>
-                        )}
-                        <div
-                            className='option'
-                            onMouseEnter={() => setIsHoveredDelete(true)}
-                            onMouseLeave={() => setIsHoveredDelete(false)}
-                            onClick={() => deleteTask(id, task.column_id)}
-                        >
-                            <span
-                                className='delete-task-button'
-                                style={{ color: isHoveredDelete ? 'var(--important)' : '' }}
-                            >
-                                {trashIcon}
-                            </span>
-                            <p>Delete Task</p>
-                        </div>
-                </div>
-                      </div>
-            )}*/}
             </>
         );
     }

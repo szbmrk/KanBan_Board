@@ -12,28 +12,14 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [needLoader, setNeedLoader] = useState(false);
-    const [search, setSearch] = useState('');
-    const [searchedUserList, setSearchedUserList] = useState([]);
-    const [searchButtonClicked, setSearchButtonClicked] = useState(false);
+
     const [error, setError] = useState(null);
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+    const [filterText, setFilterText] = useState("");
+    const [usersLoaded, setUsersLoaded] = useState(false);
 
     useEffect(() => {
         setNeedLoader(true);
         getUsers();
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"))
-        }
-
-
-        console.log("Darkmode: " + localStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-        //eddig
     }, []);
 
     async function getUsers() {
@@ -47,8 +33,9 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
             console.log("users!!!");
             console.log(response.data.users);
             setUsers(response.data.users);
-            console.log(response.data.users);
+            setFilteredUsers(response.data.users);
             setNeedLoader(false);
+            setUsersLoaded(true);
         } catch (error) {
             setError(error.response.data);
         }
@@ -62,91 +49,86 @@ const AddUser = ({ teamID, OnClose, AddUsers }) => {
         }
     }
 
-    function handleSearchUsers(e) {
-        setSearch(e.target.value);
-        console.log(e.target.value);
+    function handleFilterChange(e) {
+        const searchText = e.target.value.toLowerCase();
+        setFilterText(searchText);
+
+        const filtered = users.filter(
+            (user) =>
+                user.username.toLowerCase().includes(searchText) ||
+                user.email.toLowerCase().includes(searchText)
+        );
+        setFilteredUsers(filtered);
     }
 
     function handleAddUsers() {
         AddUsers(selectedUsers, teamID);
         OnClose();
     }
-    function handleSearchButton() {
-        let tempSearchedUserList = [];
-        for (let i = 0; i < search.length; i++) {
-            if (search[i] === '@') {
-                tempSearchedUserList = (users.filter(
-                    user => {
-                        return user.email.toLowerCase().includes(search.toLowerCase());
-                    }
-                )
-                )
-                setSearchedUserList(tempSearchedUserList);
-                setSearchButtonClicked(true);
-                return;
-            }
-        }
-        tempSearchedUserList = (users.filter(
-            user => {
-                return user.username.toLowerCase().includes(search.toLowerCase());
-            }
-        )
-        )
-        setSearchedUserList(tempSearchedUserList);
-        setSearchButtonClicked(true);
-    }
 
     return (
-        <div className='overlay' data-theme={theme}>
-            <div className='popup popup-mini'>
-                <span className='close-btn' onClick={OnClose}>
+        <div className="overlay">
+            <div className="popup add-user-popup">
+                <span className="close-btn" onClick={OnClose}>
                     {closeIcon}
                 </span>
-                <p className='confirmation-text'>Select Users to Add: </p>
-                {needLoader ?
-                    <Loader /> :
-                    users.length === 0 ? (
-                        <div>
-                            <p>No users to add</p>
-                        </div>
-                    ) :
-                        !searchButtonClicked ? (
-                            <div className='user-select'>
-                                <input className='searchInputCard' name='searchInput' onChange={handleSearchUsers} placeholder='Search users...' />
-                                <button className='searchButtonCard' onClick={handleSearchButton}>Search</button>
-                                {users.map((user) => (
-                                    <div
-                                        key={user.user_id}
-                                        onClick={() => toggleUserSelection(user.user_id)}
-                                        className={selectedUsers.includes(user.user_id) ? 'selected' : ''}
-                                    >
-                                        <p>{user.username}</p>
-                                    </div>
-                                ))}
+                <p className="confirmation-text">Select Users to Add: </p>
+                <div>
+                    <p>Filter by Username:</p>
+                    <input
+                        disabled={!usersLoaded}
+                        className="filter-input"
+                        type="text"
+                        placeholder="Search users..."
+                        value={filterText}
+                        onChange={handleFilterChange}
+                    />
+                </div>
+                {needLoader ? (
+                    <Loader />
+                ) : filteredUsers.length === 0 ? (
+                    <div>
+                        <p>No users to add</p>
+                    </div>
+                ) : (
+                    <div className="user-select">
+                        {filteredUsers.map((filteredUser) => (
+                            <div
+                                key={filteredUser.user_id}
+                                onClick={() => toggleUserSelection(filteredUser.user_id)}
+                                className={
+                                    selectedUsers.includes(filteredUser.user_id) ? "selected" : ""
+                                }
+                            >
+                                <p title={`${filteredUser.username}\n${filteredUser.email}`}>
+                                    {filteredUser.username.length < 17
+                                        ? filteredUser.username
+                                        : filteredUser.username.slice(0, 14) + " ..."}
+                                    <br />
+                                    {filteredUser.email.length < 17
+                                        ? filteredUser.email
+                                        : filteredUser.email.slice(0, 14) + " ..."}
+                                </p>
                             </div>
-                        ) :
-                            (
-                                <div className='user-select'>
-                                    <input name='searchInput' onChange={handleSearchUsers} placeholder='Search users...' />
-                                    <button onClick={handleSearchButton}>Search</button>
-                                    {searchedUserList.map((user) => (
-                                        <div
-                                            key={user.user_id}
-                                            onClick={() => toggleUserSelection(user.user_id)}
-                                            className={selectedUsers.includes(user.user_id) ? 'selected' : ''}
-                                        >
-                                            <p>{user.username}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            )
-                }
-                <button className='add-button' onClick={handleAddUsers}>
+                        ))}
+                    </div>
+                )}
+                <button
+                    className="add-button"
+                    disabled={selectedUsers.length === 0}
+                    onClick={handleAddUsers}
+                    style={{ marginTop: "10px", marginBottom: "10px", width: "100%", height: "40px" }}
+                >
                     Add Users
                 </button>
             </div>
             {error && (
-                <ErrorWrapper originalError={error} onClose={() => { setError(null); }} />
+                <ErrorWrapper
+                    originalError={error}
+                    onClose={() => {
+                        setError(null);
+                    }}
+                />
             )}
         </div>
     );

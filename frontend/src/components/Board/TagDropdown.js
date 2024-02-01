@@ -9,6 +9,7 @@ const TagDropdown = ({
     tags,
     allTags,
     taskId,
+    columnId,
     placeTagOnTask,
     removeTagFromTask,
     tagEditHandler,
@@ -133,7 +134,7 @@ const TagDropdown = ({
                     return true;
                 }
             });
-            placeTagOnTask(taskId, selectedTag);
+            placeTagOnTask(taskId, selectedTag, columnId);
         }
 
         // Reorder the selected tags based on the options array

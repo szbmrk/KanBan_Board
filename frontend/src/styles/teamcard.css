@@ -249,7 +249,6 @@
     transition: all 0.3s ease;
     order: 1;
     cursor: pointer;
-    flex: 1;
 }
 
 .add-button:hover {
