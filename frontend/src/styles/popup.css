@@ -179,6 +179,7 @@
     border-radius: 5px;
     background-color: var(--dark-Navbar);
     font-family: var(--basic-font);
+    color: var(--light-gray);
 }
 
 .description-textarea:focus {
