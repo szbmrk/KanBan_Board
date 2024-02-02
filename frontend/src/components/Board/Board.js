@@ -1944,6 +1944,8 @@ const Board = () => {
                                                         }}
                                                     >
                                                         <h2 className="card-title">{column.name}</h2>
+                                                        {(column.task_limit != 0 && column.task_limit != null) &&
+                                                            <p style={{ marginTop: "-25px", color: "var(--light-gray)" }}>{column.tasks.length + "/" + column.task_limit}</p>}
                                                     </div>
 
                                                     <div
