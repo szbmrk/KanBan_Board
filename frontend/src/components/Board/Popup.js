@@ -15,6 +15,7 @@ import {
     faTrash,
     faPeopleGroup,
     faComments,
+    faCheck,
 } from '@fortawesome/free-solid-svg-icons';
 import axios from '../../api/axios';
 import Subtask from './Subtask';
@@ -37,6 +38,8 @@ const attachmentIcon = <FontAwesomeIcon icon={faPaperclip} />;
 const trashIcon = <FontAwesomeIcon icon={faTrash} />;
 const membersIcon = <FontAwesomeIcon icon={faPeopleGroup} />;
 const commentsIcon = <FontAwesomeIcon icon={faComments} />;
+const checkIcon = <FontAwesomeIcon icon={faCheck} />;
+const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
 
 const Popup = ({
     task,
@@ -79,6 +82,8 @@ const Popup = ({
     const [notMembers, setNotMembers] = useState([]);
     const [showAddMember, setShowAddMember] = useState(false);
     const [newMember, setNewMember] = useState(null);
+    const [showEditTitle, setShowEditTitle] = useState(false);
+    const [showEditDescription, setShowEditDescription] = useState(false);
 
     const token = sessionStorage.getItem('token');
 
@@ -99,12 +104,35 @@ const Popup = ({
     };
 
     const handleChange = (event) => {
+        setShowEditTitle(true);
         setEditedText(event.target.value);
     };
 
     const handleDescriptionChange = (event) => {
+        setShowEditDescription(true);
         setEditedDescription(event.target.value);
     };
+
+    const confirmTitleChange = () => {
+        setShowEditTitle(false);
+        onSave(task.task_id, task.parent_task_id, task.column_id, editedText, editedDescription);
+    };
+
+    const declineTitleChange = () => {
+        setShowEditTitle(false);
+        setEditedText(task.title);
+    };
+
+    const confirmDescriptionChange = () => {
+        setShowEditDescription(false);
+        onSave(task.task_id, task.parent_task_id, task.column_id, editedText, editedDescription);
+    };
+
+    const declineDescriptionChange = () => {
+        setShowEditDescription(false);
+        setEditedDescription(task.description);
+    };
+
 
     useEffect(() => {
         getNotMembers();
@@ -438,16 +466,43 @@ const Popup = ({
                             )}
                         </div>
                         <div className='description-container'>
-                            <div className='subtitle'>
-                                <span className='icon'>{fileIcon}</span>
-                                <h3>Description:</h3>
-                            </div>
-                            <textarea
-                                className='description-textarea'
-                                value={editedDescription}
-                                onChange={handleDescriptionChange}
-                            />
-                        </div>
+                            {showEditDescription ?
+                                (<>
+                                    <div className='subtitle'>
+                                        <span className='icon'>{fileIcon}</span>
+                                        <h3>Description:</h3>
+                                    </div>
+                                    <textarea
+                                        className='description-textarea'
+                                        value={editedDescription}
+                                        onChange={handleDescriptionChange}
+                                    />
+                                    <span
+                                        className="edit-action-button"
+                                        id="check-button"
+                                        onClick={() => confirmDescriptionChange()}
+                                    >
+                                        {checkIcon}
+                                    </span>
+                                    <span
+                                        className="edit-action-button"
+                                        id="cancel-button"
+                                        onClick={() => declineDescriptionChange()}
+                                    >
+                                        {xMarkIcon}
+                                    </span>
+                                </>) : (<>
+                                    <div className='subtitle'>
+                                        <span className='icon'>{fileIcon}</span>
+                                        <h3>Description:</h3>
+                                    </div>
+                                    <textarea
+                                        className='description-textarea'
+                                        value={editedDescription}
+                                        onChange={handleDescriptionChange}
+                                    />
+                                </>)
+                            }</div>
                         <div className='subtasks-container'>
                             {task.subtasks && task.subtasks.length > 0 ? (
                                 <>
@@ -559,14 +614,6 @@ const Popup = ({
                         </div>
                     </div>
                 </div>
-                <button
-                    className='save-button'
-                    onClick={() =>
-                        onSave(task.task_id, task.parent_task_id, task.column_id, editedText, editedDescription)
-                    }
-                >
-                    Save
-                </button>
                 <button className='add-icon' onClick={handleAddToCard} style={{ zIndex: addToCardIconZIndex }}>
                     {plusIcon}
                 </button>

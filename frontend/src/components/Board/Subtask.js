@@ -181,10 +181,10 @@ export default function Subtask({
                             className='option'
                             onMouseEnter={() => setIsHoveredDelete(true)}
                             onMouseLeave={() => setIsHoveredDelete(false)}
+                            onClick={deleteSubtask}
                         >
                             <span
                                 className='trash-icon'
-                                onClick={deleteSubtask}
                                 style={{ color: isHoveredDelete ? 'var(--important)' : '' }}
                             >
                                 {trashIcon}
