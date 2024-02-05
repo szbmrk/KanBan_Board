@@ -802,6 +802,7 @@ const Board = () => {
                 }
             );
             const newSubtask = response.data.task;
+            newSubtask.description = "Description of New Subtask";
             const newBoardData = [...board.columns];
             const columnIndex = newBoardData.findIndex(
                 (column) => column.column_id === column_id
@@ -884,8 +885,6 @@ const Board = () => {
                 }
             });
             setBoard({ ...board, columns: newBoardData });
-
-            handleOpenPreviousTask(parent_task_id, column_id);
         } catch (e) {
             console.log(e);
             if (e.response.status === 401 || e.response.status === 500) {
@@ -1031,7 +1030,6 @@ const Board = () => {
     ) => {
         if (parent_task_id === null) {
             await handleEditTask(task_id, column_id, newTitle, newDescription);
-            setShowPopup(false);
         } else {
             await handleEditSubtask(
                 task_id,

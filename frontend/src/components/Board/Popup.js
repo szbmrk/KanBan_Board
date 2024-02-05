@@ -133,6 +133,31 @@ const Popup = ({
         setEditedDescription(task.description);
     };
 
+    const handleFocusTitle = (event) => {
+        setShowEditTitle(true);
+    };
+
+    const handleBlurTitle = (e) => {
+        console.log(e.relatedTarget);
+        if (e.relatedTarget && e.relatedTarget.tagName === 'SPAN' && e.relatedTarget.id === 'check-button') {
+            return;
+        }
+        declineTitleChange();
+    };
+
+    const handleBlurDescription = (e) => {
+        if (e.relatedTarget && e.relatedTarget.tagName === 'SPAN' && e.relatedTarget.id === 'check-button') {
+            return;
+        }
+        declineDescriptionChange();
+    };
+
+    useEffect(() => {
+        const input = document.querySelector('.board-input');
+        if (input && showEditTitle) {
+            input.focus();
+        }
+    }, [showEditTitle]);
 
     useEffect(() => {
         getNotMembers();
@@ -402,7 +427,30 @@ const Popup = ({
             <div className='popup' ref={popupRef}>
                 {/* Upper Part */}
                 <div className='upper-part'>
-                    <input type='text' className='board-input' value={editedText} onChange={handleChange} />
+                    {showEditTitle ? (
+                        <><input type='text' id='edit_title_input' className='board-input' value={editedText} onChange={handleChange} onBlur={handleBlurTitle} />
+                            <div>
+                                <span
+                                    className="edit-action-button"
+                                    id="check-button"
+                                    onClick={() => confirmTitleChange()}
+                                    tabIndex={0}
+                                >
+                                    {checkIcon}
+                                </span>
+                                <span
+                                    className="edit-action-button"
+                                    id="cancel-button"
+                                    onClick={() => declineTitleChange()}
+                                    tabIndex={0}
+                                >
+                                    {xMarkIcon}
+                                </span>
+                            </div>
+                        </>) : (
+
+                        <input type='text' className='board-input' value={editedText} onChange={handleChange} onFocus={handleFocusTitle} />
+                    )}
                     {task.due_date && (
                         <div className='due-date'>
                             <span className='icon'>{stopwatchIcon}</span>
@@ -476,11 +524,13 @@ const Popup = ({
                                         className='description-textarea'
                                         value={editedDescription}
                                         onChange={handleDescriptionChange}
+                                        onBlur={handleBlurDescription}
                                     />
                                     <span
                                         className="edit-action-button"
                                         id="check-button"
-                                        onClick={() => confirmDescriptionChange()}
+                                        onClick={() => confirmDescriptionChange()} ű
+                                        tabIndex={0}
                                     >
                                         {checkIcon}
                                     </span>
@@ -488,6 +538,7 @@ const Popup = ({
                                         className="edit-action-button"
                                         id="cancel-button"
                                         onClick={() => declineDescriptionChange()}
+                                        tabIndex={0}
                                     >
                                         {xMarkIcon}
                                     </span>
