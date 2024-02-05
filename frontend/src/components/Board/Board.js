@@ -19,7 +19,7 @@ import {
     faSort,
     faArrowDownAZ,
     faCalendarDays,
-    faCircleExclamation
+    faCircleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "../../styles/board.css";
@@ -42,7 +42,7 @@ import DocumentationPopup from "../DocumentationPopup";
 import GeneratePerformanceSummaryPopup from "../GeneratePerformanceSummaryPopup";
 import SimpleTextPopup from "../SimpleTextPopup";
 import AddColumnPopup from "../AddColumnPopup";
-import DatePicker from 'react-datepicker';
+import DatePicker from "react-datepicker";
 
 export const documentationIcon = <FontAwesomeIcon icon={faFileLines} />;
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
@@ -56,9 +56,20 @@ const Board = () => {
     const [board, setBoard] = useState([]);
     const [columnPositions, setColumnPositions] = useState([]);
     const [editingColumnIndex, setEditingColumnIndex] = useState(null);
+    const [taskToDelete, setTaskToDelete] = useState(null);
     const [columnToDeleteIndex, setColumnToDeleteIndex] = useState(null);
-    const [showDeleteConfirmation, setShowDeleteColumnConfirmation] =
+    const [
+        codeReviewOrDocumentationToDelete,
+        setCodeReviewOrDocumentationToDelete,
+    ] = useState(null);
+    const [showDeleteTaskConfirmation, setShowDeleteTaskConfirmation] =
         useState(false);
+    const [showDeleteColumnConfirmation, setShowDeleteColumnConfirmation] =
+        useState(false);
+    const [
+        showDeleteCodeReviewOrDocumentationConfirmation,
+        setShowDeleteCodeReviewOrDocumentationConfirmation,
+    ] = useState(false);
     const originalTitle = useRef(null);
     const editBoxRef = useRef(null);
     const [columnNewTitle, setColumnNewTitle] = useState("");
@@ -132,8 +143,10 @@ const Board = () => {
     const [isHoveredDeadline, setIsHoveredDeadline] = useState(false);
     const [isHoveredPriority, setIsHoveredPriority] = useState(false);
     const [isHoveredSortByTitleBar, setIsHoveredSortByTitleBar] = useState(false);
-    const [isHoveredFilterByTitleBar, setIsHoveredFilterByTitleBar] = useState(false);
-    const [isHoveredClearFilterByTitleBar, setIsHoveredClearFilterByTitleBar] = useState(false);
+    const [isHoveredFilterByTitleBar, setIsHoveredFilterByTitleBar] =
+        useState(false);
+    const [isHoveredClearFilterByTitleBar, setIsHoveredClearFilterByTitleBar] =
+        useState(false);
     const [isSortOpen, setIsSortOpen] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const sortNameIcon = <FontAwesomeIcon icon={faArrowDownAZ} />;
@@ -141,14 +154,18 @@ const Board = () => {
     const sortPriorityIcon = <FontAwesomeIcon icon={faCircleExclamation} />;
     const token = sessionStorage.getItem("token");
     const team_member = JSON.parse(sessionStorage.getItem("team_members"));
-    const permissions = JSON.parse(sessionStorage.getItem("permissions")).teams.filter(permission => { return parseInt(permission.board_id) === parseInt(board_id) });
+    const permissions = JSON.parse(
+        sessionStorage.getItem("permissions")
+    ).teams.filter((permission) => {
+        return parseInt(permission.board_id) === parseInt(board_id);
+    });
 
-    const [priorityFilter, setPriorityFilter] = useState([])
-    const [tagFilter, setTagFilter] = useState([])
-    const [memberFilter, setMemberFilter] = useState([])
-    const [deadlineFilter, setDeadlineFilter] = useState(null)
-    const [isFilterActive, setIsFilterActive] = useState(false)
-    const [filterCount, setFilterCount] = useState(0)
+    const [priorityFilter, setPriorityFilter] = useState([]);
+    const [tagFilter, setTagFilter] = useState([]);
+    const [memberFilter, setMemberFilter] = useState([]);
+    const [deadlineFilter, setDeadlineFilter] = useState(null);
+    const [isFilterActive, setIsFilterActive] = useState(false);
+    const [filterCount, setFilterCount] = useState(0);
 
     const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
 
@@ -166,17 +183,15 @@ const Board = () => {
         console.log(permissions);
 
         const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"))
-        }
+            setTheme(localStorage.getItem("darkMode"));
+        };
 
-
-        console.log("Darkmode: " + localStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
+        console.log("Darkmode: " + localStorage.getItem("darkMode"));
+        window.addEventListener("ChangingTheme", ResetTheme);
 
         return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-
+            window.removeEventListener("ChangingTheme", ResetTheme);
+        };
     }, []);
 
     useEffect(() => {
@@ -223,8 +238,7 @@ const Board = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            setTags(response1.data.tags)
-
+            setTags(response1.data.tags);
 
             const response = await axios.get(`/boards/${board_id}`, {
                 headers: {
@@ -249,7 +263,6 @@ const Board = () => {
 
             console.log("Columns: ", tempBoard.columns);
 
-
             setBoard(tempBoard);
             console.log("tempBoard");
             console.log(tempBoard);
@@ -267,8 +280,6 @@ const Board = () => {
                 }
                 navigate(`/board/${board_id}`);
             }
-
-
         } catch (e) {
             console.error(e);
             if (e.response.status === 401 || e.response.status === 500) {
@@ -376,14 +387,14 @@ const Board = () => {
         }
     };
 
-    const handleDeleteButtonClick = (event, columnIndex) => {
+    const handleDeleteColumnButtonClick = (event, columnIndex) => {
         event.stopPropagation();
         setShowDeleteColumnConfirmation(true);
         setColumnToDeleteIndex(columnIndex);
         setShowIconContainer1(false);
     };
 
-    const handleColumnDeleteConfirm = () => {
+    const handleDeleteColumnConfirm = () => {
         console.log("confirm");
 
         try {
@@ -414,7 +425,7 @@ const Board = () => {
         setColumnToDeleteIndex(null);
     };
 
-    const handleColumnDeleteCancel = () => {
+    const handleDeleteColumnCancel = () => {
         console.log("cancel");
         setShowDeleteColumnConfirmation(false);
         setColumnToDeleteIndex(null);
@@ -671,25 +682,35 @@ const Board = () => {
         }
     };
 
-    const handleDeleteTask = async (taskId, column_id) => {
+    const handleDeleteTaskButtonClick = async (task) => {
+        setShowDeleteTaskConfirmation(true);
+        setTaskToDelete(task);
+        setShowIconContainer1(false);
+    };
+
+    const handleDeleteTaskConfirm = async () => {
+        console.log(taskToDelete);
+
         try {
-            await axios.delete(`/boards/${board_id}/tasks/${taskId}`, {
+            await axios.delete(`/boards/${board_id}/tasks/${taskToDelete.task_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
             const targetDiv = board.columns.find(
-                (column) => column.column_id === column_id
+                (column) => column.column_id === taskToDelete.column_id
             );
             const updatedtasks = targetDiv.tasks.filter(
-                (task) => task.task_id !== taskId
+                (task) => task.task_id !== taskToDelete.task_id
             );
             const newColumnData = [...board.columns];
             const columnIndex = newColumnData.findIndex(
-                (column) => column.column_id === column_id
+                (column) => column.column_id === taskToDelete.column_id
             );
             newColumnData[columnIndex] = { ...targetDiv, tasks: updatedtasks };
             setBoard({ ...board, columns: newColumnData });
+
+            handleDeleteTaskCancel();
         } catch (e) {
             console.error(e);
             if (e.response.status === 401 || e.response.status === 500) {
@@ -699,6 +720,12 @@ const Board = () => {
                 setError(e.message);
             }
         }
+    };
+
+    const handleDeleteTaskCancel = async () => {
+        console.log("cancel");
+        setShowDeleteTaskConfirmation(false);
+        setTaskToDelete(null);
     };
 
     const handleFavouriteTask = (id, column_id) => {
@@ -775,7 +802,6 @@ const Board = () => {
                 }
             );
             const newSubtask = response.data.task;
-            newSubtask.description = "Description of New Subtask";
             const newBoardData = [...board.columns];
             const columnIndex = newBoardData.findIndex(
                 (column) => column.column_id === column_id
@@ -858,6 +884,8 @@ const Board = () => {
                 }
             });
             setBoard({ ...board, columns: newBoardData });
+
+            handleOpenPreviousTask(parent_task_id, column_id);
         } catch (e) {
             console.log(e);
             if (e.response.status === 401 || e.response.status === 500) {
@@ -1003,6 +1031,7 @@ const Board = () => {
     ) => {
         if (parent_task_id === null) {
             await handleEditTask(task_id, column_id, newTitle, newDescription);
+            setShowPopup(false);
         } else {
             await handleEditSubtask(
                 task_id,
@@ -1179,9 +1208,16 @@ const Board = () => {
         setInspectedColumn(null);
     };
 
-    const deleteCodeReviewOrDocumentation = async (
-        codeReviewOrDocumentationToDelete
+    const handleDeleteCodeReviewOrDocumentationButtonClick = async (
+        codeReviewOrDocumentation
     ) => {
+        setShowDeleteCodeReviewOrDocumentationConfirmation(true);
+        setCodeReviewOrDocumentationToDelete(codeReviewOrDocumentation);
+        setShowIconContainer1(false);
+        setIsAGIOpen(false);
+    };
+
+    const handleDeleteCodeReviewOrDocumentationConfirm = async () => {
         const deleteCodeReviewOrDocumentation = await axios.delete(
             `/AGI/CodeReviewOrDocumentation/boards/${board_id}/agiAnswer/${codeReviewOrDocumentationToDelete.agi_answer_id}`,
             {
@@ -1199,7 +1235,15 @@ const Board = () => {
                         codeReviewOrDocumentationToDelete.agi_answer_id
                 );
             setCodeReviewOrDocumentation(filteredCodeReviewOrDocumentations);
+            handleDeleteCodeReviewOrDocumentationCancel();
         }
+    };
+
+    const handleDeleteCodeReviewOrDocumentationCancel = async () => {
+        console.log("cancel");
+        setShowDeleteCodeReviewOrDocumentationConfirmation(false);
+        setCodeReviewOrDocumentationToDelete(null);
+        setIsAGIOpen(false);
     };
 
     const getCraftedPromptResult = async (craftedPrompt) => {
@@ -1228,7 +1272,7 @@ const Board = () => {
                 case "GENERATETASK":
                     openGenerateTaskWithAGIPopup(res.data, column);
                     /* setShowGenerateTaskWithAGIPopup(true);
-                    setInspectedTask(res.data); */
+                              setInspectedTask(res.data); */
                     break;
                 default:
                     break;
@@ -1257,12 +1301,12 @@ const Board = () => {
                 case "GENERATESUBTASK":
                     task.tasks = res.data;
                     /*           setShowGenerateTaskWithAGIPopup(true);
-                    setInspectedTask(task); */
+                              setInspectedTask(task); */
                     openGenerateTaskWithAGIPopup(task, column);
                     break;
                 case "GENERATEATTACHMENTLINK":
                     /*           setShowGenerateTaskWithAGIPopup(true);
-                    setInspectedTask(res.data); */
+                              setInspectedTask(res.data); */
                     openGenerateAttachmentLinkWithAGIPopup(task, res.data);
                     break;
                 default:
@@ -1582,7 +1626,7 @@ const Board = () => {
     };
 
     const sortByCardName = () => {
-        console.log("cards sorted")
+        console.log("cards sorted");
         //frontend sorting
         const newBoardData = [...board.columns];
         newBoardData.map((column) => {
@@ -1600,7 +1644,7 @@ const Board = () => {
                             {
                                 task_id: task.task_id,
                                 position: index,
-                                column_id: column.column_id
+                                column_id: column.column_id,
                             },
                         ],
                     },
@@ -1610,10 +1654,9 @@ const Board = () => {
                         },
                     }
                 );
-            }
-            );
+            });
         });
-    }
+    };
 
     const sortByCardDeadline = () => {
         //frontend sorting
@@ -1624,8 +1667,7 @@ const Board = () => {
                     ? 1
                     : b.due_date === null
                         ? -1
-                        :
-                        a.due_date.localeCompare(b.due_date)
+                        : a.due_date.localeCompare(b.due_date)
             );
         });
         setBoard({ ...board, columns: newBoardData });
@@ -1640,7 +1682,7 @@ const Board = () => {
                             {
                                 task_id: task.task_id,
                                 position: index,
-                                column_id: column.column_id
+                                column_id: column.column_id,
                             },
                         ],
                     },
@@ -1650,10 +1692,9 @@ const Board = () => {
                         },
                     }
                 );
-            }
-            );
+            });
         });
-    }
+    };
 
     const sortByCardPriority = () => {
         //frontend sorting
@@ -1664,8 +1705,7 @@ const Board = () => {
                     ? 1
                     : b.priority_id === null
                         ? -1
-                        :
-                        a.priority_id - b.priority_id
+                        : a.priority_id - b.priority_id
             );
         });
         setBoard({ ...board, columns: newBoardData });
@@ -1680,7 +1720,7 @@ const Board = () => {
                             {
                                 task_id: task.task_id,
                                 position: index,
-                                column_id: column.column_id
+                                column_id: column.column_id,
                             },
                         ],
                     },
@@ -1690,82 +1730,81 @@ const Board = () => {
                         },
                     }
                 );
-            }
-            );
+            });
         });
-    }
+    };
 
     const selectAllPriorityFilter = () => {
-        let newPriorityFilter = []
+        let newPriorityFilter = [];
         priorities.map((priority) => {
-            newPriorityFilter.push(priority.priority_id)
-        })
-        setPriorityFilter(newPriorityFilter)
-        countFilterCounts(newPriorityFilter, tagFilter)
-    }
+            newPriorityFilter.push(priority.priority_id);
+        });
+        setPriorityFilter(newPriorityFilter);
+        countFilterCounts(newPriorityFilter, tagFilter);
+    };
 
     const selectAllTagFilter = () => {
-        let newTagFilter = []
+        let newTagFilter = [];
         tags.map((tag) => {
-            newTagFilter.push(tag.tag_id)
-        })
-        setTagFilter(newTagFilter)
-        countFilterCounts(priorityFilter, newTagFilter)
-    }
+            newTagFilter.push(tag.tag_id);
+        });
+        setTagFilter(newTagFilter);
+        countFilterCounts(priorityFilter, newTagFilter);
+    };
 
     const deSelectAllPriorityFilter = () => {
-        setPriorityFilter([])
-        countFilterCounts([], tagFilter)
-    }
+        setPriorityFilter([]);
+        countFilterCounts([], tagFilter);
+    };
 
     const deSelectAllTagFilter = () => {
-        setTagFilter([])
-        countFilterCounts(priorityFilter, [])
-    }
+        setTagFilter([]);
+        countFilterCounts(priorityFilter, []);
+    };
 
     const checkPriorityFilter = (priority_id) => {
-        let newPriorityFilter = [...priorityFilter]
+        let newPriorityFilter = [...priorityFilter];
         if (newPriorityFilter.includes(priority_id)) {
-            newPriorityFilter = newPriorityFilter.filter((priority) => priority !== priority_id)
-        }
-        else {
-            newPriorityFilter = [...newPriorityFilter, priority_id]
+            newPriorityFilter = newPriorityFilter.filter(
+                (priority) => priority !== priority_id
+            );
+        } else {
+            newPriorityFilter = [...newPriorityFilter, priority_id];
         }
 
-        setPriorityFilter(newPriorityFilter)
-        countFilterCounts(newPriorityFilter, tagFilter)
-    }
+        setPriorityFilter(newPriorityFilter);
+        countFilterCounts(newPriorityFilter, tagFilter);
+    };
 
     const changeTagFilter = (tag_id) => {
-        let newTagFilter = [...tagFilter]
+        let newTagFilter = [...tagFilter];
         if (newTagFilter.includes(tag_id)) {
-            newTagFilter = newTagFilter.filter((tag) => tag !== tag_id)
-        }
-        else {
-            newTagFilter = [...newTagFilter, tag_id]
+            newTagFilter = newTagFilter.filter((tag) => tag !== tag_id);
+        } else {
+            newTagFilter = [...newTagFilter, tag_id];
         }
 
-        setTagFilter(newTagFilter)
-        countFilterCounts(priorityFilter, newTagFilter)
-    }
+        setTagFilter(newTagFilter);
+        countFilterCounts(priorityFilter, newTagFilter);
+    };
 
     const countFilterCounts = (priorityFilter, tagFilter) => {
-        let count = priorityFilter.length + tagFilter.length
-        setFilterCount(count)
+        let count = priorityFilter.length + tagFilter.length;
+        setFilterCount(count);
         if (count > 0) {
-            setIsFilterActive(true)
+            setIsFilterActive(true);
         } else {
-            setIsFilterActive(false)
+            setIsFilterActive(false);
         }
-    }
+    };
 
     const clearFilters = () => {
-        deSelectAllPriorityFilter()
-        deSelectAllTagFilter()
-        setIsFilterActive(false)
-        setFilterCount(0)
-        setIsHoveredClearFilterByTitleBar(false)
-    }
+        deSelectAllPriorityFilter();
+        deSelectAllTagFilter();
+        setIsFilterActive(false);
+        setFilterCount(0);
+        setIsHoveredClearFilterByTitleBar(false);
+    };
 
     const handleChildData = (
         options,
@@ -1806,19 +1845,25 @@ const Board = () => {
                                 <h1 className="title-name">{board.name}</h1>
                                 <div className="title-bar-buttons">
                                     <ul>
-                                        {isFilterActive && <li
-                                            onMouseEnter={() => setIsHoveredClearFilterByTitleBar(true)}
-                                            onMouseLeave={() => setIsHoveredClearFilterByTitleBar(false)}
-                                            onClick={clearFilters}
-                                            style={{
-                                                color:
-                                                    isHoveredClearFilterByTitleBar
+                                        {isFilterActive && (
+                                            <li
+                                                onMouseEnter={() =>
+                                                    setIsHoveredClearFilterByTitleBar(true)
+                                                }
+                                                onMouseLeave={() =>
+                                                    setIsHoveredClearFilterByTitleBar(false)
+                                                }
+                                                onClick={clearFilters}
+                                                style={{
+                                                    color: isHoveredClearFilterByTitleBar
                                                         ? "var(--off-white)"
                                                         : "var(--dark-gray)",
-                                            }}>
-                                            <span>{filterDeleteIcon}</span>
-                                            <p>Clear filters</p>
-                                        </li>}
+                                                }}
+                                            >
+                                                <span>{filterDeleteIcon}</span>
+                                                <p>Clear filters</p>
+                                            </li>
+                                        )}
                                         <li
                                             onMouseEnter={() => setIsHoveredFilterByTitleBar(true)}
                                             onMouseLeave={() => setIsHoveredFilterByTitleBar(false)}
@@ -1828,31 +1873,39 @@ const Board = () => {
                                                     isHoveredFilterByTitleBar || isFilterOpen
                                                         ? "var(--off-white)"
                                                         : "var(--dark-gray)",
-                                            }}>
-                                            <span>{filterIcon}</span>
-                                            <p>Filter {filterCount > 0 ? "(" + filterCount + ")" : ""}</p>
-                                        </li>
-                                        {isFilterActive === false ? <li
-                                            onMouseEnter={() => setIsHoveredSortByTitleBar(true)}
-                                            onMouseLeave={() => setIsHoveredSortByTitleBar(false)}
-                                            onClick={toggleSortDropdown}
-                                            style={{
-                                                color:
-                                                    isHoveredSortByTitleBar || isSortOpen
-                                                        ? "var(--off-white)"
-                                                        : "var(--dark-gray)",
                                             }}
                                         >
-                                            <span>{sortIcon}</span>
-                                            <p>Sort by</p>
-                                        </li> : <li style={{
-                                            color:
-                                                "rgba(var(--dark-grayRGB), 0.3)",
-                                            cursor: "not-allowed"
-                                        }}>
-                                            <span>{sortIcon}</span>
-                                            <p>Sort by</p></li>
-                                        }
+                                            <span>{filterIcon}</span>
+                                            <p>
+                                                Filter {filterCount > 0 ? "(" + filterCount + ")" : ""}
+                                            </p>
+                                        </li>
+                                        {isFilterActive === false ? (
+                                            <li
+                                                onMouseEnter={() => setIsHoveredSortByTitleBar(true)}
+                                                onMouseLeave={() => setIsHoveredSortByTitleBar(false)}
+                                                onClick={toggleSortDropdown}
+                                                style={{
+                                                    color:
+                                                        isHoveredSortByTitleBar || isSortOpen
+                                                            ? "var(--off-white)"
+                                                            : "var(--dark-gray)",
+                                                }}
+                                            >
+                                                <span>{sortIcon}</span>
+                                                <p>Sort by</p>
+                                            </li>
+                                        ) : (
+                                            <li
+                                                style={{
+                                                    color: "rgba(var(--dark-grayRGB), 0.3)",
+                                                    cursor: "not-allowed",
+                                                }}
+                                            >
+                                                <span>{sortIcon}</span>
+                                                <p>Sort by</p>
+                                            </li>
+                                        )}
                                         <li
                                             onMouseEnter={() => setIsHoveredAITitleBar(true)}
                                             onMouseLeave={() => setIsHoveredAITitleBar(false)}
@@ -1935,7 +1988,10 @@ const Board = () => {
                                                     <div
                                                         className="column-title-container"
                                                         onDoubleClick={() => {
-                                                            const permissionsFilter = permissions.filter(permission => permission.permission === 'column_management');
+                                                            const permissionsFilter = permissions.filter(
+                                                                (permission) =>
+                                                                    permission.permission === "column_management"
+                                                            );
                                                             if (permissionsFilter.length === 1) {
                                                                 handleColumnTitleDoubleClick(index);
                                                             }
@@ -1963,98 +2019,116 @@ const Board = () => {
                                                     </div>
                                                 </>
                                             )}
-                                            {(column.task_limit != 0 && column.task_limit != null) &&
-                                                <p style={{ marginTop: "-25px", color: "var(--light-gray)" }}>{column.tasks.length + "/" + column.task_limit}</p>}
+                                            {column.task_limit != 0 && column.task_limit != null && (
+                                                <p
+                                                    style={{
+                                                        marginTop: "-25px",
+                                                        color: "var(--light-gray)",
+                                                    }}
+                                                >
+                                                    {column.tasks.length + "/" + column.task_limit}
+                                                </p>
+                                            )}
                                             <div className="task-container">
                                                 {/*get tasks that match the filters*/}
-                                                {column.tasks.filter(task => {
-                                                    if (priorityFilter.length == 0 && tagFilter.length == 0) {
-                                                        return true
-                                                    }
-                                                    else if (priorityFilter.length == 0) {
-                                                        return task.tags.some(tag => tagFilter.includes(tag.tag_id))
-                                                    }
-                                                    else if (tagFilter.length == 0) {
-                                                        return priorityFilter.includes(task.priority_id)
-                                                    }
-                                                    else {
-                                                        return priorityFilter.includes(task.priority_id) && task.tags.some(tag => tagFilter.includes(tag.tag_id))
-                                                    }
-                                                }
-                                                ).map((task, taskIndex) => (
-                                                    <Task
-                                                        permissions={permissions}
-                                                        key={task.task_id}
-                                                        id={task.task_id}
-                                                        index={taskIndex}
-                                                        task={task}
-                                                        column={column}
-                                                        ref={showableTask}
-                                                        craftedPromptsTask={craftedPromptsTask}
-                                                        divName={`div${index + 1}`}
-                                                        favouriteTask={handleFavouriteTask}
-                                                        unFavouriteTask={handleUnFavouriteTask}
-                                                        deleteTask={handleDeleteTask}
-                                                        setTaskAsInspectedTask={setTaskAsInspectedTask}
-                                                        openGenerateTaskWithAGIPopup={
-                                                            openGenerateTaskWithAGIPopup
+                                                {column.tasks
+                                                    .filter((task) => {
+                                                        if (
+                                                            priorityFilter.length == 0 &&
+                                                            tagFilter.length == 0
+                                                        ) {
+                                                            return true;
+                                                        } else if (priorityFilter.length == 0) {
+                                                            return task.tags.some((tag) =>
+                                                                tagFilter.includes(tag.tag_id)
+                                                            );
+                                                        } else if (tagFilter.length == 0) {
+                                                            return priorityFilter.includes(task.priority_id);
+                                                        } else {
+                                                            return (
+                                                                priorityFilter.includes(task.priority_id) &&
+                                                                task.tags.some((tag) =>
+                                                                    tagFilter.includes(tag.tag_id)
+                                                                )
+                                                            );
                                                         }
-                                                        clickable={taskIsClickable}
-                                                        onChildData={handleChildData}
-                                                        showIconContainer={showIconContainer}
-                                                        zIndex={cardZIndex}
-                                                        isFilterActive={isFilterActive}
-                                                        moveCardFrontend={(
-                                                            dragIndex,
-                                                            hoverIndex,
-                                                            sourceDiv,
-                                                            targetDiv
-                                                        ) =>
-                                                            moveCardFrontend(
+                                                    })
+                                                    .map((task, taskIndex) => (
+                                                        <Task
+                                                            permissions={permissions}
+                                                            key={task.task_id}
+                                                            id={task.task_id}
+                                                            index={taskIndex}
+                                                            task={task}
+                                                            column={column}
+                                                            ref={showableTask}
+                                                            craftedPromptsTask={craftedPromptsTask}
+                                                            divName={`div${index + 1}`}
+                                                            favouriteTask={handleFavouriteTask}
+                                                            unFavouriteTask={handleUnFavouriteTask}
+                                                            deleteTask={handleDeleteTaskButtonClick}
+                                                            setTaskAsInspectedTask={setTaskAsInspectedTask}
+                                                            openGenerateTaskWithAGIPopup={
+                                                                openGenerateTaskWithAGIPopup
+                                                            }
+                                                            clickable={taskIsClickable}
+                                                            onChildData={handleChildData}
+                                                            showIconContainer={showIconContainer}
+                                                            zIndex={cardZIndex}
+                                                            isFilterActive={isFilterActive}
+                                                            moveCardFrontend={(
                                                                 dragIndex,
                                                                 hoverIndex,
-                                                                parseInt(sourceDiv.substr(3)) - 1,
-                                                                parseInt(targetDiv.substr(3)) - 1
-                                                            )
-                                                        }
-                                                        moveCardBackend={(
-                                                            dragIndex,
-                                                            hoverIndex,
-                                                            sourceDiv,
-                                                            targetDiv
-                                                        ) =>
-                                                            moveCardBackend(
+                                                                sourceDiv,
+                                                                targetDiv
+                                                            ) =>
+                                                                moveCardFrontend(
+                                                                    dragIndex,
+                                                                    hoverIndex,
+                                                                    parseInt(sourceDiv.substr(3)) - 1,
+                                                                    parseInt(targetDiv.substr(3)) - 1
+                                                                )
+                                                            }
+                                                            moveCardBackend={(
                                                                 dragIndex,
                                                                 hoverIndex,
-                                                                parseInt(sourceDiv.substr(3)) - 1,
-                                                                parseInt(targetDiv.substr(3)) - 1
-                                                            )
-                                                        }
-                                                        generateDocumentationForTask={(task) =>
-                                                            generateDocumentationForTask(task)
-                                                        }
-                                                        generateTasks={(task, column) =>
-                                                            openGenerateTaskWithAGIPopup(task, column)
-                                                        }
-                                                        generateAttachmentLinks={(task) =>
-                                                            openGenerateAttachmentLinkWithAGIPopup(task)
-                                                        }
-                                                        HandleCraftedPromptTaskClick={(
-                                                            craftedPrompt,
-                                                            task,
-                                                            column
-                                                        ) =>
-                                                            HandleCraftedPromptTaskClick(
+                                                                sourceDiv,
+                                                                targetDiv
+                                                            ) =>
+                                                                moveCardBackend(
+                                                                    dragIndex,
+                                                                    hoverIndex,
+                                                                    parseInt(sourceDiv.substr(3)) - 1,
+                                                                    parseInt(targetDiv.substr(3)) - 1
+                                                                )
+                                                            }
+                                                            generateDocumentationForTask={(task) =>
+                                                                generateDocumentationForTask(task)
+                                                            }
+                                                            generateTasks={(task, column) =>
+                                                                openGenerateTaskWithAGIPopup(task, column)
+                                                            }
+                                                            generateAttachmentLinks={(task) =>
+                                                                openGenerateAttachmentLinkWithAGIPopup(task)
+                                                            }
+                                                            HandleCraftedPromptTaskClick={(
                                                                 craftedPrompt,
                                                                 task,
                                                                 column
-                                                            )
-                                                        }
-                                                    />
-                                                ))}
-
+                                                            ) =>
+                                                                HandleCraftedPromptTaskClick(
+                                                                    craftedPrompt,
+                                                                    task,
+                                                                    column
+                                                                )
+                                                            }
+                                                        />
+                                                    ))}
                                             </div>
-                                            {column.is_finished === 0 && permissions.filter(permission => { return permission.permission === 'task_management' }).length === 1 ? (
+                                            {column.is_finished === 0 &&
+                                                permissions.filter((permission) => {
+                                                    return permission.permission === "task_management";
+                                                }).length === 1 ? (
                                                 <div
                                                     className="card addbtn"
                                                     onClick={() => handleAddTask(index)}
@@ -2068,14 +2142,16 @@ const Board = () => {
                                     </Column>
                                 ))}
                                 {/*check permission for loumn magamegemt*/}
-                                {permissions.filter(permission => { return permission.permission === 'column_management' }).length === 1 &&
-                                    <div
-                                        className="card-container addbtn-column"
-                                        onClick={handleAddColumn}
-                                    >
-                                        {plusIcon} Add new column
-                                    </div>
-                                }
+                                {permissions.filter((permission) => {
+                                    return permission.permission === "column_management";
+                                }).length === 1 && (
+                                        <div
+                                            className="card-container addbtn-column"
+                                            onClick={handleAddColumn}
+                                        >
+                                            {plusIcon} Add new column
+                                        </div>
+                                    )}
                             </div>
                         </div>
                     )}
@@ -2086,12 +2162,8 @@ const Board = () => {
                                 onClick={() => {
                                     setIsSortOpen(false);
                                 }}
-                            >
-                            </div>
-                            <div
-                                className="sort-submenu"
-                                data-theme={theme}
-                            >
+                            ></div>
+                            <div className="sort-submenu" data-theme={theme}>
                                 <p className="sort-menu-title"> Sort menu </p>
                                 <ul className="sort-menu">
                                     <li
@@ -2156,28 +2228,48 @@ const Board = () => {
                                 onClick={() => {
                                     setIsFilterOpen(false);
                                 }}
-                            >
-                            </div>
-                            <div
-                                className="filter-submenu"
-                                data-theme={theme}
-                            >
+                            ></div>
+                            <div className="filter-submenu" data-theme={theme}>
                                 <p className="filter-menu-title"> Filter menu </p>
                                 <div className="filter-menu">
                                     <div className="filter-category">
                                         <p>Priority:</p>
-                                        <div style={{ display: "flex", justifyContent: "start", gap: "10px", marginTop: "20px" }}>
-                                            <button className="select-all-button" onClick={selectAllPriorityFilter}>select all</button>
-                                            <button className="select-all-button" onClick={deSelectAllPriorityFilter}>unselect all</button>
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "start",
+                                                gap: "10px",
+                                                marginTop: "20px",
+                                            }}
+                                        >
+                                            <button
+                                                className="select-all-button"
+                                                onClick={selectAllPriorityFilter}
+                                            >
+                                                select all
+                                            </button>
+                                            <button
+                                                className="select-all-button"
+                                                onClick={deSelectAllPriorityFilter}
+                                            >
+                                                unselect all
+                                            </button>
                                         </div>
                                         <div className="filter-checkbox-container">
                                             {priorities.map((priority) => (
-                                                <div key={priority.priority_id} className="filter-checkbox-item">
+                                                <div
+                                                    key={priority.priority_id}
+                                                    className="filter-checkbox-item"
+                                                >
                                                     <input
                                                         type="checkbox"
                                                         id={priority.priority_id}
-                                                        onChange={() => checkPriorityFilter(priority.priority_id)}
-                                                        checked={priorityFilter.includes(priority.priority_id)}
+                                                        onChange={() =>
+                                                            checkPriorityFilter(priority.priority_id)
+                                                        }
+                                                        checked={priorityFilter.includes(
+                                                            priority.priority_id
+                                                        )}
                                                     />
                                                     <label htmlFor={priority.priority_id}>
                                                         {priority.priority}
@@ -2188,9 +2280,26 @@ const Board = () => {
                                     </div>
                                     <div className="filter-category">
                                         <p>Tag:</p>
-                                        <div style={{ display: "flex", justifyContent: "start", gap: "10px", marginTop: "20px" }}>
-                                            <button className="select-all-button" onClick={selectAllTagFilter}>select all</button>
-                                            <button className="select-all-button" onClick={deSelectAllTagFilter}>unselect all</button>
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "start",
+                                                gap: "10px",
+                                                marginTop: "20px",
+                                            }}
+                                        >
+                                            <button
+                                                className="select-all-button"
+                                                onClick={selectAllTagFilter}
+                                            >
+                                                select all
+                                            </button>
+                                            <button
+                                                className="select-all-button"
+                                                onClick={deSelectAllTagFilter}
+                                            >
+                                                unselect all
+                                            </button>
                                         </div>
                                         <div className="filter-checkbox-container">
                                             {tags.map((tag) => (
@@ -2201,7 +2310,11 @@ const Board = () => {
                                                         onChange={() => changeTagFilter(tag.tag_id)}
                                                         checked={tagFilter.includes(tag.tag_id)}
                                                     />
-                                                    <label className="tag-filter-label" htmlFor={tag.tag_id} style={{ backgroundColor: tag.color }}>
+                                                    <label
+                                                        className="tag-filter-label"
+                                                        htmlFor={tag.tag_id}
+                                                        style={{ backgroundColor: tag.color }}
+                                                    >
                                                         {tag.name}
                                                     </label>
                                                 </div>
@@ -2219,12 +2332,8 @@ const Board = () => {
                                 onClick={() => {
                                     setIsAGIOpen(false);
                                 }}
-                            >
-                            </div>
-                            <div
-                                className="agi-submenu"
-                                data-theme={theme}
-                            >
+                            ></div>
+                            <div className="agi-submenu" data-theme={theme}>
                                 <p className="agi-menu-title"> AI menu </p>
                                 <ul className="agi-menu">
                                     <li
@@ -2237,7 +2346,9 @@ const Board = () => {
                                         <span
                                             className="craft-button"
                                             style={{
-                                                color: isHoveredPerformanceSummary ? "var(--craft)" : "",
+                                                color: isHoveredPerformanceSummary
+                                                    ? "var(--craft)"
+                                                    : "",
                                             }}
                                         >
                                             {craftIcon}
@@ -2312,7 +2423,9 @@ const Board = () => {
                                                         className="code-button"
                                                         style={{
                                                             color:
-                                                                isHoveredCode === index + 1 ? "var(--code)" : "",
+                                                                isHoveredCode === index + 1
+                                                                    ? "var(--code)"
+                                                                    : "",
                                                         }}
                                                     >
                                                         {codeIcon}
@@ -2322,7 +2435,9 @@ const Board = () => {
                                                 <span
                                                     className="delete-code-review-or-documentation-button"
                                                     onClick={() => {
-                                                        deleteCodeReviewOrDocumentation(element);
+                                                        handleDeleteCodeReviewOrDocumentationButtonClick(
+                                                            element
+                                                        );
                                                     }}
                                                 >
                                                     {xMarkIcon}
@@ -2333,7 +2448,6 @@ const Board = () => {
                                 </ul>
                             </div>
                         </>
-
                     )}
                     {showIconContainer && (
                         <div
@@ -2347,7 +2461,8 @@ const Board = () => {
                                 iconContainerPosition={iconContainerPosition}
                                 options={iconContainerOptions}
                             />
-                        </div>)}
+                        </div>
+                    )}
                     {showIconContainer1 && (
                         <div
                             className="overlay"
@@ -2405,7 +2520,7 @@ const Board = () => {
                                 </div>
                                 {craftedPromptsBoard.map((craftedPrompt, index) => (
                                     <div
-                                        className='option'
+                                        className="option"
                                         key={index}
                                         onMouseEnter={() => setIsHoveredClipboard(index + 1)}
                                         onMouseLeave={() => setIsHoveredClipboard(-1)}
@@ -2433,26 +2548,31 @@ const Board = () => {
                                         <p>{craftedPrompt.crafted_prompt_title}</p>
                                     </div>
                                 ))}
-                                {permissions.filter(permission => permission.permission === 'column_management').length === 1 &&
-                                    <div
-                                        className="option"
-                                        onMouseEnter={() => setIsHoveredX(true)}
-                                        onMouseLeave={() => setIsHoveredX(false)}
-                                        onClick={(e) => handleDeleteButtonClick(e, columnIndex)}
-                                    >
-                                        <span
-                                            className="delete-column-button"
-                                            style={{
-                                                color: isHoveredX ? "var(--important)" : "",
-                                            }}
+                                {permissions.filter(
+                                    (permission) => permission.permission === "column_management"
+                                ).length === 1 && (
+                                        <div
+                                            className="option"
+                                            onMouseEnter={() => setIsHoveredX(true)}
+                                            onMouseLeave={() => setIsHoveredX(false)}
+                                            onClick={(e) =>
+                                                handleDeleteColumnButtonClick(e, columnIndex)
+                                            }
                                         >
-                                            {trashIcon}
-                                        </span>
-                                        <p>Delete Column</p>
-                                    </div>
-                                }
+                                            <span
+                                                className="delete-column-button"
+                                                style={{
+                                                    color: isHoveredX ? "var(--important)" : "",
+                                                }}
+                                            >
+                                                {trashIcon}
+                                            </span>
+                                            <p>Delete Column</p>
+                                        </div>
+                                    )}
                             </div>
-                        </div>)}
+                        </div>
+                    )}
                     {showGenerateAttachmentLinkWithAGIPopup && (
                         <GenerateAttachmentLinkWithAGIPopup
                             task={inspectedTask}
@@ -2497,11 +2617,30 @@ const Board = () => {
                             onCancel={handleColumnNameCancel}
                         />
                     )}
-                    {showDeleteConfirmation && (
+                    {showDeleteTaskConfirmation && (
                         <ConfirmationPopup
-                            text={board.columns[columnToDeleteIndex]?.title}
-                            onCancel={handleColumnDeleteCancel}
-                            onConfirm={handleColumnDeleteConfirm}
+                            text={taskToDelete.title}
+                            onCancel={handleDeleteTaskCancel}
+                            onConfirm={handleDeleteTaskConfirm}
+                        />
+                    )}
+                    {showDeleteColumnConfirmation && (
+                        <ConfirmationPopup
+                            text={board.columns[columnToDeleteIndex]?.name}
+                            onCancel={handleDeleteColumnCancel}
+                            onConfirm={handleDeleteColumnConfirm}
+                        />
+                    )}
+                    {showDeleteCodeReviewOrDocumentationConfirmation && (
+                        <ConfirmationPopup
+                            text={
+                                codeReviewOrDocumentationToDelete.codeReviewOrDocumentationType ===
+                                    "CODE REVIEW"
+                                    ? "Code review"
+                                    : "Documentation"
+                            }
+                            onCancel={handleDeleteCodeReviewOrDocumentationCancel}
+                            onConfirm={handleDeleteCodeReviewOrDocumentationConfirm}
                         />
                     )}
                     {showCraftPromptPopup && (
@@ -2517,35 +2656,33 @@ const Board = () => {
                             onCancel={() => setShowGeneratePerformanceSummaryPopup(false)}
                         />
                     )}
-                </DndProvider >
+                </DndProvider>
             )}
-            {
-                showPopup && (
-                    <Popup
-                        task={inspectedTask}
-                        onClose={handleClosePopup}
-                        onSave={handleSavePopup}
-                        board_id={board_id}
-                        addSubtask={handleAddSubtask}
-                        deleteSubtask={handleDeleteSubtask}
-                        favouriteSubtask={handleFavouriteSubtask}
-                        unFavouriteSubtask={handleUnFavouriteSubtask}
-                        handlePostComment={postComment}
-                        setTaskAsInspectedTask={setTaskAsInspectedTask}
-                        onPreviousTask={handleOpenPreviousTask}
-                        priorities={priorities}
-                        modifyPriority={handleModifyPriority}
-                        modifyDeadline={handleModifyDeadline}
-                        addAttachment={handleAddAttachment}
-                        deleteAttachment={handleDeleteAttachment}
-                        addMember={handleAddMember}
-                        deleteMember={handleDeleteMember}
-                        tags={inspectedTask.tags}
-                        placeTagOnTask={handlePlaceTagOnTask}
-                        removeTagFromTask={handleRemoveTagFromTask}
-                    />
-                )
-            }
+            {showPopup && (
+                <Popup
+                    task={inspectedTask}
+                    onClose={handleClosePopup}
+                    onSave={handleSavePopup}
+                    board_id={board_id}
+                    addSubtask={handleAddSubtask}
+                    deleteSubtask={handleDeleteSubtask}
+                    favouriteSubtask={handleFavouriteSubtask}
+                    unFavouriteSubtask={handleUnFavouriteSubtask}
+                    handlePostComment={postComment}
+                    setTaskAsInspectedTask={setTaskAsInspectedTask}
+                    onPreviousTask={handleOpenPreviousTask}
+                    priorities={priorities}
+                    modifyPriority={handleModifyPriority}
+                    modifyDeadline={handleModifyDeadline}
+                    addAttachment={handleAddAttachment}
+                    deleteAttachment={handleDeleteAttachment}
+                    addMember={handleAddMember}
+                    deleteMember={handleDeleteMember}
+                    tags={inspectedTask.tags}
+                    placeTagOnTask={handlePlaceTagOnTask}
+                    removeTagFromTask={handleRemoveTagFromTask}
+                />
+            )}
         </>
     );
 };
