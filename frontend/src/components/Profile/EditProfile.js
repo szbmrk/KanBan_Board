@@ -119,6 +119,12 @@ export default function EditProfile() {
             }, 8000);
         } else {
             try {
+                if (formData.newPassword.length < 8) {
+                    setDisplay("block");
+                    setError('New password must be at least 8 characters long');
+                    return;
+                }
+
                 const response = await axios.put(
                     `/profile`,
                     {
