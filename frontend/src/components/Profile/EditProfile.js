@@ -23,7 +23,6 @@ export default function EditProfile() {
         }
 
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {
@@ -40,6 +39,7 @@ export default function EditProfile() {
         oldPassword: "",
     });
     const [error, setError] = useState(false);
+    const [successfull, setSuccessfull] = useState(false);
     const [redirect, setRedirect] = useState(false);
     const [deleteIsClicked, setDelete] = useState(false);
     const [profileImageUrl, setProfileImageUrl] = useState(
@@ -100,8 +100,10 @@ export default function EditProfile() {
                         headers: { Authorization: `Bearer ${token}` },
                     }
                 );
-                console.log(response);
-                console.log(response.data.message);
+                setSuccessfull(true);
+                setTimeout(() => {
+                    setSuccessfull(false);
+                }, 8000);
             } catch (e) {
                 console.log(e);
                 if (e.response.status === 401 || e.response.status === 500) {
@@ -137,8 +139,16 @@ export default function EditProfile() {
                         headers: { Authorization: `Bearer ${token}` },
                     }
                 );
-                console.log(response);
-                console.log(response.data.message);
+                setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    oldPassword: "",
+                    newPassword: "",
+                    confirmPassword: "",
+                }));
+                setSuccessfull(true);
+                setTimeout(() => {
+                    setSuccessfull(false);
+                }, 8000);
             } catch (err) {
                 setDisplay("block");
                 setError(err.response.data.error);
@@ -240,6 +250,11 @@ export default function EditProfile() {
                         {error !== "" && (
                             <div className="errorBox" style={{ display }}>
                                 <p>{error}</p>
+                            </div>
+                        )}
+                        {successfull && (
+                            <div className="succesfullBox">
+                                <p>Profile successfully updated!</p>
                             </div>
                         )}
                         <button className="confirm-button" type="submit">

@@ -68,7 +68,7 @@
 .form-group-edit input[type="password"]::selection {
     background: var(--light-gray);
     color: var(--dark-gray);
-  }
+}
 
 .confirm-button {
     width: 100%;
@@ -126,4 +126,11 @@
     width: 100%;
     color: var(--light-gray);
     border: 1px solid var(--important);
+}
+
+.succesfullBox {
+    width: 100%;
+    color: var(--light-gray);
+    border: 1px solid var(--confirm);
+    background-color: var(--confirm);
 }
