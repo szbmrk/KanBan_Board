@@ -10,6 +10,7 @@ export const Column = ({
     onMouseLeave,
     index,
     zIndex,
+    canMove
 }) => {
     const [originalPos, setOriginalPos] = useState(null);
 
@@ -71,7 +72,7 @@ export const Column = ({
         <div
             className='column'
             data-theme={theme}
-            ref={(node) => drag(drop(node))}
+            ref={(node) => canMove ? drag(drop(node)) : null}
             style={{ opacity, display, zIndex: index === divIndex ? zIndex : 1 }}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
