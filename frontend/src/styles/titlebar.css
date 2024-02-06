@@ -19,6 +19,14 @@
     margin: 20px;
 }
 
+.title-name-input {
+    font-family: var(--basic-font);
+    font-size: 2em;
+    margin: 20px;
+    border: none;
+    background-color: var(--title-bar);
+}
+
 .title-bar-buttons {
     height: 100%;
     display: flex;

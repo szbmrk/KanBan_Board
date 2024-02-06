@@ -167,6 +167,9 @@ const Board = () => {
     const [isFilterActive, setIsFilterActive] = useState(false);
     const [filterCount, setFilterCount] = useState(0);
 
+    const [boardTitle, setBoardTitle] = useState("");
+    const [showBoardTitleEdit, setShowBoardTitleEdit] = useState(false);
+
     const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
 
     useEffect(() => {
@@ -249,6 +252,8 @@ const Board = () => {
             setPermission(true);
             let tempBoard = response.data.board;
             let tempColumns = tempBoard.columns;
+
+            setBoardTitle(tempBoard.name);
 
             // Sort the columns and tasks by position
             tempColumns.map((column) =>
@@ -1821,6 +1826,59 @@ const Board = () => {
         showableTask.current = task;
     };
 
+    const confirmTitleChange = async () => {
+        setBoardTitle(boardTitle);
+        setShowBoardTitleEdit(false);
+
+        try {
+            await axios.put(
+                `/dashboard/board/${board.board_id}`,
+                {
+                    name: boardTitle,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            const newBoardData = { ...board };
+            newBoardData.name = boardTitle;
+            setBoard(newBoardData);
+
+        } catch (e) {
+            console.error(e);
+            e.response.status === 401 || e.response.status === 500
+                ? setError("You are not logged in! Redirecting to login page...")
+                : setError(e.message);
+        }
+
+    }
+
+    const declineTitleChange = () => {
+        setBoardTitle(board.name);
+        setShowBoardTitleEdit(false);
+    }
+
+    const handleTitleChange = (event) => {
+        setBoardTitle(event.target.value);
+        setShowBoardTitleEdit(true);
+    }
+
+    const handleBlurTitle = (e) => {
+        console.log(e.relatedTarget);
+        if (e.relatedTarget && e.relatedTarget.tagName === 'SPAN' && e.relatedTarget.id === 'check-button') {
+            return;
+        }
+        declineTitleChange();
+    };
+
+    useEffect(() => {
+        if (showBoardTitleEdit) {
+            document.querySelector('.title-name-input').focus();
+        }
+    }, [showBoardTitleEdit]);
+
     return (
         <>
             {permission === false ? (
@@ -1840,7 +1898,27 @@ const Board = () => {
                     ) : (
                         <div className="content col-10" data-theme={theme}>
                             <div className="title-bar">
-                                <h1 className="title-name">{board.name}</h1>
+                                <div>
+                                    {showBoardTitleEdit === false && <h1 className="title-name" onClick={() => setShowBoardTitleEdit(true)}>{boardTitle}</h1>}
+                                    {showBoardTitleEdit && <>
+                                        <input className="title-name-input" type="text" value={boardTitle} onChange={handleTitleChange} onBlur={handleBlurTitle} />
+                                        <span
+                                            className="edit-action-button"
+                                            id="check-button"
+                                            onClick={() => confirmTitleChange()}
+                                            tabIndex={0}
+                                        >
+                                            {checkIcon}
+                                        </span>
+                                        <span
+                                            className="edit-action-button"
+                                            id="cancel-button"
+                                            onClick={() => declineTitleChange()}
+                                            tabIndex={0}
+                                        >
+                                            {xMarkIcon}
+                                        </span></>}
+                                </div>
                                 <div className="title-bar-buttons">
                                     <ul>
                                         {isFilterActive && (
