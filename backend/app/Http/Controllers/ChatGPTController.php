@@ -19,19 +19,16 @@ use Illuminate\Support\Facades\Log;
 use App\Helpers\ExecutePythonScript;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\LlamaController;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Exception;
-
-
 
 class ChatGPTController extends Controller
 {
     public static function GenerateTaskChatGPT($request, $craftedPrompt)
     {
-        $prompt = ChatGPTController::PromptAssembly($request, $craftedPrompt);
+        $prompt = Self::PromptAssembly($request, $craftedPrompt);
 
-        return ChatGPTController::CallPythonAndFormatResponse($prompt);
+        return Self::CallPythonAndFormatResponse($prompt);
     }
 
     public static function PromptAssembly($request, $craftedPrompt)
@@ -62,7 +59,7 @@ class ChatGPTController extends Controller
 
 
         // Construct the prompt for the current iteration
-        $prompt = "$behavior Generate $taskCounter kanban tickets in JSON structure in a list with title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list) attributes for this ticket: '$taskPrompt'";
+        $prompt = "$behavior Generate $taskCounter kanban tickets in JSON structure in an array with title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as an array) attributes for this ticket: '$taskPrompt'";
 
         return $prompt;
 
@@ -75,7 +72,7 @@ class ChatGPTController extends Controller
 
         $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
 
-        return ChatGPTController::CallPythonAndFormatResponse($prompt);
+        return Self::CallPythonAndFormatResponse($prompt);
 
 
     }
@@ -96,7 +93,7 @@ class ChatGPTController extends Controller
             $prompt = "Generate $taskCounter task kanban board tickets. JSON structure in a list. title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list). '$taskPrompt'. ";
 
             // Call the Python script and get the formatted response
-            $formattedResponse = ChatGPTController::CallPythonAndFormatResponse($prompt);
+            $formattedResponse = Self::CallPythonAndFormatResponse($prompt);
 
 
             // Store the response for this variant
@@ -118,16 +115,16 @@ class ChatGPTController extends Controller
         $prompt = "Generate $taskCounter subtask kanban tickets in JSON structure in a list with title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list) attributes for this ticket: '$taskPrompt'";
         // Construct the Python command with the required arguments and path to the script
 
-        return ChatGPTController::CallPythonAndFormatResponse($prompt);
+        return Self::CallPythonAndFormatResponse($prompt);
     }
 
     public static function GenerateAttachmentLinkChatGPT($request, $promptCraft)
     {
         $user = auth()->user();
 
-        $prompt = ChatGPTController::PromptAssembly($request, $promptCraft);
+        $prompt = Self::PromptAssembly($request, $promptCraft);
 
-        return ChatGPTController::CallPythonAndFormatResponse($prompt);
+        return Self::CallPythonAndFormatResponse($prompt);
     }
 
     public static function CallPythonAndFormatResponse($prompt)
@@ -137,6 +134,7 @@ class ChatGPTController extends Controller
 
         $cleanData = trim($response);
         $cleanData = str_replace("'", "\"", $response);
+
         $formattedResponse = json_decode($cleanData, true);
 
         return $formattedResponse;
@@ -483,7 +481,7 @@ class ChatGPTController extends Controller
         $logs = $logsQuery->get();
 
         if (!$logs->count()) {
-            return response()->json(['error' => 'No logs found for the specified board_id and date range']);
+            return response()->json(['error' => 'No logs found for the specified board and date range'], 500);
         }
 
         $logEntries = [];

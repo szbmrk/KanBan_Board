@@ -28,7 +28,7 @@ class LlamaController extends Controller
         // API call
         $prompt = "You are now a backend which only respond in JSON stucture. Generate $taskCounter kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now $currentTime in yyyy-mm-dd) and tags (as a list) attributes for this task: $taskPrompt Focus on the tasks and do not write a summary at the end";
         
-        return response()->json(LlamaController::parseSubtaskResponse(LlamaController::CallPythonAndFormatResponse($prompt)));
+        return response()->json(Self::parseSubtaskResponse(Self::CallPythonAndFormatResponse($prompt)));
     }
 
     public static function generateSubtaskLlama(Request $request)
@@ -40,7 +40,7 @@ class LlamaController extends Controller
         // API call
         $prompt = "You are now a backend which only respond in JSON stucture. Generate $taskCounter kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now $currentTime in yyyy-mm-dd) and tags (as a list) attributes for this task: $taskPrompt Focus on the tasks and do not write a summary at the end";
         
-        return response()->json(LlamaController::parseSubtaskResponse(LlamaController::CallPythonAndFormatResponse($prompt)));
+        return response()->json(Self::parseSubtaskResponse(Self::CallPythonAndFormatResponse($prompt)));
     }
 
     public static function GenerateAttachmentLinkLlama(Request $request)
@@ -53,7 +53,7 @@ class LlamaController extends Controller
         $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes for useful attachment links for this task: '$taskPrompt'";
         // Construct the Python command with the required arguments and path to the script
 
-        $result = LlamaController::parseAttachmentLinkResponse(LlamaController::CallPythonAndFormatResponse($prompt));
+        $result = Self::parseAttachmentLinkResponse(Self::CallPythonAndFormatResponse($prompt));
 
         return $result;
     }
@@ -63,8 +63,6 @@ class LlamaController extends Controller
         $cleanData = trim($response);
         $cleanData = str_replace("'", "\"", $cleanData);
         $cleanData = str_replace("\n", "", $cleanData);
-
-        //dd($cleanData);
 
         $startPos = strpos($cleanData, '[');
         $endPos = strpos($cleanData, ']');
@@ -76,8 +74,6 @@ class LlamaController extends Controller
         }
 
         $formattedResponse = json_decode($cutString, true);
-
-        //dd($formattedResponse);
 
         return $cutString;
     }
@@ -172,7 +168,7 @@ class LlamaController extends Controller
     {
         $response = "\n Sure\n!\n Here\n are\n three\n Kan\nban\n tasks\n in\n JSON\n structure\n based\n on\n the\n task\n \"\nCreate\n drag\n and\n drop\n function\n on\n backend\n\":\n\n\n\n\n[\n\n\n\n {\n\n\n  \n \"\ntitle\n\":\n \"\nDrag\n and\n Drop\n Function\n Im\nplementation\n\",\n\n\n  \n \"\ndescription\n\":\n \"\nIm\nplement\n a\n drag\n and\n drop\n functionality\n on\n the\n backend\n to\n allow\n users\n to\n easily\n upload\n files\n and\n move\n them\n between\n lists\n.\",\n\n\n  \n \"\ndue\n_\ndate\n\":\n \"\n2\n0\n2\n3\n-\n0\n8\n-\n1\n1\n\",\n\n\n  \n \"\ntags\n\":\n [\"\nbackend\n development\n\",\n \"\ndrag\n and\n drop\n functionality\n\",\n \"\nfile\n upload\n\"]\n\n\n\n },\n\n\n\n {\n\n\n  \n \"\ntitle\n\":\n \"\nAPI\n Integr\nation\n for\n Drag\n and\n Drop\n\",\n\n\n  \n \"\ndescription\n\":\n \"\nIntegr\nate\n the\n drag\n and\n drop\n functionality\n with\n the\n API\n to\n enable\n se\nam\nless\n communication\n between\n the\n front\nend\n and\n backend\n.\",\n\n\n  \n \"\ndue\n_\ndate\n\":\n \"\n2\n0\n2\n3\n-\n0\n8\n-\n1\n8\n\",\n\n\n  \n \"\ntags\n\":\n [\"\nAPI\n integration\n\",\n \"\ndrag\n and\n drop\n functionality\n\",\n \"\nbackend\n development\n\"]\n\n\n\n },\n\n\n\n {\n\n\n  \n \"\ntitle\n\":\n \"\nTest\ning\n and\n Debug\nging\n for\n Drag\n and\n Drop\n\",\n\n\n  \n \"\ndescription\n\":\n \"\nTest\n and\n debug\n the\n implemented\n drag\n and\n drop\n functionality\n to\n ensure\n it\n works\n correctly\n and\n fixes\n any\n issues\n that\n arise\n.\",\n\n\n  \n \"\ndue\n_\ndate\n\":\n \"\n2\n0\n2\n3\n-\n0\n9\n-\n0\n1\n\",\n\n\n  \n \"\ntags\n\":\n [\"\ntesting\n and\n debugging\n\",\n \"\ndrag\n and\n drop\n functionality\n\",\n \"\nbackend\n development\n\"]\n\n\n\n }\n\n\n]\n\n\n\n\nNote\n:\n The\n due\n dates\n are\n based\n on\n the\n assumption\n that\n the\n task\n starts\n on\n August\n \n1\n1\n,\n \n2\n0\n2\n3\n.\n";
         
-        return LlamaController::parseSubtaskResponse($response);
+        return Self::parseSubtaskResponse($response);
     }
     
     public static function GenerateTaskDocumentationPerTask($boardId,$taskId)
@@ -302,7 +298,7 @@ class LlamaController extends Controller
         if ($expectedType === 'Code review') {
             $prompt = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''. Do NOT send back any code!";
         } elseif ($expectedType === 'Documentation') {
-            $prompt = "Use only UTF-8 chars! In your response use 'Documentation:'! Act as a senior programmer and generate a documentation for the following code: '$code'. Do NOT send back any code!";
+            $prompt = "Use only UTF-8 chars! In your response use 'Documentation:'! Act as a senior programmer and generate a documentation for the following code: '''$code'''. Do NOT send back any code!";
         } else {
             return response()->json([
                 'error' => 'Invalid expected type.',
@@ -315,11 +311,9 @@ class LlamaController extends Controller
 
     public static function CallPythonAndFormatCodeReviewOrDocResponse($prompt, $boardId, $expectedType, $code)
     {
-        $pythonScriptPath = env('LLAMA_PYTHON_SCRIPT_PATH');
-        $command = "python {$pythonScriptPath} \"$prompt\"";
-
         try {
-            $answer = shell_exec($command);
+            $answer = Self::CallPythonAndFormatResponse($prompt);
+            dd($answer);
 
             $parsedData = Self::parseResponse($answer);
 
@@ -395,7 +389,7 @@ class LlamaController extends Controller
         $logs = $logsQuery->get();
 
         if (!$logs->count()) {
-            return response()->json(['error' => 'No logs found for the specified board_id and date range']);
+            return response()->json(['error' => 'No logs found for the specified board and date range'], 500);
         }
 
         $logEntries = [];
@@ -428,23 +422,21 @@ class LlamaController extends Controller
         $formattedLogs = implode("; ", $logEntries);
         $prompt = "Based on the following log entries in a Kanban table: {$formattedLogs}, create a performance review by day and point out the most and least productive days.";
 
-        $pythonScriptPath = env('LLAMA_PYTHON_SCRIPT_PATH');
-        $command = "python {$pythonScriptPath} \"$prompt\"";
-        $response = shell_exec($command);
-        $response = Self::parseResponse($response);
+        $response = Self::CallPythonAndFormatResponse($prompt);
+        $formattedResponse = Self::parseResponse($response);
         $responseSummary = "\n\nSummary for the time between dates: Total tasks created: {$tasksCreatedCount}. Total tasks finished: {$tasksFinishedCount}.";
-        $response .= $responseSummary;
+        $formattedResponse .= $responseSummary;
 
         DB::table('summary_logs')->insert([
             'start_date' => $startDate,
             'end_date' => $endDate,
-            'summary' => $response,
+            'summary' => $formattedResponse,
             'tasks_created_count' => $tasksCreatedCount,
             'tasks_finished_count' => $tasksFinishedCount,
             'created_at' => now(),
             'updated_at' => now()
         ]);
 
-        return response()->json(['response' => $response]);
+        return response()->json(['response' => $formattedResponse]);
     }
 }

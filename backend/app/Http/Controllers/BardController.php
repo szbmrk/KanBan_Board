@@ -17,9 +17,7 @@ use Illuminate\Support\Facades\Log;
 use App\Helpers\ExecutePythonScript;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\LlamaController;
 use Illuminate\Support\Facades\DB;
-
 
 class BardController extends Controller
 {
@@ -27,9 +25,9 @@ class BardController extends Controller
     public static function generateTaskBard(Request $request, $craftedPrompt)
     {
         
-        $prompt = BardController::AssemblyPrompt($request, $craftedPrompt);
+        $prompt = Self::AssemblyPrompt($request, $craftedPrompt);
 
-        return BardController::CallPythonAndFormatResponse($prompt);
+        return Self::CallPythonAndFormatResponse($prompt);
     }
 
     public static function AssemblyPrompt($request, $craftedPrompt) 
@@ -81,7 +79,7 @@ class BardController extends Controller
         // API call
         $prompt = "You are now a backend which only respond in JSON stucture. Generate at least $taskCounter kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now '{$currentTime}' in yyyy-mm-dd) and tags (as a list) attributes for this task: $taskPrompt Focus on the tasks and do not write a summary at the end";
 
-        return BardController::CallPythonAndFormatResponse($prompt);
+        return Self::CallPythonAndFormatResponse($prompt);
     }
 
 
@@ -122,7 +120,7 @@ class BardController extends Controller
     
         $prompt = "You are now a backend which only respond in JSON structure. Generate at least $taskCounter kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now '{$currentTime}' in yyyy-mm-dd) and tags (as a list) attributes for this task: $taskPrompt Focus on the tasks and do not write a summary at the end";
     
-        $array = BardController::CallPythonAndFormatResponseDraft($prompt, $responseCounter);
+        $array = Self::CallPythonAndFormatResponseDraft($prompt, $responseCounter);
         
         return $array;
     }
@@ -265,7 +263,7 @@ class BardController extends Controller
             $command = "python {$pythonScriptPath} \"{$prompt}\"";
                 $answer = shell_exec($command);
             
-                $answer = BardController::parseTaskResponseDraft($answer);
+                $answer = Self::parseTaskResponseDraft($answer);
             //  $parsedResponse = json_decode($answer, true); // Parse the JSON response
                 $responseArrays[$i] = $answer;
         }
@@ -281,7 +279,7 @@ class BardController extends Controller
         
         try {
             $answer = shell_exec($command);   
-            $parsedData = BardController::parseTaskResponseDraft($answer);
+            $parsedData = Self::parseTaskResponseDraft($answer);
             return response()->json($parsedData);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
@@ -295,7 +293,7 @@ class BardController extends Controller
 
         try {
             $answer = shell_exec($command);   
-            $parsedData = BardController::parseLinkResponse($answer);
+            $parsedData = Self::parseLinkResponse($answer);
             return response()->json($parsedData);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
@@ -304,7 +302,7 @@ class BardController extends Controller
 
     public static function GenerateAttachmentLinkBard($request, $craftedPrompt) 
     {  
-        $prompt = BardController::AssemblyPrompt($request, $craftedPrompt);
+        $prompt = Self::AssemblyPrompt($request, $craftedPrompt);
 
         if(!$craftedPrompt) {
             $taskPrompt = $request->header('TaskPrompt');
@@ -312,7 +310,7 @@ class BardController extends Controller
             $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
         }
 
-        return BardController::CallPythonAndFormatResponseAttachment($prompt);
+        return Self::CallPythonAndFormatResponseAttachment($prompt);
     }
 
     public static function parseLinkResponse($response)
@@ -371,7 +369,7 @@ class BardController extends Controller
             ], 400);
         }
     
-        return BardController::CallPythonAndFormatCodeReviewOrDocResponse($prompt, $boardId, $expectedType, $code);
+        return Self::CallPythonAndFormatCodeReviewOrDocResponse($prompt, $boardId, $expectedType, $code);
     }
 
     public static function parseResponse($response)
@@ -391,7 +389,7 @@ class BardController extends Controller
         try {
             $answer = shell_exec($command);
 
-            $parsedData = BardController::parseResponse($answer);
+            $parsedData = Self::parseResponse($answer);
 
             $user = auth()->user();
             $board = Board::where('board_id', $boardId)->first();
@@ -459,7 +457,7 @@ class BardController extends Controller
         $logs = $logsQuery->get();
 
         if (!$logs->count()) {
-            return response()->json(['error' => 'No logs found for the specified board_id and date range']);
+            return response()->json(['error' => 'No logs found for the specified board and date range'], 500);
         }
 
         $logEntries = [];
