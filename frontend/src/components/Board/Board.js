@@ -183,13 +183,11 @@ const Board = () => {
         reloadCraftedPrompts();
         //setOwnPermissions(team_member.teams.filter(team => team.team_id === data.team_id).map(permission => permission.permission_data));
 
-        console.log(permissions);
 
         const ResetTheme = () => {
             setTheme(localStorage.getItem("darkMode"));
         };
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"));
         window.addEventListener("ChangingTheme", ResetTheme);
 
         return () => {
@@ -219,7 +217,6 @@ const Board = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log(prioritiesResponse);
             setPriorities(prioritiesResponse.data.priorities);
         } catch (e) {
             console.error(e);
@@ -266,11 +263,8 @@ const Board = () => {
 
             setColumnPositions(tempColumnPositions);
 
-            console.log("Columns: ", tempBoard.columns);
 
             setBoard(tempBoard);
-            console.log("tempBoard");
-            console.log(tempBoard);
 
             if (task_to_show_id) {
                 const columnIndex = tempBoard.columns.findIndex(
@@ -300,7 +294,6 @@ const Board = () => {
     };
 
     const handleColumnNameConfirm = async (data) => {
-        console.log(data);
         try {
             const formData = new FormData();
             formData.append("name", data.columnName);
@@ -400,8 +393,6 @@ const Board = () => {
     };
 
     const handleDeleteColumnConfirm = () => {
-        console.log("confirm");
-
         try {
             axios.delete(
                 `/boards/${board_id}/columns/${board.columns[columnToDeleteIndex].column_id}`,
@@ -431,7 +422,6 @@ const Board = () => {
     };
 
     const handleDeleteColumnCancel = () => {
-        console.log("cancel");
         setShowDeleteColumnConfirmation(false);
         setColumnToDeleteIndex(null);
     };
@@ -522,7 +512,6 @@ const Board = () => {
     };
 
     const handleAddTask = async (divIndex) => {
-        console.log("handle add task");
         setShowTaskNamePopup(true);
         setCurrentDivIndex(divIndex);
     };
@@ -549,7 +538,6 @@ const Board = () => {
             setBoard({ ...board, columns: newBoardData });
             handleTaskNameCancel();
         } catch (e) {
-            console.log(e.response.status);
             alert(e.response.data.error);
             if (e.response.status === 401 || e.response.status === 500) {
                 setError("You are not logged in! Redirecting to login page...");
@@ -611,7 +599,6 @@ const Board = () => {
         }
 
         const position = sourceDiv.tasks[hoverIndex].position;
-        console.log(position);
 
         try {
             await axios.post(
@@ -694,8 +681,6 @@ const Board = () => {
     };
 
     const handleDeleteTaskConfirm = async () => {
-        console.log(taskToDelete);
-
         try {
             await axios.delete(`/boards/${board_id}/tasks/${taskToDelete.task_id}`, {
                 headers: {
@@ -728,7 +713,6 @@ const Board = () => {
     };
 
     const handleDeleteTaskCancel = async () => {
-        console.log("cancel");
         setShowDeleteTaskConfirmation(false);
         setTaskToDelete(null);
     };
@@ -819,7 +803,6 @@ const Board = () => {
             task.subtasks.push(newSubtask);
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
-            console.log(e);
             if (e.response.status === 401 || e.response.status === 500) {
                 setError("You are not logged in! Redirecting to login page...");
                 setRedirect(true);
@@ -891,7 +874,6 @@ const Board = () => {
             });
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
-            console.log(e);
             if (e.response.status === 401 || e.response.status === 500) {
                 setError("You are not logged in! Redirecting to login page...");
                 setRedirect(true);
@@ -1062,11 +1044,7 @@ const Board = () => {
     };
 
     const openGenerateTaskWithAGIPopup = (task, column) => {
-        console.log("column");
-        console.log(column);
-
         setShowGenerateTaskWithAGIPopup(true);
-        console.log(task);
         if (task) {
             if (Array.isArray(task)) {
                 setInspectedTask(cloneDeep(task));
@@ -1085,7 +1063,6 @@ const Board = () => {
 
     const openGenerateAttachmentLinkWithAGIPopup = (task, attachmentLink) => {
         setShowGenerateAttachmentLinkWithAGIPopup(true);
-        console.log(task);
         if (task) {
             setInspectedTask(cloneDeep(task));
         }
@@ -1110,11 +1087,7 @@ const Board = () => {
                 }
             );
 
-            console.log("crafted prompts");
-            console.log(craftedPromptsResponse.data);
             setCraftedPrompts(craftedPromptsResponse.data);
-            console.log("craftedPrompts");
-            console.log(craftedPrompts);
             const boardPrompts = craftedPromptsResponse.data.filter(
                 (prompt) => prompt.action === "GENERATETASK"
             );
@@ -1126,8 +1099,6 @@ const Board = () => {
 
             setCraftedPromptsBoard(boardPrompts);
             setCraftedPromptsTask(taskPrompts);
-            console.log(craftedPromptsBoard);
-            console.log(craftedPromptsTask);
         } catch (e) {
             console.error(e);
             if (e.response.status === 401 || e.response.status === 500) {
@@ -1152,9 +1123,6 @@ const Board = () => {
                 }
             );
 
-            console.log("CodeReviewOrDocumentation:");
-            console.log(codeReviewOrDocumentationResponse);
-            console.log(codeReviewOrDocumentationResponse.data);
             setCodeReviewOrDocumentation(codeReviewOrDocumentationResponse.data);
         } catch (e) {
             console.error(e);
@@ -1229,7 +1197,6 @@ const Board = () => {
                 },
             }
         );
-        console.log(deleteCodeReviewOrDocumentation);
         if (deleteCodeReviewOrDocumentation) {
             const filteredCodeReviewOrDocumentations =
                 codeReviewOrDocumentations.filter(
@@ -1243,7 +1210,6 @@ const Board = () => {
     };
 
     const handleDeleteCodeReviewOrDocumentationCancel = async () => {
-        console.log("cancel");
         setShowDeleteCodeReviewOrDocumentationConfirmation(false);
         setCodeReviewOrDocumentationToDelete(null);
         setIsAGIOpen(false);
@@ -1263,13 +1229,8 @@ const Board = () => {
     };
 
     const useCrafterPromptOnColumn = async (craftedPrompt, column) => {
-        console.log("craftedPrompt");
-        console.log(craftedPrompt);
         try {
             const res = await getCraftedPromptResult(craftedPrompt);
-
-            console.log("res.data");
-            console.log(res.data);
 
             switch (craftedPrompt.action) {
                 case "GENERATETASK":
@@ -1281,7 +1242,6 @@ const Board = () => {
                     break;
             }
 
-            console.log(res);
         } catch (e) {
             console.error(e);
             if (e.response.status === 401 || e.response.status === 500) {
@@ -1294,8 +1254,6 @@ const Board = () => {
     };
 
     const useCrafterPromptOnTask = async (craftedPrompt, task, column) => {
-        console.log("craftedPrompt");
-        console.log(craftedPrompt);
 
         try {
             const res = await getCraftedPromptResult(craftedPrompt);
@@ -1316,7 +1274,6 @@ const Board = () => {
                     break;
             }
 
-            console.log(res);
         } catch (e) {
             console.error(e);
             if (e.response.status === 401 || e.response.status === 500) {
@@ -1629,7 +1586,6 @@ const Board = () => {
     };
 
     const sortByCardName = () => {
-        console.log("cards sorted");
         //frontend sorting
         const newBoardData = [...board.columns];
         newBoardData.map((column) => {
@@ -1866,7 +1822,6 @@ const Board = () => {
     }
 
     const handleBlurTitle = (e) => {
-        console.log(e.relatedTarget);
         if (e.relatedTarget && e.relatedTarget.tagName === 'SPAN' && e.relatedTarget.id === 'check-button') {
             return;
         }

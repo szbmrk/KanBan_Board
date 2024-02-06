@@ -40,7 +40,6 @@ export default function Dashboard() {
         }
         //backendről fetchelés
         fetchDashboardData();
-        console.log(permissions);
 
         //ez
         const ResetTheme = () => {
@@ -48,7 +47,6 @@ export default function Dashboard() {
         }
 
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {
@@ -68,10 +66,7 @@ export default function Dashboard() {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log(response.data);
             const teamData = response.data.teams;
-            console.log("teamData");
-            console.log(teamData);
             setTeams(teamData);
             ResetRoles();
         } catch (e) {
@@ -139,9 +134,6 @@ export default function Dashboard() {
 
     // Function to delete a board from a team
     const deleteBoardFromTeam = async () => {
-        console.log("selectedIDs");
-        console.log(selectedTeamId);
-        console.log(selectedBoardId);
 
         try {
             await axios.delete(`/dashboard/board/${selectedBoardId}`, {
@@ -418,7 +410,6 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
         }
 
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {
