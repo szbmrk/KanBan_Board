@@ -45,9 +45,13 @@ const Signup = () => {
                     setError('Passwords do not match');
                 }
             }
-            await axios.post('/user/signup', formData);
-            console.log('Signup successful');
-            navigate('/login');
+            try {
+                const response = await axios.post('/user/signup', formData);
+                navigate('/login');
+            }
+            catch (err) {
+                setError(err.response.data.error);
+            }
         }
     );
     const [error, setError] = useState(err);

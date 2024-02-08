@@ -38,6 +38,11 @@ class UserController extends Controller
             return response()->json(['error' => 'Email already exists'], 400);
         }
 
+        $usernameExists = \App\Models\User::where('username', $request->username)->count();
+        if ($usernameExists > 0) {
+            return response()->json(['error' => 'Username already exists'], 400);
+        }
+
         $user = new \App\Models\User;
         $user->username = $request->username;
         $user->email = $request->email;
@@ -162,13 +167,13 @@ class UserController extends Controller
     public function showPermissions()
     {
         $user = auth()->user();
-    
+
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-    
+
         $userPermissions = [];
-    
+
         foreach ($user->teamMembers as $teamMember) {
             foreach ($teamMember->roles as $role) {
                 foreach ($role->permissions as $permission) {
@@ -177,12 +182,12 @@ class UserController extends Controller
                         'team_id' => $teamMember->team_id,
                         'board_id' => $role->board_id,
                     ];
-    
+
                     $userPermissions[] = $permissionData;
                 }
             }
         }
-    
+
         return response()->json(['permissions' => $userPermissions]);
     }
 }
