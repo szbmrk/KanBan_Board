@@ -1,0 +1,23 @@
+.placeholder {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+  background-color: transparent;
+  color: var(--light-gray);
+  border: 2px solid var(--dark-gray);
+  border-radius: 5px;
+  padding: 10px;
+  margin: 5px;
+  width: auto;
+  min-height: 60px;
+  transition: 0.3s ease;
+}
+
+.placeholder-title {
+  font-size: 0.9em;
+  width: 100%;
+  text-align: center;
+  padding: 5px 10px 5px 5px;
+}
