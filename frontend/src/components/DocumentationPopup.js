@@ -9,162 +9,160 @@ import hljs from "highlight.js";
 import ErrorWrapper from "../ErrorWrapper";
 
 const DocumentationPopup = ({ board_id, task, column, onCancel }) => {
-    const aiOptions = [
-        { value: "chatgpt", label: "ChatGPT" },
-        { value: "llama", label: "Llama" },
-        { value: "bard", label: "Bard" },
-    ];
-    let [chosenAI, setChosenAI] = useState(aiOptions[0].value);
+  const aiOptions = [
+    { value: "chatgpt", label: "ChatGPT" },
+    { value: "llama", label: "Llama" },
+    { value: "bard", label: "Bard" },
+  ];
+  let [chosenAI, setChosenAI] = useState(aiOptions[0].value);
 
-    const [output, setOutput] = useState("");
+  const [output, setOutput] = useState("");
 
-    const closeIcon = <FontAwesomeIcon icon={faXmark} />;
+  const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
-    const [error, setError] = useState(null);
+  const [error, setError] = useState(null);
 
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
-    useEffect(() => {
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"))
-        }
-
-
-        console.log("Darkmode: " + localStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-        //eddig
-    }, []);
-
-
-    const handleRunClick = async () => {
-        if (task) {
-            GenerateTaskDocumentationPerTask();
-        } else if (column) {
-            GenerateTaskDocumentationPerColumn();
-        } else {
-            GenerateTaskDocumentationPerBoard();
-        }
+  const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+  useEffect(() => {
+    //ez
+    const ResetTheme = () => {
+      setTheme(localStorage.getItem("darkMode"));
     };
 
-    const GenerateTaskDocumentationPerTask = async () => {
-        try {
-            const token = sessionStorage.getItem("token");
+    console.log("Darkmode: " + localStorage.getItem("darkMode"));
+    window.addEventListener("ChangingTheme", ResetTheme);
 
-            const res = await axios.get(
-                `/AGI/generate-documentation-task/board/${board_id}/task/${task.task_id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        ChosenAI: `${chosenAI}`,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-
-            console.log(res);
-            console.log(res.data.response);
-            setOutput(res.data.response);
-        } catch (e) {
-            setError(e.response.data);
-        }
+    return () => {
+      window.removeEventListener("ChangingTheme", ResetTheme);
     };
+    //eddig
+  }, []);
 
-    const GenerateTaskDocumentationPerColumn = async () => {
-        try {
-            const token = sessionStorage.getItem("token");
+  const handleRunClick = async () => {
+    if (task) {
+      GenerateTaskDocumentationPerTask();
+    } else if (column) {
+      GenerateTaskDocumentationPerColumn();
+    } else {
+      GenerateTaskDocumentationPerBoard();
+    }
+  };
 
-            const res = await axios.get(
-                `/AGI/generate-documentation-column/board/${board_id}/column/${column.column_id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        ChosenAI: `${chosenAI}`,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
+  const GenerateTaskDocumentationPerTask = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
 
-            console.log(res);
-            console.log(res.data.response);
-            setOutput(res.data.response);
-        } catch (e) {
-            setError(e.response.data);
+      const res = await axios.get(
+        `/AGI/generate-documentation-task/board/${board_id}/task/${task.task_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            ChosenAI: `${chosenAI}`,
+            "Content-Type": "application/json",
+          },
         }
-    };
+      );
 
-    const GenerateTaskDocumentationPerBoard = async () => {
-        try {
-            const token = sessionStorage.getItem("token");
+      console.log(res);
+      console.log(res.data.response);
+      setOutput(res.data.response);
+    } catch (e) {
+      setError(e?.response?.data);
+    }
+  };
 
-            const res = await axios.get(
-                `/AGI/generate-documentation-board/${board_id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        ChosenAI: `${chosenAI}`,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
+  const GenerateTaskDocumentationPerColumn = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
 
-            console.log(res);
-            console.log(res.data.response);
-            setOutput(res.data.response);
-        } catch (e) {
-            setError(e.response.data);
+      const res = await axios.get(
+        `/AGI/generate-documentation-column/board/${board_id}/column/${column.column_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            ChosenAI: `${chosenAI}`,
+            "Content-Type": "application/json",
+          },
         }
-    };
+      );
 
-    useEffect(() => {
-        hljs.highlightAll();
-    });
+      console.log(res);
+      console.log(res.data.response);
+      setOutput(res.data.response);
+    } catch (e) {
+      setError(e?.response?.data);
+    }
+  };
 
-    return (
-        <div className="overlay" data-theme={theme}>
-            <div className="popup agi-popup">
-                <span className="close-btn" onClick={onCancel}>
-                    {closeIcon}
-                </span>
-                <div className="gt-popup-content">
-                    <h2>
-                        {"Generate documentation for " +
-                            (task
-                                ? "task: " + task.title
-                                : column
-                                    ? "column: " + column.name
-                                    : "the board")}
-                    </h2>
-                    <div className="gt-action-buttons">
-                        <div className="dropdown-container">
-                            <p>Which AI do you want to use?</p>
-                            <Dropdown
-                                className="code-dropdown"
-                                options={aiOptions}
-                                value={chosenAI}
-                                onChange={(selectedOption) => setChosenAI(selectedOption.value)}
-                            />
-                        </div>
-                        <button className="generate-button" onClick={handleRunClick}>
-                            Run
-                        </button>
-                    </div>
-                    <textarea className="output-textarea" value={output} disabled />
-                </div>
+  const GenerateTaskDocumentationPerBoard = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+
+      const res = await axios.get(
+        `/AGI/generate-documentation-board/${board_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            ChosenAI: `${chosenAI}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log(res);
+      console.log(res.data.response);
+      setOutput(res.data.response);
+    } catch (e) {
+      setError(e?.response?.data);
+    }
+  };
+
+  useEffect(() => {
+    hljs.highlightAll();
+  });
+
+  return (
+    <div className="overlay" data-theme={theme}>
+      <div className="popup agi-popup">
+        <span className="close-btn" onClick={onCancel}>
+          {closeIcon}
+        </span>
+        <div className="gt-popup-content">
+          <h2>
+            {"Generate documentation for " +
+              (task
+                ? "task: " + task.title
+                : column
+                ? "column: " + column.name
+                : "the board")}
+          </h2>
+          <div className="gt-action-buttons">
+            <div className="dropdown-container">
+              <p>Which AI do you want to use?</p>
+              <Dropdown
+                className="code-dropdown"
+                options={aiOptions}
+                value={chosenAI}
+                onChange={(selectedOption) => setChosenAI(selectedOption.value)}
+              />
             </div>
-            {error && (
-                <ErrorWrapper
-                    originalError={error}
-                    onClose={() => {
-                        setError(null);
-                    }}
-                />
-            )}
+            <button className="generate-button" onClick={handleRunClick}>
+              Run
+            </button>
+          </div>
+          <textarea className="output-textarea" value={output} disabled />
         </div>
-    );
+      </div>
+      {error && (
+        <ErrorWrapper
+          originalError={error}
+          onClose={() => {
+            setError(null);
+          }}
+        />
+      )}
+    </div>
+  );
 };
 
 export default DocumentationPopup;

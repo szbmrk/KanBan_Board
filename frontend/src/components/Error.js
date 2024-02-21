@@ -1,45 +1,48 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import React from "react";
+import { Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export default function Error({ error, redirect }) {
-    const [canBeRedirected, setCanBeRedirected] = useState(false);
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+  const [canBeRedirected, setCanBeRedirected] = useState(false);
+  const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
 
-    useEffect(() => {
-        const onPageLoad = () => {
-            setTimeout(() => {
-                redirect && setCanBeRedirected(true);
-            }, 2000);
-        };
+  useEffect(() => {
+    const onPageLoad = () => {
+      setTimeout(() => {
+        redirect && setCanBeRedirected(true);
+      }, 2000);
+    };
 
-        document.readyState === 'complete' ? onPageLoad() : window.addEventListener('load', onPageLoad);
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"))
-        }
+    document.readyState === "complete"
+      ? onPageLoad()
+      : window.addEventListener("load", onPageLoad);
+    //ez
+    const ResetTheme = () => {
+      setTheme(localStorage.getItem("darkMode"));
+    };
 
+    console.log("Darkmode: " + localStorage.getItem("darkMode"));
+    window.addEventListener("ChangingTheme", ResetTheme);
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
+    return () => {
+      window.removeEventListener("ChangingTheme", ResetTheme);
+    };
+    //eddig
+  }, []);
 
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-        //eddig
-    }, []);
-
-    return (
+  return (
+    <>
+      {canBeRedirected ? (
+        <Navigate to="/login" />
+      ) : (
         <>
-            {canBeRedirected ? (
-                <Navigate to='/login' />
-            ) : (
-                <>
-                    <div className='content col-10'>
-                        <h1 style={{ textAlign: 'center' }}>{error}</h1>
-                    </div>
-                </>
-            )}
+          <div className="content col-10">
+            <h1 style={{ textAlign: "center" }}>
+              {error.error ? error.error : error.message}
+            </h1>
+          </div>
         </>
-    );
+      )}
+    </>
+  );
 }
