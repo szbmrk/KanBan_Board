@@ -71,7 +71,7 @@ const GeneratePerformanceSummaryPopup = ({ board_id, onCancel }) => {
       console.log(res.data.response);
       setOutput(res.data.response);
     } catch (e) {
-      setError(e.response.data);
+      setError(e?.response?.data);
     }
   };
 
