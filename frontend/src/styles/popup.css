@@ -441,8 +441,9 @@
     border: 1px solid var(--light-gray);
     border-radius: 5px;
     overflow: auto;
-    background-color: var(--light-gray);
+    background-color: var(--dark-Navbar);
     font-family: var(--basic-font);
+    color: var(--light-gray);
 }
 
 .add-comment-textarea:focus {
