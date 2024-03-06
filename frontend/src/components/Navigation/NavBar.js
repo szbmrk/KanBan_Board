@@ -31,6 +31,7 @@ const Navbar = () => {
 
     const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
     useEffect(() => {
+        DarkMode()
         //ez
         const ResetTheme = () => {
             setTheme(localStorage.getItem("darkMode"))
