@@ -118,6 +118,11 @@ export default function Permissiontable() {
     return baseRole; 
   }
 
+  function isBaseRole(roleId) {
+    const minRoleId = Math.min(...roles.map(role => role.role_id));
+    return roleId === minRoleId;
+  }
+
   async function DeleteRole(role_id) {
     try {
 
@@ -304,7 +309,7 @@ export default function Permissiontable() {
                       board_id,
                       team_id,
                       "role_management"
-                    ) && (
+                    )&& !isBaseRole(role.role_id) && (
                       <button
                         onClick={() => DeleteRole(role.role_id)}
                         className="delete-role"
@@ -332,10 +337,8 @@ export default function Permissiontable() {
                         {permission.name}
                       </div>
                       {roles.map((role) => (
-                        <div
-                          key={role.role_id}
-                          className="permission-table-body-cell"
-                        >
+                        <div key={role.role_id} className="permission-table-body-cell"> 
+                        {!isBaseRole(role.role_id) && (    
                           <input
                             className="permission-checkbox"
                             type="checkbox"
@@ -355,6 +358,7 @@ export default function Permissiontable() {
                               )
                             }
                           />
+                        )}
                         </div>
                       ))}
                     </div>
