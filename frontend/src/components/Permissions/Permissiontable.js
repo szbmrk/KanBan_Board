@@ -106,8 +106,26 @@ export default function Permissiontable() {
     }
   }
 
+  function getBaseRole(roles) {
+    if (roles.length === 0) {
+      return null; 
+    }
+    
+    const baseRole = roles.reduce((minRole, currentRole) => {
+      return currentRole.role_id < minRole.role_id ? currentRole : minRole;
+    }, roles[0]);
+    
+    return baseRole; 
+  }
+
   async function DeleteRole(role_id) {
     try {
+
+      const baseRole = getBaseRole(roles);
+      if (baseRole && baseRole.role_id === role_id) {
+        throw new Error("Cannot delete base role.");
+      }
+
       const response = await axios.delete(
         `/boards/${board_id}/roles/${role_id}`,
         {
@@ -125,6 +143,11 @@ export default function Permissiontable() {
 
   async function DeletePermissionFromRole(role_id, permission_id) {
     try {
+
+      const baseRole = getBaseRole(roles);
+      if (baseRole && baseRole.role_id === role_id) {
+        throw new Error("Cannot delete permission from base role.");
+      }
       const response = await axios.delete(
         `/boards/${board_id}/roles/${role_id}/permissions/${permission_id}`,
         {
@@ -136,38 +159,6 @@ export default function Permissiontable() {
       console.log(response);
       const newRoles = [...roles];
       for (let i = 0; i < newRoles.length; i++) {
-        if (parseInt(newRoles[i].role_id) === parseInt(role_id)) {
-          newRoles[i].permissions.splice(
-            newRoles[i].permissions.findIndex(
-              (permission) =>
-                parseInt(permission.id) === parseInt(permission_id)
-            ),
-            1
-          );
-          break;
-        }
-      }
-      await ResetRoles();
-      setRoles(newRoles);
-      setNeedLoader(false);
-    } catch (error) {
-      setError(error?.response?.data);
-    }
-  }
-
-  async function DeletePermissionFromRole(role_id, permission_id) {
-    try {
-      const response = await axios.delete(
-        `/boards/${board_id}/roles/${role_id}/permissions/${permission_id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log(response);
-      const newRoles = [...roles];
-      for (let i = 0; newRoles.length; i++) {
         if (parseInt(newRoles[i].role_id) === parseInt(role_id)) {
           newRoles[i].permissions.splice(
             newRoles[i].permissions.findIndex(
@@ -219,6 +210,12 @@ export default function Permissiontable() {
 
   function handleCheckboxChange(e) {
     setNeedLoader(true);
+    const baseRole = getBaseRole(roles);
+    if (baseRole && baseRole.role_id === e.target.id) {
+      setError("Cannot delete permission from base role.");
+      return;
+    }
+    
     if (e.target.checked) {
       AddPermissionToRole(e.target.id, e.target.value);
     } else {

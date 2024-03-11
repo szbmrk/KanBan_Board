@@ -11,8 +11,9 @@ export const SetRoles = async (token) => {
             }
         });
         sessionStorage.setItem('permissions', roleHandler(response.data));
-        teamPermissions = JSON.parse(sessionStorage.getItem('permissions')).teams;
-        ownPermissions = JSON.parse(sessionStorage.getItem('permissions')).general_role;
+        const rolesData = JSON.parse(sessionStorage.getItem('permissions'));
+        teamPermissions = rolesData.teams;
+        ownPermissions = rolesData.general_role;
     } catch (error) {
         console.log(error);
     }
