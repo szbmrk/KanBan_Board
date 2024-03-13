@@ -106,8 +106,31 @@ export default function Permissiontable() {
     }
   }
 
+  function getBaseRole(roles) {
+    if (roles.length === 0) {
+      return null; 
+    }
+    
+    const baseRole = roles.reduce((minRole, currentRole) => {
+      return currentRole.role_id < minRole.role_id ? currentRole : minRole;
+    }, roles[0]);
+    
+    return baseRole; 
+  }
+
+  function isBaseRole(roleId) {
+    const minRoleId = Math.min(...roles.map(role => role.role_id));
+    return roleId === minRoleId;
+  }
+
   async function DeleteRole(role_id) {
     try {
+
+      const baseRole = getBaseRole(roles);
+      if (baseRole && baseRole.role_id === role_id) {
+        throw new Error("Cannot delete base role.");
+      }
+
       const response = await axios.delete(
         `/boards/${board_id}/roles/${role_id}`,
         {
@@ -125,6 +148,11 @@ export default function Permissiontable() {
 
   async function DeletePermissionFromRole(role_id, permission_id) {
     try {
+
+      const baseRole = getBaseRole(roles);
+      if (baseRole && baseRole.role_id === role_id) {
+        throw new Error("Cannot delete permission from base role.");
+      }
       const response = await axios.delete(
         `/boards/${board_id}/roles/${role_id}/permissions/${permission_id}`,
         {
@@ -136,38 +164,6 @@ export default function Permissiontable() {
       console.log(response);
       const newRoles = [...roles];
       for (let i = 0; i < newRoles.length; i++) {
-        if (parseInt(newRoles[i].role_id) === parseInt(role_id)) {
-          newRoles[i].permissions.splice(
-            newRoles[i].permissions.findIndex(
-              (permission) =>
-                parseInt(permission.id) === parseInt(permission_id)
-            ),
-            1
-          );
-          break;
-        }
-      }
-      await ResetRoles();
-      setRoles(newRoles);
-      setNeedLoader(false);
-    } catch (error) {
-      setError(error?.response?.data);
-    }
-  }
-
-  async function DeletePermissionFromRole(role_id, permission_id) {
-    try {
-      const response = await axios.delete(
-        `/boards/${board_id}/roles/${role_id}/permissions/${permission_id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log(response);
-      const newRoles = [...roles];
-      for (let i = 0; newRoles.length; i++) {
         if (parseInt(newRoles[i].role_id) === parseInt(role_id)) {
           newRoles[i].permissions.splice(
             newRoles[i].permissions.findIndex(
@@ -219,6 +215,12 @@ export default function Permissiontable() {
 
   function handleCheckboxChange(e) {
     setNeedLoader(true);
+    const baseRole = getBaseRole(roles);
+    if (baseRole && baseRole.role_id === e.target.id) {
+      setError("Cannot delete permission from base role.");
+      return;
+    }
+    
     if (e.target.checked) {
       AddPermissionToRole(e.target.id, e.target.value);
     } else {
@@ -307,7 +309,7 @@ export default function Permissiontable() {
                       board_id,
                       team_id,
                       "role_management"
-                    ) && (
+                    )&& !isBaseRole(role.role_id) && (
                       <button
                         onClick={() => DeleteRole(role.role_id)}
                         className="delete-role"
@@ -335,10 +337,8 @@ export default function Permissiontable() {
                         {permission.name}
                       </div>
                       {roles.map((role) => (
-                        <div
-                          key={role.role_id}
-                          className="permission-table-body-cell"
-                        >
+                        <div key={role.role_id} className="permission-table-body-cell"> 
+                        {!isBaseRole(role.role_id) && (    
                           <input
                             className="permission-checkbox"
                             type="checkbox"
@@ -358,6 +358,7 @@ export default function Permissiontable() {
                               )
                             }
                           />
+                        )}
                         </div>
                       ))}
                     </div>

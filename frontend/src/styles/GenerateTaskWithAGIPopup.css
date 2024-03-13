@@ -58,8 +58,9 @@
   padding: 5px;
   border-radius: 5px;
   border: 1px solid var(--light-gray);
-  background-color: var(--light-gray);
+  background-color: var(--dark-Navbar);
   font-family: var(--basic-font);
+  color: var(--light-gray);
 }
 
 .gt-input-container input {
