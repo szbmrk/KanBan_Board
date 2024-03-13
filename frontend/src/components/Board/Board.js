@@ -2463,16 +2463,16 @@ const Board = () => {
                     </div>
                     <div className="filter-checkbox-container">
                       {tags.map((tag) => (
-                        <div key={tag.tag_id} className="filter-checkbox-item">
+                        <div key={"tag: "+ tag.tag_id} className="filter-checkbox-item">
                           <input
                             type="checkbox"
-                            id={tag.tag_id}
+                            id={"tag: "+ tag.tag_id}
                             onChange={() => changeTagFilter(tag.tag_id)}
                             checked={tagFilter.includes(tag.tag_id)}
                           />
                           <label
                             className="tag-filter-label"
-                            htmlFor={tag.tag_id}
+                            htmlFor={"tag: "+ tag.tag_id}
                             style={{ backgroundColor: tag.color }}
                           >
                             {tag.name}
