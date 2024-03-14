@@ -20,6 +20,16 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Priority;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\LogRequest;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\Events\BoardChange;
+use Illuminate\Support\Facades\Event;
 
 class TaskController extends Controller
 {
@@ -118,6 +128,12 @@ class TaskController extends Controller
         $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task->task_id);
 
         LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Task created successfully!", $teamId, $board_id, $task->task_id);
+
+        $data = [
+            'task' => $task
+        ];
+        broadcast(new BoardChange($board_id, "CREATED_TASK", $data));
+
         return response()->json(['message' => 'Task created successfully', 'task' => $taskWithSubtasksAndTags]);
     }
 
@@ -202,6 +218,11 @@ class TaskController extends Controller
 
         $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task_id);
 
+        $data = [
+            'task' => $task
+        ];
+        broadcast(new BoardChange($board_id, "UPDATED_TASK", $data));
+
         return response()->json(['message' => 'Task updated successfully', 'task' => $taskWithSubtasksAndTags]);
     }
 
@@ -265,6 +286,11 @@ class TaskController extends Controller
 
         $task->delete();
 
+        $data = [
+            'task' => $task
+        ];
+        broadcast(new BoardChange($board_id, "DELETED_TASK", $data));
+
         return response()->json(['message' => 'Task deleted successfully']);
     }
 
@@ -312,9 +338,12 @@ class TaskController extends Controller
             return response()->json(['error' => 'Duplicate positions are not allowed'], 403);
         }
 
-        foreach ($tasks as $task) {
+        
+        foreach ($tasks as &$task) {
             $taskToUpdate = Task::find($task['task_id']);
             if ($taskToUpdate) {
+                $task['old_column_id'] = $taskToUpdate->column_id;
+                $task['task'] = $taskToUpdate;
                 $taskToUpdate->position = $task['position'];
                 if (isset($task['column_id']) && $task['column_id'] != $taskToUpdate->column_id) {
                     $newColumn = Column::find($task['column_id']);
@@ -332,6 +361,11 @@ class TaskController extends Controller
                 return response()->json(['error' => 'Task not found'], 404);
             }
         }
+
+       $data = [
+            'tasks' => $tasks
+        ];
+        broadcast(new BoardChange($board->board_id, "POSITION_UPDATED_TASK", $data));
 
         return response()->json(['message' => 'Tasks position updated successfully.']);
     }
@@ -866,15 +900,6 @@ class TaskController extends Controller
             }
         }
     }
-
-
-
-
-
-
-
-
-
 
     private function updateTask($task, $data)
     {

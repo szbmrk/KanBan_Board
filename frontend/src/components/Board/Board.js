@@ -46,6 +46,11 @@ import AddColumnPopup from "../AddColumnPopup";
 import SimpleLabelPopup from "../SimpleLabelPopup";
 import DatePicker from "react-datepicker";
 import ErrorWrapper from "../../ErrorWrapper";
+import Echo from "laravel-echo";
+import {
+  REACT_APP_PUSHER_KEY,
+  REACT_APP_PUSHER_CLUSTER,
+} from "../../api/config";
 
 export const documentationIcon = <FontAwesomeIcon icon={faFileLines} />;
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
@@ -174,6 +179,8 @@ const Board = () => {
 
   const [boardTitle, setBoardTitle] = useState("");
   const [showBoardTitleEdit, setShowBoardTitleEdit] = useState(false);
+  const boardRef = useRef(board);
+  const columnPositionsRef = useRef(columnPositions);
 
   const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
 
@@ -200,6 +207,33 @@ const Board = () => {
   }, []);
 
   useEffect(() => {
+    window.Pusher = require("pusher-js");
+    window.Pusher.logToConsole = true;
+
+    const echo = new Echo({
+      broadcaster: "pusher",
+      key: REACT_APP_PUSHER_KEY,
+      cluster: REACT_APP_PUSHER_CLUSTER,
+      forceTLS: true,
+    });
+
+    const channel = echo.channel(`BoardChange`);
+
+    channel.listen(
+      `.board.${board_id}`,
+      (e) => {
+        handleWebSocket(e);
+      },
+      []
+    );
+
+    return () => {
+      console.log("Cleanup");
+      channel.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
     const handleClickOutside = (event) => {
       // Check if the click was outside the title edit input box
       if (editBoxRef.current && !editBoxRef.current.contains(event.target)) {
@@ -213,6 +247,284 @@ const Board = () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, [editingColumnIndex]);
+
+  // Update the board reference whenever the board state changes
+  useEffect(() => {
+    boardRef.current = board;
+  }, [board]);
+
+  const handleWebSocket = async (websocket) => {
+    console.log("DATA");
+    console.log(websocket.data);
+    switch (websocket.changeType) {
+      case "CREATED_TASK":
+        webSocketAddTask(websocket.data.task);
+        break;
+      case "UPDATED_TASK":
+        webSocketUpdateTask(websocket.data.task);
+        break;
+      case "POSITION_UPDATED_TASK":
+        webSocketPositionUpdateTask(websocket.data);
+        break;
+      case "DELETED_TASK":
+        webSocketDeleteTask(websocket.data.task);
+        break;
+      case "CREATED_TASK_TAG":
+        webSocketCreateTaskTag(websocket.data);
+        break;
+      case "DELETED_TASK_TAG":
+        webSocketDeleteTaskTag(websocket.data);
+        break;
+      case "UPDATED_TAG":
+        webSocketUpdateTag(websocket.data.tag);
+        break;
+      case "CREATED_COLUMN":
+        webSocketAddColumn(websocket.data);
+        break;
+      case "UPDATED_COLUMN":
+        webSocketUpdateColumn(websocket.data.column);
+        break;
+      case "POSITION_UPDATED_COLUMN":
+        webSocketPositionUpdateColumn(websocket.data);
+        break;
+      case "DELETED_COLUMN":
+        webSocketDeleteColumn(websocket.data.column);
+        break;
+      case "UPDATED_BOARD_NAME":
+        webSocketChangeBoardName(websocket.data.name);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const webSocketAddTask = async (task) => {
+    console.log("BOARD");
+    console.log(boardRef.current);
+    console.log(boardRef.current.columns);
+    const newBoardData = [...boardRef.current.columns];
+    const targetColumn = newBoardData.find(
+      (column) => column.column_id === task.column_id
+    );
+    if (targetColumn) {
+      targetColumn.tasks.push(task);
+      setBoard({ ...board, columns: newBoardData });
+    }
+  };
+
+  const webSocketUpdateTask = async (updatedTask) => {
+    console.log("BOARD");
+    console.log(boardRef.current);
+
+    const newTaskData = [...boardRef.current.columns];
+    const columnIndex = newTaskData.findIndex(
+      (column) => column.column_id === updatedTask.column_id
+    );
+    const taskIndex = newTaskData[columnIndex].tasks.findIndex(
+      (currentTask) => currentTask.task_id === updatedTask.task_id
+    );
+    newTaskData[columnIndex].tasks[taskIndex].title = updatedTask.title;
+    newTaskData[columnIndex].tasks[taskIndex].description =
+      updatedTask.description;
+    setBoard({ ...boardRef.current, columns: newTaskData });
+  };
+
+  const webSocketPositionUpdateTask = async (data) => {
+    console.log("BOARD");
+    console.log(boardRef.current);
+    console.log("POSITION UPDATED task");
+    console.log(data);
+    const newBoardData = [...boardRef.current.columns];
+
+    data.tasks.forEach((task) => {
+      console.log(boardRef.current.columns);
+      const oldColumn = newBoardData.find(
+        (column) => task.old_column_id === column.column_id
+      );
+
+      const newColumn = newBoardData.find(
+        (column) => task.column_id === column.column_id
+      );
+
+      const taskExist = newColumn.tasks.find(
+        (currentTask) => task.task_id === currentTask.task_id
+      );
+
+      console.log("Task Exist");
+      console.log(taskExist);
+
+      if (taskExist) {
+        return;
+      }
+
+      oldColumn.tasks = oldColumn.tasks.filter(
+        (taskInColumn) => taskInColumn.task_id !== task.task_id
+      );
+
+      console.log("LENGTH");
+      console.log(newColumn.tasks.length);
+
+      if (newColumn.tasks.length > 0) {
+        insertTask(newColumn.tasks, task.task);
+      } else {
+        newColumn.tasks.push(task.task);
+      }
+    });
+
+    setBoard({ ...board, columns: newBoardData });
+  };
+
+  function insertTask(tasks, newTask) {
+    // Find the index where the new task should be inserted
+    let insertIndex = tasks.findIndex(
+      (task) => task.position > newTask.position
+    );
+
+    // If insertIndex is -1, it means the new task has the highest position value
+    // So, it should be inserted at the end of the array
+    if (insertIndex === -1) {
+      insertIndex = tasks.length;
+    }
+
+    // Insert the new task at the determined index
+    tasks.splice(insertIndex, 0, newTask);
+
+    return tasks;
+  }
+
+  const webSocketCreateTaskTag = async (data) => {
+    console.log("CreatedTaskTag");
+    console.log(boardRef.current);
+
+    placeTagOnTask(data.task.task_id, data.tag, data.task.column_id);
+  };
+
+  const webSocketDeleteTaskTag = async (data) => {
+    console.log("CreatedTaskTag");
+    console.log(boardRef.current);
+
+    removeTagFromTask(data.task.task_id, data.tag.tag_id);
+  };
+
+  const webSocketUpdateTag = async (tag) => {
+    console.log("webSocketUpdateTag");
+    console.log(boardRef.current);
+
+    updateTagsWithTagId(tag);
+  };
+
+  function updateTagsWithTagId(updatedTag) {
+    let newBoardData = [...boardRef.current.columns];
+
+    newBoardData.forEach((column) =>
+      column.tasks.forEach((task) =>
+        task.tags.forEach((tag, index) => {
+          if (tag.tag_id === updatedTag.tag_id) {
+            task.tags[index] = updatedTag;
+          }
+        })
+      )
+    );
+
+    setBoard({ ...boardRef.current, columns: newBoardData });
+  }
+
+  const webSocketDeleteTask = async (task) => {
+    console.log("BOARD");
+    console.log(boardRef.current);
+    console.log(boardRef.current.columns);
+    const newBoardData = [...boardRef.current.columns];
+    const targetColumn = newBoardData.find(
+      (column) => column.column_id === task.column_id
+    );
+    console.log("DELETE TASK");
+    console.log(inspectedTaskRef?.current);
+    console.log(task);
+    if (inspectedTaskRef?.current?.task_id === task.task_id) {
+      handleClosePopup();
+    }
+    if (targetColumn) {
+      // Remove the task with the same ID from the target column
+      targetColumn.tasks = targetColumn.tasks.filter(
+        (taskInColumn) => taskInColumn.task_id !== task.task_id
+      );
+      setBoard({ ...boardRef.current, columns: newBoardData });
+    }
+  };
+
+  const webSocketAddColumn = async (data) => {
+    console.log("BOARD");
+    console.log(boardRef.current);
+    console.log(boardRef.current.columns);
+    console.log("NEW column");
+    console.log(data.column);
+    data.column.is_finished = data.is_finished === "1" ? 1 : 0;
+    data.column.task_limit = data.task_limit;
+    data.column.tasks = [];
+
+    const newBoardData = [...boardRef.current.columns, data.column];
+    let tempPositions = columnPositionsRef.current;
+    tempPositions.push(data.column.column_id);
+    setColumnPositions(tempPositions);
+    setBoard({ ...boardRef.current, columns: newBoardData });
+    console.log("BOARDREF");
+    console.log(boardRef.current);
+  };
+
+  const webSocketPositionUpdateColumn = async (data) => {
+    console.log("BOARD");
+    console.log(boardRef.current);
+    console.log("POSITION UPDATED column");
+    console.log(data);
+    setColumnPositions(data.columns);
+
+    const indexMap = boardRef.current.columns.reduce((acc, column, index) => {
+      acc[column.column_id] = index;
+      return acc;
+    }, {});
+
+    // Sort the first array based on the order of column_ids in the second array
+    const sortedColumns = [...boardRef.current.columns].sort(
+      (a, b) =>
+        data.columns.indexOf(a.column_id) - data.columns.indexOf(b.column_id)
+    );
+
+    setColumnPositions(data.columns);
+    setBoard({ ...boardRef.current, columns: sortedColumns });
+  };
+
+  const webSocketUpdateColumn = async (updatedColumn) => {
+    const newBoardData = [...boardRef.current.columns];
+
+    const column = newBoardData.find(
+      (currentColumn) => currentColumn.column_id === updatedColumn.column_id
+    );
+
+    column.name = updatedColumn.name;
+    column.is_finished = updatedColumn.is_finished === "1" ? 1 : 0;
+    column.task_limit = updatedColumn.task_limit;
+
+    setBoard({ ...boardRef.current, columns: newBoardData });
+  };
+
+  const webSocketDeleteColumn = async (column) => {
+    console.log("BOARD");
+    console.log(boardRef.current);
+    console.log(boardRef.current.columns);
+
+    let newBoardData = [...boardRef.current.columns];
+    newBoardData = newBoardData.filter(
+      (currentColumn) => column.column_id !== currentColumn.column_id
+    );
+    setColumnPositions(newBoardData.map((column) => column.position));
+    setBoard({ ...boardRef.current, columns: newBoardData });
+  };
+
+  const webSocketChangeBoardName = async (name) => {
+    console.log("BOARD");
+    console.log(boardRef.current);
+    setBoardTitle(name);
+  };
 
   const reloadPriorities = async () => {
     try {
@@ -312,16 +624,6 @@ const Board = () => {
         },
       });
 
-      const newColumn = res.data.column;
-      newColumn.is_finished = data.isFinished ? 1 : 0;
-      newColumn.task_limit = data.taskLimit;
-      newColumn.tasks = [];
-
-      const newBoardData = [...board.columns, newColumn];
-      let tempPositions = columnPositions;
-      tempPositions.push(newColumn.column_id);
-      setColumnPositions(tempPositions);
-      setBoard({ ...board, columns: newBoardData });
       setShowColumnNamePopup(false);
     } catch (e) {
       console.error(e);
@@ -415,11 +717,6 @@ const Board = () => {
           },
         }
       );
-
-      const newBoardData = [...board.columns];
-      newBoardData.splice(columnToDeleteIndex, 1);
-      setColumnPositions(newBoardData.map((column) => column.column_id));
-      setBoard({ ...board, columns: newBoardData });
     } catch (e) {
       console.error(e);
       if (e?.response?.status === 401 || e?.response?.status === 500) {
@@ -550,11 +847,6 @@ const Board = () => {
         },
       });
 
-      const createdTask = res.data.task;
-      createdTask.board_id = board_id;
-      const newBoardData = [...board.columns];
-      newBoardData[currentDivIndex].tasks.push(createdTask);
-      setBoard({ ...board, columns: newBoardData });
       handleTaskNameCancel();
     } catch (e) {
       if (e?.response?.status === 401 || e?.response?.status === 500) {
@@ -611,6 +903,8 @@ const Board = () => {
     let from_column_id = targetDiv.column_id;
     let to_column_id = sourceDiv.column_id;
     let position;
+    console.log("FROM");
+    console.log(from_column_id);
 
     if (hoverIndex) {
       task_to_modify_id = sourceDiv.tasks[hoverIndex].task_id;
@@ -628,6 +922,8 @@ const Board = () => {
       }
 
       position = sourceDiv.tasks[hoverIndex].position;
+      console.log("POSITION");
+      console.log(position);
     } else {
       task_to_modify_id = sourceDiv.tasks[0].task_id;
       position = 1;
@@ -1036,6 +1332,10 @@ const Board = () => {
   //popup
   const [showPopup, setShowPopup] = useState(false);
   const [inspectedTask, setInspectedTask] = useState(null);
+  const inspectedTaskRef = useRef(inspectedTask);
+  useEffect(() => {
+    inspectedTaskRef.current = inspectedTask;
+  }, [inspectedTask]);
   const [inspectedColumn, setInspectedColumn] = useState(null);
   const [
     inspectedCodeReviewOrDocumentation,
@@ -1585,21 +1885,7 @@ const Board = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      const newBoardData = [...board.columns];
-      const columnIndex = newBoardData.findIndex(
-        (column) => column.column_id === column_id
-      );
-      const updatedTask = findTaskById(
-        newBoardData[columnIndex].tasks,
-        task_id
-      );
-      if (updatedTask.tags === undefined) {
-        updatedTask.tags = [];
-      }
-      updatedTask.tags.push(tag);
-      updatedTask.tags.sort((a, b) => a.tag_id - b.tag_id);
-
-      setBoard({ ...board, columns: newBoardData });
+      placeTagOnTask(task_id, tag, column_id);
     } catch (e) {
       console.error(e);
       if (e?.response?.status === 401 || e?.response?.status === 500) {
@@ -1613,6 +1899,25 @@ const Board = () => {
     }
   };
 
+  const placeTagOnTask = async (task_id, tag, column_id) => {
+    const newBoardData = [...boardRef.current.columns];
+    const columnIndex = newBoardData.findIndex(
+      (column) => column.column_id === column_id
+    );
+    const updatedTask = findTaskById(newBoardData[columnIndex].tasks, task_id);
+    if (updatedTask.tags === undefined) {
+      updatedTask.tags = [];
+    }
+    const existingTag = updatedTask.tags.find((t) => t.tag_id === tag.tag_id);
+    if (existingTag) {
+      return;
+    }
+    updatedTask.tags.push(tag);
+    updatedTask.tags.sort((a, b) => a.tag_id - b.tag_id);
+
+    setBoard({ ...boardRef.current, columns: newBoardData });
+  };
+
   const handleRemoveTagFromTask = async (task_id, tag_id) => {
     try {
       await axios.delete(
@@ -1622,18 +1927,7 @@ const Board = () => {
         }
       );
 
-      const updatedBoard = { ...board };
-      const updatedTask = updatedBoard.columns
-        .flatMap((column) => column.tasks)
-        .find((task) => task.task_id === task_id);
-      const removedTagIndex = updatedTask.tags.findIndex(
-        (tag) => tag.tag_id === tag_id
-      );
-      if (removedTagIndex !== -1) {
-        updatedTask.tags.splice(removedTagIndex, 1);
-      }
-
-      setBoard(updatedBoard);
+      removeTagFromTask(task_id, tag_id);
     } catch (e) {
       console.error(e);
       if (e?.response?.status === 401 || e?.response?.status === 500) {
@@ -1645,6 +1939,21 @@ const Board = () => {
         setError(e);
       }
     }
+  };
+
+  const removeTagFromTask = async (task_id, tag_id, column_id) => {
+    const updatedBoard = { ...boardRef.current };
+    const updatedTask = updatedBoard.columns
+      .flatMap((column) => column.tasks)
+      .find((task) => task.task_id === task_id);
+    const removedTagIndex = updatedTask.tags.findIndex(
+      (tag) => tag.tag_id === tag_id
+    );
+    if (removedTagIndex !== -1) {
+      updatedTask.tags.splice(removedTagIndex, 1);
+    }
+
+    setBoard(updatedBoard);
   };
 
   const handleBoardTagDeletion = async (tag_id) => {
