@@ -13,7 +13,7 @@ export default function Permissiontable() {
   const [permissions, setPermissions] = useState([]);
   const [newRoleName, setNewRoleName] = useState("");
   const [needLoader, setNeedLoader] = useState(false);
-  const [renameIsActive, setRenameIsActive] = useState(false);
+  const [renameIsActive, setRenameIsActive] = useState({});
   const [renameRoleName, setRenameRoleName] = useState("");
 
   const token = sessionStorage.getItem("token");
@@ -108,14 +108,14 @@ export default function Permissiontable() {
 
   function getBaseRole(roles) {
     if (roles.length === 0) {
-      return null; 
+      return null;
     }
-    
+
     const baseRole = roles.reduce((minRole, currentRole) => {
       return currentRole.role_id < minRole.role_id ? currentRole : minRole;
     }, roles[0]);
-    
-    return baseRole; 
+
+    return baseRole;
   }
 
   function isBaseRole(roleId) {
@@ -220,7 +220,7 @@ export default function Permissiontable() {
       setError("Cannot delete permission from base role.");
       return;
     }
-    
+
     if (e.target.checked) {
       AddPermissionToRole(e.target.id, e.target.value);
     } else {
@@ -233,24 +233,31 @@ export default function Permissiontable() {
   }
 
   async function handleRoleRenameSubmit(role_id) {
-    setRenameIsActive(false);
+    const currentRole = roles.find(role => parseInt(role.role_id) === parseInt(role_id));
+    if (currentRole.name === renameRoleName || renameRoleName.trim() === "") {
+      setRenameIsActive(prevState => ({ ...prevState, [role_id]: false }));
+      setRenameRoleName("");
+      return;
+    }
+
     try {
       const response = await axios.put(
         `/boards/${board_id}/roles/${role_id}`,
-        { name: renameRoleName },
+        { name: renameRoleName.trim() },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      const newRoleData = [...roles];
-      newRoleData.forEach((role) => {
+      const newRoleData = roles.map(role => {
         if (parseInt(role.role_id) === parseInt(role_id)) {
-          role.name = renameRoleName;
+          return { ...role, name: renameRoleName.trim() };
         }
+        return role;
       });
       setRoles(newRoleData);
+      setRenameIsActive(prevState => ({ ...prevState, [role_id]: false }));
       setRenameRoleName("");
     } catch (error) {
       setError(error?.response?.data);
@@ -267,34 +274,15 @@ export default function Permissiontable() {
             <div className="permission-table-header">
               <div className="permission-table-header-cell">Permissions</div>
               {roles.map((role, index) => (
-                <div
-                  key={role.role_id}
-                  className="permission-table-header-cell"
-                >
+                <div key={role.role_id} className="permission-table-header-cell">
                   <div className="role-header-div">
-                    {!renameIsActive ? (
-                      <div
-                        className="role-rename-div"
-                        onDoubleClick={() => {
-                          if (
-                            checkPermissionForBoard(
-                              board_id,
-                              team_id,
-                              "role_management"
-                            )
-                          ) {
-                            setRenameIsActive(true);
-                          }
-                        }}
-                      >
-                        <p>{role.name}</p>
-                      </div>
-                    ) : (
+                    {renameIsActive[role.role_id] ? (
                       <div className="role-rename-input">
                         <input
                           className="role-rename-input-field"
                           type="text"
                           placeholder="Rename this role..."
+                          value={renameRoleName === "" ? role.name : renameRoleName}
                           onChange={handleRoleRename}
                         />
                         <button
@@ -303,20 +291,41 @@ export default function Permissiontable() {
                         >
                           Rename
                         </button>
+                        <button
+                          className="role-cancel-button"
+                          onClick={() => {
+                            setRenameIsActive(prevState => ({ ...prevState, [role.role_id]: false }));
+                            setRenameRoleName("");
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <div
+                        className="role-rename-div"
+                        onDoubleClick={() => {
+                          if (checkPermissionForBoard(board_id, team_id, "role_management")) {
+                            setRenameIsActive(prevState => ({ ...prevState, [role.role_id]: true }));
+                            setRenameRoleName(role.name);
+                          }
+                        }}
+                      >
+                        <p>{role.name}</p>
                       </div>
                     )}
                     {checkPermissionForBoard(
                       board_id,
                       team_id,
                       "role_management"
-                    )&& !isBaseRole(role.role_id) && (
-                      <button
-                        onClick={() => DeleteRole(role.role_id)}
-                        className="delete-role"
-                      >
-                        Delete
-                      </button>
-                    )}
+                    ) && !isBaseRole(role.role_id) && (
+                        <button
+                          onClick={() => DeleteRole(role.role_id)}
+                          className="delete-role"
+                        >
+                          Delete
+                        </button>
+                      )}
                   </div>
                 </div>
               ))}
@@ -337,28 +346,28 @@ export default function Permissiontable() {
                         {permission.name}
                       </div>
                       {roles.map((role) => (
-                        <div key={role.role_id} className="permission-table-body-cell"> 
-                        {!isBaseRole(role.role_id) && (    
-                          <input
-                            className="permission-checkbox"
-                            type="checkbox"
-                            onChange={handleCheckboxChange}
-                            id={role.role_id}
-                            value={permission.id}
-                            name={permission.name}
-                            checked={checkIfPermissionIsSet(
-                              role.role_id,
-                              permission.id
-                            )}
-                            disabled={
-                              !checkPermissionForBoard(
-                                board_id,
-                                team_id,
-                                "roles_permissions_management"
-                              )
-                            }
-                          />
-                        )}
+                        <div key={role.role_id} className="permission-table-body-cell">
+                          {!isBaseRole(role.role_id) && (
+                            <input
+                              className="permission-checkbox"
+                              type="checkbox"
+                              onChange={handleCheckboxChange}
+                              id={role.role_id}
+                              value={permission.id}
+                              name={permission.name}
+                              checked={checkIfPermissionIsSet(
+                                role.role_id,
+                                permission.id
+                              )}
+                              disabled={
+                                !checkPermissionForBoard(
+                                  board_id,
+                                  team_id,
+                                  "roles_permissions_management"
+                                )
+                              }
+                            />
+                          )}
                         </div>
                       ))}
                     </div>
