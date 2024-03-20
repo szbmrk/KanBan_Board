@@ -12,6 +12,7 @@ import {
     faUserPen,
     faMagnifyingGlass,
     faCircleHalfStroke,
+    faImage,
 } from "@fortawesome/free-solid-svg-icons";
 
 const notificationIcon = <FontAwesomeIcon icon={faBell} />;
@@ -21,6 +22,7 @@ const signOutIcon = <FontAwesomeIcon icon={faSignOutAlt} />;
 const editProfileIcon = <FontAwesomeIcon icon={faUserPen} />;
 const searchIcon = <FontAwesomeIcon icon={faMagnifyingGlass} />;
 const displayModeIcon = <FontAwesomeIcon icon={faCircleHalfStroke} />;
+const backgoundChangeIcon=<FontAwesomeIcon icon={faImage} />;
 
 const Navbar = () => {
     const { isLoggedIn, onLogout } = React.useContext(AuthContext);
@@ -136,6 +138,7 @@ const Navbar = () => {
     }, [isSidebarOnTop]);
 
     const [isOpen, setIsOpen] = useState(false);
+    const [isBgOpen, setIsBgOpen] = useState(false);
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
@@ -144,6 +147,9 @@ const Navbar = () => {
     const handleClick = () => {
         setMenuIconClicked(true);
         toggleSidebar();
+    };
+    const toggleBgDropdown=()=>{
+        setIsBgOpen(!isBgOpen);
     };
 
     return (
@@ -154,6 +160,9 @@ const Navbar = () => {
                         {menuIcon}
                     </button>
                     <ul>
+                        <li>
+                            <span onClick={toggleBgDropdown}>{backgoundChangeIcon}</span>
+                        </li>
                         <li>
                             <span onClick={DarkMode}>{displayModeIcon}</span>
                         </li>
@@ -184,6 +193,14 @@ const Navbar = () => {
                                 <span>Sign Out</span>
                             </Link>
                         </li>
+                    </ul>
+                </div>
+            )}
+            {isBgOpen && (
+                <div className="background-submenu" onMouseLeave={() => setIsBgOpen(false)}>
+                    <p className="background-menu-title"> Backgrounds </p>
+                    <ul className="background-menu">
+                        
                     </ul>
                 </div>
             )}

@@ -274,10 +274,7 @@ export default function Permissiontable() {
             <div className="permission-table-header">
               <div className="permission-table-header-cell">Permissions</div>
               {roles.map((role, index) => (
-                <div
-                  key={role.role_id}
-                  className="permission-table-header-cell"
-                >
+                <div key={role.role_id} className="permission-table-header-cell">
                   <div className="role-header-div">
                     {renameIsActive[role.role_id] ? (
                       <div className="role-rename-input">
@@ -285,7 +282,7 @@ export default function Permissiontable() {
                           className="role-rename-input-field"
                           type="text"
                           placeholder="Rename this role..."
-                          value={renameRoleName === "" ? role.name : renameRoleName} // Ez biztosítja, hogy az input mező az aktuális szerepkör nevét jeleníti meg.
+                          value={renameRoleName === "" ? role.name : renameRoleName}
                           onChange={handleRoleRename}
                         />
                         <button
@@ -294,6 +291,15 @@ export default function Permissiontable() {
                         >
                           Rename
                         </button>
+                        <button
+                          className="role-cancel-button"
+                          onClick={() => {
+                            setRenameIsActive(prevState => ({ ...prevState, [role.role_id]: false }));
+                            setRenameRoleName("");
+                          }}
+                        >
+                          Cancel
+                        </button>
                       </div>
                     ) : (
                       <div
@@ -301,6 +307,7 @@ export default function Permissiontable() {
                         onDoubleClick={() => {
                           if (checkPermissionForBoard(board_id, team_id, "role_management")) {
                             setRenameIsActive(prevState => ({ ...prevState, [role.role_id]: true }));
+                            setRenameRoleName(role.name);
                           }
                         }}
                       >
