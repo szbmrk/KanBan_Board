@@ -204,4 +204,19 @@
     transition: background-color 0.3s ease;
 }
 
+.role-cancel-button {
+    background-color: var(--cancel);
+    border: none;
+    color: var(--off-white);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.role-cancel-button:hover {
+    background-color: var(--cancel-hover);
+}
+
 /* Add your additional styles here */
