@@ -233,24 +233,31 @@ export default function Permissiontable() {
   }
 
   async function handleRoleRenameSubmit(role_id) {
-    setRenameIsActive(prevState => ({ ...prevState, [role_id]: false }));
+    const currentRole = roles.find(role => parseInt(role.role_id) === parseInt(role_id));
+    if (currentRole.name === renameRoleName || renameRoleName.trim() === "") {
+      setRenameIsActive(prevState => ({ ...prevState, [role_id]: false }));
+      setRenameRoleName("");
+      return;
+    }
+
     try {
       const response = await axios.put(
         `/boards/${board_id}/roles/${role_id}`,
-        { name: renameRoleName },
+        { name: renameRoleName.trim() },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      const newRoleData = [...roles];
-      newRoleData.forEach((role) => {
+      const newRoleData = roles.map(role => {
         if (parseInt(role.role_id) === parseInt(role_id)) {
-          role.name = renameRoleName;
+          return { ...role, name: renameRoleName.trim() };
         }
+        return role;
       });
       setRoles(newRoleData);
+      setRenameIsActive(prevState => ({ ...prevState, [role_id]: false }));
       setRenameRoleName("");
     } catch (error) {
       setError(error?.response?.data);
