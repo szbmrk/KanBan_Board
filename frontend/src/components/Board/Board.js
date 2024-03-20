@@ -540,7 +540,7 @@ const Board = () => {
       const newTask = {
         column_id: board.columns[currentDivIndex].column_id,
         title: name,
-        description: `Description of New Card in ${board.columns[currentDivIndex].name}`,
+        description: ``,
       };
 
       const board_id = board.columns[currentDivIndex].board_id;
