@@ -833,7 +833,7 @@ const Board = () => {
         }
       );
       const newSubtask = response.data.task;
-      newSubtask.description = "Description of New Subtask";
+      newSubtask.description = "";
       const newBoardData = [...board.columns];
       const columnIndex = newBoardData.findIndex(
         (column) => column.column_id === column_id
