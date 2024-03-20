@@ -582,6 +582,7 @@ const Popup = ({
                   </div>
                   <textarea
                     className="description-textarea"
+                    placeholder={"Description of " + task.title}
                     value={editedDescription}
                     onChange={handleDescriptionChange}
                     onBlur={handleBlurDescription}
@@ -612,6 +613,7 @@ const Popup = ({
                   </div>
                   <textarea
                     className="description-textarea"
+                    placeholder={"Description of " + task.title}
                     value={editedDescription}
                     onChange={handleDescriptionChange}
                   />
