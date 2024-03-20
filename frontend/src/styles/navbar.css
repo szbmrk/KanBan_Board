@@ -74,7 +74,7 @@
     z-index: 100;
 }
 
-.profile-menu-title {
+.profile-menu-title, .background-menu-title {
     color: var(--light-gray);
     margin: 0 20px 20px;
     border-bottom: 1px solid var(--light-gray);

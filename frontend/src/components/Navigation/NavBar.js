@@ -200,7 +200,7 @@ const Navbar = () => {
                 <div className="background-submenu" onMouseLeave={() => setIsBgOpen(false)}>
                     <p className="background-menu-title"> Backgrounds </p>
                     <ul className="background-menu">
-                        
+                        {/*TODO: add background buttons*/}
                     </ul>
                 </div>
             )}
