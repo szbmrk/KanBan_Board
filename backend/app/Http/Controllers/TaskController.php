@@ -219,7 +219,7 @@ class TaskController extends Controller
         $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task_id);
 
         $data = [
-            'task' => $task
+            'task' => $taskWithSubtasksAndTags
         ];
         broadcast(new BoardChange($board_id, "UPDATED_TASK", $data));
 
@@ -458,6 +458,11 @@ class TaskController extends Controller
 
         $subTaskWithSubtasksAndTagsAndComments = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($subTask->task_id);
 
+        $data = [
+            'subtask' => $subTaskWithSubtasksAndTagsAndComments
+        ];
+        broadcast(new BoardChange($board->board_id, "CREATED_SUBTASK", $data));
+
         return response()->json(['message' => 'Subtask created successfully', 'task' => $subTaskWithSubtasksAndTagsAndComments]);
     }
 
@@ -489,6 +494,11 @@ class TaskController extends Controller
 
         $subTaskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($subtask_id);
 
+        $data = [
+            'subtask' => $subTaskWithSubtasksAndTags
+        ];
+        broadcast(new BoardChange($board->board_id, "UPDATED_SUBTASK", $data));
+
         return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTaskWithSubtasksAndTags]);
     }
 
@@ -512,6 +522,11 @@ class TaskController extends Controller
         }
 
         $subTask->delete();
+
+        $data = [
+            'subtask' => $subTask
+        ];
+        broadcast(new BoardChange($board->board_id, "DELETED_SUBTASK", $data));
 
         return response()->json(['message' => 'Subtask deleted successfully']);
     }

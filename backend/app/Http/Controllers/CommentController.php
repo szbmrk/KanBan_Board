@@ -7,6 +7,17 @@ use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\Events\BoardChange;
+use Illuminate\Support\Facades\Event;
 
 class CommentController extends Controller
 {
@@ -57,6 +68,13 @@ class CommentController extends Controller
 
         $comment->save();
         $commentWithUser = Comment::with('user')->find($comment->comment_id);
+
+        $data = [
+            'task' => $task,
+            'comment' => $commentWithUser
+        ];
+        broadcast(new BoardChange($board->board_id, "CREATED_COMMENT", $data));
+
         return response()->json(['message' => 'Comment created successfully', 'comment' => $commentWithUser]);
     }
 }

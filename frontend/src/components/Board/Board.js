@@ -180,6 +180,7 @@ const Board = () => {
   const [boardTitle, setBoardTitle] = useState("");
   const [showBoardTitleEdit, setShowBoardTitleEdit] = useState(false);
   const boardRef = useRef(board);
+  const popupRef = useRef(null);
   const columnPositionsRef = useRef(columnPositions);
 
   const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
@@ -278,6 +279,30 @@ const Board = () => {
       case "UPDATED_TAG":
         webSocketUpdateTag(websocket.data.tag);
         break;
+      case "CREATED_COMMENT":
+        webSocketCreateComment(websocket.data);
+        break;
+      case "CREATED_ATTACHMENT":
+        webSocketCreateAttachment(websocket.data);
+        break;
+      case "DELETED_ATTACHMENT":
+        webSocketDeleteAttachment(websocket.data);
+        break;
+      case "CREATED_USER_TASK":
+        webSocketCreateUserTask(websocket.data);
+        break;
+      case "DELETED_USER_TASK":
+        webSocketDeleteUserTask(websocket.data);
+        break;
+      case "CREATED_SUBTASK":
+        webSocketCreateSubtask(websocket.data);
+        break;
+      case "UPDATED_SUBTASK":
+        webSocketUpdateSubtask(websocket.data);
+        break;
+      case "DELETED_SUBTASK":
+        webSocketDeleteSubtask(websocket.data);
+        break;
       case "CREATED_COLUMN":
         webSocketAddColumn(websocket.data);
         break;
@@ -315,6 +340,8 @@ const Board = () => {
   const webSocketUpdateTask = async (updatedTask) => {
     console.log("BOARD");
     console.log(boardRef.current);
+    console.log("UPDATED TASK");
+    console.log(updatedTask);
 
     const newTaskData = [...boardRef.current.columns];
     const columnIndex = newTaskData.findIndex(
@@ -326,7 +353,15 @@ const Board = () => {
     newTaskData[columnIndex].tasks[taskIndex].title = updatedTask.title;
     newTaskData[columnIndex].tasks[taskIndex].description =
       updatedTask.description;
+    newTaskData[columnIndex].tasks[taskIndex].due_date = updatedTask.due_date;
+    newTaskData[columnIndex].tasks[taskIndex].priority_id =
+      updatedTask.priority_id;
+    newTaskData[columnIndex].tasks[taskIndex].priority = updatedTask.priority;
     setBoard({ ...boardRef.current, columns: newTaskData });
+
+    if (inspectedTaskRef?.current?.task_id === updatedTask.task_id) {
+      popupRef?.current?.setTask(updatedTask);
+    }
   };
 
   const webSocketPositionUpdateTask = async (data) => {
@@ -429,6 +464,63 @@ const Board = () => {
     setBoard({ ...boardRef.current, columns: newBoardData });
   }
 
+  const webSocketCreateComment = async (data) => {
+    console.log("webSocketCreateComment");
+    console.log(boardRef.current);
+
+    console.log("comment");
+    console.log(data.task);
+    console.log(inspectedTaskRef.current);
+    console.log(data.comment);
+
+    const newTaskData = [...boardRef.current.columns];
+    const columnIndex = newTaskData.findIndex(
+      (column) => column.column_id === data.task.column_id
+    );
+    const taskIndex = newTaskData[columnIndex].tasks.findIndex(
+      (currentTask) => currentTask.task_id === data.task.task_id
+    );
+    if (!newTaskData[columnIndex].tasks[taskIndex].comments) {
+      newTaskData[columnIndex].tasks[taskIndex].comments = [];
+    }
+    newTaskData[columnIndex].tasks[taskIndex].comments.push(data.comment);
+
+    setBoard({ ...boardRef.current, columns: newTaskData });
+
+    /* if (inspectedTaskRef?.current?.task_id === data.task.task_id) {
+      popupRef?.current?.addComment(data.comment);
+    } */
+  };
+
+  const webSocketCreateAttachment = async (data) => {
+    console.log("webSocketCreateAttachment");
+    console.log(boardRef.current);
+
+    addAttachment(data.task.task_id, data.task.column_id, data.attachment);
+  };
+
+  const webSocketDeleteAttachment = async (data) => {
+    console.log("webSocketCreateAttachment");
+    console.log(boardRef.current);
+
+    deleteAttachment(data.task.task_id, data.task.column_id, data.attachment);
+  };
+
+  const webSocketCreateUserTask = async (data) => {
+    console.log("webSocketCreateUserTask");
+    console.log(boardRef.current);
+
+    addMember(data.task.task_id, data.task.column_id, data.member);
+    popupRef?.current?.handleAddedMemberToTask(data.member);
+  };
+
+  const webSocketDeleteUserTask = async (data) => {
+    console.log("webSocketCreateUserTask");
+    console.log(boardRef.current);
+
+    popupRef?.current?.handleDeletedMemberFromTask(data.member);
+  };
+
   const webSocketDeleteTask = async (task) => {
     console.log("BOARD");
     console.log(boardRef.current);
@@ -450,6 +542,18 @@ const Board = () => {
       );
       setBoard({ ...boardRef.current, columns: newBoardData });
     }
+  };
+
+  const webSocketCreateSubtask = async (data) => {
+    addSubtask(data.subtask);
+  };
+
+  const webSocketUpdateSubtask = async (data) => {
+    editSubtask(data.subtask);
+  };
+
+  const webSocketDeleteSubtask = async (data) => {
+    deleteSubtask(data.subtask);
   };
 
   const webSocketAddColumn = async (data) => {
@@ -1128,18 +1232,6 @@ const Board = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      const newSubtask = response.data.task;
-      newSubtask.description = "Description of New Subtask";
-      const newBoardData = [...board.columns];
-      const columnIndex = newBoardData.findIndex(
-        (column) => column.column_id === column_id
-      );
-      const task = findTaskById(
-        newBoardData[columnIndex].tasks,
-        parent_task_id
-      );
-      task.subtasks.push(newSubtask);
-      setBoard({ ...board, columns: newBoardData });
     } catch (e) {
       if (e?.response?.status === 401 || e?.response?.status === 500) {
         setError({
@@ -1152,6 +1244,20 @@ const Board = () => {
     }
   };
 
+  const addSubtask = async (newSubtask) => {
+    newSubtask.description = "Description of New Subtask";
+    const newBoardData = [...boardRef.current.columns];
+    const columnIndex = newBoardData.findIndex(
+      (column) => column.column_id === newSubtask.column_id
+    );
+    const task = findTaskById(
+      newBoardData[columnIndex].tasks,
+      newSubtask.parent_task_id
+    );
+    task.subtasks.push(newSubtask);
+    setBoard({ ...boardRef.current, columns: newBoardData });
+  };
+
   const handleDeleteSubtask = async (subtask_id, parent_task_id, column_id) => {
     try {
       await axios.delete(`/boards/${board_id}/subtasks/${subtask_id}`, {
@@ -1159,19 +1265,6 @@ const Board = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      const newBoardData = [...board.columns];
-      const columnIndex = newBoardData.findIndex(
-        (column) => column.column_id === column_id
-      );
-      const task = findTaskById(
-        newBoardData[columnIndex].tasks,
-        parent_task_id
-      );
-      task.subtasks.splice(
-        task.subtasks.findIndex((subtask) => subtask.task_id === subtask_id),
-        1
-      );
-      setBoard({ ...board, columns: newBoardData });
     } catch (e) {
       console.error(e);
       if (e?.response?.status === 401 || e?.response?.status === 500) {
@@ -1183,6 +1276,21 @@ const Board = () => {
         setError(e);
       }
     }
+  };
+
+  const deleteSubtask = (deletedSubtask) => {
+    const newBoardData = [...boardRef.current.columns];
+    const columnIndex = newBoardData.findIndex(
+      (column) => column.column_id === deletedSubtask.column_id
+    );
+    const task = findTaskById(
+      newBoardData[columnIndex].tasks,
+      deletedSubtask.parent_task_id
+    );
+    task.subtasks = task.subtasks.filter(
+      (subtask) => subtask.task_id !== deletedSubtask.task_id
+    );
+    setBoard({ ...boardRef.current, columns: newBoardData });
   };
 
   const handleEditSubtask = async (
@@ -1200,21 +1308,6 @@ const Board = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      const newBoardData = [...board.columns];
-      const columnIndex = newBoardData.findIndex(
-        (column) => column.column_id === column_id
-      );
-      const task = findTaskById(
-        newBoardData[columnIndex].tasks,
-        parent_task_id
-      );
-      task.subtasks.map((subtask) => {
-        if (subtask.task_id === subtask_id) {
-          subtask.title = title;
-          subtask.description = description;
-        }
-      });
-      setBoard({ ...board, columns: newBoardData });
     } catch (e) {
       if (e?.response?.status === 401 || e?.response?.status === 500) {
         setError({
@@ -1225,6 +1318,24 @@ const Board = () => {
         setError(e);
       }
     }
+  };
+
+  const editSubtask = (editedSubtask) => {
+    const newBoardData = [...boardRef.current.columns];
+    const columnIndex = newBoardData.findIndex(
+      (column) => column.column_id === editedSubtask.column_id
+    );
+    const task = findTaskById(
+      newBoardData[columnIndex].tasks,
+      editedSubtask.parent_task_id
+    );
+    task.subtasks.map((subtask) => {
+      if (subtask.task_id === editedSubtask.task_id) {
+        subtask.title = editedSubtask.title;
+        subtask.description = editedSubtask.description;
+      }
+    });
+    setBoard({ ...boardRef.current, columns: newBoardData });
   };
 
   const handleFavouriteSubtask = (subtask_id, parent_task_id, column_id) => {
@@ -1308,14 +1419,6 @@ const Board = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      const newComment = response.data.comment;
-      const newBoardData = [...board.columns];
-      const columnIndex = newBoardData.findIndex(
-        (column) => column.column_id === column_id
-      );
-      const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
-      task.comments.push(newComment);
-      setBoard({ ...board, columns: newBoardData });
     } catch (e) {
       console.log(e);
       if (e?.response?.status === 401 || e?.response?.status === 500) {
@@ -1344,6 +1447,8 @@ const Board = () => {
   const [inspectedAttachmentLinks, setInspectedAttachmentLinks] =
     useState(null);
   const setTaskAsInspectedTask = (task) => {
+    console.log("inspected task");
+    console.log(task);
     setInspectedTask(task);
     setShowPopup(true);
   };
@@ -1672,15 +1777,6 @@ const Board = () => {
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      const newBoardData = [...board.columns];
-      const columnIndex = newBoardData.findIndex(
-        (column) => column.column_id === column_id
-      );
-      const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
-      const newTask = response.data.task;
-      task.priority_id = newTask.priority_id;
-      task.priority = newTask.priority;
-      setBoard({ ...board, columns: newBoardData });
     } catch (e) {
       console.error(e);
       if (e?.response?.status === 401 || e?.response?.status === 500) {
@@ -1731,14 +1827,6 @@ const Board = () => {
         { link: link, description: description },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      const newAttachment = response.data.attachment;
-      const newBoardData = [...board.columns];
-      const columnIndex = newBoardData.findIndex(
-        (column) => column.column_id === column_id
-      );
-      const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
-      task.attachments.push(newAttachment);
-      setBoard({ ...board, columns: newBoardData });
     } catch (e) {
       console.error(e);
       if (e?.response?.status === 401 || e?.response?.status === 500) {
@@ -1752,23 +1840,24 @@ const Board = () => {
     }
   };
 
+  const addAttachment = async (task_id, column_id, attachment) => {
+    const newBoardData = [...boardRef.current.columns];
+    const columnIndex = newBoardData.findIndex(
+      (column) => column.column_id === column_id
+    );
+    const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
+    if (!task.attachments) {
+      task.attachments = [];
+    }
+    task.attachments.push(attachment);
+    setBoard({ ...boardRef.current, columns: newBoardData });
+  };
+
   const handleDeleteAttachment = async (task_id, column_id, attachment_id) => {
     try {
       await axios.delete(`/attachments/${attachment_id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const newBoardData = [...board.columns];
-      const columnIndex = newBoardData.findIndex(
-        (column) => column.column_id === column_id
-      );
-      const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
-      task.attachments.splice(
-        task.attachments.findIndex(
-          (attachment) => attachment.attachment_id === attachment_id
-        ),
-        1
-      );
-      setBoard({ ...board, columns: newBoardData });
     } catch (e) {
       console.error(e);
       if (e?.response?.status === 401 || e?.response?.status === 500) {
@@ -1780,6 +1869,22 @@ const Board = () => {
         setError(e);
       }
     }
+  };
+
+  const deleteAttachment = async (task_id, column_id, attachment) => {
+    const newBoardData = [...boardRef.current.columns];
+    const columnIndex = newBoardData.findIndex(
+      (column) => column.column_id === column_id
+    );
+    const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
+    task.attachments.splice(
+      task.attachments.findIndex(
+        (currentAttachment) =>
+          currentAttachment.attachment_id === attachment.attachment_id
+      ),
+      1
+    );
+    setBoard({ ...boardRef.current, columns: newBoardData });
   };
 
   const handleShowCraftPromptPopup = () => {
@@ -1801,14 +1906,6 @@ const Board = () => {
         { user_id: member_id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      const newMember = response.data.member;
-      const newBoardData = [...board.columns];
-      const columnIndex = newBoardData.findIndex(
-        (column) => column.column_id === column_id
-      );
-      const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
-      task.members.push(newMember);
-      setBoard({ ...board, columns: newBoardData });
     } catch (e) {
       console.error(e);
       if (e?.response?.status === 401 || e?.response?.status === 500) {
@@ -1820,6 +1917,19 @@ const Board = () => {
         setError(e);
       }
     }
+  };
+
+  const addMember = async (task_id, column_id, newMember) => {
+    const newBoardData = [...boardRef.current.columns];
+    const columnIndex = newBoardData.findIndex(
+      (column) => column.column_id === column_id
+    );
+    const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
+    if (!task.members) {
+      task.members = [];
+    }
+    task.members.push(newMember);
+    setBoard({ ...boardRef.current, columns: newBoardData });
   };
 
   const handleDeleteMember = async (task_id, column_id, member_id) => {
@@ -3155,6 +3265,7 @@ const Board = () => {
           tags={inspectedTask.tags}
           placeTagOnTask={handlePlaceTagOnTask}
           removeTagFromTask={handleRemoveTagFromTask}
+          ref={popupRef}
         />
       )}
       {error && (
