@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComments } from '@fortawesome/free-solid-svg-icons';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { formatDate } from '../../utils/DateFormat';
+import axios from 'axios';
 
 const sendMessageIcon = <FontAwesomeIcon icon={faPaperPlane} />;
 
@@ -17,6 +18,25 @@ export default function Comment({ comments, handlePostComment }) {
         handlePostComment(addComment);
         setAddComment('');
     };
+
+    const deleteComment = async (commentId) => {
+        try {
+            // Először töröljük a kommentet a backend-en keresztül
+            await axios.delete(`/api/comments/${commentId}`);
+
+            // Ha a törlés sikeres volt, frissítsük a kommenteket
+
+            // például, ha a comments egy useState változó, frissíthetjük azt:
+            // setComments(comments.filter(comment => comment.id !== commentId));
+
+            setTheme(localStorage.getItem("darkMode"));
+
+            // Ha szükséges, itt további logikát is hozzáadhatsz, például üzeneteket vagy visszajelzést a felhasználónak.
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+        }
+    };
+
     const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
     useEffect(() => {
         //ez
@@ -49,6 +69,11 @@ export default function Comment({ comments, handlePostComment }) {
                             <div className='comment-header'>
                                 <span className='username'>{comment.user.username}</span>
                                 <span className='date'>{formatDate(comment.created_at)}</span>
+                                {sessionStorage.getItem('username') === comment.user.username && (
+                                    <button className='delete-comment-button' onClick={() => deleteComment(comment.id)}>
+                                        Delete
+                                    </button>
+                                )}
                             </div>
                             <div className='comment-text'>{comment.text}</div>
                         </div>

@@ -59,4 +59,30 @@ class CommentController extends Controller
         $commentWithUser = Comment::with('user')->find($comment->comment_id);
         return response()->json(['message' => 'Comment created successfully', 'comment' => $commentWithUser]);
     }
+
+    public function commentDelete($comment_id)
+    {
+        $user = Auth::user();
+        $comment = Comment::find($comment_id);
+    
+        if (!$comment) {
+            return response()->json(['error' => 'Comment not found'], 404);
+        }
+    
+        $task = $comment->task;
+        $board = $task->column->board;
+    
+        if (!$user->isMemberOfBoard($board->board_id)) {
+            return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+    
+        // Ellenőrizd, hogy a felhasználó tényleg törölheti-e a kommentet
+        if ($comment->user_id !== $user->user_id) {
+            return response()->json(['error' => 'You are not authorized to delete this comment'], 403);
+        }
+    
+        $comment->delete();
+    
+        return response()->json(['message' => 'Comment deleted successfully']);
+    }
 }
