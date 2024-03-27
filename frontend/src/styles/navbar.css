@@ -61,7 +61,7 @@
     align-self: center;
 }
 
-.profile-submenu , .background-submenu {
+.profile-submenu  {
     position: absolute;
     top: 50px;
     right: 0;
@@ -74,7 +74,7 @@
     z-index: 100;
 }
 
-.profile-menu-title, .background-menu-title {
+.profile-menu-title {
     color: var(--light-gray);
     margin: 0 20px 20px;
     border-bottom: 1px solid var(--light-gray);
