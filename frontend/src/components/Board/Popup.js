@@ -97,7 +97,8 @@ const Popup = ({
     const [error, setError] = useState(null);
 
     const validateLink = (inputLink) => {
-        const urlPattern = /^(http|https):\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/;
+        const urlPattern = /^(https?:\/\/|http?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/i;
+
         return urlPattern.test(inputLink);
     };
 
