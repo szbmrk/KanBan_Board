@@ -282,6 +282,9 @@ const Board = () => {
             case "CREATED_COMMENT":
                 webSocketCreateComment(websocket.data);
                 break;
+            case "DELETED_COMMENT":
+                webSocketDeleteComment(websocket.data);
+                break;
             case "CREATED_ATTACHMENT":
                 webSocketCreateAttachment(websocket.data);
                 break;
@@ -490,6 +493,34 @@ const Board = () => {
         /* if (inspectedTaskRef?.current?.task_id === data.task.task_id) {
           popupRef?.current?.addComment(data.comment);
         } */
+    };
+
+    const webSocketDeleteComment = async (data) => {
+        console.log("webSocketDeleteComment");
+        console.log(boardRef.current);
+
+        console.log("comment");
+        console.log(data.task);
+        console.log(inspectedTaskRef.current);
+        console.log(data.comment);
+
+        const newTaskData = [...boardRef.current.columns];
+        const columnIndex = newTaskData.findIndex(
+            (column) => column.column_id === data.task.column_id
+        );
+        const taskIndex = newTaskData[columnIndex].tasks.findIndex(
+            (currentTask) => currentTask.task_id === data.task.task_id
+        );
+        if (!newTaskData[columnIndex].tasks[taskIndex].comments) {
+            newTaskData[columnIndex].tasks[taskIndex].comments = [];
+        }
+
+        newTaskData[columnIndex].tasks[taskIndex].comments = newTaskData[columnIndex].tasks[taskIndex].comments.filter(
+            (comment) => comment.comment_id !== data.comment.comment_id
+        );
+
+
+        setBoard({ ...boardRef.current, columns: newTaskData });
     };
 
     const webSocketCreateAttachment = async (data) => {
