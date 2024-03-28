@@ -15,7 +15,6 @@ import EditProfile from './components/Profile/EditProfile';
 import Notification from './components/Notification';
 import Permissiontable from './components/Permissions/Permissiontable';
 
-
 const App = () => {
     return (
         <BrowserRouter>
