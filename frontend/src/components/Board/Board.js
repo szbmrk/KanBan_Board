@@ -186,7 +186,7 @@ const Board = () => {
     const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
 
     useEffect(() => {
-        document.title = "Board";
+        document.title = "KanBan | Board";
 
         reloadPriorities();
 

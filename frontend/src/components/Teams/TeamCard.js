@@ -51,7 +51,7 @@ const TeamCard = ({
     const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
 
     useEffect(() => {
-        document.title = 'Teams';
+        document.title = 'KanBan | Teams';
         console.log(data.team_members);
         for (let i = 0; i < data.team_members.length; i++) {
             if (data.team_members[i].user_id === data.created_by) {
