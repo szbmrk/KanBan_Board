@@ -934,6 +934,7 @@ const Board = () => {
             } else {
                 try {
                     const column_id = board.columns[columnIndex].column_id;
+                    const isFinished = board.columns[columnIndex].is_finished;
                     await axios.put(
                         `/boards/column/${column_id}`,
                         { name: columnNewTitle },
@@ -946,7 +947,7 @@ const Board = () => {
 
                     const newColumnData = [...board.columns];
                     newColumnData[columnIndex].name = columnNewTitle;
-                    newColumnData[columnIndex].is_finished = board.columns[columnIndex].is_finished;
+                    newColumnData[columnIndex].is_finished = isFinished;
                     setBoard({ ...board, columns: newColumnData });
                 } catch (e) {
                     console.error(e);
