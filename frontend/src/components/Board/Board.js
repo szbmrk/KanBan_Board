@@ -636,7 +636,7 @@ const Board = () => {
         );
 
         column.name = updatedColumn.name;
-        column.is_finished = updatedColumn.is_finished === "1" ? 1 : 0;
+        column.is_finished = updatedColumn.is_finished === 1 ? 1 : 0;
         column.task_limit = updatedColumn.task_limit;
 
         setBoard({ ...boardRef.current, columns: newBoardData });
