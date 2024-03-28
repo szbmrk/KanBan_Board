@@ -11,6 +11,7 @@ cd frontend -> npm install (ez először kell csak /
 - '.env.example' tartalmának átmásolása a '.env-be'
 - /src/api/config.js fájl létrehozása
 - /src/api/config.js.example fájl tartalmának átmásolása a 'config.js-be'
+- indítás után az app a localhost:3000/agi-kanban-on érhető el
 
 
 ## backend setupolása:
