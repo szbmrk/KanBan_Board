@@ -50,7 +50,7 @@ import Echo from "laravel-echo";
 import {
     REACT_APP_PUSHER_KEY,
     REACT_APP_PUSHER_CLUSTER,
-} from "../../api/config.js";
+} from "../../api/config";
 
 export const documentationIcon = <FontAwesomeIcon icon={faFileLines} />;
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
@@ -210,6 +210,7 @@ const Board = () => {
     useEffect(() => {
         window.Pusher = require("pusher-js");
         window.Pusher.logToConsole = true;
+
         const echo = new Echo({
             broadcaster: "pusher",
             key: REACT_APP_PUSHER_KEY,
