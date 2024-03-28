@@ -50,7 +50,7 @@ import Echo from "laravel-echo";
 import {
     REACT_APP_PUSHER_KEY,
     REACT_APP_PUSHER_CLUSTER,
-} from "../../api/config";
+} from "../../api/config.js";
 
 export const documentationIcon = <FontAwesomeIcon icon={faFileLines} />;
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
