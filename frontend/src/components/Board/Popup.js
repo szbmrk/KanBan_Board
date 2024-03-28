@@ -51,6 +51,7 @@ const Popup = ({
   unFavouriteSubtask,
   setTaskAsInspectedTask,
   handlePostComment,
+  handleDeleteComment,
   onPreviousTask,
   priorities,
   modifyPriority,
@@ -87,6 +88,7 @@ const Popup = ({
   const [newMember, setNewMember] = useState(null);
   const [showEditTitle, setShowEditTitle] = useState(false);
   const [showEditDescription, setShowEditDescription] = useState(false);
+  const [taskUsestate , setTask] = useState(task);
 
   const token = sessionStorage.getItem("token");
 
@@ -262,6 +264,9 @@ const Popup = ({
     handlePostComment(task.task_id, task.column_id, comment);
   };
 
+  const deleteComment = async (commentId) => {
+    handleDeleteComment(commentId, task.column_id ,task.task_id);
+  };
   const handleGetBoardTags = async () => {
     try {
       const token = sessionStorage.getItem("token");
@@ -286,12 +291,12 @@ const Popup = ({
       .toISOString()
       .slice(0, 19)
       .replace("T", " ");
-    modifyDeadline(task.task_id, task.column_id, nextWeekTimestamp);
+    modifyDeadline(taskUsestate.task_id, task.column_id, nextWeekTimestamp);
   };
 
   const handleModifyDeadline = (date) => {
     const timestamp = date.toISOString().slice(0, 19).replace("T", " ");
-    modifyDeadline(task.task_id, task.column_id, timestamp);
+    modifyDeadline(taskUsestate.task_id, task.column_id, timestamp);
   };
 
   const handleOnDatePickerClose = () => {
@@ -307,19 +312,19 @@ const Popup = ({
   };
 
   const handleAddPriority = () => {
-    modifyPriority(task.task_id, task.column_id, priorities[0].priority_id);
+    modifyPriority(taskUsestate.task_id, task.column_id, priorities[0].priority_id);
   };
 
   const handleModifyPriority = (priorityId) => {
-    modifyPriority(task.task_id, task.column_id, priorityId);
+    modifyPriority(taskUsestate.task_id, task.column_id, priorityId);
   };
 
   const handleAddAttachment = (e) => {
     e.preventDefault();
     if (linkIsValid) {
       addAttachment(
-        task.task_id,
-        task.column_id,
+        taskUsestate.task_id,
+        taskUsestate.column_id,
         newAttachmentLink,
         newAttachmentDescription
       );
@@ -503,12 +508,12 @@ const Popup = ({
               onFocus={handleFocusTitle}
             />
           )}
-          {task.due_date && (
+          {taskUsestate.due_date && (
             <div className="due-date">
               <span className="icon">{stopwatchIcon}</span>
               <DatePicker
                 className="due-date-picker"
-                selected={task.due_date ? new Date(task.due_date) : null}
+                selected={taskUsestate.due_date ? new Date(taskUsestate.due_date) : null}
                 onSelect={(date) => setNewDeadlineDate(date)}
                 onCalendarClose={handleOnDatePickerClose}
                 dateFormat="yyyy-MM-dd"
@@ -516,18 +521,18 @@ const Popup = ({
             </div>
           )}
           {/* TODO: különböző színű icon megjelenítése az id helyett annak függvényében, hogy milyen a prioritása a feledatnak */}
-          {task.priority && (
+          {taskUsestate.priority && (
             <>
               <div
                 onClick={handleOpenPriorityPicker}
                 style={{ zIndex: priorityDropDownZIndex }}
                 className="priority"
               >
-                {task.priority.priority}
+                {taskUsestate.priority.priority}
               </div>
             </>
           )}
-          {task.parent_task_id === null ? (
+          {taskUsestate.parent_task_id === null ? (
             <span className="close-btn" onClick={onClose}>
               {closeIcon}
             </span>
@@ -535,7 +540,7 @@ const Popup = ({
             <span
               className="close-btn"
               onClick={() =>
-                onPreviousTask(task.parent_task_id, task.column_id)
+                onPreviousTask(taskUsestate.parent_task_id, task.column_id)
               }
             >
               {backIcon}
@@ -546,7 +551,7 @@ const Popup = ({
         <div className="lower-part">
           <div className="popup-content">
             <div className="tags-container">
-              {task.tags && (
+              {taskUsestate.tags && (
                 <>
                   <div className="subtitle">
                     <span className="icon">{tagsIcon}</span>
@@ -556,8 +561,8 @@ const Popup = ({
                     <TagDropdown
                       tags={task.tags}
                       allTags={boardTags}
-                      taskId={task.task_id}
-                      columnId={task.column_id}
+                      taskId={taskUsestate.task_id}
+                      columnId={taskUsestate.column_id}
                       placeTagOnTask={placeTagOnTask}
                       removeTagFromTask={removeTagFromTask}
                       tagEditHandler={handleTagEditing}
@@ -619,14 +624,14 @@ const Popup = ({
               )}
             </div>
             <div className="subtasks-container">
-              {task.subtasks && task.subtasks.length > 0 ? (
+              {taskUsestate.subtasks && taskUsestate.subtasks.length > 0 ? (
                 <>
                   <div className="subtitle">
                     <span className="icon">{subtaskIcon}</span>
                     <h3>Subtasks:</h3>
                   </div>
                   <div className="subtask">
-                    {task.subtasks.map((subTask, index) => (
+                    {taskUsestate.subtasks.map((subTask, index) => (
                       <Subtask
                         key={subTask.task_id}
                         subTask={subTask}
@@ -669,19 +674,20 @@ const Popup = ({
                 <h3>Comments:</h3>
               </div>
               <Comment
-                comments={task.comments}
+                comments={taskUsestate.comments}
                 handlePostComment={handlePostCommentFromComment}
+                deleteComment={deleteComment}
               ></Comment>
             </div>
             <div className="attachments-container">
-              {task.attachments && task.attachments.length > 0 && (
+              {taskUsestate.attachments && taskUsestate.attachments.length > 0 && (
                 <>
                   <div className="subtitle">
                     <span className="icon">{attachmentIcon}</span>
                     <h3>Attachments:</h3>
                   </div>
                   <div className="attachment-container">
-                    {task.attachments.map((attachment, index) => (
+                    {taskUsestate.attachments.map((attachment, index) => (
                       <div className="attachment" key={index}>
                         <a
                           className="attachment-link"
@@ -694,8 +700,8 @@ const Popup = ({
                           className="trash-icon"
                           onClick={() =>
                             deleteAttachment(
-                              task.task_id,
-                              task.column_id,
+                              taskUsestate.task_id,
+                              taskUsestate.column_id,
                               attachment.attachment_id
                             )
                           }
@@ -709,14 +715,14 @@ const Popup = ({
               )}
             </div>
             <div className="members-container">
-              {task.members && task.members.length > 0 && (
+              {taskUsestate.members && taskUsestate.members.length > 0 && (
                 <>
                   <div className="subtitle">
                     <span className="icon">{membersIcon}</span>
                     <h3>Members:</h3>
                   </div>
                   <div className="member-container">
-                    {task.members.map((member, index) => (
+                    {taskUsestate.members.map((member, index) => (
                       <div className="member" key={index}>
                         <p className="username">{member.username}</p>
                         <p className="email">{member.email}</p>
@@ -762,16 +768,16 @@ const Popup = ({
               <div className="add-to-card-content">
                 <div
                   className="add-to-card-item"
-                  onClick={() => addSubtask(task.task_id, task.column_id)}
+                  onClick={() => addSubtask(taskUsestate.task_id, taskUsestate.column_id)}
                 >
                   <p>Subtask</p>
                 </div>
-                {task.due_date === null && (
+                {taskUsestate.due_date === null && (
                   <div className="add-to-card-item" onClick={handleAddDeadline}>
                     <p>Deadline</p>
                   </div>
                 )}
-                {task.priority === null && (
+                {taskUsestate.priority === null && (
                   <div className="add-to-card-item" onClick={handleAddPriority}>
                     <p>Priority</p>
                   </div>
