@@ -946,6 +946,7 @@ const Board = () => {
 
                     const newColumnData = [...board.columns];
                     newColumnData[columnIndex].name = columnNewTitle;
+                    newColumnData[columnIndex].is_finished = board.columns[columnIndex].is_finished;
                     setBoard({ ...board, columns: newColumnData });
                 } catch (e) {
                     console.error(e);
