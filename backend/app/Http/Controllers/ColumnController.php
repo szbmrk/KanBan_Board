@@ -17,6 +17,16 @@ use App\Helpers\LogRequest;
 use Illuminate\Http\Request;
 use App\Models\FavouriteTask;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\Events\BoardChange;
+use Illuminate\Support\Facades\Event;
 
 
 class ColumnController extends Controller
@@ -75,6 +85,13 @@ class ColumnController extends Controller
         $board->columns()->save($column);
     
         LogRequest::instance()->logAction('CREATED COLUMN', $user->user_id, "Column Created successfully!", $teamId, $board_id, null);
+
+        $data = [
+            'column' => $column,
+            'is_finished' => $request->input('is_finished'),
+            'task_limit' => $request->input('task_limit'),
+        ];
+        broadcast(new BoardChange($board_id, "CREATED_COLUMN", $data));
     
         return response()->json(['message' => 'Column created successfully', 'column' => $column]);
     }
@@ -123,6 +140,12 @@ class ColumnController extends Controller
             $column->save();
 
             LogRequest::instance()->logAction('UPDATED COLUMN', $user->user_id, "Column Updated successfully!", $teamId, $column->board_id, null);
+
+            $data = [
+                'column' => $column
+            ];
+            broadcast(new BoardChange($column->board_id, "UPDATED_COLUMN", $data));
+
             return response()->json(['column' => $column]);
         }
     }
@@ -174,6 +197,12 @@ class ColumnController extends Controller
             }
         }
         LogRequest::instance()->logAction('UPDATED COLUMN', $user->user_id, "Columns position updated successfully.", $teamId, $column->board_id, null);
+
+        $data = [
+            'columns' => $columns
+        ];
+        broadcast(new BoardChange($board_id, "POSITION_UPDATED_COLUMN", $data));
+
         return response()->json(['message' => 'Columns position updated successfully.']);
     }
 
@@ -238,6 +267,12 @@ class ColumnController extends Controller
         $column->delete();
 
         LogRequest::instance()->logAction('DELETED COLUMN', $user->user_id, "Column deleted successfully! Column: $column->name", $teamId, $column->board_id, null);
+
+        $data = [
+            'column' => $column
+        ];
+        broadcast(new BoardChange($board_id, "DELETED_COLUMN", $data));
+
         return response()->json(['message' => 'Column deleted successfully!']);
     }
 

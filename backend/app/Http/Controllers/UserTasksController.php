@@ -8,6 +8,17 @@ use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Board;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\Events\BoardChange;
+use Illuminate\Support\Facades\Event;
 
 class UserTasksController extends Controller
 {
@@ -56,8 +67,15 @@ class UserTasksController extends Controller
 
         $member = User::where('user_id', $new_user_id)->first();
 
+        $data = [
+            'task' => $task,
+            'member' => $member
+        ];
+        broadcast(new BoardChange($task->board_id, "CREATED_USER_TASK", $data));
+
         return response()->json(['message' => 'Task assigned successfully', 'member' => $member]);
     }
+    
     public function destroy($task_id, $user_id)
     {
         $user = auth()->user();
@@ -69,7 +87,23 @@ class UserTasksController extends Controller
             return response()->json(['error' => 'Task assignment not found'], 404);
         }
 
+        // Get the task
+        $task = Task::find($task_id);
+
+        // Check if the task exists
+        if (!$task) {
+            return response()->json(['error' => 'Task not found'], 404);
+        }
+
+        $member = User::where('user_id', $user_id)->first();
+
         $assignment->delete();
+
+        $data = [
+            'task' => $task,
+            'member' => $member
+        ];
+        broadcast(new BoardChange($task->board_id, "DELETED_USER_TASK", $data));
 
         return response()->json(['message' => 'Task unassigned successfully']);
     }

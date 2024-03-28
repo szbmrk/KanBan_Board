@@ -41,28 +41,31 @@ const commentsIcon = <FontAwesomeIcon icon={faComments} />;
 const checkIcon = <FontAwesomeIcon icon={faCheck} />;
 const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
 
-const Popup = ({
-  task,
-  onClose,
-  onSave,
-  addSubtask,
-  deleteSubtask,
-  favouriteSubtask,
-  unFavouriteSubtask,
-  setTaskAsInspectedTask,
-  handlePostComment,
-  onPreviousTask,
-  priorities,
-  modifyPriority,
-  modifyDeadline,
-  addAttachment,
-  deleteAttachment,
-  addMember,
-  deleteMember,
-  placeTagOnTask,
-  removeTagFromTask,
-  handleBoardTagDeletion,
-}) => {
+const Popup = (
+  {
+    task,
+    onClose,
+    onSave,
+    addSubtask,
+    deleteSubtask,
+    favouriteSubtask,
+    unFavouriteSubtask,
+    setTaskAsInspectedTask,
+    handlePostComment,
+    onPreviousTask,
+    priorities,
+    modifyPriority,
+    modifyDeadline,
+    addAttachment,
+    deleteAttachment,
+    addMember,
+    deleteMember,
+    placeTagOnTask,
+    removeTagFromTask,
+    handleBoardTagDeletion,
+  },
+  ref
+) => {
   const popupRef = useRef(null);
   const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
   const [editedText, setEditedText] = useState(task.title);
@@ -183,6 +186,7 @@ const Popup = ({
   }, [showEditTitle]);
 
   useEffect(() => {
+    console.log("Useffect-task");
     getNotMembers();
     setShowPriorityDropDown(false);
     setNewDeadlineDate(null);
@@ -192,6 +196,24 @@ const Popup = ({
     setEditedDescription(task.description);
     handleGetBoardTags();
   }, [task]);
+
+  const setTask = (updatedTask) => {
+    console.log("Useffect-task");
+    getNotMembers();
+    setShowPriorityDropDown(false);
+    setNewDeadlineDate(null);
+    setNewAttachmentLink("");
+    setNewAttachmentDescription("");
+    setEditedText(updatedTask.title);
+    setEditedDescription(updatedTask.description);
+    handleGetBoardTags();
+  };
+
+  React.useImperativeHandle(ref, () => ({
+    setTask,
+    handleAddedMemberToTask,
+    handleDeletedMemberFromTask,
+  }));
 
   useEffect(() => {
     const ResetTheme = () => {
@@ -331,31 +353,37 @@ const Popup = ({
 
   const handleAddMember = () => {
     addMember(task.task_id, task.column_id, newMember);
-    const newNotMembers = [...notMembers];
-    newNotMembers.splice(
-      newNotMembers.findIndex((member) => member.user_id === newMember),
-      1
-    );
-    setNotMembers(newNotMembers);
     setShowAddMember(false);
+  };
+
+  const handleAddedMemberToTask = (addedMember) => {
+    let newNotMembers = [...notMembers];
+
+    newNotMembers = newNotMembers.filter(
+      (currentMember) => currentMember.user_id !== addedMember.user_id
+    );
     if (newNotMembers.length > 0) {
       setNewMember(newNotMembers[0].user_id); // reset value for dropdown
     }
+    setNotMembers(newNotMembers);
   };
 
   const handleDeleteMember = (userId) => {
     deleteMember(task.task_id, task.column_id, userId);
-    const newNotMembers = [...notMembers];
-    const newMember = task.members.find((member) => member.user_id === userId);
-    newNotMembers.push(newMember);
-    task.members.splice(
-      task.members.findIndex((member) => member.user_id === userId),
-      1
-    );
-    setNotMembers(newNotMembers);
+  };
+
+  const handleDeletedMemberFromTask = (addedMember) => {
+    let newNotMembers = [...notMembers];
+
+    newNotMembers.push(addedMember);
     if (newNotMembers.length > 0) {
       setNewMember(newNotMembers[0].user_id); // reset value for dropdown
     }
+    setNotMembers(newNotMembers);
+
+    task.members = task.members.filter(
+      (currentMember) => currentMember.user_id !== addedMember.user_id
+    );
   };
 
   const handleCloseTagEditor = () => {
@@ -925,4 +953,4 @@ const Popup = ({
   );
 };
 
-export default Popup;
+export default React.forwardRef(Popup);
