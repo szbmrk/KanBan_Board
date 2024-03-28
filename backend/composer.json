@@ -14,7 +14,10 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
+<<<<<<< Updated upstream
         "pusher/pusher-php-server": "^7.2",
+=======
+>>>>>>> Stashed changes
         "react/http": "^1.1",
         "tymon/jwt-auth": "^2.0"
     },
