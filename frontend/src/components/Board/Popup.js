@@ -63,7 +63,7 @@ const Popup = ({
     placeTagOnTask,
     removeTagFromTask,
     handleBoardTagDeletion,
-}) => {
+}, ref) => {
     const popupRef = useRef(null);
     const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
     const [editedText, setEditedText] = useState(task.title);

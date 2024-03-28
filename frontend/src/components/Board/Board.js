@@ -1432,6 +1432,35 @@ const Board = () => {
         }
     };
 
+    const deleteComment = async (comment_id, column_id, task_id) => {
+        try {
+            await axios.delete(`/tasks/comments/${comment_id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const newBoardData = [...board.columns];
+            const columnIndex = newBoardData.findIndex(
+                (column) => column.column_id === column_id
+            );
+            const task = findTaskById(newBoardData[columnIndex].tasks, task_id);
+            task.comments = task.comments.filter(
+                (comment) => comment.comment_id !== comment_id
+            );
+            setBoard({ ...board, columns: newBoardData });
+        } catch (e) {
+            console.log(e);
+            if (e?.response?.status === 401 || e?.response?.status === 500) {
+                setError({
+                    message: "You are not logged in! Redirecting to login page...",
+                });
+                setRedirect(true);
+            } else {
+                setError(e);
+            }
+        }
+    };
+
+
+
     //popup
     const [showPopup, setShowPopup] = useState(false);
     const [inspectedTask, setInspectedTask] = useState(null);
@@ -3253,6 +3282,7 @@ const Board = () => {
                     favouriteSubtask={handleFavouriteSubtask}
                     unFavouriteSubtask={handleUnFavouriteSubtask}
                     handlePostComment={postComment}
+                    handleDeleteComment={deleteComment}
                     setTaskAsInspectedTask={setTaskAsInspectedTask}
                     onPreviousTask={handleOpenPreviousTask}
                     priorities={priorities}
