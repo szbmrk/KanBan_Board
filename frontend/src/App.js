@@ -17,69 +17,71 @@ import Permissiontable from './components/Permissions/Permissiontable';
 
 const App = () => {
     return (
-        <BrowserRouter>
-            <AuthProvider>
-                <Routes>
-                    <Route path="/" element={<ProtectedRoute> <Navigate to="/dashboard" /> </ProtectedRoute>} />
-                    <Route exact path="/login" element={<Login />} />
-                    <Route exact path="/signup" element={<Signup />} />
-                    <Route exact path="/board/:board_id" element={
-                        <ProtectedRoute>
-                            <Navbar />
-                            <Sidebar />
-                            <Board />
-                        </ProtectedRoute>} />
-                    <Route exact path="/board/:board_id/:column_to_show_id/:task_to_show_id" element={
-                        <ProtectedRoute>
-                            <Navbar />
-                            <Sidebar />
-                            <Board />
-                        </ProtectedRoute>} />
-                    <Route exact path="/dashboard" element={
-                        <ProtectedRoute>
-                            <Navbar />
-                            <Sidebar />
-                            <Dashboard />
-                        </ProtectedRoute>} />
-                    <Route exact path="/assigned_tasks" element={
-                        <ProtectedRoute>
-                            <Navbar />
-                            <Sidebar />
-                            <AssignedTasks />
-                        </ProtectedRoute>} />
-                    <Route exact path="/teams" element={
-                        <ProtectedRoute>
-                            <Navbar />
-                            <Sidebar />
-                            <Teams />
-                        </ProtectedRoute>} />
-                    <Route exact path="/permissiontable" element={
-                        <ProtectedRoute>
-                            <Navbar />
-                            <Sidebar />
-                            <ManageBoardPermissions />
-                        </ProtectedRoute>} />
-                    <Route exact path="/permissions/:team_id/:board_id" element={
-                        <ProtectedRoute>
-                            <Navbar />
-                            <Sidebar />
-                            <Permissiontable />
-                        </ProtectedRoute>} />
-                    <Route exact path="/profile" element={
-                        <ProtectedRoute>
-                            <Navbar />
-                            <Sidebar />
-                            <EditProfile />
-                        </ProtectedRoute>} />
-                    <Route exact path="/notifications" element={
-                        <ProtectedRoute>
-                            <Navbar />
-                            <Sidebar />
-                            <Notification />
-                        </ProtectedRoute>} />
-                </Routes>
-            </AuthProvider>
-        </BrowserRouter>
+        <>
+            <BrowserRouter basename="/agi-kanban">
+                <AuthProvider>
+                    <Routes>
+                        <Route path="/" element={<ProtectedRoute> <Navigate to="/dashboard" /> </ProtectedRoute>} />
+                        <Route exact path="/login" element={<Login />} />
+                        <Route exact path="/signup" element={<Signup />} />
+                        <Route exact path="/board/:board_id" element={
+                            <ProtectedRoute>
+                                <Navbar />
+                                <Sidebar />
+                                <Board />
+                            </ProtectedRoute>} />
+                        <Route exact path="/board/:board_id/:column_to_show_id/:task_to_show_id" element={
+                            <ProtectedRoute>
+                                <Navbar />
+                                <Sidebar />
+                                <Board />
+                            </ProtectedRoute>} />
+                        <Route exact path="/dashboard" element={
+                            <ProtectedRoute>
+                                <Navbar />
+                                <Sidebar />
+                                <Dashboard />
+                            </ProtectedRoute>} />
+                        <Route exact path="/assigned_tasks" element={
+                            <ProtectedRoute>
+                                <Navbar />
+                                <Sidebar />
+                                <AssignedTasks />
+                            </ProtectedRoute>} />
+                        <Route exact path="/teams" element={
+                            <ProtectedRoute>
+                                <Navbar />
+                                <Sidebar />
+                                <Teams />
+                            </ProtectedRoute>} />
+                        <Route exact path="/permissiontable" element={
+                            <ProtectedRoute>
+                                <Navbar />
+                                <Sidebar />
+                                <ManageBoardPermissions />
+                            </ProtectedRoute>} />
+                        <Route exact path="/permissions/:team_id/:board_id" element={
+                            <ProtectedRoute>
+                                <Navbar />
+                                <Sidebar />
+                                <Permissiontable />
+                            </ProtectedRoute>} />
+                        <Route exact path="/profile" element={
+                            <ProtectedRoute>
+                                <Navbar />
+                                <Sidebar />
+                                <EditProfile />
+                            </ProtectedRoute>} />
+                        <Route exact path="/notifications" element={
+                            <ProtectedRoute>
+                                <Navbar />
+                                <Sidebar />
+                                <Notification />
+                            </ProtectedRoute>} />
+                    </Routes>
+                </AuthProvider>
+            </BrowserRouter>
+        </>
     );
 };
 
