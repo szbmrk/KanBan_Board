@@ -974,7 +974,7 @@ const Board = () => {
             const newTask = {
                 column_id: board.columns[currentDivIndex].column_id,
                 title: name,
-                description: `Description of New Card in ${board.columns[currentDivIndex].name}`,
+                description: ``,
             };
 
             const board_id = board.columns[currentDivIndex].board_id;
@@ -1278,7 +1278,7 @@ const Board = () => {
     };
 
     const addSubtask = async (newSubtask) => {
-        newSubtask.description = "Description of New Subtask";
+        newSubtask.description = "";
         const newBoardData = [...boardRef.current.columns];
         const columnIndex = newBoardData.findIndex(
             (column) => column.column_id === newSubtask.column_id
