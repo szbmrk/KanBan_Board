@@ -24,6 +24,11 @@
     /* Allow divs to wrap to next line */
     justify-content: flex-start;
     align-items: flex-start;
+
+}
+
+.Board_Without_title {
+    overflow: auto;
 }
 
 .addbtn-column {

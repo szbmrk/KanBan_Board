@@ -118,9 +118,9 @@ body {
     text-align: center;
     margin: 0 auto;
     height: calc(100vh - 50px);
-    overflow: auto;
     float: right !important;
     max-width: calc(100% - 231px);
+    overflow: auto;
 }
 
 @media screen and (max-width: 600px) {

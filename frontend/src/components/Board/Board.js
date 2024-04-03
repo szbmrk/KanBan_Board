@@ -2548,251 +2548,254 @@ const Board = () => {
                                     </ul>
                                 </div>
                             </div>
-                            <div className="div-container">
-                                {board.columns.map((column, index) => (
-                                    <Column
-                                        key={index}
-                                        divIndex={index}
-                                        moveColumnFrontend={moveColumnFrontend}
-                                        moveColumnBackend={moveColumnBackend}
-                                        onMouseEnter={() => handleMouseEnterOnColumn(index)}
-                                        onMouseLeave={handleMouseLeaveOnColumn}
-                                        zIndex={
-                                            columnIndex === index
-                                                ? columnZIndex
-                                                : () => setColumnZIndex(1)
-                                        }
-                                        canMove={editingColumnIndex !== index}
-                                    >
-                                        <div className="card-container">
-                                            {editingColumnIndex === index ? (
-                                                <div className="name-edit">
-                                                    <input
-                                                        type="text"
-                                                        value={columnNewTitle}
-                                                        onChange={(event) =>
-                                                            handleColumnTitleChange(event, index)
-                                                        }
-                                                        autoFocus
-                                                        ref={editBoxRef} // Set the ref to the title edit input box
-                                                        onClick={(e) => e.stopPropagation()}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === "Enter") {
-                                                                handleColumnTitleBlur(index);
-                                                            } else if (e.key === "Escape") {
-                                                                handleColumnTitleBlur(index, true); // Pass `true` to indicate that changes are cancelled
+                            <div className="Board_Without_title">
+                                <div className="div-container">
+                                    {board.columns.map((column, index) => (
+                                        <Column
+                                            key={index}
+                                            divIndex={index}
+                                            moveColumnFrontend={moveColumnFrontend}
+                                            moveColumnBackend={moveColumnBackend}
+                                            onMouseEnter={() => handleMouseEnterOnColumn(index)}
+                                            onMouseLeave={handleMouseLeaveOnColumn}
+                                            zIndex={
+                                                columnIndex === index
+                                                    ? columnZIndex
+                                                    : () => setColumnZIndex(1)
+                                            }
+                                            canMove={editingColumnIndex !== index}
+                                        >
+                                            <div className="card-container">
+                                                {editingColumnIndex === index ? (
+                                                    <div className="name-edit">
+                                                        <input
+                                                            type="text"
+                                                            value={columnNewTitle}
+                                                            onChange={(event) =>
+                                                                handleColumnTitleChange(event, index)
                                                             }
-                                                        }}
-                                                    />
-                                                    <span
-                                                        className="edit-action-button"
-                                                        id="check-button"
-                                                        onClick={() => handleColumnTitleBlur(index)}
-                                                    >
-                                                        {checkIcon}
-                                                    </span>
-                                                    <span
-                                                        className="edit-action-button"
-                                                        id="cancel-button"
-                                                        onClick={() => handleColumnTitleBlur(index, true)}
-                                                    >
-                                                        {xMarkIcon}
-                                                    </span>
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    <div
-                                                        className="column-title-container"
-                                                        onDoubleClick={() => {
-                                                            const permissionsFilter = permissions.filter(
-                                                                (permission) =>
-                                                                    permission.permission === "column_management"
-                                                            );
-                                                            if (permissionsFilter.length === 1) {
-                                                                handleColumnTitleDoubleClick(index);
-                                                            }
-                                                        }}
-                                                    >
-                                                        <h2 className="card-title">{column.name}</h2>
-                                                    </div>
-
-                                                    <div
-                                                        className="options"
-                                                        style={{
-                                                            visibility:
-                                                                hoveredColumnId === index
-                                                                    ? "visible"
-                                                                    : "hidden",
-                                                            transition: "visibility 0.1s ease",
-                                                        }}
-                                                    >
+                                                            autoFocus
+                                                            ref={editBoxRef} // Set the ref to the title edit input box
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === "Enter") {
+                                                                    handleColumnTitleBlur(index);
+                                                                } else if (e.key === "Escape") {
+                                                                    handleColumnTitleBlur(index, true); // Pass `true` to indicate that changes are cancelled
+                                                                }
+                                                            }}
+                                                        />
                                                         <span
-                                                            className="dots"
-                                                            onClick={(e) => handleDotsClick(e, index)}
+                                                            className="edit-action-button"
+                                                            id="check-button"
+                                                            onClick={() => handleColumnTitleBlur(index)}
                                                         >
-                                                            {dotsIcon}
+                                                            {checkIcon}
+                                                        </span>
+                                                        <span
+                                                            className="edit-action-button"
+                                                            id="cancel-button"
+                                                            onClick={() => handleColumnTitleBlur(index, true)}
+                                                        >
+                                                            {xMarkIcon}
                                                         </span>
                                                     </div>
-                                                </>
-                                            )}
-                                            {column.task_limit != 0 && column.task_limit != null && (
-                                                <p
-                                                    style={{
-                                                        marginTop: "-25px",
-                                                        color: "var(--light-gray)",
-                                                    }}
-                                                >
-                                                    {column.tasks.length + "/" + column.task_limit}
-                                                </p>
-                                            )}
-                                            <div className="task-container">
-                                                {/*get tasks that match the filters*/}
-                                                {column.tasks.length === 0 ? (
-                                                    // Render the default task if no tasks exist
-                                                    <TaskPlaceholder
-                                                        key={index}
-                                                        column={column}
-                                                        divName={`div${index + 1}`}
-                                                        isFilterActive={isFilterActive}
-                                                        moveCardFrontend={(
-                                                            dragIndex,
-                                                            hoverIndex,
-                                                            sourceDiv,
-                                                            targetDiv
-                                                        ) =>
-                                                            moveCardFrontend(
+                                                ) : (
+                                                    <>
+                                                        <div
+                                                            className="column-title-container"
+                                                            onDoubleClick={() => {
+                                                                const permissionsFilter = permissions.filter(
+                                                                    (permission) =>
+                                                                        permission.permission === "column_management"
+                                                                );
+                                                                if (permissionsFilter.length === 1) {
+                                                                    handleColumnTitleDoubleClick(index);
+                                                                }
+                                                            }}
+                                                        >
+                                                            <h2 className="card-title">{column.name}</h2>
+                                                        </div>
+
+                                                        <div
+                                                            className="options"
+                                                            style={{
+                                                                visibility:
+                                                                    hoveredColumnId === index
+                                                                        ? "visible"
+                                                                        : "hidden",
+                                                                transition: "visibility 0.1s ease",
+                                                            }}
+                                                        >
+                                                            <span
+                                                                className="dots"
+                                                                onClick={(e) => handleDotsClick(e, index)}
+                                                            >
+                                                                {dotsIcon}
+                                                            </span>
+                                                        </div>
+                                                    </>
+                                                )}
+                                                {column.task_limit != 0 && column.task_limit != null && (
+                                                    <p
+                                                        style={{
+                                                            marginTop: "-25px",
+                                                            color: "var(--light-gray)",
+                                                        }}
+                                                    >
+                                                        {column.tasks.length + "/" + column.task_limit}
+                                                    </p>
+                                                )}
+                                                <div className="task-container">
+                                                    {/*get tasks that match the filters*/}
+                                                    {column.tasks.length === 0 ? (
+                                                        // Render the default task if no tasks exist
+                                                        <TaskPlaceholder
+                                                            key={index}
+                                                            column={column}
+                                                            divName={`div${index + 1}`}
+                                                            isFilterActive={isFilterActive}
+                                                            moveCardFrontend={(
                                                                 dragIndex,
                                                                 hoverIndex,
-                                                                parseInt(sourceDiv.substr(3)) - 1,
-                                                                parseInt(targetDiv.substr(3)) - 1
-                                                            )
-                                                        }
-                                                    />
-                                                ) : (
-                                                    column.tasks
-                                                        .filter((task) => {
-                                                            if (
-                                                                priorityFilter.length == 0 &&
-                                                                tagFilter.length == 0
-                                                            ) {
-                                                                return true;
-                                                            } else if (priorityFilter.length == 0) {
-                                                                return task.tags.some((tag) =>
-                                                                    tagFilter.includes(tag.tag_id)
-                                                                );
-                                                            } else if (tagFilter.length == 0) {
-                                                                return priorityFilter.includes(
-                                                                    task.priority_id
-                                                                );
-                                                            } else {
-                                                                return (
-                                                                    priorityFilter.includes(task.priority_id) &&
-                                                                    task.tags.some((tag) =>
-                                                                        tagFilter.includes(tag.tag_id)
-                                                                    )
-                                                                );
+                                                                sourceDiv,
+                                                                targetDiv
+                                                            ) =>
+                                                                moveCardFrontend(
+                                                                    dragIndex,
+                                                                    hoverIndex,
+                                                                    parseInt(sourceDiv.substr(3)) - 1,
+                                                                    parseInt(targetDiv.substr(3)) - 1
+                                                                )
                                                             }
-                                                        })
-                                                        .map((task, taskIndex) => (
-                                                            <Task
-                                                                permissions={permissions}
-                                                                key={task.task_id}
-                                                                id={task.task_id}
-                                                                index={taskIndex}
-                                                                task={task}
-                                                                column={column}
-                                                                ref={showableTask}
-                                                                craftedPromptsTask={craftedPromptsTask}
-                                                                divName={`div${index + 1}`}
-                                                                favouriteTask={handleFavouriteTask}
-                                                                unFavouriteTask={handleUnFavouriteTask}
-                                                                deleteTask={handleDeleteTaskButtonClick}
-                                                                setTaskAsInspectedTask={setTaskAsInspectedTask}
-                                                                openGenerateTaskWithAGIPopup={
-                                                                    openGenerateTaskWithAGIPopup
+                                                        />
+                                                    ) : (
+                                                        column.tasks
+                                                            .filter((task) => {
+                                                                if (
+                                                                    priorityFilter.length == 0 &&
+                                                                    tagFilter.length == 0
+                                                                ) {
+                                                                    return true;
+                                                                } else if (priorityFilter.length == 0) {
+                                                                    return task.tags.some((tag) =>
+                                                                        tagFilter.includes(tag.tag_id)
+                                                                    );
+                                                                } else if (tagFilter.length == 0) {
+                                                                    return priorityFilter.includes(
+                                                                        task.priority_id
+                                                                    );
+                                                                } else {
+                                                                    return (
+                                                                        priorityFilter.includes(task.priority_id) &&
+                                                                        task.tags.some((tag) =>
+                                                                            tagFilter.includes(tag.tag_id)
+                                                                        )
+                                                                    );
                                                                 }
-                                                                clickable={taskIsClickable}
-                                                                onChildData={handleChildData}
-                                                                showIconContainer={showIconContainer}
-                                                                zIndex={cardZIndex}
-                                                                isFilterActive={isFilterActive}
-                                                                moveCardFrontend={(
-                                                                    dragIndex,
-                                                                    hoverIndex,
-                                                                    sourceDiv,
-                                                                    targetDiv
-                                                                ) =>
-                                                                    moveCardFrontend(
+                                                            })
+                                                            .map((task, taskIndex) => (
+                                                                <Task
+                                                                    permissions={permissions}
+                                                                    key={task.task_id}
+                                                                    id={task.task_id}
+                                                                    index={taskIndex}
+                                                                    task={task}
+                                                                    column={column}
+                                                                    ref={showableTask}
+                                                                    craftedPromptsTask={craftedPromptsTask}
+                                                                    divName={`div${index + 1}`}
+                                                                    favouriteTask={handleFavouriteTask}
+                                                                    unFavouriteTask={handleUnFavouriteTask}
+                                                                    deleteTask={handleDeleteTaskButtonClick}
+                                                                    setTaskAsInspectedTask={setTaskAsInspectedTask}
+                                                                    openGenerateTaskWithAGIPopup={
+                                                                        openGenerateTaskWithAGIPopup
+                                                                    }
+                                                                    clickable={taskIsClickable}
+                                                                    onChildData={handleChildData}
+                                                                    showIconContainer={showIconContainer}
+                                                                    zIndex={cardZIndex}
+                                                                    isFilterActive={isFilterActive}
+                                                                    moveCardFrontend={(
                                                                         dragIndex,
                                                                         hoverIndex,
-                                                                        parseInt(sourceDiv.substr(3)) - 1,
-                                                                        parseInt(targetDiv.substr(3)) - 1
-                                                                    )
-                                                                }
-                                                                moveCardBackend={(
-                                                                    dragIndex,
-                                                                    hoverIndex,
-                                                                    sourceDiv,
-                                                                    targetDiv
-                                                                ) =>
-                                                                    moveCardBackend(
+                                                                        sourceDiv,
+                                                                        targetDiv
+                                                                    ) =>
+                                                                        moveCardFrontend(
+                                                                            dragIndex,
+                                                                            hoverIndex,
+                                                                            parseInt(sourceDiv.substr(3)) - 1,
+                                                                            parseInt(targetDiv.substr(3)) - 1
+                                                                        )
+                                                                    }
+                                                                    moveCardBackend={(
                                                                         dragIndex,
                                                                         hoverIndex,
-                                                                        parseInt(sourceDiv.substr(3)) - 1,
-                                                                        parseInt(targetDiv.substr(3)) - 1
-                                                                    )
-                                                                }
-                                                                generateDocumentationForTask={(task) =>
-                                                                    generateDocumentationForTask(task)
-                                                                }
-                                                                generateTasks={(task, column) =>
-                                                                    openGenerateTaskWithAGIPopup(task, column)
-                                                                }
-                                                                generateAttachmentLinks={(task) =>
-                                                                    openGenerateAttachmentLinkWithAGIPopup(task)
-                                                                }
-                                                                HandleCraftedPromptTaskClick={(
-                                                                    craftedPrompt,
-                                                                    task,
-                                                                    column
-                                                                ) =>
-                                                                    HandleCraftedPromptTaskClick(
+                                                                        sourceDiv,
+                                                                        targetDiv
+                                                                    ) =>
+                                                                        moveCardBackend(
+                                                                            dragIndex,
+                                                                            hoverIndex,
+                                                                            parseInt(sourceDiv.substr(3)) - 1,
+                                                                            parseInt(targetDiv.substr(3)) - 1
+                                                                        )
+                                                                    }
+                                                                    generateDocumentationForTask={(task) =>
+                                                                        generateDocumentationForTask(task)
+                                                                    }
+                                                                    generateTasks={(task, column) =>
+                                                                        openGenerateTaskWithAGIPopup(task, column)
+                                                                    }
+                                                                    generateAttachmentLinks={(task) =>
+                                                                        openGenerateAttachmentLinkWithAGIPopup(task)
+                                                                    }
+                                                                    HandleCraftedPromptTaskClick={(
                                                                         craftedPrompt,
                                                                         task,
                                                                         column
-                                                                    )
-                                                                }
-                                                            />
-                                                        ))
+                                                                    ) =>
+                                                                        HandleCraftedPromptTaskClick(
+                                                                            craftedPrompt,
+                                                                            task,
+                                                                            column
+                                                                        )
+                                                                    }
+                                                                />
+                                                            ))
+                                                    )}
+                                                </div>
+                                                {column.is_finished === 0 &&
+                                                    permissions.filter((permission) => {
+                                                        return permission.permission === "task_management";
+                                                    }).length === 1 ? (
+                                                    <div
+                                                        className="card addbtn"
+                                                        onClick={() => handleAddTask(index)}
+                                                    >
+                                                        {plusIcon} Add new task
+                                                    </div>
+                                                ) : (
+                                                    <></>
                                                 )}
                                             </div>
-                                            {column.is_finished === 0 &&
-                                                permissions.filter((permission) => {
-                                                    return permission.permission === "task_management";
-                                                }).length === 1 ? (
-                                                <div
-                                                    className="card addbtn"
-                                                    onClick={() => handleAddTask(index)}
-                                                >
-                                                    {plusIcon} Add new task
-                                                </div>
-                                            ) : (
-                                                <></>
-                                            )}
-                                        </div>
-                                    </Column>
-                                ))}
-                                {/*check permission for loumn magamegemt*/}
-                                {permissions.filter((permission) => {
-                                    return permission.permission === "column_management";
-                                }).length === 1 && (
-                                        <div
-                                            className="card-container addbtn-column"
-                                            onClick={handleAddColumn}
-                                        >
-                                            {plusIcon} Add new column
-                                        </div>
-                                    )}
+                                        </Column>
+                                    ))}
+                                    {/*check permission for loumn magamegemt*/}
+                                    {permissions.filter((permission) => {
+                                        return permission.permission === "column_management";
+                                    }).length === 1 && (
+                                            <div
+                                                className="card-container addbtn-column"
+                                                onClick={handleAddColumn}
+                                            >
+                                                {plusIcon} Add new column
+                                            </div>
+                                        )}
+                                </div>
+
                             </div>
                         </div>
                     )}
