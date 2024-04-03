@@ -138,6 +138,8 @@ const Navbar = () => {
     }, [isSidebarOnTop]);
 
     const [isOpen, setIsOpen] = useState(false);
+    const [isBgOpen, setIsBgOpen] = useState(false);
+
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
     };
@@ -145,6 +147,9 @@ const Navbar = () => {
     const handleClick = () => {
         setMenuIconClicked(true);
         toggleSidebar();
+    };
+    const toggleBgDropdown=()=>{
+        setIsBgOpen(!isBgOpen);
     };
 
     return (
@@ -155,6 +160,9 @@ const Navbar = () => {
                         {menuIcon}
                     </button>
                     <ul>
+                        <li>
+                            <span onClick={toggleBgDropdown}>{backgoundChangeIcon}</span>
+                        </li>
                         <li>
                             <span onClick={DarkMode}>{displayModeIcon}</span>
                         </li>
@@ -180,17 +188,19 @@ const Navbar = () => {
                             </Link>
                         </li>
                         <li>
-                            <Link to="{/*TODO: bg page*/}" onClick={toggleDropdown}>
-                                <span>{backgoundChangeIcon}</span>
-                                <span>Change Background</span>
-                            </Link>
-                        </li>
-                        <li>
                             <Link to="/login" onClick={onLogout} className="logout">
                                 <span>{signOutIcon}</span>
                                 <span>Sign Out</span>
                             </Link>
                         </li>
+                    </ul>
+                </div>
+            )}
+            {isBgOpen && (
+                <div className="background-submenu" onMouseLeave={() => setIsBgOpen(false)}>
+                    <p className="background-menu-title"> Backgrounds </p>
+                    <ul className="background-menu">
+                        
                     </ul>
                 </div>
             )}
