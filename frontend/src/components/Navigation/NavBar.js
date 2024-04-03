@@ -12,6 +12,7 @@ import {
     faUserPen,
     faMagnifyingGlass,
     faCircleHalfStroke,
+    faImage,
 } from "@fortawesome/free-solid-svg-icons";
 
 const notificationIcon = <FontAwesomeIcon icon={faBell} />;
@@ -21,6 +22,7 @@ const signOutIcon = <FontAwesomeIcon icon={faSignOutAlt} />;
 const editProfileIcon = <FontAwesomeIcon icon={faUserPen} />;
 const searchIcon = <FontAwesomeIcon icon={faMagnifyingGlass} />;
 const displayModeIcon = <FontAwesomeIcon icon={faCircleHalfStroke} />;
+const backgroundChangeIcon=<FontAwesomeIcon icon={faImage}/>;
 
 const Navbar = () => {
     const { isLoggedIn, onLogout } = React.useContext(AuthContext);
@@ -176,6 +178,12 @@ const Navbar = () => {
                             <Link to="/profile" onClick={toggleDropdown}>
                                 <span>{editProfileIcon}</span>
                                 <span>Edit Profile</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="" onClick={toggleDropdown}>
+                                <span>{backgroundChangeIcon}</span>
+                                <span>Change Background</span>
                             </Link>
                         </li>
                         <li>

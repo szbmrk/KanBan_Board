@@ -20,3 +20,10 @@
 | 12:26 | Tag filter | Megjelenítési hiba | Bizonyos tagek kiválasztásako a priority filter alpján jelenít meg. |
 | 12:28 | Tag filter(All) | Sikeres | Minden task megjelenik. |
 
+| Tesztelő: Horváth Áron Ákos | Időpont: 2023.12.13. 11:28 | Böngésző: Microsoft Edge|
+| -------------------------------------|----------|-------------------------|
+
+| Időpont | Teszt                | Eredmény | Megjegyzés     
+|:-------:|----------------------|----------|-----------------------------------------------------------------------|
+| 13:06 | Team létrehozás | Sikeres | Sikeresen létrejön a csapat. |                                                       
+| 13:07 | Board | Sikeres | Sikeresen létrejön a csapat. |                                                       
