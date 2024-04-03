@@ -101,6 +101,7 @@ Route::get('/board/{board_id}/task-completion-rate', [TaskController::class, 'bo
 
 Route::get('/tasks/{task_id}/comments', [CommentController::class, 'index'])->middleware('api');
 Route::post('/tasks/{task_id}/comments', [CommentController::class, 'commentStore'])->middleware('api');
+Route::delete('/tasks/comments/{comment_id}', [CommentController::class, 'commentDelete'])->middleware('api');
 
 Route::get('/boards/{boardId}/tasks/{taskId}/tags', [TaskTagController::class, 'index'])->middleware('api');
 Route::post('/boards/{boardId}/tasks/{taskId}/tags/{tag_id}', [TaskTagController::class, 'store'])->middleware('api');

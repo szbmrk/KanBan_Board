@@ -14,6 +14,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Helpers\ExecutePythonScript;
 use function app\Helpers\ExecutePythonScript\executePythonScript;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\Events\BoardChange;
+use Illuminate\Support\Facades\Event;
 
 
 class DashboardController extends Controller
@@ -113,6 +123,12 @@ class DashboardController extends Controller
                 $board->name = $request->name;
                 $board->save();
                 LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "Board Updated successfully!", $board->team_id, $board_id, null);
+
+                $data = [
+                    'name' => $board->name
+                ];
+                broadcast(new BoardChange($board_id, "UPDATED_BOARD_NAME", $data));
+
                 return response()->json(['board' => $board]);
             }
 
@@ -124,6 +140,12 @@ class DashboardController extends Controller
                 $board->name = $request->name;
                 $board->save();
                 LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "Board Updated successfully!", $board->team_id, $board_id, null);
+
+                $data = [
+                    'name' => $board->name
+                ];
+                broadcast(new BoardChange($board_id, "UPDATED_BOARD_NAME", $data));
+
                 return response()->json(['board' => $board]);
             }
         }

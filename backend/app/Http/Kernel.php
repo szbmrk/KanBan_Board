@@ -41,9 +41,9 @@ class Kernel extends HttpKernel
 
         'api' => [
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            \Illuminate\Routing\Middleware\ThrottleRequests::class . ':api',
+            \Illuminate\Routing\Middleware\ThrottleRequests::class . ':2500,1' ,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        ],
+       ],
     ];
 
     /**
@@ -63,7 +63,12 @@ class Kernel extends HttpKernel
         'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
         'precognitive' => \Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
         'signed' => \App\Http\Middleware\ValidateSignature::class,
-        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        //'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+	'throttle' => [
+    		'key' => 'user-request-limit', // The key used to identify the throttle (can be customized)
+    		'limit' => 250, // The maximum number of requests allowed within the specified duration
+    		'expires' => 1, // The duration (in minutes) for which the limit is enforced
+      	],
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     ];
 }

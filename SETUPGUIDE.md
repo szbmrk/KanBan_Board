@@ -6,8 +6,12 @@ a legújabb Composer-hez, minimum PHP 7.2.5 kell. A régebbi Composer verziókho
 ## frontend indítása:
 
 cd frontend -> npm install (ez először kell csak / 
-minden olyan bővítés után amikor új package kerül be) -> npm start
-/src/api/axios.js átírni a backend path-et
+- minden olyan bővítés után amikor új package kerül be) -> npm start
+- '.env' fájl létrehozása
+- '.env.example' tartalmának átmásolása a '.env-be'
+- /src/api/config.js fájl létrehozása
+- /src/api/config.js.example fájl tartalmának átmásolása a 'config.js-be'
+- indítás után az app a localhost:3000/agi-kanban-on érhető el
 
 
 ## backend setupolása:
