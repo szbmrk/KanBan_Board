@@ -2256,6 +2256,7 @@ const Board = () => {
                                 openGenerateTaskWithAGIPopup={
                                   openGenerateTaskWithAGIPopup
                                 }
+                                handleTaskDoubleClick={() => setTaskAsInspectedTask(task)}
                                 clickable={taskIsClickable}
                                 onChildData={handleChildData}
                                 showIconContainer={showIconContainer}
