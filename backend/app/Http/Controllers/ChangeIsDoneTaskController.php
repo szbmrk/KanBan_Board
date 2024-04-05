@@ -41,7 +41,7 @@ class ChangeIsDoneTaskController extends Controller
         $data = [
             'subtask' => $subTaskWithSubtasksAndTags
         ];
-        broadcast(new BoardChange($board->board_id, "UPDATED_SUBTASK", $data));
+        broadcast(new BoardChange($board->board_id, "CHANGE_ISDONE_SUBTASK", $data));
 
         return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTaskWithSubtasksAndTags]);
     }
@@ -76,7 +76,7 @@ class ChangeIsDoneTaskController extends Controller
         $data = [
             'subtask' => $subTaskWithSubtasksAndTags
         ];
-        broadcast(new BoardChange($board->board_id, "UPDATED_SUBTASK", $data));
+        broadcast(new BoardChange($board->board_id, "CHANGE_ISDONE_SUBTASK", $data));
 
         return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTaskWithSubtasksAndTags]);
     }

@@ -303,6 +303,9 @@ const Board = () => {
             case "UPDATED_SUBTASK":
                 webSocketUpdateSubtask(websocket.data);
                 break;
+            case "CHANGE_ISDONE_SUBTASK":
+                webSocketUpdateSubtaskIsDone(websocket.data);
+                break;
             case "DELETED_SUBTASK":
                 webSocketDeleteSubtask(websocket.data);
                 break;
@@ -582,6 +585,26 @@ const Board = () => {
     const webSocketUpdateSubtask = async (data) => {
         editSubtask(data.subtask);
     };
+
+    const webSocketUpdateSubtaskIsDone = async (data) => {
+        const modifiedSubtask = data.subtask;
+        const newBoardData = [...boardRef.current.columns];
+        const columnIndex = newBoardData.findIndex(
+            (column) => column.column_id === modifiedSubtask.column_id
+        );
+        const task = findTaskById(
+            newBoardData[columnIndex].tasks,
+            modifiedSubtask.parent_task_id
+        );
+        task.subtasks.map((subtask) => {
+            if (subtask.task_id === modifiedSubtask.subtask_id) {
+                subtask.completed = modifiedSubtask.completed;
+            }
+        });
+
+        setBoard({ ...boardRef.current, columns: newBoardData });
+    };
+
 
     const webSocketDeleteSubtask = async (data) => {
         deleteSubtask(data.subtask);
