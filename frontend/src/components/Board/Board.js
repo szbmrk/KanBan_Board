@@ -596,9 +596,11 @@ const Board = () => {
             newBoardData[columnIndex].tasks,
             modifiedSubtask.parent_task_id
         );
+        console.log("TASK");
         task.subtasks.map((subtask) => {
-            if (subtask.task_id === modifiedSubtask.subtask_id) {
-                subtask.completed = modifiedSubtask.completed;
+            console.log(subtask, modifiedSubtask);
+            if (subtask.task_id === modifiedSubtask.task_id) {
+                subtask.completed = modifiedSubtask.completed ? 1 : 0;
             }
         });
 
