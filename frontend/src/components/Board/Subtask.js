@@ -88,6 +88,7 @@ export default function Subtask({
                 data-theme={theme}
                 onMouseEnter={() => handleMouseEnterOnSubtask(subTask.task_id)}
                 onMouseLeave={handleMouseLeaveOnSubtask}
+                onDoubleClick={() => setTaskAsInspectedTask(subTask.task_id)}
                 style={{ zIndex: subtaskZIndex }}
             >
                 <div className='task-title'>{subTask.title}</div>
