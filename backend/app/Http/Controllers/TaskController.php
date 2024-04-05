@@ -130,7 +130,7 @@ class TaskController extends Controller
         LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Task created successfully!", $teamId, $board_id, $task->task_id);
 
         $data = [
-            'task' => $task
+            'task' => $taskWithSubtasksAndTags
         ];
         broadcast(new BoardChange($board_id, "CREATED_TASK", $data));
 
@@ -338,7 +338,7 @@ class TaskController extends Controller
             return response()->json(['error' => 'Duplicate positions are not allowed'], 403);
         }
 
-        
+
         foreach ($tasks as &$task) {
             $taskToUpdate = Task::find($task['task_id']);
             if ($taskToUpdate) {
@@ -362,7 +362,7 @@ class TaskController extends Controller
             }
         }
 
-       $data = [
+        $data = [
             'tasks' => $tasks
         ];
         broadcast(new BoardChange($board->board_id, "POSITION_UPDATED_TASK", $data));
@@ -560,7 +560,7 @@ class TaskController extends Controller
             ->toArray();
 
         $invalidPriorityIds = array_filter($tasksData, function ($taskData) {
-            return !isset($taskData['priority_id']) || !in_array($taskData['priority_id'], [1, 2, 3, 4]);
+            return !isset ($taskData['priority_id']) || !in_array($taskData['priority_id'], [1, 2, 3, 4]);
         });
 
         if (!empty($invalidPriorityIds)) {
