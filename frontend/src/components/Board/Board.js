@@ -1443,6 +1443,50 @@ const Board = () => {
         }
     };
 
+    const handleIsDoneSubTask = (isDone, subtask_id, parent_task_id, column_id) => {
+        console.log("xxx")
+        try {
+            if (isDone) {
+                axios.post(`/boards/${board_id}/tasks/${subtask_id}/isDone`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+            }
+            else {
+                axios.delete(`/boards/${board_id}/tasks/${subtask_id}/isDone`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+            }
+            const newBoardData = [...board.columns];
+            const columnIndex = newBoardData.findIndex(
+                (column) => column.column_id === column_id
+            );
+            const task = findTaskById(
+                newBoardData[columnIndex].tasks,
+                parent_task_id
+            );
+            task.subtasks.map((subtask) => {
+                if (subtask.task_id === subtask_id) {
+                    subtask.completed = isDone;
+                }
+            });
+            setBoard({ ...board, columns: newBoardData });
+        } catch (e) {
+            console.error(e);
+            if (e?.response?.status === 401 || e?.response?.status === 500) {
+                setError({
+                    message: "You are not logged in! Redirecting to login page...",
+                });
+                setRedirect(true);
+            } else {
+                setError(e);
+            }
+        }
+    };
+
     const postComment = async (task_id, column_id, comment) => {
         try {
             const response = await axios.post(
@@ -3316,6 +3360,7 @@ const Board = () => {
                     board_id={board_id}
                     addSubtask={handleAddSubtask}
                     deleteSubtask={handleDeleteSubtask}
+                    changeIsDoneSubTask={handleIsDoneSubTask}
                     favouriteSubtask={handleFavouriteSubtask}
                     unFavouriteSubtask={handleUnFavouriteSubtask}
                     handlePostComment={postComment}

@@ -3,6 +3,7 @@ import Tag from '../Tag';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil, faTrash, faEllipsis, faStar as faSolidStar } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faRegularStar } from '@fortawesome/free-regular-svg-icons';
+import "../../styles/popup.css";
 
 const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 const trashIcon = <FontAwesomeIcon icon={faTrash} />;
@@ -14,6 +15,7 @@ const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
 export default function Subtask({
     subTask,
     index,
+    changeIsDoneSubTask,
     favouriteSubtask,
     unFavouriteSubtask,
     deleteSubtask,
@@ -75,6 +77,10 @@ export default function Subtask({
         //eddig
     }, []);
 
+    const handleIsDoneChange = (e) => {
+        changeIsDoneSubTask(e.target.checked);
+    }
+
     return (
         <>
             <div
@@ -85,6 +91,9 @@ export default function Subtask({
                 style={{ zIndex: subtaskZIndex }}
             >
                 <div className='task-title'>{subTask.title}</div>
+                <div>
+                    <input className='isDone-checkbox' type='checkbox' checked={subTask.completed} onChange={handleIsDoneChange}></input>
+                </div>
                 <div
                     className='subtask-options'
                     style={{ visibility: hoveredSubtaskId === subTask.task_id ? 'visible' : 'hidden' }}

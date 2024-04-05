@@ -31,6 +31,7 @@ use App\Http\Controllers\TeamManagementController;
 use App\Http\Controllers\ChatGPTController;
 use App\Http\Controllers\AGIAnswersController;
 use App\Http\Controllers\FavouriteTaskController;
+use App\Http\Controllers\ChangeIsDoneTaskController;
 use App\Http\Controllers\RolePermissionController;
 
 /*
@@ -117,9 +118,12 @@ Route::get('/favourite/{user_id}', [FavouriteTaskController::class, 'index'])->m
 Route::post('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'store'])->middleware('api');
 Route::delete('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'destroy'])->middleware('api');
 
+Route::post('/boards/{board_id}/tasks/{subtask_id}/isDone', [ChangeIsDoneTaskController::class, 'store'])->middleware('api');
+Route::delete('/boards/{board_id}/tasks/{subtask_id}/isDone', [ChangeIsDoneTaskController::class, 'destroy'])->middleware('api');
+
 Route::get('/boards/{boardId}/roles', [RoleController::class, 'index'])->middleware('api');
 Route::post('/boards/{boardId}/roles', [RoleController::class, 'store'])->middleware('api');
-Route::put('/boards/{boardId}/roles/{roleId}',[RoleController::class, 'update'])->middleware('api');
+Route::put('/boards/{boardId}/roles/{roleId}', [RoleController::class, 'update'])->middleware('api');
 Route::delete('/boards/{boardId}/roles/{roleId}', [RoleController::class, 'destroy'])->middleware('api');
 
 Route::get('/boards/{boardId}/tasks/{taskId}/mentions', [MentionController::class, 'index'])->middleware('api');
@@ -145,7 +149,7 @@ Route::get('/boards/{board_id}/tasks/{task_id}/not_assigned_users', [UserTasksCo
 Route::get('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'index'])->middleware('api');
 Route::post('/boards/{boardId}/team-member-roles', [TeamMemberRoleController::class, 'store'])->middleware('api');
 Route::get('/boards/{boardId}/available-team-member-roles/{teamMemberId}', [TeamMemberRoleController::class, 'getAvailableRoles'])->middleware('api');
-Route::delete('/boards/{boardId}/team-member-roles/{teamMemberRoleId}',[TeamMemberRoleController::class, 'destroy'])->middleware('api');
+Route::delete('/boards/{boardId}/team-member-roles/{teamMemberRoleId}', [TeamMemberRoleController::class, 'destroy'])->middleware('api');
 
 Route::get('/boards/{boardId}/role-permissions', [RolePermissionController::class, 'index'])->middleware('api');
 Route::post('/boards/{boardId}/roles/{roleId}/permissions', [RolePermissionController::class, 'store'])->middleware('api');

@@ -47,6 +47,7 @@ const Popup = ({
     onSave,
     addSubtask,
     deleteSubtask,
+    changeIsDoneSubTask,
     favouriteSubtask,
     unFavouriteSubtask,
     setTaskAsInspectedTask,
@@ -490,6 +491,20 @@ const Popup = ({
         }
     };
 
+    const CountSubtasksDone = () => {
+        let count = 0;
+        task.subtasks.forEach((subtask) => {
+            if (subtask.completed) {
+                count++;
+            }
+        });
+        return count;
+    }
+
+    const handleIsDoneSubtask = (isDone, subtask_id, parent_task_id, column_id) => {
+        changeIsDoneSubTask(isDone, subtask_id, parent_task_id, column_id);
+    };
+
     return (
         <div className="overlay" data-theme={theme}>
             <div className="popup" ref={popupRef}>
@@ -612,7 +627,7 @@ const Popup = ({
                                     </div>
                                     <textarea
                                         className="description-textarea"
-                                        placeholder={"Description of "+ task.title}
+                                        placeholder={"Description of " + task.title}
                                         value={editedDescription}
                                         onChange={handleDescriptionChange}
                                         onBlur={handleBlurDescription}
@@ -643,7 +658,7 @@ const Popup = ({
                                     </div>
                                     <textarea
                                         className="description-textarea"
-                                        placeholder={"Description of "+ task.title}
+                                        placeholder={"Description of " + task.title}
                                         value={editedDescription}
                                         onChange={handleDescriptionChange}
                                     />
@@ -655,7 +670,7 @@ const Popup = ({
                                 <>
                                     <div className="subtitle">
                                         <span className="icon">{subtaskIcon}</span>
-                                        <h3>Subtasks:</h3>
+                                        <h3>Subtasks {"(" + CountSubtasksDone() + "/" + task.subtasks.length + ")"}:</h3>
                                     </div>
                                     <div className="subtask">
                                         {task.subtasks.map((subTask, index) => (
@@ -663,6 +678,14 @@ const Popup = ({
                                                 key={subTask.task_id}
                                                 subTask={subTask}
                                                 index={index}
+                                                changeIsDoneSubTask={(isDone) =>
+                                                    handleIsDoneSubtask(
+                                                        isDone,
+                                                        subTask.task_id,
+                                                        subTask.parent_task_id,
+                                                        subTask.column_id
+                                                    )
+                                                }
                                                 favouriteSubtask={() =>
                                                     favouriteSubtask(
                                                         subTask.task_id,
