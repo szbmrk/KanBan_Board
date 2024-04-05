@@ -54,6 +54,9 @@ export default function EditProfile() {
             setFormData({
                 username: response.data[0].username,
                 email: response.data[0].email,
+                newPassword: "",
+                confirmPassword: "",
+                oldPassword: "",
             });
         } catch (e) {
             console.log(e);
@@ -80,14 +83,15 @@ export default function EditProfile() {
         setError(null);
         const { name, value, type, checked } = e.target;
         const val = type === "checkbox" ? checked : value;
-        setFormData((prevFormData) => ({
-            ...prevFormData,
+        setFormData(({
+            ...formData,
             [name]: val,
         }));
     };
 
     async function handleSubmit(e) {
         e.preventDefault();
+        console.log(formData);
         if (formData.newPassword === "" && formData.confirmPassword === "")
             try {
                 const response = await axios.put(
