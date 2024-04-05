@@ -55,6 +55,7 @@ export const Task = forwardRef(
       iconContainer,
       zIndex,
       isFilterActive,
+      handleTaskDoubleClick,
     },
     ref
   ) => {
@@ -308,6 +309,7 @@ export const Task = forwardRef(
           }}
           onMouseEnter={() => handleMouseEnterOnCard(id)}
           onMouseLeave={handleMouseLeaveOnCard}
+          onDoubleClick={handleTaskDoubleClick}
         >
           <div className="task-title">{task.title}</div>
           <div className="options">
