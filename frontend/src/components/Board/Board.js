@@ -2713,6 +2713,7 @@ const Board = () => {
                                                                         openGenerateTaskWithAGIPopup
                                                                     }
                                                                     clickable={taskIsClickable}
+                                                                    handleTaskDoubleClick={() => setTaskAsInspectedTask(task)}
                                                                     onChildData={handleChildData}
                                                                     showIconContainer={showIconContainer}
                                                                     zIndex={cardZIndex}
