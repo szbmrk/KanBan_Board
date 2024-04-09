@@ -175,6 +175,12 @@ class AttachmentController extends Controller
             $attachments[] = $attachment;
         }
 
+        $data = [
+            'task' => $task,
+            'attachments' => $attachments
+        ];
+        broadcast(new BoardChange($board->board_id, "CREATED_MULTIPLE_ATTACHMENT", $data));
+
         return response()->json(['message' => 'Attachments created successfully']);
     }
 

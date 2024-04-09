@@ -9,13 +9,7 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
 import ErrorWrapper from "../ErrorWrapper";
 
-const GenerateTaskWithAGIPopup = ({
-  board_id,
-  column,
-  tasks,
-  fetchBoardData,
-  onCancel,
-}) => {
+const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
   let [editedTasks, setEditedTasks] = useState(tasks ? [...tasks] : []);
   const taskTitleInputRef = useRef(null);
   const popupRef = useRef(null);
@@ -78,9 +72,23 @@ const GenerateTaskWithAGIPopup = ({
     setEditedTasks(updatedTasks);
   };
 
+  const handleTagChange = (task, tag, newName) => {
+    const tagIndex = task.tags.indexOf(tag);
+
+    if (tagIndex !== -1) {
+      const updatedTask = { ...task };
+      updatedTask.tags[tagIndex] = newName;
+
+      const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
+
+      setEditedTasks(updatedTasks);
+    }
+  };
+
   const saveToDatabase = async () => {
     try {
       const token = sessionStorage.getItem("token");
+      console.log("SAVED DATA");
       console.log(editedTasks);
 
       const res = await axios.put(
@@ -96,7 +104,6 @@ const GenerateTaskWithAGIPopup = ({
 
       console.log(res);
       console.log(res.data);
-      fetchBoardData();
       alert("Saved!");
       oncancel();
     } catch (e) {
@@ -123,10 +130,10 @@ const GenerateTaskWithAGIPopup = ({
       console.log(res.data);
 
       if (task) {
-        task.tasks = res.data;
+        task.subtasks = res.data;
         const updatedTask = task
-          ? { ...task, tasks: res.data }
-          : { tasks: res.data };
+          ? { ...task, subtasks: res.data }
+          : { subtasks: res.data };
         const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
 
         setEditedTasks(updatedTasks);
@@ -145,9 +152,9 @@ const GenerateTaskWithAGIPopup = ({
         ? updatedTask
         : {
             ...task,
-            tasks: task.tasks
-              ? updateTaskInEditedTasks(task.tasks, updatedTask)
-              : task.tasks,
+            tasks: task.subtasks
+              ? updateTaskInEditedTasks(task.subtasks, updatedTask)
+              : task.subtasks,
           }
     );
   };
@@ -198,10 +205,10 @@ const GenerateTaskWithAGIPopup = ({
       console.log(res.data);
 
       if (task) {
-        task.tasks = res.data;
+        task.subtasks = res.data;
         const updatedTask = task
-          ? { ...task, tasks: res.data }
-          : { tasks: res.data };
+          ? { ...task, subtasks: res.data }
+          : { subtasks: res.data };
         const updatedTasks = updateTaskInEditedTasks(editedTasks, updatedTask);
 
         setEditedTasks(updatedTasks);
@@ -234,6 +241,7 @@ const GenerateTaskWithAGIPopup = ({
                   handleTitleChange={handleTitleChange}
                   handleDescriptionChange={handleDescriptionChange}
                   handleDueDateChange={handleDueDateChange}
+                  handleTagChange={handleTagChange}
                   editedTasks={editedTasks}
                 />
               ))}
@@ -325,6 +333,7 @@ const TaskRecursive = ({
   handleTitleChange,
   handleDescriptionChange,
   handleDueDateChange,
+  handleTagChange,
   editedTasks,
 }) => {
   let [chosenAI, setChosenAI] = useState(aiOptions[0]);
@@ -415,6 +424,17 @@ const TaskRecursive = ({
             <p className="value">{task.due_date}</p>
           )}
         </div>
+        <div className="gt-attributes">
+          <p className="title">Tags:</p>
+          {task.tags.map((tag, index) => (
+            <textarea
+              key={index}
+              value={tag}
+              onChange={(e) => handleTagChange(task, tag, e.target.value)}
+              className="gt-space-after"
+            />
+          ))}
+        </div>
       </div>
       <div className="gt-action-buttons">
         <div className="dropdown-container">
@@ -444,10 +464,10 @@ const TaskRecursive = ({
           Generate Subtasks
         </button>
       </div>
-      {task.tasks && task.tasks.length > 0 && (
+      {task.subtasks && task.subtasks.length > 0 && (
         <div className="subtasks">
           <h2>Generated Subtasks:</h2>
-          {task.tasks.map((subtask, subtaskIndex) => (
+          {task.subtasks.map((subtask, subtaskIndex) => (
             <TaskRecursive
               deepness={deepness + 1}
               key={subtaskIndex}
@@ -458,6 +478,7 @@ const TaskRecursive = ({
               handleTitleChange={handleTitleChange}
               handleDescriptionChange={handleDescriptionChange}
               handleDueDateChange={handleDueDateChange}
+              handleTagChange={handleTagChange}
               editedTasks={editedTasks}
             />
           ))}

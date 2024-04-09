@@ -17,6 +17,17 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\BardController;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\Events\BoardChange;
+use Illuminate\Support\Facades\Event;
 
 
 class AGIController extends Controller
@@ -202,7 +213,13 @@ class AGIController extends Controller
             default:
                 $response = "No AI chosen";
                 break;
-        }  
+        }
+
+        $data = [
+            'codeReviewOrDocumentation' => $response
+        ];
+        broadcast(new BoardChange($boardId, "GENERATED_CODE_REVIEW_OR_DOCUMENTATION", $data));
+
         return $response;
     }
 

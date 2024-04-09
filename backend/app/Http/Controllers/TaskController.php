@@ -9,6 +9,7 @@ use App\Models\Board;
 use App\Models\Column;
 use App\Models\Comment;
 use App\Models\Mention;
+use App\Models\Tag;
 use App\Models\TaskTag;
 use App\Models\Feedback;
 use App\Models\UserTask;
@@ -860,26 +861,43 @@ class TaskController extends Controller
 
         DB::beginTransaction();
 
+        $highestPosition = Task::where('column_id', $columnId)->max('position');
+
         try {
-            foreach ($tasksData as $taskData) {
+            foreach ($tasksData as $index => &$taskData) {
                 $validator = Validator::make($tasksData, [
                     '*.title' => 'string|max:100',
-                    '*.tasks.*.title' => 'string|max:100',
+                    '*.subtasks.*.title' => 'string|max:100',
                     '*.description' => 'nullable|string|max:1000',
-                    '*.tasks.*.description' => 'nullable|string|max:1000',
-                    '*.priority_id' => 'in:1,2,3,4',
-                    '*.tasks.*.priority_id' => 'in:1,2,3,4',
+                    '*.subtasks.*.description' => 'nullable|string|max:1000',
+                    '*.priority_id' => 'nullable|in:1,2,3,4',
+                    '*.subtasks.*.priority_id' => 'nullable|in:1,2,3,4',
                     '*.due_date' => 'nullable|date|after:today',
-                    '*.tasks.*.due_date' => 'nullable|date|after:today',
+                    '*.subtasks.*.due_date' => 'nullable|date|after:today',
                 ]);
 
                 if ($validator->fails()) {
                     return response()->json(['errors' => $validator->errors()], 400);
                 }
+
+                if (!isset($taskData["position"])) {
+                    if ($highestPosition !== null) {
+                        $taskData["position"] = (int)($highestPosition + $index + 1);
+                    } else {
+                        $taskData["position"] = (int)($index + 1);
+                    }
+                }
+
                 $this->processTaskData($taskData, $boardId, $columnId);
             }
 
             DB::commit();
+
+            $data = [
+                'column_id' => (int)$columnId,
+                'tasks' => $tasksData
+            ];
+            broadcast(new BoardChange($boardId, "CREATED_MULTIPLE_TASKS", $data));
 
         } catch (\Exception $e) {
             DB::rollback();
@@ -890,9 +908,11 @@ class TaskController extends Controller
         return response()->json(['message' => 'Tasks updated successfully'], 200);
     }
 
-    private function processTaskData($taskData, $boardId, $columnId, $parentTask = null)
+    private function processTaskData(&$taskData, $boardId, $columnId, $parentTask = null)
     {
         $mainTask = null; // Inicializáljuk a változót null-ra
+        $taskData['column_id'] = (int)$columnId;
+        $taskData['board_id'] = (int)$boardId;
         if (isset($taskData['title'])) {
             if (isset($taskData['task_id'])) {
                 $existingTask = Task::find($taskData['task_id']);
@@ -902,14 +922,23 @@ class TaskController extends Controller
                 }
             } else {
                 $mainTask = $this->createTask($taskData, $boardId, $columnId);
+                $taskData['task_id'] = $mainTask->task_id;
+                $taskData['project_id'] = $mainTask->project_id;
+                $taskData['priority_id'] = $mainTask->priority_id;
+                $taskData['completed'] = $mainTask->completed;
+                $taskData['created_at'] = $mainTask->created_at;
+                $taskData['updated_at'] = $mainTask->updated_at;
                 if ($parentTask !== null) {
                     $mainTask->parentTask()->associate($parentTask);
+                    $taskData['parent_task_id'] = $parentTask['task_id'];
                     $mainTask->save();
                 }
+
+                $this->processTaskDataTags($taskData, $boardId);
             }
 
-            if (isset($taskData['tasks']) && is_array($taskData['tasks'])) {
-                foreach ($taskData['tasks'] as $subtaskData) {
+            if (isset($taskData['subtasks']) && is_array($taskData['subtasks'])) {
+                foreach ($taskData['subtasks'] as &$subtaskData) {
                     $this->processTaskData($subtaskData, $boardId, $columnId, $mainTask);
                 }
             }
@@ -922,6 +951,40 @@ class TaskController extends Controller
         $task->update($data);
     }
 
+    private function processTaskDataTags(&$taskData, $boardId) {
+        if (isset($taskData['tags']) && is_array($taskData['tags'])) {
+            $newTagsArray = [];
+            foreach ($taskData['tags'] as &$tagsData) {
+               $tagExists = Tag::Where('board_id', '=', $boardId)->Where('name', '=', $tagsData)->first();
+               if($tagExists) {
+                    $newTaskTag = new TaskTag();
+                    $newTaskTag->board_id = $boardId;
+                    $newTaskTag->task_id = $taskData['task_id'];
+                    $newTaskTag->tag_id = $tagExists->tag_id;
+                    $newTaskTag->save();
+
+                    array_push($newTagsArray, $tagExists);
+               } else {
+                    $tag = new Tag([
+                        'name' => $tagsData,
+                        'color' => '#BB0000',
+                        'board_id' => $boardId
+                    ]);
+
+                    $tag->save();
+
+                    $newTaskTag = new TaskTag();
+                    $newTaskTag->board_id = $boardId;
+                    $newTaskTag->task_id = $taskData['task_id'];
+                    $newTaskTag->tag_id = $tag->tag_id;
+                    $newTaskTag->save();
+
+                    array_push($newTagsArray, $tag);
+               }
+            }
+            $taskData['tags'] = $newTagsArray;
+        }
+    }
 
     public function boardTaskCompletionRate(Request $request, $board_id)
     {

@@ -10,7 +10,7 @@ import "react-dropdown/style.css";
 import BasicAutocomplete from "./BasicAutocomplete";
 import ErrorWrapper from "../ErrorWrapper";
 
-const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
+const CraftPromptPopup = ({ board_id, onCancel }) => {
   const [error, setError] = useState(null);
   const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
 
@@ -130,7 +130,6 @@ const CraftPromptPopup = ({ board_id, reloadCraftedPrompts, onCancel }) => {
       );
       if (res) {
         alert("Crafted prompt saved!");
-        reloadCraftedPrompts();
         onCancel();
       }
 

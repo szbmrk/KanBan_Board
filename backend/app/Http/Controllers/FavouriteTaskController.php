@@ -7,6 +7,17 @@ use App\Models\Board;
 use App\Models\FavouriteTask;
 use App\Models\Task;
 use App\Models\User;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\Events\BoardChange;
+use Illuminate\Support\Facades\Event;
 
 
 class FavouriteTaskController extends Controller
@@ -76,6 +87,12 @@ class FavouriteTaskController extends Controller
         $favouriteTask->user_id = $user->user_id;
         $favouriteTask->task_id = $task_id;
         $favouriteTask->save();
+
+        $data = [
+            'user_id' => $user->user_id,
+            'task' => $task
+        ];
+        broadcast(new BoardChange($board_id, "FAVOURITE_TASK", $data));
     
         return response()->json(['message' => 'Task added to favorite tasks successfully.'], 201);
     }
@@ -108,17 +125,23 @@ class FavouriteTaskController extends Controller
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
     
-        $favoriteTask = FavouriteTask::where('user_id', $user->user_id)
+        $favouriteTask = FavouriteTask::where('user_id', $user->user_id)
             ->where('task_id', $task_id)
             ->first();
     
-        if (!$favoriteTask) {
-            return response()->json(['error' => 'Task is not in your favorite tasks'], 404);
+        if (!$favouriteTask) {
+            return response()->json(['error' => 'Task is not in your favourite tasks'], 404);
         }
     
-        $favoriteTask->delete();
+        $favouriteTask->delete();
+
+        $data = [
+            'user_id' => $user->user_id,
+            'task' => $task
+        ];
+        broadcast(new BoardChange($board_id, "UNFAVOURITE_TASK", $data));
     
-        return response()->json(['message' => 'Task removed from favorite tasks successfully.'], 200);
+        return response()->json(['message' => 'Task removed from favourite tasks successfully.'], 200);
     }
     
 
