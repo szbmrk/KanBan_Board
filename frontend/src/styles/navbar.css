@@ -61,7 +61,7 @@
     align-self: center;
 }
 
-.profile-submenu {
+.profile-submenu , .background-submenu {
     position: absolute;
     top: 50px;
     right: 0;

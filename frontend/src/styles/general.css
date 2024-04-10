@@ -25,6 +25,8 @@
     --code: #ff8c00;
     --craft: #5bffc8;
     --light-blue: #00bfff;
+    --cancel: #757575;
+    --cancel-hover: #9e9e9e;
 }
 
 [data-theme='light'] {
