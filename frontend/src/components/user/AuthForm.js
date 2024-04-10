@@ -96,8 +96,7 @@ const AuthForm = ({
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                //placeholder="Enter your email or username"
-                                placeholder="Enter your email"
+                                placeholder="Enter your email or username"
                                 required
                             />
                         </div>
