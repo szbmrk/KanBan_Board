@@ -76,11 +76,22 @@ class UserController extends Controller
     }
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $emailOrUsername = $request->input('email');
+        $password = $request->input('password');
+
+        // Check if the provided email looks like an email address
+        $isEmail = filter_var($emailOrUsername, FILTER_VALIDATE_EMAIL);
+
+        // Construct the credentials array based on whether it's an email or username
+        if ($isEmail) {
+            $credentials = ['email' => $emailOrUsername, 'password' => $password];
+        } else {
+            $credentials = ['username' => $emailOrUsername, 'password' => $password];
+        }
 
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'Incorrect email address or password'], 400);
+                return response()->json(['error' => 'Incorrect email address, username, or password'], 400);
             }
 
             $user = JWTAuth::user();
