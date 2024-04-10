@@ -277,6 +277,13 @@ export default function EditProfile() {
                             Delete account
                         </button>
                     </form>
+                    <div className="ChangeBG">
+                        <h2>Change Background</h2>
+                        <br/>
+                        <div className="Button-carusell">
+                            
+                        </div>
+                    </div>
                     {deleteIsClicked && <DeleteConfirm OnClose={handleDeleteButton} />}
                 </div>
             )}
