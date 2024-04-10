@@ -13,7 +13,7 @@ export default function Permissiontable() {
     const [permissions, setPermissions] = useState([]);
     const [newRoleName, setNewRoleName] = useState("");
     const [needLoader, setNeedLoader] = useState(false);
-    const [renameIsActive, setRenameIsActive] = useState(false);
+    const [renameIsActive, setRenameIsActive] = useState(null); // null kezdeti értékkel
     const [renameRoleName, setRenameRoleName] = useState("");
 
     const token = sessionStorage.getItem("token");
@@ -233,7 +233,7 @@ export default function Permissiontable() {
     }
 
     async function handleRoleRenameSubmit(role_id) {
-        setRenameIsActive(false);
+        setRenameIsActive(null);
         try {
             const response = await axios.put(
                 `/boards/${board_id}/roles/${role_id}`,
@@ -276,34 +276,30 @@ export default function Permissiontable() {
                                             <div
                                                 className="role-rename-div"
                                                 onDoubleClick={() => {
-                                                    if (
-                                                        checkPermissionForBoard(
-                                                            board_id,
-                                                            team_id,
-                                                            "role_management"
-                                                        )
-                                                    ) {
-                                                        setRenameIsActive(true);
+                                                    if (checkPermissionForBoard(board_id, team_id, "role_management")) {
+                                                        setRenameIsActive(role.role_id); // Állítsd be az aktív szerep azonosítóját
                                                     }
                                                 }}
                                             >
                                                 <p>{role.name}</p>
                                             </div>
                                         ) : (
-                                            <div className="role-rename-input">
-                                                <input
-                                                    className="role-rename-input-field"
-                                                    type="text"
-                                                    placeholder="Rename this role..."
-                                                    onChange={handleRoleRename}
-                                                />
-                                                <button
-                                                    className="role-rename-button"
-                                                    onClick={() => handleRoleRenameSubmit(role.role_id)}
-                                                >
-                                                    Rename
-                                                </button>
-                                            </div>
+                                            renameIsActive === role.role_id && ( // Csak az aktív szerepnél jelenik meg
+                                                <div className="role-rename-input">
+                                                    <input
+                                                        className="role-rename-input-field"
+                                                        type="text"
+                                                        placeholder="Rename this role..."
+                                                        onChange={handleRoleRename}
+                                                    />
+                                                    <button
+                                                        className="role-rename-button"
+                                                        onClick={() => handleRoleRenameSubmit(role.role_id)}
+                                                    >
+                                                        Rename
+                                                    </button>
+                                                </div>
+                                            )
                                         )}
                                         {checkPermissionForBoard(
                                             board_id,
