@@ -284,19 +284,29 @@ export default function Permissiontable() {
                                                 <p>{role.name}</p>
                                             </div>
                                         ) : (
-                                            renameIsActive === role.role_id && ( // Csak az aktív szerepnél jelenik meg
+                                            renameIsActive === role.role_id && (
                                                 <div className="role-rename-input">
                                                     <input
                                                         className="role-rename-input-field"
                                                         type="text"
                                                         placeholder="Rename this role..."
                                                         onChange={handleRoleRename}
+                                                        value={renameRoleName}
                                                     />
                                                     <button
                                                         className="role-rename-button"
                                                         onClick={() => handleRoleRenameSubmit(role.role_id)}
                                                     >
                                                         Rename
+                                                    </button>
+                                                    <button
+                                                        className="cancel-rename-button"
+                                                        onClick={() => {
+                                                            setRenameIsActive(null); // Inaktív állapotba állítja az átnevezést
+                                                            setRenameRoleName(""); // Törli a beírt szöveget
+                                                        }}
+                                                    >
+                                                        Cancel
                                                     </button>
                                                 </div>
                                             )
