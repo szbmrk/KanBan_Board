@@ -284,7 +284,7 @@ export default function Permissiontable() {
                                                 <p>{role.name}</p>
                                             </div>
                                         ) : (
-                                            renameIsActive === role.role_id && (
+                                            renameIsActive === role.role_id && ( // Only show for the active role being renamed
                                                 <div className="role-rename-input">
                                                     <input
                                                         className="role-rename-input-field"
@@ -299,11 +299,12 @@ export default function Permissiontable() {
                                                     >
                                                         Rename
                                                     </button>
+                                                    {/* Cancel button */}
                                                     <button
-                                                        className="cancel-rename-button"
+                                                        className="cancel-role-button"
                                                         onClick={() => {
-                                                            setRenameIsActive(null); // Inaktív állapotba állítja az átnevezést
-                                                            setRenameRoleName(""); // Törli a beírt szöveget
+                                                            setRenameIsActive(null); // Reset the active role being renamed
+                                                            setRenameRoleName(""); // Optionally reset the input field value
                                                         }}
                                                     >
                                                         Cancel
