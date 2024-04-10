@@ -6,7 +6,8 @@ import Loader from "../Loader";
 import Error from "../Error";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-
+import bgRegular from "../../styles/imgs/background-regular.jpg";
+import bgBlue from "../../styles/imgs/background-blue.jpg";
 const deleteIcon = <FontAwesomeIcon icon={faXmark} />;
 
 export default function EditProfile() {
@@ -280,8 +281,9 @@ export default function EditProfile() {
                     <div className="ChangeBG">
                         <h2>Change Background</h2>
                         <br/>
-                        <div className="Button-carusell">
-                            
+                        <div className="Button-scroller">
+                            <button id="bg1"> <img src={bgRegular} height={120} width={160}></img> </button>
+                            <button id="bg2"> <img src={bgBlue} height={120} width={160}></img> </button>
                         </div>
                     </div>
                     {deleteIsClicked && <DeleteConfirm OnClose={handleDeleteButton} />}
