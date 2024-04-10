@@ -8,6 +8,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import bgRegular from "../../styles/imgs/background-regular.jpg";
 import bgBlue from "../../styles/imgs/background-blue.jpg";
+import bgDarkBlue from "../../styles/imgs/background-darkblue.jpg";
+import bgGray from "../../styles/imgs/background-gray.jpg";
+import bgGreen from "../../styles/imgs/background-green.jpg";
+import bgPurple from "../../styles/imgs/background-purple.jpg";
+
 const deleteIcon = <FontAwesomeIcon icon={faXmark} />;
 
 export default function EditProfile() {
@@ -284,6 +289,10 @@ export default function EditProfile() {
                         <div className="Button-scroller">
                             <button id="bg1"> <img src={bgRegular} height={120} width={160}></img> </button>
                             <button id="bg2"> <img src={bgBlue} height={120} width={160}></img> </button>
+                            <button id="bg3"> <img src={bgDarkBlue} height={120} width={160}></img> </button>
+                            <button id="bg4"> <img src={bgGray} height={120} width={160}></img> </button>
+                            <button id="bg5"> <img src={bgGreen} height={120} width={160}></img> </button>
+                            <button id="bg6"> <img src={bgPurple} height={120} width={160}></img> </button>
                         </div>
                     </div>
                     {deleteIsClicked && <DeleteConfirm OnClose={handleDeleteButton} />}
