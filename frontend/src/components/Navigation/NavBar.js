@@ -63,7 +63,8 @@ const Navbar = () => {
         window.dispatchEvent(event)
     }
 
-    /*const toggleSidebar = () => {
+    
+    const toggleSidebar = () => {
         const sidebar = document.querySelector(".sidebar");
         const content = document.querySelector(".content");
 
@@ -73,63 +74,28 @@ const Navbar = () => {
             sidebar.style.transform = isSidebarOnTop
                 ? "translateY(-253px)"
                 : "translateX(-231px)";
-            sidebar.style.transition = "transform 0.5s ease-in-out";
-            content.style.transition = "max-width 0.5s ease-in-out";
+            sidebar.style.transition = "transform 0.2s ease-in-out";
+            content.style.transition = "transform 0.2s ease-in-out, width 0.3s ease-in-out";
             setIsSidebarVisible(false);
-            setTimeout(() => {
-                content.style.maxWidth = "100%";
-                content.classList.remove("col-10");
-                content.classList.add("col-12");
-                sidebar.classList.remove("col-2");
-                sidebar.style.display = "none";
-            }, 500);
+            content.style.maxWidth = "100%";
+            content.classList.remove("col-10");
+            content.classList.add("col-12");
+            sidebar.classList.remove("col-2");
+            sidebar.style.display = "none";
         } else {
-            sidebar.style.transition = "transform 0.5s ease-in-out";
-            content.style.transition = "max-width 0.5s ease-in-out";
+            //sidebar.style.transition = "transform 0.5s ease-in-out";
+           //content.style.transition = "max-width 0.5s ease-in-out";
             setIsSidebarVisible(true);
             sidebar.style.display = "block";
-            setTimeout(() => {
-                sidebar.classList.add("col-2");
+            sidebar.classList.add("col-2");
                 content.classList.remove("col-12");
                 content.classList.add("col-10");
                 content.style.maxWidth = isSidebarOnTop ? "100%" : "calc(100% - 231px)";
                 sidebar.style.transform = "translateX(0px)";
-            }, 0);
-        }
-        setMenuIconClicked(false);
-    };*/
 
-    const toggleSidebar = () => {
-        const sidebar = document.querySelector(".sidebar");
-        const content = document.querySelector(".content");
-        const sidebarWidth = sidebar.offsetWidth;
-    
-        if (!isSidebarVisible) {
-            setIsSidebarVisible(true);
-            setIsSidebarClosable(true);
-    
-            content.style.transition = "transform 0.5s ease-in-out, width 0.5s ease-in-out";
-            sidebar.style.transition = "transform 0.5s ease-in-out";
-    
-            content.style.transform = `translateX(0) scaleX(1)`;
-            sidebar.style.transform = `translateX(0)`;
-            content.style.width = `calc(100% - ${sidebarWidth}px)`;
-        } else {
-            setIsSidebarVisible(false);
-            setIsSidebarClosable(false);
-    
-            content.style.transition = "transform 0.5s ease-in-out, width 0.5s ease-in-out";
-            sidebar.style.transition = "transform 0.5s ease-in-out";
-    
-            content.style.transform = `translateX(-7%) scaleX(1.1)`; 
-            sidebar.style.transform = `translateX(-${sidebarWidth}px)`;
-            content.style.width = `100%`;
         }
-    
         setMenuIconClicked(false);
     };
-    
-    
       
     useEffect(() => {
         const maxWidth = window.matchMedia("(min-width: 980px)");
