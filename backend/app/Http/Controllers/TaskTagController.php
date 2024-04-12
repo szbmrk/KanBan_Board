@@ -7,6 +7,7 @@ use App\Models\Tag;
 use App\Models\Board;
 use App\Models\Task;
 use App\Models\TaskTag;
+use App\Models\UserTask;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
@@ -16,6 +17,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\BoardChange;
+use App\Events\AssignedTaskChange;
 use Illuminate\Support\Facades\Event;
 
 
@@ -98,6 +100,8 @@ class TaskTagController extends Controller
         // Check if the task already exists in the TaskTag table
         $taskInBoard = TaskTag::where('task_id', $task_id)->exists();
 
+        $user_ids = UserTask::where('task_id', $task_id)->pluck('user_id')->toArray();
+
         $tag = Tag::find($tag_id); 
     
         if (!$taskInBoard) { 
@@ -113,6 +117,14 @@ class TaskTagController extends Controller
                 'tag' => $tag,
             ];
             broadcast(new BoardChange($board_id, "CREATED_TASK_TAG", $data));
+
+            foreach ($user_ids as $user_id) {
+                $data = [
+                    'task' => $task,
+                    'tag' => $tag,
+                ];
+                broadcast(new AssignedTaskChange($user_id, "CREATED_TASK_TAG", $data));
+            }
     
             return response()->json(['message' => 'Task tag created successfully.'], 201);
         }
@@ -129,6 +141,14 @@ class TaskTagController extends Controller
             'tag' => $tag,
         ];
         broadcast(new BoardChange($board_id, "CREATED_TASK_TAG", $data));
+
+        foreach ($user_ids as $user_id) {
+            $data = [
+                'task' => $task,
+                'tag' => $tag,
+            ];
+            broadcast(new AssignedTaskChange($user_id, "CREATED_TASK_TAG", $data));
+        }
 
         return response()->json(['message' => 'Task tag created successfully.'], 201);
     }
@@ -184,6 +204,16 @@ class TaskTagController extends Controller
             'tag' => $tag,
         ];
         broadcast(new BoardChange($board_id, "DELETED_TASK_TAG", $data));
+
+        $user_ids = UserTask::where('task_id', $task_id)->pluck('user_id')->toArray();
+
+        foreach ($user_ids as $user_id) {
+            $data = [
+                'task' => $task,
+                'tag' => $tag,
+            ];
+            broadcast(new AssignedTaskChange($user_id, "DELETED_TASK_TAG", $data));
+        }
 
         return response()->json(['message' => 'Task tag deleted successfully'], 200);
     }

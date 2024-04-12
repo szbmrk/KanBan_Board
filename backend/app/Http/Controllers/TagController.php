@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Tag;
 use App\Models\Board;
+use App\Models\UserTask;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
@@ -14,6 +15,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\BoardChange;
+use App\Events\AssignedTaskChange;
 use Illuminate\Support\Facades\Event;
 
 class TagController extends Controller
@@ -138,6 +140,19 @@ class TagController extends Controller
             'tag' => $tag,
         ];
         broadcast(new BoardChange($boardId, "UPDATED_TAG", $data));
+
+        $user_ids = UserTask::whereIn('task_id', function($query) use ($tagId) {
+            $query->select('task_id')
+                ->from('task_tags')
+                ->where('tag_id', $tagId);
+        })->pluck('user_id')->toArray();
+
+        foreach ($user_ids as $user_id) {
+            $data = [
+                'tag' => $tag,
+            ];
+            broadcast(new AssignedTaskChange($user_id, "UPDATED_TAG", $data));
+        }
 
         return response()->json(['message' => 'Tag updated successfully.'], 200);
     }

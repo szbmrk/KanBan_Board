@@ -30,6 +30,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\BoardChange;
+use App\Events\AssignedTaskChange;
 use Illuminate\Support\Facades\Event;
 
 class TaskController extends Controller
@@ -224,6 +225,15 @@ class TaskController extends Controller
         ];
         broadcast(new BoardChange($board_id, "UPDATED_TASK", $data));
 
+        $user_ids = UserTask::where('task_id', $task_id)->pluck('user_id')->toArray();
+
+        foreach ($user_ids as $user_id) {
+            $data = [
+                'task' => $taskWithSubtasksAndTags
+            ];
+            broadcast(new AssignedTaskChange($user_id, "UPDATED_ASSIGNED_TASK_OR_SUBTASK", $data));
+        }
+
         return response()->json(['message' => 'Task updated successfully', 'task' => $taskWithSubtasksAndTags]);
     }
 
@@ -285,12 +295,23 @@ class TaskController extends Controller
 
         Feedback::where('task_id', $task_id)->delete();
 
+        $user_ids = UserTask::where('task_id', $task_id)->pluck('user_id')->toArray();
+
+        UserTask::Where('task_id', $task_id)->delete();
+
         $task->delete();
 
         $data = [
             'task' => $task
         ];
         broadcast(new BoardChange($board_id, "DELETED_TASK", $data));
+
+        foreach ($user_ids as $user_id) {
+            $data = [
+                'task' => $task
+            ];
+            broadcast(new AssignedTaskChange($user_id, "UNASSIGNED_FROM_TASK", $data));
+        }
 
         return response()->json(['message' => 'Task deleted successfully']);
     }
@@ -499,6 +520,20 @@ class TaskController extends Controller
             'subtask' => $subTaskWithSubtasksAndTags
         ];
         broadcast(new BoardChange($board->board_id, "UPDATED_SUBTASK", $data));
+
+        $user_ids;
+        if($subTask->parent_task_id === null) {
+            $user_ids = UserTask::where('task_id', $subtask_id)->orWhere('task_id', $subTask->parent_task_id)->pluck('user_id')->toArray();
+        } else {
+            $user_ids = UserTask::where('task_id', $subtask_id)->pluck('user_id')->toArray();
+        }
+
+        foreach ($user_ids as $user_id) {
+            $data = [
+                'task' => $subTaskWithSubtasksAndTags
+            ];
+            broadcast(new AssignedTaskChange($user_id, "UPDATED_ASSIGNED_TASK_OR_SUBTASK", $data));
+        }
 
         return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTaskWithSubtasksAndTags]);
     }
