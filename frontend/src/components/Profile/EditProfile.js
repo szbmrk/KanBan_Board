@@ -283,16 +283,19 @@ export default function EditProfile() {
                             Delete account
                         </button>
                     </form>
-                    <div className="ChangeBG">
+                    <div class="ChangeBG">
                         <h2>Change Background</h2>
-                        <br/>
-                        <div className="Button-scroller">
-                            <button id="bg1"> <img src={bgRegular} height={120} width={160}></img> </button>
-                            <button id="bg2"> <img src={bgBlue} height={120} width={160}></img> </button>
-                            <button id="bg3"> <img src={bgDarkBlue} height={120} width={160}></img> </button>
-                            <button id="bg4"> <img src={bgGray} height={120} width={160}></img> </button>
-                            <button id="bg5"> <img src={bgGreen} height={120} width={160}></img> </button>
-                            <button id="bg6"> <img src={bgPurple} height={120} width={160}></img> </button>
+                        <div class="ButtonContainer">
+                            <button class="scroll-button prev-button">&lt;</button>
+                            <div class="Button-scroller">
+                                <button id="bg1"> <img src={bgRegular} height={120} width={160}></img> </button>
+                                <button id="bg2"> <img src={bgBlue} height={120} width={160}></img> </button>
+                                <button id="bg3"> <img src={bgDarkBlue} height={120} width={160}></img> </button>
+                                <button id="bg4"> <img src={bgGray} height={120} width={160}></img> </button>
+                                <button id="bg5"> <img src={bgGreen} height={120} width={160}></img> </button>
+                                <button id="bg6"> <img src={bgPurple} height={120} width={160}></img> </button>
+                            </div>
+                            <button class="scroll-button next-button">&gt;</button>
                         </div>
                     </div>
                     {deleteIsClicked && <DeleteConfirm OnClose={handleDeleteButton} />}
