@@ -184,6 +184,16 @@ export default function EditProfile() {
         changeProfilePicture();
     }
 
+    function handleScrollNext() {
+        const container = document.querySelector('.Button-scroller');
+        container.scrollLeft += 160; // Assuming each image has a width of 160px
+    }
+    
+    function handleScrollPrev() {
+        const container = document.querySelector('.Button-scroller');
+        container.scrollLeft -= 160; // Assuming each image has a width of 160px
+    }
+
     return (
         <div className="content col-10" data-theme={theme}>
             {formData.username === "" ? (
@@ -286,7 +296,7 @@ export default function EditProfile() {
                     <div class="ChangeBG">
                         <h2>Change Background</h2>
                         <div class="ButtonContainer">
-                            <button class="scroll-button prev-button">&lt;</button>
+                            <button class="scroll-button prev-button" onClick={handleScrollPrev}>&lt;</button>
                             <div class="Button-scroller">
                                 <button id="bg1"> <img src={bgRegular} height={120} width={160}></img> </button>
                                 <button id="bg2"> <img src={bgBlue} height={120} width={160}></img> </button>
@@ -295,7 +305,7 @@ export default function EditProfile() {
                                 <button id="bg5"> <img src={bgGreen} height={120} width={160}></img> </button>
                                 <button id="bg6"> <img src={bgPurple} height={120} width={160}></img> </button>
                             </div>
-                            <button class="scroll-button next-button">&gt;</button>
+                            <button class="scroll-button next-button" onClick={handleScrollNext}>&gt;</button>
                         </div>
                     </div>
                     {deleteIsClicked && <DeleteConfirm OnClose={handleDeleteButton} />}
