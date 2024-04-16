@@ -97,11 +97,11 @@ const Popup = ({
     const [error, setError] = useState(null);
 
     const validateLink = (inputLink) => {
-        const urlPattern = /^(https?:\/\/|http?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/i;
+        const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?([?#][^\s]*)?$/i;
 
         return urlPattern.test(inputLink);
     };
-
+    
     const handleLinkChange = (event) => {
         const inputValue = event.target.value;
         setNewAttachmentLink(inputValue);
