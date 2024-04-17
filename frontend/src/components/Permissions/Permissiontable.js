@@ -233,7 +233,13 @@ export default function Permissiontable() {
     }
 
     async function handleRoleRenameSubmit(role_id) {
-        setRenameIsActive(null);
+        const currentRole = roles.find(role => parseInt(role.role_id) === parseInt(role_id));
+        if (currentRole.name === renameRoleName || renameRoleName.trim() === "") {
+            setRenameIsActive(null);
+            setRenameRoleName("");
+            return;
+        }
+
         try {
             const response = await axios.put(
                 `/boards/${board_id}/roles/${role_id}`,
@@ -252,10 +258,12 @@ export default function Permissiontable() {
             });
             setRoles(newRoleData);
             setRenameRoleName("");
+            setRenameIsActive(null);
         } catch (error) {
             setError(error?.response?.data);
         }
     }
+
 
     return (
         <div className="content col-10" data-theme={theme}>
