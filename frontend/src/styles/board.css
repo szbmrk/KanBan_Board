@@ -28,6 +28,7 @@
 }
 
 .Board_Without_title {
+    position: relative;
     overflow: auto;
     z-index: 2;
 }
