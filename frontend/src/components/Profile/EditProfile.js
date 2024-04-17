@@ -194,8 +194,7 @@ export default function EditProfile() {
         container.scrollLeft -= 160;
     }
     function handleBackgroundChangeClick(e){
-        document.body.style.backgroundImage=e;
-        console.log(e);
+        document.body.style.backgroundImage='url(' + e + ')';
     }
 
     return (
