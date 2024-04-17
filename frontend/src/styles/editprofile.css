@@ -176,7 +176,7 @@
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    margin: 0 10px; /* Added margin for spacing */
+    margin: 0 10px; 
 }
 
 .Button-scroller::-webkit-scrollbar {
