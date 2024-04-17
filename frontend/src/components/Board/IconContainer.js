@@ -13,6 +13,7 @@ const calculateMenuPosition = (triggerElement, menuHeight) => {
         return { top: triggerRect.bottom + window.scrollY };
     }
 };
+//board js-ből áthozni a triggerelementet!
 
 const IconContainer = ({ iconContainerPosition, options }) => {
     const [isHovered, setIsHovered] = useState(false);
@@ -25,8 +26,7 @@ const IconContainer = ({ iconContainerPosition, options }) => {
                 position: "fixed",
                 overflow: "hidden",
                 left: iconContainerPosition.x + "px",
-                top: iconContainerPosition.y + "px",
-                bottom: iconContainerPosition.y - "px",
+                top: calculateMenuPosition(tri, windowHeight).top,
             }}
         >
             {options.map((option, index) => (
