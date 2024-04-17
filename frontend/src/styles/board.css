@@ -29,6 +29,7 @@
 
 .Board_Without_title {
     overflow: auto;
+    z-index: 2;
 }
 
 .addbtn-column {

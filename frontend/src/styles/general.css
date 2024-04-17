@@ -116,13 +116,14 @@ body {
 }
 
 .content {
-    position: relative;
+    //position: relative;
     text-align: center;
     margin: 0 auto;
     height: calc(100vh - 50px);
     float: right !important;
     max-width: calc(100% - 231px);
     overflow: auto;
+    z-index: 0;
 }
 
 @media screen and (max-width: 600px) {
