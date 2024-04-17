@@ -1,46 +1,62 @@
 import React, { useState } from "react";
 
-const IconContainer = ({ iconContainerPosition, options }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isHoveredIndex, setIsHoveredIndex] = useState(null);
+const calculateMenuPosition = (triggerElement, menuHeight) => {
+    const windowHeight = window.innerHeight;
+    const triggerRect = triggerElement.getBoundingClientRect();
+    const availableSpaceDown = windowHeight - (triggerRect.bottom + window.scrollY);
 
-  return (
-    <div
-      className="icon-container"
-      style={{
-        position: "fixed",
-        left: iconContainerPosition.x + "px",
-        top: iconContainerPosition.y + "px",
-      }}
-    >
-      {options.map((option, index) => (
+    if (availableSpaceDown < menuHeight) {
+        // Not enough space below, display upwards
+        return { top: triggerRect.top + window.scrollY - menuHeight };
+    } else {
+        // Enough space below, display downwards (default behavior)
+        return { top: triggerRect.bottom + window.scrollY };
+    }
+};
+
+const IconContainer = ({ iconContainerPosition, options }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    const [isHoveredIndex, setIsHoveredIndex] = useState(null);
+
+    return (
         <div
-          className="option"
-          key={index}
-          onMouseEnter={() => [setIsHovered(true), setIsHoveredIndex(index)]}
-          onMouseLeave={() => [setIsHovered(false), setIsHoveredIndex(null)]}
-          onClick={() => option.onClick()}
-        >
-          <span
-            className={option.iconClassName || ""}
+            className="icon-container"
             style={{
-              color:
-                (isHoveredIndex === index && isHovered && option.hoverColor) ||
-                "",
-              animation:
-                (isHoveredIndex === index && isHovered && option.animation) ||
-                "",
+                position: "fixed",
+                overflow: "hidden",
+                left: iconContainerPosition.x + "px",
+                top: iconContainerPosition.y + "px",
+                bottom: iconContainerPosition.y - "px",
             }}
-          >
-            {(isHoveredIndex === index && isHovered
-              ? option.hoveredIcon
-              : option.icon) || ""}
-          </span>
-          <p>{option.label || ""}</p>
+        >
+            {options.map((option, index) => (
+                <div
+                    className="option"
+                    key={index}
+                    onMouseEnter={() => [setIsHovered(true), setIsHoveredIndex(index)]}
+                    onMouseLeave={() => [setIsHovered(false), setIsHoveredIndex(null)]}
+                    onClick={() => option.onClick()}
+                >
+                    <span
+                        className={option.iconClassName || ""}
+                        style={{
+                            color:
+                                (isHoveredIndex === index && isHovered && option.hoverColor) ||
+                                "",
+                            animation:
+                                (isHoveredIndex === index && isHovered && option.animation) ||
+                                "",
+                        }}
+                    >
+                        {(isHoveredIndex === index && isHovered
+                            ? option.hoveredIcon
+                            : option.icon) || ""}
+                    </span>
+                    <p>{option.label || ""}</p>
+                </div>
+            ))}
         </div>
-      ))}
-    </div>
-  );
+    );
 };
 
 export default IconContainer;
