@@ -186,12 +186,12 @@ export default function EditProfile() {
 
     function handleScrollNext() {
         const container = document.querySelector('.Button-scroller');
-        container.scrollLeft += 160; // Assuming each image has a width of 160px
+        container.scrollLeft += 160; 
     }
     
     function handleScrollPrev() {
         const container = document.querySelector('.Button-scroller');
-        container.scrollLeft -= 160; // Assuming each image has a width of 160px
+        container.scrollLeft -= 160;
     }
 
     return (
