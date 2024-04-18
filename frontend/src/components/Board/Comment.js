@@ -57,7 +57,7 @@ export default function Comment({ comments, handlePostComment, deleteComment }) 
                                 <span className='date'>{formatDate(comment.created_at)}</span>
                                 {sessionStorage.getItem('username') === comment.user.username && (
                                     <button className='delete-comment-button' onClick={() => deleteComment(comment.comment_id)}>
-                                        <FontAwesomeIcon icon={faTrash} />
+                                        <FontAwesomeIcon icon={faTrash} style={{ color: 'ivory' }} />
                                     </button>
                                 )}
                             </div>      
