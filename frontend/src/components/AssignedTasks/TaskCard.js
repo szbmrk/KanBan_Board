@@ -89,9 +89,17 @@ const TaskCard = ({ task }) => {
                         <h3>Attachments:</h3>
                     </div>
 
-                    {task.attachments.map((attachment, index) =>
-                        attachment && attachment.link ? <p key={index}>{attachment.link}</p> : null
-                    )}
+                    <div className='attachments'>
+                        {task.attachments.map((attachment, index) =>
+                            attachment && attachment.link ? (
+                                <p key={index}>
+                                    <a href={attachment.link} target="_blank" rel="noopener noreferrer" className="attachment-link">
+                                        <span className="attachment-text">{attachment.link}</span>
+                                    </a>
+                                </p>
+                            ) : null
+                        )}
+                    </div>
                 </>
             )}
             {task.comments && task.comments.length > 0 && (

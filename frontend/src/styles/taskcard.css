@@ -73,3 +73,11 @@
   padding: 15px; /* Add padding to make the content breathe */
 }
 
+.attachment-text {
+  display: block;
+  width: 80%; /* Az attachment szélességét itt állíthatod be */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
