@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComments } from '@fortawesome/free-solid-svg-icons';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { formatDate } from '../../utils/DateFormat';
 import axios from "../../api/axios";
 
@@ -56,10 +57,10 @@ export default function Comment({ comments, handlePostComment, deleteComment }) 
                                 <span className='date'>{formatDate(comment.created_at)}</span>
                                 {sessionStorage.getItem('username') === comment.user.username && (
                                     <button className='delete-comment-button' onClick={() => deleteComment(comment.comment_id)}>
-                                        Delete
+                                        <FontAwesomeIcon icon={faTrash} />
                                     </button>
                                 )}
-                            </div>
+                            </div>      
                             <div className='comment-text'>{comment.text}</div>
                         </div>
                     ))}
