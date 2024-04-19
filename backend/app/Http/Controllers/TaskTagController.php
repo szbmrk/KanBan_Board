@@ -119,10 +119,6 @@ class TaskTagController extends Controller
             broadcast(new BoardChange($board_id, "CREATED_TASK_TAG", $data));
 
             foreach ($user_ids as $user_id) {
-                $data = [
-                    'task' => $task,
-                    'tag' => $tag,
-                ];
                 broadcast(new AssignedTaskChange($user_id, "CREATED_TASK_TAG", $data));
             }
     
@@ -143,10 +139,6 @@ class TaskTagController extends Controller
         broadcast(new BoardChange($board_id, "CREATED_TASK_TAG", $data));
 
         foreach ($user_ids as $user_id) {
-            $data = [
-                'task' => $task,
-                'tag' => $tag,
-            ];
             broadcast(new AssignedTaskChange($user_id, "CREATED_TASK_TAG", $data));
         }
 
@@ -208,10 +200,6 @@ class TaskTagController extends Controller
         $user_ids = UserTask::where('task_id', $task_id)->pluck('user_id')->toArray();
 
         foreach ($user_ids as $user_id) {
-            $data = [
-                'task' => $task,
-                'tag' => $tag,
-            ];
             broadcast(new AssignedTaskChange($user_id, "DELETED_TASK_TAG", $data));
         }
 

@@ -228,9 +228,6 @@ class TaskController extends Controller
         $user_ids = UserTask::where('task_id', $task_id)->pluck('user_id')->toArray();
 
         foreach ($user_ids as $user_id) {
-            $data = [
-                'task' => $taskWithSubtasksAndTags
-            ];
             broadcast(new AssignedTaskChange($user_id, "UPDATED_ASSIGNED_TASK_OR_SUBTASK", $data));
         }
 
@@ -307,9 +304,6 @@ class TaskController extends Controller
         broadcast(new BoardChange($board_id, "DELETED_TASK", $data));
 
         foreach ($user_ids as $user_id) {
-            $data = [
-                'task' => $task
-            ];
             broadcast(new AssignedTaskChange($user_id, "UNASSIGNED_FROM_TASK", $data));
         }
 
@@ -485,6 +479,12 @@ class TaskController extends Controller
         ];
         broadcast(new BoardChange($board->board_id, "CREATED_SUBTASK", $data));
 
+        $user_ids = UserTask::where('task_id', $parent_task_id)->pluck('user_id')->toArray();
+
+        foreach ($user_ids as $user_id) {
+            broadcast(new AssignedTaskChange($user_id, "CREATED_SUBTASK_FOR_ASSIGNED_TASK", $data));
+        }
+
         return response()->json(['message' => 'Subtask created successfully', 'task' => $subTaskWithSubtasksAndTagsAndComments]);
     }
 
@@ -522,16 +522,16 @@ class TaskController extends Controller
         broadcast(new BoardChange($board->board_id, "UPDATED_SUBTASK", $data));
 
         $user_ids;
-        if($subTask->parent_task_id === null) {
+        if($subTask->parent_task_id !== null) {
             $user_ids = UserTask::where('task_id', $subtask_id)->orWhere('task_id', $subTask->parent_task_id)->pluck('user_id')->toArray();
         } else {
             $user_ids = UserTask::where('task_id', $subtask_id)->pluck('user_id')->toArray();
         }
 
+        $data = [
+            'task' => $subTaskWithSubtasksAndTags
+        ];
         foreach ($user_ids as $user_id) {
-            $data = [
-                'task' => $subTaskWithSubtasksAndTags
-            ];
             broadcast(new AssignedTaskChange($user_id, "UPDATED_ASSIGNED_TASK_OR_SUBTASK", $data));
         }
 
@@ -557,12 +557,18 @@ class TaskController extends Controller
             return response()->json(['error' => 'Subtask not found or does not belong to this board'], 404);
         }
 
+        $user_ids = UserTask::where('task_id', $subTask->parent_task_id)->pluck('user_id')->toArray();
+
         $subTask->delete();
 
         $data = [
             'subtask' => $subTask
         ];
         broadcast(new BoardChange($board->board_id, "DELETED_SUBTASK", $data));
+
+        foreach ($user_ids as $user_id) {
+            broadcast(new AssignedTaskChange($user_id, "DELETED_SUBTASK_FOR_ASSIGNED_TASK", $data));
+        }
 
         return response()->json(['message' => 'Subtask deleted successfully']);
     }

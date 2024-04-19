@@ -307,7 +307,10 @@ const Board = () => {
         webSocketDeleteTaskTag(websocket.data);
         break;
       case "UPDATED_TAG":
-        webSocketUpdateTag(websocket.data.tag);
+        webSocketUpdateTag(websocket.data);
+        break;
+      case "DELETED_TAG":
+        webSocketDeleteTag(websocket.data);
         break;
       case "CREATED_COMMENT":
         webSocketCreateComment(websocket.data);
@@ -546,37 +549,68 @@ const Board = () => {
     removeTagFromTask(data.task.task_id, data.tag.tag_id);
   };
 
-  const webSocketUpdateTag = async (tag) => {
+  const webSocketUpdateTag = (data) => {
     console.log("webSocketUpdateTag");
     console.log(boardRef.current);
 
-    updateTagsWithTagId(tag);
-  };
-
-  function updateTagsWithTagId(updatedTag) {
     let newBoardData = [...boardRef.current.columns];
 
-    newBoardData.forEach((column) =>
-      column.tasks.forEach((task) =>
-        task.tags.forEach((tag, index) => {
-          if (tag.tag_id === updatedTag.tag_id) {
-            task.tags[index] = updatedTag;
-          }
-        })
-      )
-    );
+    newBoardData.forEach((currentColumn) => {
+      newBoardData.tasks = updateTagsWithTagId(currentColumn.tasks, data.tag);
+    });
 
     setBoard({ ...boardRef.current, columns: newBoardData });
-  }
+  };
+
+  const updateTagsWithTagId = (tasks, tag) => {
+    tasks.forEach((currentTask) => {
+      if (currentTask.tags) {
+        currentTask.tags.forEach((currentTag, index) => {
+          if (currentTag.tag_id === tag.tag_id) {
+            currentTask.tags[index] = tag;
+          }
+        });
+      }
+      if (currentTask.subtasks) {
+        currentTask.subtasks = updateTagsWithTagId(currentTask.subtasks, tag);
+      }
+    });
+    return tasks;
+  };
+
+  const webSocketDeleteTag = (data) => {
+    console.log("webSocketDeleteTag");
+    console.log(boardRef.current);
+
+    let newBoardData = [...boardRef.current.columns];
+
+    newBoardData.forEach((currentColumn) => {
+      newBoardData.tasks = DeleteTagByTagId(
+        currentColumn.tasks,
+        data.tag.tag_id
+      );
+    });
+
+    setBoard({ ...boardRef.current, columns: newBoardData });
+  };
+
+  const DeleteTagByTagId = (tasks, tag_id) => {
+    tasks.forEach((currentTask) => {
+      if (currentTask.tags) {
+        currentTask.tags = currentTask.tags.filter(
+          (currentTag) => currentTag.tag_id !== tag_id
+        );
+      }
+      if (currentTask.subtasks) {
+        currentTask.subtasks = DeleteTagByTagId(currentTask.subtasks, tag_id);
+      }
+    });
+    return tasks;
+  };
 
   const webSocketCreateComment = async (data) => {
     console.log("webSocketCreateComment");
     console.log(boardRef.current);
-
-    console.log("comment");
-    console.log(data.task);
-    console.log(inspectedTaskRef.current);
-    console.log(data.comment);
 
     const newTaskData = [...boardRef.current.columns];
     const columnIndex = newTaskData.findIndex(
@@ -2354,20 +2388,6 @@ const Board = () => {
     }
 
     setBoard(updatedBoard);
-  };
-
-  const handleBoardTagDeletion = async (tag_id) => {
-    const updatedBoard = { ...board };
-    for (const column of updatedBoard.columns) {
-      for (const task of column.tasks) {
-        const removedTagIndex = task.tags.findIndex(
-          (tag) => tag.tag_id === tag_id
-        );
-        if (removedTagIndex !== -1) {
-          task.tags.splice(removedTagIndex, 1);
-        }
-      }
-    }
   };
 
   const sortByCardName = () => {
