@@ -74,8 +74,8 @@ const Navbar = () => {
             sidebar.style.transform = isSidebarOnTop
                 ? "translateY(-253px)"
                 : "translateX(-231px)";
-            sidebar.style.transition = "transform 0.2s ease-in-out";
-            content.style.transition = "transform 0.2s ease-in-out, width 0.3s ease-in-out";
+            sidebar.style.transition = "transform 0.4s ease-in-out";
+            content.style.transition = "transform 0.4s ease-in-out, width 0.4s ease-in-out";
             setIsSidebarVisible(false);
             content.style.maxWidth = "100%";
             content.classList.remove("col-10");
@@ -120,10 +120,10 @@ const Navbar = () => {
         const setSidebarOnTop = (e) => {
             if (e.matches) {
                 content.style.maxWidth = "100%";
-                content.style.transition = "max-width 0.5s ease-in-out";
+                content.style.transition = "max-width 0.4s ease-in-out";
             } else {
                 content.style.maxWidth = "calc(100% - 231px)";
-                content.style.transition = "max-width 0.5s ease-in-out";
+                content.style.transition = "max-width 0.4s ease-in-out";
             }
             setIsSidebarOnTop(e.matches);
         };
