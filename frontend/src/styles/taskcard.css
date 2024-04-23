@@ -79,5 +79,6 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  margin-left: 40px;
 }
 
