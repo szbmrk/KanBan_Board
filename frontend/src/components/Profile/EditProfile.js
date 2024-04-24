@@ -195,7 +195,8 @@ export default function EditProfile() {
     }
     function handleBackgroundChangeClick(e){
         console.log(e);
-        document.body.style.backgroundImage="url( ./"+e+")"
+        var style="background-image: url("+ e+"); position: fixed top: 0; left: 0; width: 100vw; height: 100vh; background: no-repeat center; background-size: cover"
+        document.getElementById('background').style=style
     }
 
     return (
@@ -302,8 +303,8 @@ export default function EditProfile() {
                         <div class="ButtonContainer">
                             <button class="scroll-button prev-button" onClick={handleScrollPrev}>&lt;</button>
                             <div class="Button-scroller">
-                                <img id="./imgs/background-regular.jpg" src={bgRegular} height={120} width={160} onClick={(e)=>handleBackgroundChangeClick(e.target.id)}></img> 
-                                <img id="./imgs/background-blue.jpg" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgBlue} height={120} width={160}></img>
+                                <img id="./src/components/imgs/background-regular.jpg" src={bgRegular} height={120} width={160} onClick={(e)=>handleBackgroundChangeClick(e.target.id)}></img> 
+                                <img id="./src/components/imgs/background-blue.jpg" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgBlue} height={120} width={160}></img>
                                 <img id="./imgs/background-darkblue.jpg"onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgDarkBlue} height={120} width={160}></img>
                                 <img id="./imgs/background-grey.jpg" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgGray} height={120} width={160}></img>
                                 <img id="./imgs/background-green.jpg"onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgGreen} height={120} width={160}></img>
