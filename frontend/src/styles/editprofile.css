@@ -183,18 +183,15 @@
     display: none;
 }
 
-.Button-scroller button {
+.Button-scroller img {
     border: none;
+    border-radius: 8px;
     background-color: transparent;
     cursor: pointer;
     padding: 0;
     margin: 0 5px; 
-}
-
-.Button-scroller button img {
-    border-radius: 8px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
     transition: transform 0.3s ease;
-    display: block;
+    display: block inline;
     flex-shrink: 0; 
 }
