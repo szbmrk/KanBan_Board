@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/login-signup.css";
 import { Link } from "react-router-dom";
+//import { useLocation } from 'react-router-dom';
 
 const AuthForm = ({
     state,
@@ -17,14 +18,85 @@ const AuthForm = ({
     textToTermsAndConditions,
 }) => {
     const [keyState, setKeyState] = useState(state);
+    //const [passwordMatchError, setPasswordMatchError] = useState(false);
+    const [passwordStrength, setPasswordStrength] = useState("");  
+   // const [isVibrating, setIsVibrating] = useState(false);
+    //const location = useLocation();
     const [authContainerVisibility, setAuthContainerVisibility] =
         useState("hidden");
+
 
     const handleChangeKeyState = () => {
         setKeyState((prevKeyState) =>
             prevKeyState === "login" ? "signup" : "login"
         );
     };
+    
+    /*const handleConfirmPasswordChange = (e) => {
+        const { name, value } = e.target;
+        handleChange(e); // Így továbbítjuk az adatokat a handleChange függvénynek
+        if (name === 'confirmPassword') {
+            if (value !== formData.password) {
+                setPasswordMatchError(true);
+            } else {
+                setPasswordMatchError(false);
+            }
+        }
+    };*/
+    
+    const handleSignUp = (e) => {
+        e.preventDefault();
+        if (passwordMatchError) {
+            setIsVibrating(true);
+            setTimeout(() => {
+                setIsVibrating(false);
+            }, 1000); // 1000 ms az effekt időtartama
+        } else {
+            handleSubmit(e);
+        }
+    };
+
+    const checkPasswordStrength = (password) => {
+        if (password.trim() === "") {
+            //ha a jelszó mező üres ne adja ki az erősségeket
+            setPasswordStrength("");
+            return;
+        }
+    
+        let strength = 0;
+    
+        // Kisbetűk ellenőrzése
+        if (/[a-z]/.test(password)) {
+            strength++;
+        }
+    
+        // Nagybetűk ellenőrzése
+        if (/[A-Z]/.test(password)) {
+            strength++;
+        }
+    
+        // Számok ellenőrzése
+        if (/[0-9]/.test(password)) {
+            strength++;
+        }
+    
+        // Speciális karakterek ellenőrzése
+        if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
+            strength++;
+        }
+    
+        if (password.length < 8 || strength < 3) {
+            // Jelszó hossza szerinti és karakter típus alapú ellenőrzés
+            setPasswordStrength("Weak");
+        } else if (password.length >= 10 && strength >= 3) {
+            // Ha a jelszó hossza legalább 10 karakter és teljesíti az erősségi feltételeket
+            setPasswordStrength("Strong");
+        } else {
+            // Ha a jelszó hossza legalább 8 karakter és teljesíti az erősségi feltételeket
+            setPasswordStrength("Medium");
+        }
+    };
+
     const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
     useEffect(() => {
         const onPageLoad = () => {
@@ -102,18 +174,51 @@ const AuthForm = ({
                             />
                         </div>
                     )}
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            placeholder="Enter your password"
-                            required
-                        />
-                    </div>
+                        {location.pathname === "/login" ? (
+                        <div className="form-group">
+                            <label htmlFor="password">Password</label>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={(e) => {
+                                    handleChange(e);
+                                }}
+                                placeholder="Enter your password"
+                                required
+                            />
+                        </div>
+                        ) : (
+                            <div className="form-group">
+                                <label htmlFor="password">Password</label>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        checkPasswordStrength(e.target.value);
+                                    }}
+                                    placeholder="Enter your password"
+                                    required
+                                />
+                                <div className="password-strength-indicator">
+                                    {passwordStrength && (
+                                        <>
+                                            <div className={`password-strength ${passwordStrength.toLowerCase()}`}>
+                                                {passwordStrength}
+                                            </div>
+                                            <div className="password-strength-meter">
+                                                <div className={`strength-indicator ${passwordStrength.toLowerCase()}`} style={{ width: `${passwordStrength === "Weak" ? 20 : passwordStrength === "Medium" ? 50 : 100}%` }}></div>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
                     {keyState === "signup" ? (
                         <div className="form-group">
                             <label htmlFor="confirmPassword">Confirm Password</label>
@@ -122,7 +227,7 @@ const AuthForm = ({
                                 id="confirmPassword"
                                 name="confirmPassword"
                                 value={formData.confirmPassword}
-                                onChange={handleChange}
+                                onChange={handleConfirmPasswordChange}
                                 placeholder="Enter your password again"
                                 required
                                 onPaste={handlePaste}
@@ -142,12 +247,12 @@ const AuthForm = ({
                             {textToTermsAndConditions}
                         </div>
                     ) : null}
-                    {error && (
+                    {error && !passwordMatchError &&(
                         <div className="errorBox" style={{ display }}>
                             <p>{error.error ? error.error : error.message}</p>
                         </div>
                     )}
-                    <button className="submit-button" type="submit">
+                    <button className="submit-button" type="submit" onClick={handleSignUp}>
                         {buttonText}
                     </button>
                     <Link to={linkTo} onClick={handleChangeKeyState}>
