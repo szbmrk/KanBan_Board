@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/login-signup.css";
 import { Link } from "react-router-dom";
-//import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const AuthForm = ({
     state,
@@ -18,10 +18,10 @@ const AuthForm = ({
     textToTermsAndConditions,
 }) => {
     const [keyState, setKeyState] = useState(state);
-    //const [passwordMatchError, setPasswordMatchError] = useState(false);
+    const [passwordMatchError, setPasswordMatchError] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState("");  
-   // const [isVibrating, setIsVibrating] = useState(false);
-    //const location = useLocation();
+    const [isVibrating, setIsVibrating] = useState(false);
+    const location = useLocation();
     const [authContainerVisibility, setAuthContainerVisibility] =
         useState("hidden");
 
@@ -32,7 +32,7 @@ const AuthForm = ({
         );
     };
     
-    /*const handleConfirmPasswordChange = (e) => {
+    const handleConfirmPasswordChange = (e) => {
         const { name, value } = e.target;
         handleChange(e); // Így továbbítjuk az adatokat a handleChange függvénynek
         if (name === 'confirmPassword') {
@@ -42,7 +42,7 @@ const AuthForm = ({
                 setPasswordMatchError(false);
             }
         }
-    };*/
+    };
     
     const handleSignUp = (e) => {
         e.preventDefault();
@@ -232,6 +232,14 @@ const AuthForm = ({
                                 required
                                 onPaste={handlePaste}
                             />
+                            {passwordMatchError && (
+                                <p className="password-match-error" style={{ 
+                                    textShadow: isVibrating ? '0 0 10px red' : 'none',
+                                    animation: isVibrating ? 'shake 0.5s linear infinite' : 'none'
+                                }}>
+                                    Passwords do not match!
+                                </p>
+                            )}
                         </div>
                     ) : null}
                     {keyState === "signup" ? (
