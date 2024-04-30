@@ -2318,8 +2318,6 @@ const Board = () => {
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      placeTagOnTask(task_id, tag, column_id);
     } catch (e) {
       console.error(e);
       if (e?.response?.status === 401 || e?.response?.status === 500) {
@@ -2334,18 +2332,29 @@ const Board = () => {
   };
 
   const placeTagOnTask = async (task_id, tag, column_id) => {
+    console.log("placeTagOnTask");
+    console.log(task_id);
+    console.log(tag);
+    console.log(column_id);
     const newBoardData = [...boardRef.current.columns];
     const columnIndex = newBoardData.findIndex(
       (column) => column.column_id === column_id
     );
+    console.log(newBoardData);
+    console.log(columnIndex);
     const updatedTask = findTaskById(newBoardData[columnIndex].tasks, task_id);
-    if (updatedTask.tags === undefined) {
+    console.log(updatedTask);
+    if (!updatedTask) {
+      return;
+    }
+    if (!updatedTask.tags) {
       updatedTask.tags = [];
     }
     const existingTag = updatedTask.tags.find((t) => t.tag_id === tag.tag_id);
     if (existingTag) {
       return;
     }
+    console.log(existingTag);
     updatedTask.tags.push(tag);
     updatedTask.tags.sort((a, b) => a.tag_id - b.tag_id);
 

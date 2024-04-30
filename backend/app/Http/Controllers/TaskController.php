@@ -400,6 +400,8 @@ class TaskController extends Controller
         broadcast(new BoardChange($board_id, "DELETED_TASK", $data));
 
         foreach ($user_ids as $user_id) {
+            NotificationController::createNotification(NotificationType::BOARD, "A task you have been assigned got deleted: ".$task->title, $user_id);
+
             broadcast(new AssignedTaskChange($user_id, "UNASSIGNED_FROM_TASK", $data));
         }
 
@@ -452,7 +454,7 @@ class TaskController extends Controller
 
 
         foreach ($tasks as &$task) {
-            $taskToUpdate = Task::find($task['task_id']);
+            $taskToUpdate = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task['task_id']);
             if ($taskToUpdate) {
                 $task['old_column_id'] = $taskToUpdate->column_id;
                 $task['task'] = $taskToUpdate;
@@ -464,6 +466,9 @@ class TaskController extends Controller
                             return response()->json(['error' => 'Task limit for the new column has been reached'], 403);
                         }
                         $taskToUpdate->column_id = $task['column_id'];
+                        if (isset($taskToUpdate->subtasks)) {
+                            Self::updateColumnIdForSubtasks($taskToUpdate->subtasks, $task['column_id']);
+                        }
                     } else {
                         return response()->json(['error' => 'Column not found or you are not a member of this board'], 404);
                     }
@@ -480,6 +485,16 @@ class TaskController extends Controller
         broadcast(new BoardChange($board->board_id, "POSITION_UPDATED_TASK", $data));
 
         return response()->json(['message' => 'Tasks position updated successfully.']);
+    }
+
+    public function updateColumnIdForSubtasks($tasks, $new_column_id){
+        foreach ($tasks as &$task) {
+            $task->column_id = $new_column_id;
+            $task->save();
+            if (isset($task->subtasks)) {
+                Self::updateColumnIdForSubtasks($task->subtasks, $new_column_id);
+            }
+        }
     }
 
     public function showSubtasks(Request $request, $board_id, $task_id)
