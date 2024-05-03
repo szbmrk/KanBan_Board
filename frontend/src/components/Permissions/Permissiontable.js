@@ -233,7 +233,13 @@ export default function Permissiontable() {
     }
 
     async function handleRoleRenameSubmit(role_id) {
-        setRenameIsActive(null);
+        const currentRole = roles.find(role => parseInt(role.role_id) === parseInt(role_id));
+        if (currentRole.name === renameRoleName || renameRoleName.trim() === "") {
+            setRenameIsActive(null);
+            setRenameRoleName("");
+            return;
+        }
+
         try {
             const response = await axios.put(
                 `/boards/${board_id}/roles/${role_id}`,
@@ -252,10 +258,12 @@ export default function Permissiontable() {
             });
             setRoles(newRoleData);
             setRenameRoleName("");
+            setRenameIsActive(null);
         } catch (error) {
             setError(error?.response?.data);
         }
     }
+
 
     return (
         <div className="content col-10" data-theme={theme}>
@@ -277,7 +285,8 @@ export default function Permissiontable() {
                                                 className="role-rename-div"
                                                 onDoubleClick={() => {
                                                     if (checkPermissionForBoard(board_id, team_id, "role_management")) {
-                                                        setRenameIsActive(role.role_id); // Állítsd be az aktív szerep azonosítóját
+                                                        setRenameIsActive(role.role_id); // Állítsd be az aktív szerepkör azonosítóját
+                                                        setRenameRoleName(role.name); // Beállítja a szerepkör jelenlegi nevét a szerkesztési mezőbe
                                                     }
                                                 }}
                                             >
@@ -291,7 +300,7 @@ export default function Permissiontable() {
                                                         type="text"
                                                         placeholder="Rename this role..."
                                                         onChange={handleRoleRename}
-                                                        value={renameRoleName}
+                                                        value={renameRoleName} // Itt használjuk a frissített állapotot
                                                     />
                                                     <button
                                                         className="role-rename-button"
@@ -299,12 +308,11 @@ export default function Permissiontable() {
                                                     >
                                                         Rename
                                                     </button>
-                                                    {/* Cancel button */}
                                                     <button
                                                         className="cancel-role-button"
                                                         onClick={() => {
-                                                            setRenameIsActive(null); // Reset the active role being renamed
-                                                            setRenameRoleName(""); // Optionally reset the input field value
+                                                            setRenameIsActive(null); // Visszaállítja az aktív szerkesztési állapotot
+                                                            setRenameRoleName(""); // Törli a szövegmező értékét
                                                         }}
                                                     >
                                                         Cancel

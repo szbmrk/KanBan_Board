@@ -148,9 +148,6 @@ class TagController extends Controller
         })->pluck('user_id')->toArray();
 
         foreach ($user_ids as $user_id) {
-            $data = [
-                'tag' => $tag,
-            ];
             broadcast(new AssignedTaskChange($user_id, "UPDATED_TAG", $data));
         }
 
@@ -185,15 +182,23 @@ class TagController extends Controller
         if (!$tag) {
           return response()->json(['error' => 'Tag not found for the specified board.'], 404); 
         }
-      
-        $team = $board->team;
-        
-      
-        if (!$team->teamMembers()->where('user_id', $user->user_id)->exists()) {
-          return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
-        }
+
+        $user_ids = UserTask::whereIn('task_id', function($query) use ($tagId) {
+            $query->select('task_id')
+                ->from('task_tags')
+                ->where('tag_id', $tagId);
+        })->pluck('user_id')->toArray();
 
         $tag->delete();
+
+        $data = [
+            'tag' => $tag,
+        ];
+        broadcast(new BoardChange($boardId, "DELETED_TAG", $data));
+
+        foreach ($user_ids as $user_id) {
+            broadcast(new AssignedTaskChange($user_id, "DELETED_TAG", $data));
+        }
       
         return response()->json(['message' => 'Tag deleted successfully.'], 200);
       

@@ -6,6 +6,22 @@ use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\Events\NotificationChange;
+use Illuminate\Support\Facades\Event;
+
+class NotificationType {
+    const BOARD = 'BOARD';
+    const TEAM = 'TEAM';
+    const SYSTEM = 'SYSTEM';
+}
 
 class NotificationController extends Controller
 {
@@ -108,6 +124,27 @@ class NotificationController extends Controller
 
     }
 
+    public static function createNotification($type, $content, $user_id)
+    {
+        $user = auth()->user();
+
+        if($user->user_id === $user_id) {
+            return;
+        }
+
+        $notification = new Notification();
+        $notification->type = $type;
+        $notification->content = $content;
+        $notification->user_id = $user_id;
+        $notification->is_read = 0;
+        $notification->save();
+
+        $data = [
+            'notification' => $notification
+        ];
+        broadcast(new NotificationChange($user_id, "CREATED_NOTIFICATION", $data));
+    }
+
     public function update(Request $request, $notificationId)
     {
         $user = auth()->user();
@@ -154,6 +191,12 @@ class NotificationController extends Controller
         try {
             $notification->is_read = $request->input('is_read', $notification->is_read);
             $notification->save();
+
+            $data = [
+                'notification' => $notification
+            ];
+            broadcast(new NotificationChange($notification->user_id, "UPDATED_NOTIFICATION", $data));
+
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

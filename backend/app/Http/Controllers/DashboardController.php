@@ -24,6 +24,8 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\BoardChange;
 use Illuminate\Support\Facades\Event;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationType;
 
 
 class DashboardController extends Controller
@@ -109,6 +111,7 @@ class DashboardController extends Controller
         }
 
         $board = Board::find($board_id);
+        $old_board_name = $board->name;
         if (!$board) {
             LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found on update -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found.'], 404);
@@ -119,27 +122,25 @@ class DashboardController extends Controller
             $roles = $user->getRoles();
             $permissions = $user->getPermissions();
 
-            if (in_array('system_admin', $permissions)) {
-                $board->name = $request->name;
-                $board->save();
-                LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "Board Updated successfully!", $board->team_id, $board_id, null);
-
-                $data = [
-                    'name' => $board->name
-                ];
-                broadcast(new BoardChange($board_id, "UPDATED_BOARD_NAME", $data));
-
-                return response()->json(['board' => $board]);
-            }
-
             $boardManagerRoles = array_filter($roles, function($role) use ($board_id) {
                 return $role['name'] == 'Board Manager' && $role['board_id'] == $board_id;
             });
 
-            if (!empty($boardManagerRoles)) {
+            if (in_array('system_admin', $permissions) || !empty($boardManagerRoles)) {
                 $board->name = $request->name;
                 $board->save();
                 LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "Board Updated successfully!", $board->team_id, $board_id, null);
+
+                $user_ids = TeamMember::whereIn('user_id', function ($query) use ($board_id) {
+                    $query->select('user_id')
+                        ->from('boards')
+                        ->join('team_members', 'boards.team_id', '=', 'team_members.team_id')
+                        ->where('boards.board_id', $board_id);
+                })->distinct()->pluck('user_id')->toArray();
+                
+                foreach ($user_ids as $user_id) {
+                    NotificationController::createNotification(NotificationType::BOARD, "A board you are member of got renamed from ".$old_board_name." to ".$request->name, $user_id);
+                }  
 
                 $data = [
                     'name' => $board->name

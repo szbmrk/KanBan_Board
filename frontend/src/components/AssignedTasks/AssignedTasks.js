@@ -57,6 +57,12 @@ const AssignedTasks = () => {
       case "ASSIGNED_TO_TASK":
         webSocketAssignedToTask(websocket.data);
         break;
+      case "CREATED_SUBTASK_FOR_ASSIGNED_TASK":
+        webSocketCreatedSubtaskForAssignedTask(websocket.data);
+        break;
+      case "DELETED_SUBTASK_FOR_ASSIGNED_TASK":
+        webSocketDeletedSubtaskForAssignedTask(websocket.data);
+        break;
       case "UPDATED_ASSIGNED_TASK_OR_SUBTASK":
         webSocketUpdatedAssignedTask(websocket.data);
         break;
@@ -72,6 +78,24 @@ const AssignedTasks = () => {
       case "UPDATED_TAG":
         webSocketUpdateTag(websocket.data);
         break;
+      case "DELETED_TAG":
+        webSocketDeleteTag(websocket.data);
+        break;
+      case "CREATED_COMMENT":
+        webSocketCreateComment(websocket.data);
+        break;
+      case "DELETED_COMMENT":
+        webSocketDeleteComment(websocket.data);
+        break;
+      case "CREATED_ATTACHMENT":
+        webSocketCreateAttachment(websocket.data);
+        break;
+      case "DELETED_ATTACHMENT":
+        webSocketDeleteAttachment(websocket.data);
+        break;
+      case "CREATED_MULTIPLE_ATTACHMENT":
+        webSocketCreateMultipleAttachment(websocket.data);
+        break;
       default:
         break;
     }
@@ -80,6 +104,32 @@ const AssignedTasks = () => {
   const webSocketAssignedToTask = async (data) => {
     const newTaskData = [...tasksRef.current];
     newTaskData.push(data.task);
+    setTasks(newTaskData);
+  };
+
+  const webSocketCreatedSubtaskForAssignedTask = async (data) => {
+    const newTaskData = [...tasksRef.current];
+    newTaskData.forEach((currentTask) => {
+      if (currentTask.task_id === data.subtask.parent_task_id) {
+        if (currentTask.subtasks) {
+          currentTask.subtasks.push(data.subtask);
+        } else {
+          currentTask.subtasks = [data.subtask];
+        }
+      }
+    });
+    setTasks(newTaskData);
+  };
+
+  const webSocketDeletedSubtaskForAssignedTask = async (data) => {
+    const newTaskData = [...tasksRef.current];
+    newTaskData.forEach((currentTask) => {
+      if (currentTask.task_id === data.subtask.parent_task_id) {
+        currentTask.subtasks = currentTask.subtasks.filter(
+          (currentSubtask) => currentSubtask.task_id !== data.subtask.task_id
+        );
+      }
+    });
     setTasks(newTaskData);
   };
 
@@ -152,6 +202,84 @@ const AssignedTasks = () => {
           }
           return currentTag;
         });
+      }
+    });
+    setTasks(newTaskData);
+  };
+
+  const webSocketDeleteTag = async (data) => {
+    let newTaskData = [...tasksRef.current];
+    newTaskData.forEach((currentTask) => {
+      currentTask.tags = currentTask.tags.filter(
+        (currentTag) => currentTag.tag_id !== data.tag.tag_id
+      );
+    });
+    setTasks(newTaskData);
+  };
+
+  const webSocketCreateComment = async (data) => {
+    let newTaskData = [...tasksRef.current];
+    newTaskData.forEach((currentTask) => {
+      if (currentTask.task_id === data.task.task_id) {
+        if (currentTask.comments) {
+          currentTask.comments.push(data.comment);
+        } else {
+          currentTask.comments = [data.comment];
+        }
+      }
+    });
+    setTasks(newTaskData);
+  };
+
+  const webSocketDeleteComment = async (data) => {
+    let newTaskData = [...tasksRef.current];
+    newTaskData.forEach((currentTask) => {
+      if (currentTask.task_id === data.task.task_id) {
+        currentTask.comments = currentTask.comments.filter(
+          (currentComment) =>
+            currentComment.comment_id !== data.comment.comment_id
+        );
+      }
+    });
+    setTasks(newTaskData);
+  };
+
+  const webSocketCreateAttachment = async (data) => {
+    let newTaskData = [...tasksRef.current];
+    newTaskData.forEach((currentTask) => {
+      if (currentTask.task_id === data.task.task_id) {
+        if (currentTask.attachments) {
+          currentTask.attachments.push(data.attachment);
+        } else {
+          currentTask.attachments = [data.attachment];
+        }
+      }
+    });
+    setTasks(newTaskData);
+  };
+
+  const webSocketDeleteAttachment = async (data) => {
+    let newTaskData = [...tasksRef.current];
+    newTaskData.forEach((currentTask) => {
+      if (currentTask.task_id === data.task.task_id) {
+        currentTask.attachments = currentTask.attachments.filter(
+          (currentAttachment) =>
+            currentAttachment.attachment_id !== data.attachment.attachment_id
+        );
+      }
+    });
+    setTasks(newTaskData);
+  };
+
+  const webSocketCreateMultipleAttachment = async (data) => {
+    let newTaskData = [...tasksRef.current];
+    newTaskData.forEach((currentTask) => {
+      if (currentTask.task_id === data.task.task_id) {
+        if (currentTask.attachments) {
+          currentTask.attachments.push(...data.attachments);
+        } else {
+          currentTask.attachments = data.attachments;
+        }
       }
     });
     setTasks(newTaskData);

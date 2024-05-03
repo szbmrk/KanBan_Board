@@ -52,3 +52,8 @@
 .sidebar-menu li:hover {
     background-color: var(--dark-gray);
 }
+
+.sidebar ul li.active {
+    background-color: #706c6c; /* Kiemeléshez használt háttérszín */
+    color: #333; /* Szövegszín */
+  }

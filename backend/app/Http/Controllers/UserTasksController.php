@@ -79,6 +79,8 @@ class UserTasksController extends Controller
         ];
         broadcast(new AssignedTaskChange($new_user_id, "ASSIGNED_TO_TASK", $data));
 
+        NotificationController::createNotification(NotificationType::BOARD, "You are assigned to the following task: ".$task->title, $new_user_id);
+
         return response()->json(['message' => 'Task assigned successfully', 'member' => $member]);
     }
     
@@ -115,6 +117,8 @@ class UserTasksController extends Controller
             'task' => $task
         ];
         broadcast(new AssignedTaskChange($user_id, "UNASSIGNED_FROM_TASK", $data));
+
+        NotificationController::createNotification(NotificationType::BOARD, "You are unassigned from the following task: ".$task->title, $user_id);
 
         return response()->json(['message' => 'Task unassigned successfully']);
     }

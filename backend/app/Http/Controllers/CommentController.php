@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Task;
+use App\Models\UserTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
@@ -17,6 +18,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\BoardChange;
+use App\Events\AssignedTaskChange;
 use Illuminate\Support\Facades\Event;
 
 class CommentController extends Controller
@@ -75,6 +77,12 @@ class CommentController extends Controller
         ];
         broadcast(new BoardChange($board->board_id, "CREATED_COMMENT", $data));
 
+        $user_ids = UserTask::where('task_id', $task_id)->pluck('user_id')->toArray();
+
+        foreach ($user_ids as $user_id) {
+            broadcast(new AssignedTaskChange($user_id, "CREATED_COMMENT", $data));
+        }
+
         return response()->json(['message' => 'Comment created successfully', 'comment' => $commentWithUser]);
     }
 
@@ -107,6 +115,12 @@ class CommentController extends Controller
             'comment' => $commentWithUser
         ];
         broadcast(new BoardChange($board->board_id, "DELETED_COMMENT", $data));
+
+        $user_ids = UserTask::where('task_id', $task->task_id)->pluck('user_id')->toArray();
+
+        foreach ($user_ids as $user_id) {
+            broadcast(new AssignedTaskChange($user_id, "DELETED_COMMENT", $data));
+        }
 
         return response()->json(['message' => 'Comment deleted successfully']);
     }
