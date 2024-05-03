@@ -9,6 +9,8 @@ use App\Models\Role;
 use App\Models\TeamMember;
 use App\Models\Permission;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationType;
 
 class TeamController extends Controller
 {
@@ -60,6 +62,7 @@ class TeamController extends Controller
         $user = auth()->user();
 
         $team = Team::find($id);
+        $old_team_name = $team->name;
 
         if (!$team) {
             LogRequest::instance()->logAction('TEAM NOT FOUND', $user->user_id, "Team not found on Update. -> team_id: $id", null, null, null);
@@ -83,6 +86,17 @@ class TeamController extends Controller
 
         $team->name = $request->input('name');
         $team->save();
+
+        if($team->name !== $old_team_name) {
+            $user_ids = TeamMember::where('team_id', $team->team_id)
+                ->distinct()
+                ->pluck('user_id')
+                ->toArray();
+                
+            foreach ($user_ids as $user_id) {
+                NotificationController::createNotification(NotificationType::TEAM, "A team you are member of got renamed from ".$old_team_name." to ".$team->name, $user_id);
+            }  
+        }
 
         LogRequest::instance()->logAction('UPDATED TEAM', $user->user_id, "Team Updated successfully!", $team->team_id, null, null);
         return response()->json(['message' => 'Team updated successfully']);
@@ -109,7 +123,16 @@ class TeamController extends Controller
             }
         }
 
+        $user_ids = TeamMember::where('team_id', $team->team_id)
+            ->distinct()
+            ->pluck('user_id')
+            ->toArray();
+
         $team->delete();
+  
+        foreach ($user_ids as $user_id) {
+            NotificationController::createNotification(NotificationType::TEAM, "A team you are member of got deleted: ".$team->name, $user_id);
+        }  
 
         LogRequest::instance()->logAction('DELETED TEAM', $user->user_id, "Team Deleted successfully! -> team_id: $team->team_id, name: $team->name", null, null, null);
 

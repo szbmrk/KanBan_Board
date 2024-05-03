@@ -15,6 +15,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\NotificationChange;
+use App\Events\UnreadNotificationCountChange;
 use Illuminate\Support\Facades\Event;
 
 class NotificationType {
@@ -68,6 +69,34 @@ class NotificationController extends Controller
         return response()->json($notification);
     }
 
+    public function unreadNotificationCount($userId)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $unreadCount = Self::getUnreadNotificationCount($userId);
+
+        return response()->json($unreadCount);
+    }
+
+    public static function getUnreadNotificationCount($userId)
+    {
+        $unreadCount = Notification::where('user_id', $userId)
+            ->where('is_read', 0)
+            ->count();
+
+        return $unreadCount;
+    }
+
+    public static function broadcastUnreadNotificationCount($userId)
+    {
+        $unreadCount = Self::getUnreadNotificationCount($userId);
+        broadcast(new UnreadNotificationCountChange($userId, $unreadCount));
+    }
+
     public function store(Request $request, $userId)
     {
         $user = auth()->user();
@@ -112,6 +141,8 @@ class NotificationController extends Controller
             $notification->user_id = $userId;
             $notification->save();
 
+            Self::broadcastUnreadNotificationCount($userId);
+
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['error' => 'User not found'], 404);
         } catch (\Illuminate\Database\QueryException $e) {
@@ -143,6 +174,8 @@ class NotificationController extends Controller
             'notification' => $notification
         ];
         broadcast(new NotificationChange($user_id, "CREATED_NOTIFICATION", $data));
+
+        Self::broadcastUnreadNotificationCount($user_id);
     }
 
     public function update(Request $request, $notificationId)
@@ -197,11 +230,61 @@ class NotificationController extends Controller
             ];
             broadcast(new NotificationChange($notification->user_id, "UPDATED_NOTIFICATION", $data));
 
+            Self::broadcastUnreadNotificationCount($notification->user_id);
+
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
 
         return response()->json(['message' => 'Notification updated successfully', 'notification' => $notification], 200);
+
+    }
+
+    public function updateMultiple(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $request->validate([
+            'notifications.*.type' => 'in:BOARD,SYSTEM,TEAM',
+            'notifications.*.content' => 'string',
+            'notifications.*.is_read' => 'required|in:0,1|boolean',
+        ]);
+
+        $notificationsData = $request->json('notifications');
+
+        if (!is_array($notificationsData)) {
+            return response()->json(['error' => 'Notifications data is missing or not in the expected format'], 400);
+        }
+
+        $notifications = [];
+
+        try {
+            foreach ($notificationsData as $notificationtData) {
+                $notification = Notification::find($notificationtData['notification_id']);
+                $notification->is_read = $notificationtData['is_read'];
+                $notification->content = $notificationtData['content'];
+                $notification->type = $notificationtData['type'];
+
+                $notification->save();
+                $notifications[] = $notification;
+            }
+
+            $data = [
+                'notifications' => $notifications
+            ];
+            broadcast(new NotificationChange($notification->user_id, "UPDATED_MULTIPLE_NOTIFICATION", $data));
+
+            Self::broadcastUnreadNotificationCount($notification->user_id);
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
+        return response()->json(['message' => 'Notification updated successfully', 'notifications' => $notifications], 200);
 
     }
 

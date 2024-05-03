@@ -30,33 +30,6 @@ export default function Notification() {
     notificationsRef.current = notifications;
   }, [notifications]);
 
-  useEffect(() => {
-    window.Pusher = require("pusher-js");
-    window.Pusher.logToConsole = true;
-
-    const echo = new Echo({
-      broadcaster: "pusher",
-      key: REACT_APP_PUSHER_KEY,
-      cluster: REACT_APP_PUSHER_CLUSTER,
-      forceTLS: true,
-    });
-
-    const channel = echo.channel(`NotificationChange`);
-
-    channel.listen(
-      `.user.${userId}`,
-      (e) => {
-        handleWebSocket(e);
-      },
-      []
-    );
-
-    return () => {
-      console.log("Cleanup");
-      channel.unsubscribe();
-    };
-  }, []);
-
   const handleWebSocket = async (websocket) => {
     console.log("DATA");
     console.log(websocket.data);
@@ -66,6 +39,9 @@ export default function Notification() {
         break;
       case "UPDATED_NOTIFICATION":
         webSocketUpdateNotification(websocket.data);
+        break;
+      case "UPDATED_MULTIPLE_NOTIFICATION":
+        webSocketUpdateMultipleNotification(websocket.data);
         break;
       default:
         break;
@@ -93,6 +69,23 @@ export default function Notification() {
     countUnseenAndSeenNotifications();
   };
 
+  const webSocketUpdateMultipleNotification = (data) => {
+    const newNotificationData = [...notificationsRef.current];
+    data.notifications.forEach((currentUpdatedNotification) => {
+      newNotificationData.forEach((currentNotification, index) => {
+        if (
+          currentNotification.notification_id ===
+          currentUpdatedNotification.notification_id
+        ) {
+          newNotificationData[index] = currentUpdatedNotification;
+        }
+      });
+    });
+
+    setNotifications(newNotificationData);
+    countUnseenAndSeenNotifications();
+  };
+
   useEffect(() => {
     document.title = "KanBan | Notification";
     getNotifications();
@@ -104,8 +97,30 @@ export default function Notification() {
     console.log("Darkmode: " + localStorage.getItem("darkMode"));
     window.addEventListener("ChangingTheme", ResetTheme);
 
+    window.Pusher = require("pusher-js");
+    window.Pusher.logToConsole = true;
+
+    const echo = new Echo({
+      broadcaster: "pusher",
+      key: REACT_APP_PUSHER_KEY,
+      cluster: REACT_APP_PUSHER_CLUSTER,
+      forceTLS: true,
+    });
+
+    const channel = echo.channel(`NotificationChange`);
+
+    channel.listen(
+      `.user.${userId}`,
+      (e) => {
+        handleWebSocket(e);
+      },
+      []
+    );
+
     return () => {
       window.removeEventListener("ChangingTheme", ResetTheme);
+      console.log("Cleanup");
+      channel.unsubscribe();
     };
     //eddig
   }, []);
@@ -137,33 +152,41 @@ export default function Notification() {
   };
 
   const markAllAsSeen = async () => {
-    notifications.forEach(async (notification) => {
-      if (notification.is_read === 0) {
-        try {
-          const res = await axios.put(
-            `/notifications/${notification.notification_id}`,
-            {
-              is_read: 1,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+    try {
+      const notificationData = [...notificationsRef.current];
+      let changedNotificationData = [];
+      notificationData.forEach((currentNotification) => {
+        if (currentNotification.is_read === 0) {
+          let clonedNotification = JSON.parse(
+            JSON.stringify(currentNotification)
           );
-        } catch (e) {
-          console.log(e);
-          if (e?.response?.status === 401 || e?.response?.status === 500) {
-            setError({
-              message: "You are not logged in! Redirecting to login page...",
-            });
-            setRedirect(true);
-          } else {
-            setError(e);
-          }
+          clonedNotification.is_read = 1;
+          changedNotificationData.push(clonedNotification);
         }
+      });
+
+      const res = await axios.put(
+        `/notifications/multiple`,
+        {
+          notifications: changedNotificationData,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } catch (e) {
+      console.log(e);
+      if (e?.response?.status === 401 || e?.response?.status === 500) {
+        setError({
+          message: "You are not logged in! Redirecting to login page...",
+        });
+        setRedirect(true);
+      } else {
+        setError(e);
       }
-    });
+    }
   };
 
   const markAsSeen = async (notification) => {

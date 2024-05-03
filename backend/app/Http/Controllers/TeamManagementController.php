@@ -6,6 +6,8 @@ use App\Models\Team;
 use App\Models\TeamMember;
 use App\Models\User;
 use App\Models\TeamMemberRole;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationType;
 
 use Illuminate\Http\Request;
 
@@ -74,6 +76,8 @@ class TeamManagementController extends Controller
                     $role->team_members_role_id = $teamMembersRoleId;
                 }
             }
+  
+            NotificationController::createNotification(NotificationType::TEAM, "You are added to the following team: ".$team->name, $userId);
 
             $addedMembers[] = $newTeamMember;
         }
@@ -109,6 +113,11 @@ class TeamManagementController extends Controller
     
         if ($teamMember) {
             $teamMember->delete();
+
+            $team = Team::find($teamId);
+  
+            NotificationController::createNotification(NotificationType::TEAM, "You are removed from the following team: ".$team->name, $userId);
+
             return response()->json(['message' => 'Team member removed from the team successfully.']);
         } else {
             return response()->json(['error' => 'Team member not found in the team.'], 404);
