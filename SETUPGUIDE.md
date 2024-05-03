@@ -24,6 +24,11 @@ cd frontend -> npm install (ez először kell csak /
 - php artisan key:generate
 - php artisan serve
 - php artisan migrate:db
+# Pusher 
+- pusher oldal regisztráció
+- a generált .env fájlba a pusher kulcs beírása
+- a .env fájlban a BROADCAST_DRIVER = log helyett pusher
+
 
 ## main:
 cd backend
