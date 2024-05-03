@@ -26,7 +26,8 @@ cd frontend -> npm install (ez először kell csak /
 - php artisan migrate:db
 # Pusher 
 - pusher oldal regisztráció
-- a generált .env fájlba a pusher kulcs beírása
+- Csinálni kell egy channelt a Pusheren belül úgy, hogy a frontend react, backend laravel
+- a channel által adott app key-eket a generált .env és config.js fájlba be kell írni
 - a .env fájlban a BROADCAST_DRIVER = log helyett pusher
 
 
