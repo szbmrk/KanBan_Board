@@ -21,12 +21,13 @@ const IconContainer = ({ iconContainerPosition, options }) => {
 
     return (
         <div
+        
             className="icon-container"
             style={{
                 position: "fixed",
                 overflow: "hidden",
                 left: iconContainerPosition.x + "px",
-                top: calculateMenuPosition(tri, windowHeight).top,
+                top: calculateMenuPosition(iconContainerPosition.getBoundingClientRect,  window.innerHeight).top,
             }}
         >
             {options.map((option, index) => (
