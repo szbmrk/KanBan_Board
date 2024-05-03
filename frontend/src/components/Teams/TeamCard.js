@@ -185,7 +185,7 @@ const TeamCard = ({
                             <p>{member.user.username}</p>
                             <div className="team-member-card-body">
                                 <div className="team-member-card-body-data">
-                                    <div className="data">
+                                    {/*<div className="data">
                                         <p>Name: </p>
                                         <p>
                                             {member.user.first_name} {member.user.last_name}
@@ -198,15 +198,15 @@ const TeamCard = ({
                                     <div className="data">
                                         <p>Address: </p>
                                         <p>{member.user.address}</p>
-                                    </div>
+                                    </div>*/}
                                     <div className="data">
                                         <p>Email: </p>
                                         <p>{member.user.email}</p>
                                     </div>
-                                    <div className="data">
+                                    {/*<div className="data">
                                         <p>Phone number: </p>
                                         <p>{member.user.phone_number}</p>
-                                    </div>
+                                    </div>*/}
                                 </div>
                                 <div className="team-member-card-body-roles-container">
                                     <p>Roles:</p>
