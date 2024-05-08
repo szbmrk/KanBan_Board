@@ -6,6 +6,12 @@ import Loader from "../Loader";
 import Error from "../Error";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import bgRegular from "../../styles/imgs/background-regular.jpg";
+import bgBlue from "../../styles/imgs/background-blue.jpg";
+import bgDarkBlue from "../../styles/imgs/background-darkblue.jpg";
+import bgGray from "../../styles/imgs/background-gray.jpg";
+import bgGreen from "../../styles/imgs/background-green.jpg";
+import bgPurple from "../../styles/imgs/background-purple.jpg";
 
 const deleteIcon = <FontAwesomeIcon icon={faXmark} />;
 
@@ -178,6 +184,22 @@ export default function EditProfile() {
         changeProfilePicture();
     }
 
+    function handleScrollNext() {
+        const container = document.querySelector('.Button-scroller');
+        container.scrollLeft += 160; 
+    }
+    
+    function handleScrollPrev() {
+        const container = document.querySelector('.Button-scroller');
+        container.scrollLeft -= 160;
+    }
+    function handleBackgroundChangeClick(e){
+        console.log(e);
+        document.body.classList.remove(...document.body.classList)
+        document.body.classList.add(e)
+        
+    }
+
     return (
         <div className="content col-10" data-theme={theme}>
             {formData.username === "" ? (
@@ -277,6 +299,21 @@ export default function EditProfile() {
                             Delete account
                         </button>
                     </form>
+                    <div class="ChangeBG">
+                        <h2>Change Background</h2>
+                        <div class="ButtonContainer">
+                            <button class="scroll-button prev-button" onClick={handleScrollPrev}>&lt;</button>
+                            <div class="Button-scroller">
+                                <img id="bg-regular" src={bgRegular} height={120} width={160} onClick={(e)=>handleBackgroundChangeClick(e.target.id)}></img> 
+                                <img id="bg-blue" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgBlue} height={120} width={160}></img>
+                                <img id="bg-darkblue"onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgDarkBlue} height={120} width={160}></img>
+                                <img id="bg-gray" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgGray} height={120} width={160}></img>
+                                <img id="bg-green"onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgGreen} height={120} width={160}></img>
+                                <img id="bg-purple" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgPurple} height={120} width={160}></img>
+                            </div>
+                            <button class="scroll-button next-button" onClick={handleScrollNext}>&gt;</button>
+                        </div>
+                    </div>
                     {deleteIsClicked && <DeleteConfirm OnClose={handleDeleteButton} />}
                 </div>
             )}
