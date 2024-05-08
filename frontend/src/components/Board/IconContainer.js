@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+/*
 const calculateMenuPosition = (triggerElement, menuHeight) => {
     const windowHeight = window.innerHeight;
     const triggerRect = triggerElement.getBoundingClientRect();
@@ -12,7 +13,7 @@ const calculateMenuPosition = (triggerElement, menuHeight) => {
         // Enough space below, display downwards (default behavior)
         return { top: triggerRect.bottom + window.scrollY };
     }
-};
+};*/
 //board js-ből áthozni a triggerelementet!
 
 const IconContainer = ({ iconContainerPosition, options }) => {
@@ -21,13 +22,13 @@ const IconContainer = ({ iconContainerPosition, options }) => {
 
     return (
         <div
-        
+
             className="icon-container"
             style={{
                 position: "fixed",
                 overflow: "hidden",
                 left: iconContainerPosition.x + "px",
-                top: calculateMenuPosition(iconContainerPosition.getBoundingClientRect,  window.innerHeight).top,
+                top: iconContainerPosition.y + "px",
             }}
         >
             {options.map((option, index) => (
