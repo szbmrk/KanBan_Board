@@ -259,12 +259,6 @@ const Navbar = () => {
               </Link>
             </li>
             <li>
-              <Link to="" onClick={toggleDropdown}>
-                <span>{backgroundChangeIcon}</span>
-                <span>Change Background</span>
-              </Link>
-            </li>
-            <li>
               <Link to="/login" onClick={onLogout} className="logout">
                 <span>{signOutIcon}</span>
                 <span>Sign Out</span>
