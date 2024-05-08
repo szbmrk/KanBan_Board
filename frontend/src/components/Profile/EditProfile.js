@@ -303,7 +303,7 @@ export default function EditProfile() {
                         <div class="ButtonContainer">
                             <button class="scroll-button prev-button" onClick={handleScrollPrev}>&lt;</button>
                             <div class="Button-scroller">
-                                <img id="bg-regular" src={bgRegular} height={120} width={160} onClick={(e)=>handleBackgroundChangeClick(e.target.id)}></img> 
+                                <img id="./src/components/imgs/background-regular.jpg" src={bgRegular} height={120} width={160} onClick={(e)=>handleBackgroundChangeClick(e.target.id)}></img> 
                                 <img id="./src/components/imgs/background-blue.jpg" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgBlue} height={120} width={160}></img>
                                 <img id="./imgs/background-darkblue.jpg"onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgDarkBlue} height={120} width={160}></img>
                                 <img id="./imgs/background-grey.jpg" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgGray} height={120} width={160}></img>
