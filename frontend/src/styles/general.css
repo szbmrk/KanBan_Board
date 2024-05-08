@@ -94,21 +94,31 @@ html {
 body {
     color: var(--dark-gray);
     line-height: 1.6;
-    background: url("./imgs/background-regular-small.jpg") no-repeat center;
     background-size: cover;
     height: 100vh;
     width: 100vw;
+    /*background-image: url("./imgs/background-regular.jpg");*/
 }
 
-.background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: url("./imgs/background-regular.jpg") no-repeat center;
-    background-size: cover;
+.bg-regular {
+    background-image: url("./imgs/background-regular.jpg");
 }
+.bg-blue {
+    background-image: url("./imgs/background-blue.jpg");
+}
+.bg-darkblue {
+    background-image: url("./imgs/background-darkblue.jpg");
+}
+.bg-gray {
+    background-image: url("./imgs/background-gray.jpg");
+}
+.bg-green {
+    background-image: url("./imgs/background-green.jpg");
+}
+.bg-purple {
+    background-image: url("./imgs/background-purple.jpg");
+}
+
 
 #root {
     height: 100vh;

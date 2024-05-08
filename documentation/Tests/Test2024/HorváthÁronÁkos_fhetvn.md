@@ -26,4 +26,18 @@
 | Időpont | Teszt                | Eredmény | Megjegyzés     
 |:-------:|----------------------|----------|-----------------------------------------------------------------------|
 | 13:06 | Team létrehozás | Sikeres | Sikeresen létrejön a csapat. |                                                       
-| 13:07 | Board | Sikeres | Sikeresen létrejön a csapat. |                                                       
+| 13:07 | Add new user | Sikeres | Sikeresen hozzáadja a csapat tagokat. |   
+| 13:09 | Remove user | Sikeres | A user eltávolítása sikeres. |  
+| 13:11 | Add role | Sikeres | A tagokat sikeresen felruházza a szerepkörrel. | 
+| 13:12 | Remove role | Sikeres | A tagoktól sikeresen elveszi a szerepkört. |  
+| 13:13 | Add new board | Sikeres | Sikeresen létrejön a tábla. |  
+| 13:15 | Add new column | Sikeres | Sikeresen létrejön az oszlop. |  
+| 13:16 | Add new task | Sikeres | Sikeresen létrejön a feladat. |  
+| 13:17 | Add new subtask | Sikeres | Sikeresen létrejön az alfeladat. |  
+| 13:18 | Moving tasks between columns | Sikeres | Sikeresen áthelyezi a feladatot. |  
+| 13:21 | Moving tasks between columns same time with other user | Hiba | A feladat áthelyezés helyett sokszorozódik. |  
+
+
+
+
+
