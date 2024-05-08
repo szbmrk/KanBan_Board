@@ -195,8 +195,9 @@ export default function EditProfile() {
     }
     function handleBackgroundChangeClick(e){
         console.log(e);
-        //document.body.classList.remove("background");
-        document.body.classList.add(e);
+        document.body.classList.remove(...document.body.classList)
+        document.body.classList.add(e)
+        
     }
 
     return (
@@ -303,12 +304,12 @@ export default function EditProfile() {
                         <div class="ButtonContainer">
                             <button class="scroll-button prev-button" onClick={handleScrollPrev}>&lt;</button>
                             <div class="Button-scroller">
-                                <img id="./src/components/imgs/background-regular.jpg" src={bgRegular} height={120} width={160} onClick={(e)=>handleBackgroundChangeClick(e.target.id)}></img> 
-                                <img id="./src/components/imgs/background-blue.jpg" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgBlue} height={120} width={160}></img>
-                                <img id="./imgs/background-darkblue.jpg"onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgDarkBlue} height={120} width={160}></img>
-                                <img id="./imgs/background-grey.jpg" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgGray} height={120} width={160}></img>
-                                <img id="./imgs/background-green.jpg"onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgGreen} height={120} width={160}></img>
-                                <img id="./imgs/background-purple.jpg" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgPurple} height={120} width={160}></img>
+                                <img id="reg" src={bgRegular} height={120} width={160} onClick={(e)=>handleBackgroundChangeClick(e.target.id)}></img> 
+                                <img id="blue" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgBlue} height={120} width={160}></img>
+                                <img id="darkblue"onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgDarkBlue} height={120} width={160}></img>
+                                <img id="gray" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgGray} height={120} width={160}></img>
+                                <img id="green"onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgGreen} height={120} width={160}></img>
+                                <img id="purple" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgPurple} height={120} width={160}></img>
                             </div>
                             <button class="scroll-button next-button" onClick={handleScrollNext}>&gt;</button>
                         </div>
