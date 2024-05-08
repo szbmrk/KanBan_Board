@@ -98,15 +98,25 @@ body {
     /*background-image: url("./imgs/background-regular.jpg");*/
 }
 
-.background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: no-repeat center;
-    background-size: cover;
+.bg-regular {
+    background-image: url("./imgs/background-regular.jpg");
 }
+.bg-blue {
+    background-image: url("./imgs/background-blue.jpg");
+}
+.bg-darkblue {
+    background-image: url("./imgs/background-darkblue.jpg");
+}
+.bg-gray {
+    background-image: url("./imgs/background-gray.jpg");
+}
+.bg-green {
+    background-image: url("./imgs/background-green.jpg");
+}
+.bg-purple {
+    background-image: url("./imgs/background-purple.jpg");
+}
+
 
 #root {
     height: 100vh;
