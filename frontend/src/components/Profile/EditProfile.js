@@ -304,12 +304,12 @@ export default function EditProfile() {
                         <div class="ButtonContainer">
                             <button class="scroll-button prev-button" onClick={handleScrollPrev}>&lt;</button>
                             <div class="Button-scroller">
-                                <img id="reg" src={bgRegular} height={120} width={160} onClick={(e)=>handleBackgroundChangeClick(e.target.id)}></img> 
-                                <img id="blue" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgBlue} height={120} width={160}></img>
-                                <img id="darkblue"onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgDarkBlue} height={120} width={160}></img>
-                                <img id="gray" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgGray} height={120} width={160}></img>
-                                <img id="green"onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgGreen} height={120} width={160}></img>
-                                <img id="purple" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgPurple} height={120} width={160}></img>
+                                <img id="bg-regular" src={bgRegular} height={120} width={160} onClick={(e)=>handleBackgroundChangeClick(e.target.id)}></img> 
+                                <img id="bg-blue" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgBlue} height={120} width={160}></img>
+                                <img id="bg-darkblue"onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgDarkBlue} height={120} width={160}></img>
+                                <img id="bg-gray" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgGray} height={120} width={160}></img>
+                                <img id="bg-green"onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgGreen} height={120} width={160}></img>
+                                <img id="bg-purple" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgPurple} height={120} width={160}></img>
                             </div>
                             <button class="scroll-button next-button" onClick={handleScrollNext}>&gt;</button>
                         </div>
