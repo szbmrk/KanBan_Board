@@ -36,10 +36,14 @@
   border-radius: 5px;
   padding: 15px;
   border-color: var(--dark-gray);
-  background-color: var(--dark-gray);
+  background-color: #383838e3;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  transition: all 0.3s ease;
+}
+[data-theme="light"] .notification {
+  background-color: #f0f0f0cc; /* Világos módhoz tartozó háttérszín */
 }
 
 .notification-header {
@@ -50,6 +54,23 @@
   color: var(--notification-type);
 }
 
+.notification:hover {
+  transform: translateY(-3px); /* Enyhe emelkedés hover esetén */
+  background-color: #4e4e4eea;
+}
+
+.notification:not(:last-child) {
+  margin-bottom: 5px; /* Kisebb térköz az értesítések között */
+}
+
+[data-theme="light"] .notification:hover {
+  background-color: #b3b3b3cc; /* Világos módhoz tartozó háttérszín */
+}
+
+.notification {
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
 .created-at {
   font-size: 0.8em;
   color: var(--light-gray);
@@ -57,6 +78,10 @@
 
 .notification-type {
   font-size: 1em;
+  color: rgb(195, 205, 241);
+}
+[data-theme="light"] .notification-type {
+  color: #383838; /* Világos módhoz tartozó háttérszín */
 }
 
 .notification-content {
@@ -73,6 +98,23 @@
   border-radius: 5px;
   padding: 5px 10px;
   cursor: pointer;
+  /*Extra kinézethez*/
+  transition: transform 0.1s ease; 
+}
+
+.mark-all-button:active,
+.mark-seen-button:active {
+  transform: scale(0.95); /* Az aktív állapotban a gomb mérete kicsit összenyomódik */
+}
+
+.mark-all-button:hover,
+.mark-seen-button:hover {
+  color: #4CAF50;
+}
+
+[data-theme="light"] .mark-all-button:hover,
+.mark-seen-button:hover {
+  color: #249428;
 }
 
 .not-found-message {
@@ -102,4 +144,9 @@
   color: var(--light-gray);
   cursor: pointer;
   font-family: var(--basic-font);
+  transition: all 0.2s ease;
+}
+
+.switch:hover {
+  transform: scale(1.03);
 }
