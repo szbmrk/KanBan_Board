@@ -9,6 +9,16 @@ use App\Models\Role;
 use App\Models\TeamMember;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\Events\TeamChange;
+use Illuminate\Support\Facades\Event;
 
 class TeamMemberRoleController extends Controller
 {
@@ -150,17 +160,30 @@ class TeamMemberRoleController extends Controller
             ->where('user_id', $teamMember->user_id)
             ->first();
             
-            foreach ($newTeamMember->roles as &$role) {
-                // Kérdezd le a team_members_role_id-t a megfelelő kritériumok alapján
-                $teamMembersRoleId = TeamMemberRole::where('team_member_id', $newTeamMember->team_members_id)
-                                                   ->where('role_id', $role->role_id)
-                                                   ->value('team_members_role_id');
+        foreach ($newTeamMember->roles as &$role) {
+            // Kérdezd le a team_members_role_id-t a megfelelő kritériumok alapján
+            $teamMembersRoleId = TeamMemberRole::where('team_member_id', $newTeamMember->team_members_id)
+                ->where('role_id', $role->role_id)
+                ->value('team_members_role_id');
     
-                // Ha találtál értéket, adjuk hozzá a szerephez
-                if ($teamMembersRoleId !== null) {
-                    $role->team_members_role_id = $teamMembersRoleId;
-                }
+            // Ha találtál értéket, adjuk hozzá a szerephez
+            if ($teamMembersRoleId !== null) {
+                $role->team_members_role_id = $teamMembersRoleId;
             }
+        }
+
+        $user_ids = TeamMember::where('team_id', $board->team_id)
+            ->distinct()
+            ->pluck('user_id')
+            ->toArray();
+
+        $data = [
+            'teamMember' => $newTeamMember,
+            'teamMemberRole' => $teamMemberRole
+        ];
+        foreach ($user_ids as $user_id) {
+            broadcast(new TeamChange($user_id, "CREATED_USER_ROLE", $data));
+        } 
 
         return response()->json(['message' => 'Role assigned successfully', 'team_member' => $newTeamMember]);
     }
@@ -218,6 +241,19 @@ class TeamMemberRoleController extends Controller
             }
     
             $teamMemberRole->delete();
+
+            $user_ids = TeamMember::where('team_id', $board->team_id)
+                ->distinct()
+                ->pluck('user_id')
+                ->toArray();
+
+            $data = [
+                'teamMember' => $teamMember,
+                'teamMemberRole' => $teamMemberRole
+            ];
+            foreach ($user_ids as $user_id) {
+                broadcast(new TeamChange($user_id, "DELETED_USER_ROLE", $data));
+            }  
     
             return response()->json(['message' => 'Team member role deleted successfully']);
         } catch (\Exception $e) {
