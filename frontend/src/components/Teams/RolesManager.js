@@ -127,9 +127,10 @@ export default function RolesManager({
             </div>
           )}
         </div>
+        {boardIsSelected &&(
         <button className="add-button" onClick={handleAddRolesToUser}>
           Add role to user
-        </button>
+        </button>)}
       </div>
       {error && (
         <ErrorWrapper
