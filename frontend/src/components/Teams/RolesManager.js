@@ -17,6 +17,7 @@ export default function RolesManager({
   const [boardsForTeam, setBoardsForTeam] = useState([]);
   const [boardIsSelected, setBoardIsSelected] = useState(false);
   const [boardRoles, setBoardRoles] = useState([]);
+  const [roleIsSelected, setRoleIsSelected] = useState(false);
   const [role_id, setRoleId] = useState();
   const [board_id, setBoardID] = useState();
 
@@ -85,13 +86,15 @@ export default function RolesManager({
     OnClose();
   }
 
-  function handleChange(e) {
-    GetRoles(e.target.value);
+  async function handleChange(e) {
+    await GetRoles(e.target.value);
     setBoardID(e.target.value);
+    setRoleIsSelected(false);
   }
 
   function RoleSelection(e) {
     setRoleId(e.target.value);
+    setRoleIsSelected(true);
   }
 
   return (
@@ -127,7 +130,7 @@ export default function RolesManager({
             </div>
           )}
         </div>
-        {boardIsSelected &&(
+        {boardIsSelected && roleIsSelected &&(
         <button className="add-button" onClick={handleAddRolesToUser}>
           Add role to user
         </button>)}
