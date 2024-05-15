@@ -26,7 +26,6 @@ export default function RolesManager({
 
   useEffect(() => {
     getBoards();
-    //ez
     const ResetTheme = () => {
       setTheme(localStorage.getItem("darkMode"));
     };
@@ -37,7 +36,6 @@ export default function RolesManager({
     return () => {
       window.removeEventListener("ChangingTheme", ResetTheme);
     };
-    //eddig
   }, []);
 
   async function getBoards() {
@@ -87,9 +85,17 @@ export default function RolesManager({
   }
 
   async function handleChange(e) {
-    await GetRoles(e.target.value);
-    setBoardID(e.target.value);
-    setRoleIsSelected(false);
+    const selectedBoardId = e.target.value;
+    if (selectedBoardId === "-1") {
+      setBoardIsSelected(false);
+      setRoleIsSelected(false);
+      setBoardRoles([]);
+      setBoardID(null);
+    } else {
+      await GetRoles(selectedBoardId);
+      setBoardID(selectedBoardId);
+      setRoleIsSelected(false);
+    }
   }
 
   function RoleSelection(e) {
@@ -105,12 +111,14 @@ export default function RolesManager({
         </span>
         <div className="selector-container">
           <p>Select board:</p>
-          <select onChange={handleChange}>
-            <option value="-1" inactive>
+          <select onChange={handleChange} defaultValue="-1">
+            <option value="-1" disabled>
               Select board
             </option>
             {boardsForTeam.map((board) => (
-              <option value={board.board_id}>{board.name}</option>
+              <option key={board.board_id} value={board.board_id}>
+                {board.name}
+              </option>
             ))}
           </select>
         </div>
@@ -118,22 +126,25 @@ export default function RolesManager({
           {boardIsSelected && (
             <div>
               <p>Select role:</p>
-              <select onChange={RoleSelection}>
-                <option value="-1" inactive>
+              <select onChange={RoleSelection} defaultValue="-1">
+                <option value="-1" disabled>
                   Select role
                 </option>
                 {boardRoles.length > 0 &&
                   boardRoles.map((role) => (
-                    <option value={role.role_id}>{role.name}</option>
+                    <option key={role.role_id} value={role.role_id}>
+                      {role.name}
+                    </option>
                   ))}
               </select>
             </div>
           )}
         </div>
-        {boardIsSelected && roleIsSelected &&(
-        <button className="add-button" onClick={handleAddRolesToUser}>
-          Add role to user
-        </button>)}
+        {boardIsSelected && roleIsSelected && (
+          <button className="add-button" onClick={handleAddRolesToUser}>
+            Add role to user
+          </button>
+        )}
       </div>
       {error && (
         <ErrorWrapper
