@@ -11,6 +11,16 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Permission;
 use App\Models\TeamMember;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\Events\TeamChange;
+use Illuminate\Support\Facades\Event;
 
 class UserController extends Controller
 {
@@ -165,12 +175,33 @@ class UserController extends Controller
         }
 
         $password = $request->input('password');
+        $userId = $user->user_id;
 
         if (!Hash::check($password, $user->password)) {
             return response()->json(['error' => 'Incorrect password'], 400);
         }
 
+        $user_ids = TeamMember::whereIn('team_id', function ($query) use ($userId) {
+        $query->select('team_id')
+            ->from('team_members')
+            ->where('user_id', $userId);
+        })
+        ->where('user_id', '<>', $userId)
+        ->distinct()
+        ->pluck('user_id')
+        ->toArray();
+
+        $user->teamMembers()->delete();
+        $user->userTasks()->delete();
+        $user->favouriteTasks()->delete();
         $user->delete();
+
+        $data = [
+            'user' => $user
+        ];
+        foreach ($user_ids as $user_id) { 
+            broadcast(new TeamChange($user_id, "DELETED_USER", $data));
+        }  
 
         return response()->json(['message' => 'User deleted successfully'], 200);
     }
