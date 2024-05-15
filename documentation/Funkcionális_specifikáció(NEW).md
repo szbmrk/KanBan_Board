@@ -97,9 +97,7 @@ A projekt igényelt üzleti folyamatai egy mobilis és rugalmas projektmenedzsme
 13. A sidebar-on a "Permission table" menüben tudja megtekinteni azokat a táblákat, amelyeken joga van módosítani a jogosultságokat és a szerepköröket.
 14. A táblára kattintva jelennek meg a szerepkörök és a hozzájuk tartozó jogosultságok.
 
-## 10. Funckió - követelmény megfeleltetése
-
-## 11. Fogalomszótár
+## 10. Fogalomszótár
 
 - **publikálás**: nyilvánossá tétel
 - **regisztráció**: jelentkezés, beiratkozás
@@ -108,34 +106,34 @@ A projekt igényelt üzleti folyamatai egy mobilis és rugalmas projektmenedzsme
 - **sidebar**: az oldal bal oldalán található sáv
 - **bemenet**: a szövegdobozokba átadott információ
 
-## 12. Kanban Board
+## 11. Kanban Board
 
 A Kanban Board egy projektmenedzsment eszköz, amely vizuális táblázatokat használ a feladatok követésére és kezelésére. A projekt folyamatai oszlopokba vannak szervezve, és a feladatok kártyákként jelennek meg, amelyek az oszlopok között mozognak az előrehaladás során.
 
-## 13. UI (Felhasználói Felület)
+## 12. UI (Felhasználói Felület)
 
 A Kanban Board projekt UI (felhasználói felülete) a rendszer által nyújtott vizuális felület, amely lehetővé teszi a felhasználók számára a projektjeik és feladataik hatékony kezelését. A UI feladata, hogy felhasználóbarát és könnyen navigálható legyen.
 
-## 14. Reszponzív
+## 13. Reszponzív
 
 A Kanban Board projekt reszponzív tervezése lehetővé teszi, hogy a felület mérete automatikusan alkalmazkodjon az eszköz képernyőjéhez. Így biztosítva a felhasználók számára optimális megjelenést és használhatóságot különböző eszközökön, például számítógépen, táblagépen vagy mobiltelefonon.
 
-## 15. Free of Charge (Ingyenesen Használható)
+## 14. Free of Charge (Ingyenesen Használható)
 
 A Kanban Board projekt ingyenesen használható, ami azt jelenti, hogy a felhasználóknak nem kell fizetniük a szolgáltatásért. Az alapvető funkcionalitások, mint például a projekt- és feladatkezelés, elérhetőek ingyenesen a felhasználók számára.
 
-## 16. Kártya
+## 15. Kártya
 
 A Kanban Board projektben a kártyák a feladatokat vagy projekteket reprezentálják. Ezek a kártyák mozognak az oszlopok között, tükrözve a feladatok állapotait és folyamatát.
 
-## 17. Osztályozás és Szűrés
+## 16. Osztályozás és Szűrés
 
 A Kanban Board projekt lehetőséget biztosít a feladatok és projektek könnyű kategorizálására és szűrésére. Ez segíti a felhasználókat abban, hogy könnyen megtalálják a számukra releváns információkat.
 
-## 18. Kollaboráció
+## 17. Kollaboráció
 
 A projekt csapattagjai közötti hatékony kommunikáció lehetővé teszi a feladatokról és projektekről szóló információk megosztását. A kollaborációs eszközök segítik a csapatok együttműködését a projekt teljesítése érdekében.
 
-## 19. Rugalmasság és Testreszabhatóság
+## 18. Rugalmasság és Testreszabhatóság
 
 A Kanban Board projekt rugalmasságot és testreszabhatóságot kínál a felhasználóknak. Az oszlopok és kártyák személyre szabhatók a projekt egyedi igényei szerint, így alkalmazkodva a különböző projektekhez és csapatokhoz.
