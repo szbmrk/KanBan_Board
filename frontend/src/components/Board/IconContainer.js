@@ -1,34 +1,43 @@
-import React, { useState } from "react";
-
-/*
-const calculateMenuPosition = (triggerElement, menuHeight) => {
-    const windowHeight = window.innerHeight;
-    const triggerRect = triggerElement.getBoundingClientRect();
-    const availableSpaceDown = windowHeight - (triggerRect.bottom + window.scrollY);
-
-    if (availableSpaceDown < menuHeight) {
-        // Not enough space below, display upwards
-        return { top: triggerRect.top + window.scrollY - menuHeight };
-    } else {
-        // Enough space below, display downwards (default behavior)
-        return { top: triggerRect.bottom + window.scrollY };
-    }
-};*/
-//board js-ből áthozni a triggerelementet!
+import React, { useState, useEffect, useRef } from "react";
 
 const IconContainer = ({ iconContainerPosition, options }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [isHoveredIndex, setIsHoveredIndex] = useState(null);
+    const [adjustedPosition, setAdjustedPosition] = useState(iconContainerPosition);
+    const containerRef = useRef(null);
+
+    const handlePosition = () => {
+        const viewportHeight = window.innerHeight;
+        const bottomThreshold = viewportHeight / 2;
+
+        if (containerRef.current) {
+            const containerHeight = containerRef.current.offsetHeight;
+
+            if (iconContainerPosition.y > bottomThreshold) {
+                setAdjustedPosition({
+                    x: iconContainerPosition.x,
+                    y: iconContainerPosition.y - containerHeight + 20,
+                });
+            } else {
+                setAdjustedPosition(iconContainerPosition);
+            }
+        }
+    };
+
+    useEffect(() => {
+        handlePosition();
+    }, [iconContainerPosition]);
 
     return (
         <div
 
             className="icon-container"
+            ref={containerRef}
             style={{
                 position: "fixed",
                 overflow: "hidden",
-                left: iconContainerPosition.x + "px",
-                top: iconContainerPosition.y + "px",
+                left: adjustedPosition.x + "px",
+                top: adjustedPosition.y + "px",
             }}
         >
             {options.map((option, index) => (

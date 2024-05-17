@@ -129,7 +129,6 @@
     flex-direction: column;
     justify-content: flex-start;
     gap: 10px;
-    /* Adjust the height as needed */
     overflow-y: auto;
     z-index: 100;
 }

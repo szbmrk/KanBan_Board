@@ -118,11 +118,8 @@ export const Task = forwardRef(
             // Set the icon-container's position and show it
             setIconContainerPosition({ x: newX, y: newY });
             setShowIconContainer(true);
-
             setCardIndex(cardIndex);
-
             setCardZIndex(100);
-
             getTaskPosition(cardIndex);
         };
 
