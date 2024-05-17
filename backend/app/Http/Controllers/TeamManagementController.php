@@ -17,6 +17,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\TeamChange;
+use App\Events\DashboardChange;
 use Illuminate\Support\Facades\Event;
 
 use Illuminate\Http\Request;
@@ -106,6 +107,13 @@ class TeamManagementController extends Controller
             foreach ($user_ids as $user_id) {
                 broadcast(new TeamChange($user_id, "USER_ADDED_TO_TEAM", $data));
             }
+
+            $team = Team::with(['boards'])->findOrFail($team_id);
+            $data = [
+                'team' => $team
+            ];
+            broadcast(new DashboardChange($userId, "THIS_USER_ADDED_TO_TEAM", $data));
+
             NotificationController::createNotification(NotificationType::TEAM, "You are added to the following team: ".$team->name, $userId);
 
             $addedMembers[] = $newTeamMember;
@@ -162,6 +170,11 @@ class TeamManagementController extends Controller
             foreach ($user_ids as $user_id) {
                 broadcast(new TeamChange($user_id, "USER_DELETED_FROM_TEAM", $data));
             }
+
+            $data = [
+                'team' => $team
+            ];
+            broadcast(new DashboardChange($teamMember->user_id, "THIS_USER_DELETED_FROM_TEAM", $data));
   
             NotificationController::createNotification(NotificationType::TEAM, "You are removed from the following team: ".$team->name, $userId);
 
