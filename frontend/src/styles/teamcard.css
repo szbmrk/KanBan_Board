@@ -196,7 +196,7 @@
 }
 
 .add-user-button {
-    color: var(--light-gray);
+    color: var(--dark-gray);
 }
 
 .trash-icon {
@@ -238,6 +238,14 @@
     order: 2;
     flex: 1;
 }
+[data-theme="light"] .delete-button {
+    color: red;
+    border: 1px solid red;
+}
+[data-theme="light"] .delete-button:hover {
+    color: var(--light-gray);
+    background-color: rgb(255, 37, 37);
+}
 
 .add-button {
     max-width: 50%;
@@ -251,10 +259,21 @@
     cursor: pointer;
 }
 
+[data-theme="light"] .add-button {
+    color: green;
+    border: 1px solid green;
+}
+
 .add-button:hover {
     background-color: var(--confirm);
+   
+}
+
+[data-theme="light"] .add-button:hover {
+    background-color: green;
     color: var(--light-gray);
 }
+
 
 .add-button:disabled {
     background-color: transparent;
