@@ -2,18 +2,24 @@
     border-radius: 5px;
     color: white;
     transition: 0.4s ease-in-out;
+    overflow: hidden;
+    white-space: nowrap; /* Nem engedi, hogy a tag több sorba kerüljön */
 }
 
 .tag-on-board {
     height: 12px;
     cursor: pointer;
     min-width: 50px;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .clicked {
     height: 25px !important;
     padding: 0.2rem 0.5rem !important;
     font-size: 0.8em !important;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .tag-on-card {
@@ -22,8 +28,12 @@
     width: fit-content;
     text-align: center;
     padding: 0.2rem 0.5rem !important;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .tag-on-card p {
     font-size: 0.8em;
+    overflow: hidden;
+    white-space: nowrap;
 }

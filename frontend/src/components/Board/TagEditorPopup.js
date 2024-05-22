@@ -54,6 +54,13 @@ const TagEditorPopup = ({ onClose, onSave, tagToEdit }) => {
         });
     };
 
+    const handleTagNameChange = (e) => {
+        const value = e.target.value;
+        if (value.length <= 35) {
+            setTagName(value);
+        }
+    };
+
     return (
         <div className='overlay darken'>
             <div className='popup popup-mini' data-theme={theme}>
@@ -66,9 +73,12 @@ const TagEditorPopup = ({ onClose, onSave, tagToEdit }) => {
                             style={{ backgroundColor: "var(--dark-gray)", color: "var(--light)" }}
                             type='text'
                             value={tagName}
-                            onChange={(e) => setTagName(e.target.value)}
+                            onChange={handleTagNameChange}
                             placeholder='Type tag name here...'
                         />
+                        <div className='char-counter'>
+                            {tagName.length} / 35
+                        </div>
                     </div>
                     <div className='color-picker'>
                         <label>Select a Color:</label>

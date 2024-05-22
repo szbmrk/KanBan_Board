@@ -66,7 +66,7 @@ class TagController extends Controller
         }
 
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:35',
             'color' => 'required|string|max:7',
         ]);
         if ($board->tags()->where('name', $request->input('name'))->exists()) {
