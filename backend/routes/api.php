@@ -55,6 +55,9 @@ Route::get('/user/check-login', [UserController::class, 'checkLogin']);
 Route::get('/profile', [UserController::class, 'show'])->middleware('api');
 Route::put('/profile', [UserController::class, 'update'])->middleware('api');
 Route::delete('/profile', [UserController::class, 'destroy'])->middleware('api');
+/* Test */
+Route::post('/user/check-email', [UserController::class, 'checkEmail']);
+
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('api');
 Route::post('/dashboard/board', [DashboardController::class, 'store'])->middleware('api');

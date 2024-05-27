@@ -190,4 +190,22 @@ class UserController extends Controller
 
         return response()->json(['permissions' => $userPermissions]);
     }
+
+    /* Test */
+
+    public function checkEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $emailExists = User::where('email', $request->email)->exists();
+
+        if ($emailExists) {
+            return response()->json(['exists' => true]);
+        }
+
+        return response()->json(['exists' => false]);
+    }
+
 }
