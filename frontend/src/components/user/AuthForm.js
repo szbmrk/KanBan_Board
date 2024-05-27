@@ -160,8 +160,8 @@ const AuthForm = ({
                                 placeholder="Enter your email"
                                 required
                             />
-                            {formData.email.trim() !== "" && emailError && (
-                                <div className="auth-error" style={{ 
+                           {formData.email.trim() !== "" && emailError && (
+                                <div className={`auth-error ${emailError === 'Email valid' ? 'auth-valid' : ''}`} style={{ 
                                     textShadow: emailError && isVibrating ? '0 0 10px red' : 'none',
                                     animation: emailError && isVibrating ? 'shake 0.5s linear infinite' : 'none'
                                 }}>
