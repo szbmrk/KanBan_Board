@@ -628,9 +628,9 @@ class TaskController extends Controller
         $subTaskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($subtask_id);
 
         $data = [
-            'subtask' => $subTaskWithSubtasksAndTags
+            'task' => $subTaskWithSubtasksAndTags
         ];
-        broadcast(new BoardChange($board->board_id, "UPDATED_SUBTASK", $data));
+        broadcast(new BoardChange($board->board_id, "UPDATED_TASK", $data));
 
         $user_ids;
         if($subTask->parent_task_id !== null) {
