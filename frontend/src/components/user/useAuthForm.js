@@ -7,18 +7,28 @@ const useAuthForm = (initialState, submitAction) => {
   const [formData, setFormData] = useState(initialState);
   const [emailError, setEmailError] = useState(""); //Test
 
+
+
   /* Test */
+
+  //Az EmailValid funkciót áthozom ide a Signup.js fileból
+
+  const EmailValid = (email) => {
+    const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    return re.test(email);
+  };
+
   const checkEmail = async (email) => {
-    /*if (!EmailValid(email)) {
+    if (!EmailValid(email)) {
       setEmailError("Invalid email format");
       return;
-    }*/
+    }
     try {
       const response = await axios.post("/user/check-email", { email });
       if (response.data.exists) {
         setEmailError("Email already exists");
       } else {
-        setEmailError("Email valid");
+        setEmailError("");
       }
     } catch (err) {
       setEmailError("Error checking email");
