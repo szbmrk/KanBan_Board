@@ -6,10 +6,11 @@ const useAuthForm = (initialState, submitAction) => {
   const [display, setDisplay] = useState("none");
   const [formData, setFormData] = useState(initialState);
   const [emailError, setEmailError] = useState(""); //Test
+  const [usernameError, setUsernameError] = useState("");
 
 
 
-  /* Test */
+  /* Test email & username*/
 
   //Az EmailValid funkciót áthozom ide a Signup.js fileból
 
@@ -35,6 +36,19 @@ const useAuthForm = (initialState, submitAction) => {
     }
   };
 
+  const checkUsername = async (username) => {
+    try {
+      const response = await axios.post("/user/check-username", { username });
+      if (response.data.exists) {
+        setUsernameError("Username already exists");
+      } else {
+        setUsernameError("");
+      }
+    } catch (err) {
+      setUsernameError("Error checking username");
+    }
+  };
+
   const handleChange = async(e) => {
     const { name, value, type, checked } = e.target;
     const val = type === "checkbox" ? checked : value;
@@ -46,6 +60,9 @@ const useAuthForm = (initialState, submitAction) => {
     /* Test */
     if (name === "email") {
       await checkEmail(value);
+    }
+    if (name === "username") {
+      await checkUsername(value);
     }
   };
 
@@ -79,6 +96,7 @@ const useAuthForm = (initialState, submitAction) => {
     handleSubmit,
     handlePaste,
     emailError,
+    usernameError,
   };
 };
 

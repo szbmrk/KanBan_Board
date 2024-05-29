@@ -29,6 +29,7 @@ const Signup = () => {
     handleSubmit,
     handlePaste: handlePasswordPaste,
     emailError,
+    usernameError,
   } = useAuthForm(
     {
       username: "",
@@ -76,7 +77,8 @@ const Signup = () => {
       error={error}
       display={error ? "block" : "none"}
       buttonText="Sign Up"
-      emailError={emailError}            
+      emailError={emailError}    
+      usernameError={usernameError}        
       textToTermsAndConditions="By clicking Sign Up, you agree to our Terms, Data Policy and Cookie Policy."
       linkText="Already have an account?"
       linkTo="/login"
