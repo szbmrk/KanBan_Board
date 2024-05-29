@@ -53,11 +53,35 @@ const TagDropdownItem = ({ data, onEdit, onDelete, onToggle, selectedTags }) => 
     };
 
     return (
-        <div className='custom-menu-item' style={itemStyle} onClick={() => onToggle(data)}>
+        <div
+            className='custom-menu-item'
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '5px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                ...itemStyle
+            }}
+            onClick={() => onToggle(data)}
+        >
             <span style={{ marginRight: '8px', opacity: selectedTags.some((tag) => tag.value === label) ? 1 : 0 }}>
                 {checkIcon}
             </span>
-            <span style={{ backgroundColor: color, color: 'var(--off-white)' }}>{label}</span>
+            <span
+                style={{
+                    flex: 1,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    backgroundColor: color,
+                    color: 'var(--off-white)',
+                    padding: '5px'
+                }}
+            >
+                {label}
+            </span>
             <div style={buttonStyle} data-theme={theme}>
                 <span
                     onClick={(e) => {
@@ -79,7 +103,7 @@ const TagDropdownItem = ({ data, onEdit, onDelete, onToggle, selectedTags }) => 
                 </span>
             </div>
         </div>
-    );
+    );    
 };
 
 export default TagDropdownItem;

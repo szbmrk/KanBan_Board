@@ -16,6 +16,7 @@ const AuthForm = ({
     linkText,
     linkTo,
     textToTermsAndConditions,
+    emailError,
 }) => {
     const [keyState, setKeyState] = useState(state);
     const [passwordMatchError, setPasswordMatchError] = useState(false);
@@ -46,7 +47,7 @@ const AuthForm = ({
     
     const handleSignUp = (e) => {
         e.preventDefault();
-        if (passwordMatchError) {
+        if (passwordMatchError || emailError) {
             setIsVibrating(true);
             setTimeout(() => {
                 setIsVibrating(false);
@@ -159,6 +160,15 @@ const AuthForm = ({
                                 placeholder="Enter your email"
                                 required
                             />
+                          {formData.email.trim() !== "" && (
+    <div className={`auth-error ${emailError ? '' : 'auth-valid'}`} style={{ 
+        textShadow: emailError && isVibrating ? '0 0 10px red' : 'none',
+        animation: emailError && isVibrating ? 'shake 0.5s linear infinite' : 'none'
+    }}>
+        {emailError ? emailError : 'Email valid'}
+    </div>
+)}
+
                         </div>) : (
                         <div className="form-group">
                             <label htmlFor="email">Email</label>
@@ -254,7 +264,7 @@ const AuthForm = ({
                             {textToTermsAndConditions}
                         </div>
                     ) : null}
-                    {error && !passwordMatchError &&(
+                    {error && !passwordMatchError && !emailError &&(
                         <div className="errorBox" style={{ display }}>
                             <p>{error.error ? error.error : error.message}</p>
                         </div>

@@ -195,7 +195,7 @@ a {
 
 .password-match-error {
     color: rgb(160, 0, 0);
-    font-size: 14px;
+    /*font-size: 14px;*/
     font-weight: bold;
     margin-top: 5px;
 }
@@ -212,4 +212,16 @@ a {
     80% { transform: translate(-1px, -1px) rotate(1deg); }
     90% { transform: translate(1px, 2px) rotate(0deg); }
     100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+/* Test */
+
+.auth-error {
+    color: rgb(160, 0, 0);
+    font-weight: bold;
+}
+
+.auth-valid {
+    color: green;
+    font-weight: bold;
 }
