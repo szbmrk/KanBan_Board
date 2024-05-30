@@ -509,3 +509,8 @@
         padding: 20px 0px;
     }
 }
+
+body, html, #root {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
