@@ -23,7 +23,10 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\BoardChange;
+use App\Events\DashboardChange;
 use Illuminate\Support\Facades\Event;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationType;
 
 
 class DashboardController extends Controller
@@ -89,6 +92,19 @@ class DashboardController extends Controller
             if (!$boardManagerRole->permissions->contains($taskManagementPermission)) {
                 $boardManagerRole->permissions()->attach($taskManagementPermission->id);
             }
+
+            $user_ids = TeamMember::where('team_id', $board->team_id)
+                ->distinct()
+                ->pluck('user_id')
+                ->toArray();
+
+            $data = [
+                'board' => $board
+            ];
+                
+            foreach ($user_ids as $user_id) {
+                broadcast(new DashboardChange($user_id, "CREATED_BOARD", $data));
+            } 
     
             LogRequest::instance()->logAction('CREATED BOARD', $user->user_id, "Board created successfully!", $team_id, $board->board_id, null);
     
@@ -109,6 +125,7 @@ class DashboardController extends Controller
         }
 
         $board = Board::find($board_id);
+        $old_board_name = $board->name;
         if (!$board) {
             LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found on update -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found.'], 404);
@@ -119,27 +136,30 @@ class DashboardController extends Controller
             $roles = $user->getRoles();
             $permissions = $user->getPermissions();
 
-            if (in_array('system_admin', $permissions)) {
-                $board->name = $request->name;
-                $board->save();
-                LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "Board Updated successfully!", $board->team_id, $board_id, null);
-
-                $data = [
-                    'name' => $board->name
-                ];
-                broadcast(new BoardChange($board_id, "UPDATED_BOARD_NAME", $data));
-
-                return response()->json(['board' => $board]);
-            }
-
             $boardManagerRoles = array_filter($roles, function($role) use ($board_id) {
                 return $role['name'] == 'Board Manager' && $role['board_id'] == $board_id;
             });
 
-            if (!empty($boardManagerRoles)) {
+            if (in_array('system_admin', $permissions) || !empty($boardManagerRoles)) {
                 $board->name = $request->name;
                 $board->save();
                 LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "Board Updated successfully!", $board->team_id, $board_id, null);
+
+                $user_ids = TeamMember::whereIn('user_id', function ($query) use ($board_id) {
+                    $query->select('user_id')
+                        ->from('boards')
+                        ->join('team_members', 'boards.team_id', '=', 'team_members.team_id')
+                        ->where('boards.board_id', $board_id);
+                })->distinct()->pluck('user_id')->toArray();
+
+                $data = [
+                    'board' => $board
+                ];
+                
+                foreach ($user_ids as $user_id) {
+                    broadcast(new DashboardChange($user_id, "UPDATED_BOARD", $data));
+                    NotificationController::createNotification(NotificationType::BOARD, "A board you are member of got renamed from ".$old_board_name." to ".$request->name, $user_id);
+                }  
 
                 $data = [
                     'name' => $board->name
@@ -178,7 +198,21 @@ class DashboardController extends Controller
             });
 
             if ($hasSystemAdminPermission || !empty($hasBoardManagerRole)) {
+                $user_ids = TeamMember::where('team_id', $board->team_id)
+                    ->distinct()
+                    ->pluck('user_id')
+                    ->toArray();
+
                 $board->delete();
+
+                $data = [
+                    'board' => $board
+                ];
+                
+                foreach ($user_ids as $user_id) {
+                    broadcast(new DashboardChange($user_id, "DELETED_BOARD", $data));
+                } 
+                
                 LogRequest::instance()->logAction('DELETED BOARD', $user->user_id, "Board Deleted successfully! -> board_id: $board_id", $board->team_id, $board_id, null);
                 return response()->json(['message' => 'Board successfully deleted'], 200);
             }

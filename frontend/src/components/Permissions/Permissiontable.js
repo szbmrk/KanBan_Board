@@ -13,7 +13,7 @@ export default function Permissiontable() {
     const [permissions, setPermissions] = useState([]);
     const [newRoleName, setNewRoleName] = useState("");
     const [needLoader, setNeedLoader] = useState(false);
-    const [renameIsActive, setRenameIsActive] = useState(false);
+    const [renameIsActive, setRenameIsActive] = useState(null); // null kezdeti értékkel
     const [renameRoleName, setRenameRoleName] = useState("");
 
     const token = sessionStorage.getItem("token");
@@ -233,7 +233,13 @@ export default function Permissiontable() {
     }
 
     async function handleRoleRenameSubmit(role_id) {
-        setRenameIsActive(false);
+        const currentRole = roles.find(role => parseInt(role.role_id) === parseInt(role_id));
+        if (currentRole.name === renameRoleName || renameRoleName.trim() === "") {
+            setRenameIsActive(null);
+            setRenameRoleName("");
+            return;
+        }
+
         try {
             const response = await axios.put(
                 `/boards/${board_id}/roles/${role_id}`,
@@ -252,10 +258,12 @@ export default function Permissiontable() {
             });
             setRoles(newRoleData);
             setRenameRoleName("");
+            setRenameIsActive(null);
         } catch (error) {
             setError(error?.response?.data);
         }
     }
+
 
     return (
         <div className="content col-10" data-theme={theme}>
@@ -276,34 +284,41 @@ export default function Permissiontable() {
                                             <div
                                                 className="role-rename-div"
                                                 onDoubleClick={() => {
-                                                    if (
-                                                        checkPermissionForBoard(
-                                                            board_id,
-                                                            team_id,
-                                                            "role_management"
-                                                        )
-                                                    ) {
-                                                        setRenameIsActive(true);
+                                                    if (checkPermissionForBoard(board_id, team_id, "role_management")) {
+                                                        setRenameIsActive(role.role_id); // Állítsd be az aktív szerepkör azonosítóját
+                                                        setRenameRoleName(role.name); // Beállítja a szerepkör jelenlegi nevét a szerkesztési mezőbe
                                                     }
                                                 }}
                                             >
                                                 <p>{role.name}</p>
                                             </div>
                                         ) : (
-                                            <div className="role-rename-input">
-                                                <input
-                                                    className="role-rename-input-field"
-                                                    type="text"
-                                                    placeholder="Rename this role..."
-                                                    onChange={handleRoleRename}
-                                                />
-                                                <button
-                                                    className="role-rename-button"
-                                                    onClick={() => handleRoleRenameSubmit(role.role_id)}
-                                                >
-                                                    Rename
-                                                </button>
-                                            </div>
+                                            renameIsActive === role.role_id && ( // Only show for the active role being renamed
+                                                <div className="role-rename-input">
+                                                    <input
+                                                        className="role-rename-input-field"
+                                                        type="text"
+                                                        placeholder="Rename this role..."
+                                                        onChange={handleRoleRename}
+                                                        value={renameRoleName} // Itt használjuk a frissített állapotot
+                                                    />
+                                                    <button
+                                                        className="role-rename-button"
+                                                        onClick={() => handleRoleRenameSubmit(role.role_id)}
+                                                    >
+                                                        Rename
+                                                    </button>
+                                                    <button
+                                                        className="cancel-role-button"
+                                                        onClick={() => {
+                                                            setRenameIsActive(null); // Visszaállítja az aktív szerkesztési állapotot
+                                                            setRenameRoleName(""); // Törli a szövegmező értékét
+                                                        }}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            )
                                         )}
                                         {checkPermissionForBoard(
                                             board_id,

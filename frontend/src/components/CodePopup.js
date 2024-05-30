@@ -101,7 +101,6 @@ const CodePopup = ({
       console.log(res);
       console.log(res.data.review);
       setOutput(res.data.review);
-      reloadCodeReviewOrDocumentation();
     } catch (e) {
       setError(e?.response?.data);
     }

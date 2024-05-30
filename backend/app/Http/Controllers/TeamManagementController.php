@@ -6,6 +6,19 @@ use App\Models\Team;
 use App\Models\TeamMember;
 use App\Models\User;
 use App\Models\TeamMemberRole;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationType;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\Events\TeamChange;
+use App\Events\DashboardChange;
+use Illuminate\Support\Facades\Event;
 
 use Illuminate\Http\Request;
 
@@ -75,6 +88,34 @@ class TeamManagementController extends Controller
                 }
             }
 
+            $team = Team::with(['teamMembers.user', 'teamMembers.roles'])->findOrFail($team_id);
+            $data = [
+                'team' => $team
+            ];
+  
+            broadcast(new TeamChange($userId, "THIS_USER_ADDED_TO_TEAM", $data));
+
+            $user_ids = TeamMember::where('team_id', $team->team_id)
+                ->Where('user_id', '!=', $userId)
+                ->distinct()
+                ->pluck('user_id')
+                ->toArray();
+            $data = [
+                'team' => $team,
+                'user' => $newTeamMember
+            ];
+            foreach ($user_ids as $user_id) {
+                broadcast(new TeamChange($user_id, "USER_ADDED_TO_TEAM", $data));
+            }
+
+            $team = Team::with(['boards'])->findOrFail($team_id);
+            $data = [
+                'team' => $team
+            ];
+            broadcast(new DashboardChange($userId, "THIS_USER_ADDED_TO_TEAM", $data));
+
+            NotificationController::createNotification(NotificationType::TEAM, "You are added to the following team: ".$team->name, $userId);
+
             $addedMembers[] = $newTeamMember;
         }
     
@@ -109,6 +150,34 @@ class TeamManagementController extends Controller
     
         if ($teamMember) {
             $teamMember->delete();
+
+            $team = Team::find($teamId);
+
+            $data = [
+                'team' => $team
+            ];
+            broadcast(new TeamChange($userId, "THIS_USER_DELETED_FROM_TEAM", $data));
+
+            $user_ids = TeamMember::where('team_id', $team->team_id)
+                ->Where('user_id', '!=', $userId)
+                ->distinct()
+                ->pluck('user_id')
+                ->toArray();
+            $data = [
+                'team' => $team,
+                'user' => $teamMember
+            ];
+            foreach ($user_ids as $user_id) {
+                broadcast(new TeamChange($user_id, "USER_DELETED_FROM_TEAM", $data));
+            }
+
+            $data = [
+                'team' => $team
+            ];
+            broadcast(new DashboardChange($teamMember->user_id, "THIS_USER_DELETED_FROM_TEAM", $data));
+  
+            NotificationController::createNotification(NotificationType::TEAM, "You are removed from the following team: ".$team->name, $userId);
+
             return response()->json(['message' => 'Team member removed from the team successfully.']);
         } else {
             return response()->json(['error' => 'Team member not found in the team.'], 404);

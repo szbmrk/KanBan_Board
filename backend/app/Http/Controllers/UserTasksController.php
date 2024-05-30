@@ -18,6 +18,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\BoardChange;
+use App\Events\AssignedTaskChange;
 use Illuminate\Support\Facades\Event;
 
 class UserTasksController extends Controller
@@ -47,7 +48,7 @@ class UserTasksController extends Controller
         }
 
         // Get the task
-        $task = Task::find($task_id);
+        $task = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task_id);
 
         // Check if the task exists
         if (!$task) {
@@ -72,6 +73,13 @@ class UserTasksController extends Controller
             'member' => $member
         ];
         broadcast(new BoardChange($task->board_id, "CREATED_USER_TASK", $data));
+
+        $data = [
+            'task' => $task
+        ];
+        broadcast(new AssignedTaskChange($new_user_id, "ASSIGNED_TO_TASK", $data));
+
+        NotificationController::createNotification(NotificationType::BOARD, "You are assigned to the following task: ".$task->title, $new_user_id);
 
         return response()->json(['message' => 'Task assigned successfully', 'member' => $member]);
     }
@@ -104,6 +112,13 @@ class UserTasksController extends Controller
             'member' => $member
         ];
         broadcast(new BoardChange($task->board_id, "DELETED_USER_TASK", $data));
+
+        $data = [
+            'task' => $task
+        ];
+        broadcast(new AssignedTaskChange($user_id, "UNASSIGNED_FROM_TASK", $data));
+
+        NotificationController::createNotification(NotificationType::BOARD, "You are unassigned from the following task: ".$task->title, $user_id);
 
         return response()->json(['message' => 'Task unassigned successfully']);
     }

@@ -467,7 +467,7 @@
 }
 
 .delete-comment-button {
-    background-color: #ff6347; 
+    background-color: #ff6347;
     color: white;
     border: none;
     border-radius: 5px;
@@ -477,9 +477,9 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
-  
+
 .delete-comment-button:hover {
-    background-color: #dc143c; 
+    background-color: #dc143c;
 }
 
 .attachment-container {
@@ -695,4 +695,58 @@
 .tag-editor-save-button:hover {
     background-color: var(--confirm);
     color: var(--light-gray);
+}
+
+.isDone-checkbox {
+    margin: 10px;
+
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--dark-gray);
+    border-radius: 5px;
+    background-color: var(--light-gray);
+    position: relative;
+    transition: background-color 0.3s, border-color 0.3s;
+    cursor: pointer;
+}
+
+.isDone-checkbox:checked {
+    background-color: var(--button);
+    /* Change to the --starred color */
+    border-color: var(--button);
+    /* Change to the --starred color */
+}
+
+.isDone-checkbox:disabled {
+    background-color: var(--bg-mostly-black);
+    cursor: not-allowed;
+    border-color: var(--dark-gray);
+}
+
+.isDone-checkbox:disabled:checked {
+    opacity: 0.5;
+}
+
+/* Custom checkmark design */
+.isDone-checkbox::after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 5px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid var(--off-white);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.isDone-checkbox:checked::after {
+    display: block;
+}
+
+/* Hover effect */
+.isDone-checkbox:hover {
+    border-color: var(--light-gray);
 }

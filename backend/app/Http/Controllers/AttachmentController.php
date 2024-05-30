@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Attachment;
 use App\Models\Task;
+use App\Models\UserTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -16,6 +17,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\BoardChange;
+use App\Events\AssignedTaskChange;
 use Illuminate\Support\Facades\Event;
 
 class AttachmentController extends Controller
@@ -77,6 +79,12 @@ class AttachmentController extends Controller
         ];
         broadcast(new BoardChange($board->board_id, "CREATED_ATTACHMENT", $data));
 
+        $user_ids = UserTask::where('task_id', $task_id)->pluck('user_id')->toArray();
+
+        foreach ($user_ids as $user_id) {
+            broadcast(new AssignedTaskChange($user_id, "CREATED_ATTACHMENT", $data));
+        }
+
         return response()->json(['message' => 'Attachment created successfully', 'attachment' => $attachment]);
     }
 
@@ -125,6 +133,8 @@ class AttachmentController extends Controller
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
 
+        $user_ids = UserTask::where('task_id', $task->task_id)->pluck('user_id')->toArray();
+
         $attachment->delete();
 
         $data = [
@@ -132,6 +142,10 @@ class AttachmentController extends Controller
             'attachment' => $attachment
         ];
         broadcast(new BoardChange($board->board_id, "DELETED_ATTACHMENT", $data));
+
+        foreach ($user_ids as $user_id) {
+            broadcast(new AssignedTaskChange($user_id, "DELETED_ATTACHMENT", $data));
+        }
 
         return response()->json(['message' => 'Attachment deleted successfully']);
     }
@@ -173,6 +187,18 @@ class AttachmentController extends Controller
 
             $attachment->save();
             $attachments[] = $attachment;
+        }
+
+        $data = [
+            'task' => $task,
+            'attachments' => $attachments
+        ];
+        broadcast(new BoardChange($board->board_id, "CREATED_MULTIPLE_ATTACHMENT", $data));
+
+        $user_ids = UserTask::where('task_id', $task_id)->pluck('user_id')->toArray();
+
+        foreach ($user_ids as $user_id) {
+            broadcast(new AssignedTaskChange($user_id, "CREATED_MULTIPLE_ATTACHMENT", $data));
         }
 
         return response()->json(['message' => 'Attachments created successfully']);

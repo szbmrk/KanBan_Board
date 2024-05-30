@@ -204,4 +204,20 @@
     transition: background-color 0.3s ease;
 }
 
+.cancel-role-button {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 400;
+    background-color: var(--cancel);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.cancel-role-button:hover {
+    background-color: var(--cancel-hover);
+}
+
 /* Add your additional styles here */

@@ -10,20 +10,20 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class BoardChange implements ShouldBroadcast
+class NotificationChange implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
-    public $boardId;
+    
+    public $userId;
     public $changeType;
     public $data;
 
     /**
      * Create a new event instance.
      */
-    public function __construct($boardId, $changeType, $data)
+    public function __construct($userId, $changeType, $data)
     {
-        $this->boardId = $boardId;
+        $this->userId = $userId;
         $this->changeType = $changeType;
         $this->data = $data;
     }
@@ -35,7 +35,7 @@ class BoardChange implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return ['BoardChange'];
+        return ['NotificationChange'];
     }
 
     /**
@@ -45,6 +45,6 @@ class BoardChange implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'board.'.$this->boardId;
+        return 'user.'.$this->userId;
     }
 }

@@ -9,6 +9,7 @@ use App\Models\Board;
 use App\Models\Column;
 use App\Models\Comment;
 use App\Models\Mention;
+use App\Models\Tag;
 use App\Models\TaskTag;
 use App\Models\Feedback;
 use App\Models\UserTask;
@@ -29,6 +30,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\BoardChange;
+use App\Events\AssignedTaskChange;
 use Illuminate\Support\Facades\Event;
 
 class TaskController extends Controller
@@ -40,6 +42,101 @@ class TaskController extends Controller
     $teamModel = new Team();
     $teamId = $teamModel->findTeamIdByBoardId($board_id);
 
+        if (!$board) {
+            LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+
+        if (!$user->isMemberOfBoard($board_id)) {
+            LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of this board. -> board_id: $board_id", null, null, null);
+            return response()->json(['error' => 'You are not a member of this board'], 403);
+        }
+
+        $permissions = $user->getPermissions();
+
+        if (!in_array('system_admin', $permissions)) {
+            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of the team that owns this board. -> board_id: $board_id", $teamId, $board_id, null);
+                return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
+            }
+
+            $rolesOnBoard = $user->getRoles($board_id);
+
+            $hasTaskManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
+                return in_array('task_management', $role->permissions->pluck('name')->toArray());
+            });
+
+            if (!$hasTaskManagementPermission) {
+                LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission for task management.", $teamId, $board_id, null);
+                return response()->json(['error' => 'You don\'t have permission to manage tasks on this board.'], 403);
+            }
+        }
+
+        $column_id = $request->input('column_id');
+        if ($column_id == null) {
+            return response()->json(['error' => 'Column id is required'], 403);
+        }
+
+        $column = Column::where('board_id', $board_id)
+            ->where('column_id', $column_id)
+            ->first();
+
+        if (!$column) {
+            return response()->json(['error' => 'Column not found for the given board'], 404);
+        }
+
+        if (isset($column->task_limit) && $column->tasks()->count() >= $column->task_limit) {
+            return response()->json(['error' => 'Task limit for the column has been reached'], 403);
+        }
+
+        $this->validate($request, [
+            'title' => 'required|string|max:100',
+            'description' => 'nullable|string',
+            'due_date' => 'nullable|date',
+            'column_id' => [
+                'required',
+                'integer',
+                Rule::exists('columns', 'column_id')->where(function ($query) use ($board_id) {
+                    $query->where('board_id', $board_id);
+                }),
+            ],
+            'priority_id' => 'nullable|integer|exists:priorities,priority_id',
+            'completed' => 'boolean',
+        ]);
+
+        $lastTask = Task::where('column_id', $request->input('column_id'))
+            ->orderBy('position', 'desc')
+            ->first();
+
+        if ($lastTask == null) {
+            $position = 1.00;
+        } else {
+            $position = $lastTask['position'] + 1.00;
+        }
+
+        $task = new Task([
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'due_date' => $request->input('due_date'),
+            'column_id' => $request->input('column_id'),
+            'board_id' => $board_id,
+            'project_id' => $board->project_id,
+            'priority_id' => $request->input('priority_id'),
+            'position' => $position,
+        ]);
+
+        $task->save();
+
+        $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task->task_id);
+
+        LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Task created successfully!", $teamId, $board_id, $task->task_id);
+
+        $data = [
+            'task' => $taskWithSubtasksAndTags
+        ];
+        broadcast(new BoardChange($board_id, "CREATED_TASK", $data));
+
+        return response()->json(['message' => 'Task created successfully', 'task' => $taskWithSubtasksAndTags]);
     if (!$board) {
         LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
         return response()->json(['error' => 'Board not found'], 404);
@@ -224,6 +321,12 @@ class TaskController extends Controller
         ];
         broadcast(new BoardChange($board_id, "UPDATED_TASK", $data));
 
+        $user_ids = UserTask::where('task_id', $task_id)->pluck('user_id')->toArray();
+
+        foreach ($user_ids as $user_id) {
+            broadcast(new AssignedTaskChange($user_id, "UPDATED_ASSIGNED_TASK_OR_SUBTASK", $data));
+        }
+
         return response()->json(['message' => 'Task updated successfully', 'task' => $taskWithSubtasksAndTags]);
     }
 
@@ -285,12 +388,22 @@ class TaskController extends Controller
 
         Feedback::where('task_id', $task_id)->delete();
 
+        $user_ids = UserTask::where('task_id', $task_id)->pluck('user_id')->toArray();
+
+        UserTask::Where('task_id', $task_id)->delete();
+
         $task->delete();
 
         $data = [
             'task' => $task
         ];
         broadcast(new BoardChange($board_id, "DELETED_TASK", $data));
+
+        foreach ($user_ids as $user_id) {
+            NotificationController::createNotification(NotificationType::BOARD, "A task you have been assigned got deleted: ".$task->title, $user_id);
+
+            broadcast(new AssignedTaskChange($user_id, "UNASSIGNED_FROM_TASK", $data));
+        }
 
         return response()->json(['message' => 'Task deleted successfully']);
     }
@@ -339,9 +452,9 @@ class TaskController extends Controller
             return response()->json(['error' => 'Duplicate positions are not allowed'], 403);
         }
 
-        
+
         foreach ($tasks as &$task) {
-            $taskToUpdate = Task::find($task['task_id']);
+            $taskToUpdate = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task['task_id']);
             if ($taskToUpdate) {
                 $task['old_column_id'] = $taskToUpdate->column_id;
                 $task['task'] = $taskToUpdate;
@@ -353,6 +466,9 @@ class TaskController extends Controller
                             return response()->json(['error' => 'Task limit for the new column has been reached'], 403);
                         }
                         $taskToUpdate->column_id = $task['column_id'];
+                        if (isset($taskToUpdate->subtasks)) {
+                            Self::updateColumnIdForSubtasks($taskToUpdate->subtasks, $task['column_id']);
+                        }
                     } else {
                         return response()->json(['error' => 'Column not found or you are not a member of this board'], 404);
                     }
@@ -363,12 +479,22 @@ class TaskController extends Controller
             }
         }
 
-       $data = [
+        $data = [
             'tasks' => $tasks
         ];
         broadcast(new BoardChange($board->board_id, "POSITION_UPDATED_TASK", $data));
 
         return response()->json(['message' => 'Tasks position updated successfully.']);
+    }
+
+    public function updateColumnIdForSubtasks($tasks, $new_column_id){
+        foreach ($tasks as &$task) {
+            $task->column_id = $new_column_id;
+            $task->save();
+            if (isset($task->subtasks)) {
+                Self::updateColumnIdForSubtasks($task->subtasks, $new_column_id);
+            }
+        }
     }
 
     public function showSubtasks(Request $request, $board_id, $task_id)
@@ -464,6 +590,12 @@ class TaskController extends Controller
         ];
         broadcast(new BoardChange($board->board_id, "CREATED_SUBTASK", $data));
 
+        $user_ids = UserTask::where('task_id', $parent_task_id)->pluck('user_id')->toArray();
+
+        foreach ($user_ids as $user_id) {
+            broadcast(new AssignedTaskChange($user_id, "CREATED_SUBTASK_FOR_ASSIGNED_TASK", $data));
+        }
+
         return response()->json(['message' => 'Subtask created successfully', 'task' => $subTaskWithSubtasksAndTagsAndComments]);
     }
 
@@ -496,9 +628,23 @@ class TaskController extends Controller
         $subTaskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($subtask_id);
 
         $data = [
-            'subtask' => $subTaskWithSubtasksAndTags
+            'task' => $subTaskWithSubtasksAndTags
         ];
-        broadcast(new BoardChange($board->board_id, "UPDATED_SUBTASK", $data));
+        broadcast(new BoardChange($board->board_id, "UPDATED_TASK", $data));
+
+        $user_ids;
+        if($subTask->parent_task_id !== null) {
+            $user_ids = UserTask::where('task_id', $subtask_id)->orWhere('task_id', $subTask->parent_task_id)->pluck('user_id')->toArray();
+        } else {
+            $user_ids = UserTask::where('task_id', $subtask_id)->pluck('user_id')->toArray();
+        }
+
+        $data = [
+            'task' => $subTaskWithSubtasksAndTags
+        ];
+        foreach ($user_ids as $user_id) {
+            broadcast(new AssignedTaskChange($user_id, "UPDATED_ASSIGNED_TASK_OR_SUBTASK", $data));
+        }
 
         return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTaskWithSubtasksAndTags]);
     }
@@ -522,12 +668,18 @@ class TaskController extends Controller
             return response()->json(['error' => 'Subtask not found or does not belong to this board'], 404);
         }
 
+        $user_ids = UserTask::where('task_id', $subTask->parent_task_id)->pluck('user_id')->toArray();
+
         $subTask->delete();
 
         $data = [
             'subtask' => $subTask
         ];
         broadcast(new BoardChange($board->board_id, "DELETED_SUBTASK", $data));
+
+        foreach ($user_ids as $user_id) {
+            broadcast(new AssignedTaskChange($user_id, "DELETED_SUBTASK_FOR_ASSIGNED_TASK", $data));
+        }
 
         return response()->json(['message' => 'Subtask deleted successfully']);
     }
@@ -561,7 +713,7 @@ class TaskController extends Controller
             ->toArray();
 
         $invalidPriorityIds = array_filter($tasksData, function ($taskData) {
-            return !isset($taskData['priority_id']) || !in_array($taskData['priority_id'], [1, 2, 3, 4]);
+            return !isset ($taskData['priority_id']) || !in_array($taskData['priority_id'], [1, 2, 3, 4]);
         });
 
         if (!empty($invalidPriorityIds)) {
@@ -861,26 +1013,43 @@ class TaskController extends Controller
 
         DB::beginTransaction();
 
+        $highestPosition = Task::where('column_id', $columnId)->max('position');
+
         try {
-            foreach ($tasksData as $taskData) {
+            foreach ($tasksData as $index => &$taskData) {
                 $validator = Validator::make($tasksData, [
                     '*.title' => 'string|max:100',
-                    '*.tasks.*.title' => 'string|max:100',
+                    '*.subtasks.*.title' => 'string|max:100',
                     '*.description' => 'nullable|string|max:1000',
-                    '*.tasks.*.description' => 'nullable|string|max:1000',
-                    '*.priority_id' => 'in:1,2,3,4',
-                    '*.tasks.*.priority_id' => 'in:1,2,3,4',
+                    '*.subtasks.*.description' => 'nullable|string|max:1000',
+                    '*.priority_id' => 'nullable|in:1,2,3,4',
+                    '*.subtasks.*.priority_id' => 'nullable|in:1,2,3,4',
                     '*.due_date' => 'nullable|date|after:today',
-                    '*.tasks.*.due_date' => 'nullable|date|after:today',
+                    '*.subtasks.*.due_date' => 'nullable|date|after:today',
                 ]);
 
                 if ($validator->fails()) {
                     return response()->json(['errors' => $validator->errors()], 400);
                 }
+
+                if (!isset($taskData["position"])) {
+                    if ($highestPosition !== null) {
+                        $taskData["position"] = (int)($highestPosition + $index + 1);
+                    } else {
+                        $taskData["position"] = (int)($index + 1);
+                    }
+                }
+
                 $this->processTaskData($taskData, $boardId, $columnId);
             }
 
             DB::commit();
+
+            $data = [
+                'column_id' => (int)$columnId,
+                'tasks' => $tasksData
+            ];
+            broadcast(new BoardChange($boardId, "CREATED_MULTIPLE_TASKS", $data));
 
         } catch (\Exception $e) {
             DB::rollback();
@@ -891,9 +1060,11 @@ class TaskController extends Controller
         return response()->json(['message' => 'Tasks updated successfully'], 200);
     }
 
-    private function processTaskData($taskData, $boardId, $columnId, $parentTask = null)
+    private function processTaskData(&$taskData, $boardId, $columnId, $parentTask = null)
     {
         $mainTask = null; // Inicializáljuk a változót null-ra
+        $taskData['column_id'] = (int)$columnId;
+        $taskData['board_id'] = (int)$boardId;
         if (isset($taskData['title'])) {
             if (isset($taskData['task_id'])) {
                 $existingTask = Task::find($taskData['task_id']);
@@ -903,14 +1074,23 @@ class TaskController extends Controller
                 }
             } else {
                 $mainTask = $this->createTask($taskData, $boardId, $columnId);
+                $taskData['task_id'] = $mainTask->task_id;
+                $taskData['project_id'] = $mainTask->project_id;
+                $taskData['priority_id'] = $mainTask->priority_id;
+                $taskData['completed'] = $mainTask->completed;
+                $taskData['created_at'] = $mainTask->created_at;
+                $taskData['updated_at'] = $mainTask->updated_at;
                 if ($parentTask !== null) {
                     $mainTask->parentTask()->associate($parentTask);
+                    $taskData['parent_task_id'] = $parentTask['task_id'];
                     $mainTask->save();
                 }
+
+                $this->processTaskDataTags($taskData, $boardId);
             }
 
-            if (isset($taskData['tasks']) && is_array($taskData['tasks'])) {
-                foreach ($taskData['tasks'] as $subtaskData) {
+            if (isset($taskData['subtasks']) && is_array($taskData['subtasks'])) {
+                foreach ($taskData['subtasks'] as &$subtaskData) {
                     $this->processTaskData($subtaskData, $boardId, $columnId, $mainTask);
                 }
             }
@@ -923,6 +1103,40 @@ class TaskController extends Controller
         $task->update($data);
     }
 
+    private function processTaskDataTags(&$taskData, $boardId) {
+        if (isset($taskData['tags']) && is_array($taskData['tags'])) {
+            $newTagsArray = [];
+            foreach ($taskData['tags'] as &$tagsData) {
+               $tagExists = Tag::Where('board_id', '=', $boardId)->Where('name', '=', $tagsData)->first();
+               if($tagExists) {
+                    $newTaskTag = new TaskTag();
+                    $newTaskTag->board_id = $boardId;
+                    $newTaskTag->task_id = $taskData['task_id'];
+                    $newTaskTag->tag_id = $tagExists->tag_id;
+                    $newTaskTag->save();
+
+                    array_push($newTagsArray, $tagExists);
+               } else {
+                    $tag = new Tag([
+                        'name' => $tagsData,
+                        'color' => '#BB0000',
+                        'board_id' => $boardId
+                    ]);
+
+                    $tag->save();
+
+                    $newTaskTag = new TaskTag();
+                    $newTaskTag->board_id = $boardId;
+                    $newTaskTag->task_id = $taskData['task_id'];
+                    $newTaskTag->tag_id = $tag->tag_id;
+                    $newTaskTag->save();
+
+                    array_push($newTagsArray, $tag);
+               }
+            }
+            $taskData['tags'] = $newTagsArray;
+        }
+    }
 
     public function boardTaskCompletionRate(Request $request, $board_id)
     {

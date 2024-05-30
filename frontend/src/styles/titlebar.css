@@ -1,5 +1,6 @@
 .title-bar {
-    position: sticky;
+    position: relative;
+    /* Stick to top on scroll */
     top: 0;
     left: 0;
     width: 100%;
@@ -11,6 +12,7 @@
     gap: 40px;
     background-color: var(--title-bar);
     border-bottom: 1px solid var(--title-bar);
+    z-index: 1;
 }
 
 .title-name {

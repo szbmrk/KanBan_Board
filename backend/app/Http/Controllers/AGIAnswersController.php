@@ -8,6 +8,17 @@ use App\Models\AGIAnswers;
 use App\Models\Task;
 use App\Models\Column;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\Events\BoardChange;
+use Illuminate\Support\Facades\Event;
 
 
 class AGIAnswersController extends Controller
@@ -397,6 +408,12 @@ class AGIAnswersController extends Controller
             return response()->json(['error' => 'Cannot delete this answer.'], 400);
         }
         $answer->delete();
+
+        $data = [
+            'codeReviewOrDocumentation' => $answer
+        ];
+        broadcast(new BoardChange($boardId, "DELETED_CODE_REVIEW_OR_DOCUMENTATION", $data));
+
         return response()->json(['message' => 'Answer deleted successfully'], 200);   
     }
 

@@ -13,6 +13,17 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\ChatGPTController;
 use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\PromptCraftController;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\Events\BoardChange;
+use Illuminate\Support\Facades\Event;
 
 class PromptCraftController extends Controller
 {
@@ -83,6 +94,11 @@ class PromptCraftController extends Controller
         $craftedPrompt->response_counter = $request->input('response_counter');
         $craftedPrompt->created_by = $user->user_id;
         $craftedPrompt->save();
+
+        $data = [
+            'craftedPrompt' => $craftedPrompt
+        ];
+        broadcast(new BoardChange($boardId, "CREATED_PROMPT", $data));
 
         return response()->json(['message' => 'Crafted prompt created successfully.'], 201);
     }
@@ -168,8 +184,8 @@ class PromptCraftController extends Controller
 
         
         $prompt->agi_behavior_id = PromptCraftController::CheckAndGenerateAlreadyExistingBehavior($request,
-                                                                            $request->input('agi_behavior'),
-                                                                            $boardId);
+            $request->input('agi_behavior'),
+            $boardId);
         
         
         $prompt->save();

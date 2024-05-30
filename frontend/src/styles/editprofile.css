@@ -134,3 +134,64 @@
     border: 1px solid var(--confirm);
     background-color: var(--confirm);
 }
+
+.ChangeBG {
+    width: 100%;
+    max-width: 600px; 
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+    background-color: var(--dark-gray); 
+    border-radius: 8px;
+    box-shadow: 0 0 10px var(--mostly-black);
+    color: var(--light-gray); 
+}
+
+.ChangeBG h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.ButtonContainer {
+    display: flex;
+    align-items: center;
+}
+
+.prev-button, .next-button {
+    background-color: transparent;
+    border: none;
+    color: var(--light-gray);
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.prev-button:hover, .next-button:hover {
+    color: var(--light-blue);
+}
+
+.Button-scroller {
+    display: flex;
+    flex-grow: 1;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    margin: 0 10px; 
+}
+
+.Button-scroller::-webkit-scrollbar {
+    display: none;
+}
+
+.Button-scroller img {
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 0;
+    margin: 0 5px; 
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
+    display: block inline;
+    flex-shrink: 0; 
+}

@@ -90,6 +90,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Notification::class, 'user_id');
     }
 
+    public function userTasks()
+    {
+        return $this->hasMany(UserTask::class, 'user_id'); 
+    }
+
     public function favouriteTasks()
     {
         return $this->hasMany(FavouriteTask::class, 'user_id'); 
