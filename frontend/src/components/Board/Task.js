@@ -10,6 +10,7 @@ import {
     faEllipsis,
     faClipboard,
     faLink,
+    faListCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as faRegularStar } from "@fortawesome/free-regular-svg-icons";
 import Tag from "../Tag";
@@ -29,6 +30,7 @@ export const solidStarIcon = <FontAwesomeIcon icon={faSolidStar} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
 export const attachmentLinkIcon = <FontAwesomeIcon icon={faLink} />;
 export const clipboardIcon = <FontAwesomeIcon icon={faClipboard} />;
+const subtaskIcon = <FontAwesomeIcon icon={faListCheck} />;
 
 export const Task = forwardRef(
     (
@@ -295,6 +297,16 @@ export const Task = forwardRef(
             );
         };
 
+        const CountSubtasksDone = () => {
+            let count = 0;
+            task.subtasks.forEach((subtask) => {
+                if (subtask.completed) {
+                    count++;
+                }
+            });
+            return count;
+        };
+
         return (
             <>
                 <div
@@ -339,6 +351,17 @@ export const Task = forwardRef(
                                 />
                             ))}
                     </div>
+                    {task && task.subtasks.length > 0 && (
+                        <div className="subtasks-oncard">
+                            <span className="icon">{subtaskIcon}</span>
+                            <p>
+                                {"(" +
+                                    CountSubtasksDone() +
+                                    "/" +
+                                    task.subtasks.length +
+                                    ")"}
+                            </p>
+                        </div>)}
                 </div>
             </>
         );

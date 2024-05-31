@@ -219,3 +219,11 @@
     align-items: flex-start;
     gap: 10px;
 }
+
+.subtasks-oncard {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
