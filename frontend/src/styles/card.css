@@ -227,3 +227,18 @@
     justify-content: flex-end;
     align-items: flex-end;
 }
+
+.members-oncard {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+
+.members-oncard img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--dark-gray);
+}

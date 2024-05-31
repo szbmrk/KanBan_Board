@@ -73,6 +73,10 @@ export const Task = forwardRef(
         const [cardZIndex, setCardZIndex] = useState(zIndex);
         const [cardIndex, setCardIndex] = useState(null);
 
+        const [profileImageUrl, setProfileImageUrl] = useState(
+            "https://www.pngitem.com/pimgs/m/30-307416_profile-icon-png-image-free-download-searchpng-employee.png"
+        );
+
         const [{ isDragging: dragging }, drag] = useDrag({
             type: ItemTypes.CARD,
             item: { id, index, divName },
@@ -362,6 +366,19 @@ export const Task = forwardRef(
                                     ")"}
                             </p>
                         </div>)}
+                    {task && task.members.length > 0 && (
+                        <div className="members-oncard">
+                            {task.members.map((member, index) => (
+                                <img
+                                    key={index}
+                                    //todo change to actual profile picture
+                                    src={profileImageUrl}
+                                    alt={member.username}
+                                    title={member.username}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </>
         );
