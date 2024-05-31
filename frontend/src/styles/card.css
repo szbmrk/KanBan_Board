@@ -234,6 +234,7 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: flex-end;
+    gap: 5px;
 }
 
 .members-oncard img {
