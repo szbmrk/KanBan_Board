@@ -943,6 +943,7 @@ const Board = () => {
     };
 
     const handleColumnNameConfirm = async (data) => {
+    setShowColumnNamePopup(false);
         try {
             const formData = new FormData();
             formData.append("name", data.columnName);
@@ -953,8 +954,6 @@ const Board = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-
-            setShowColumnNamePopup(false);
         } catch (e) {
             console.error(e);
             if (e?.response?.status === 401 || e?.response?.status === 500) {
@@ -1165,6 +1164,7 @@ const Board = () => {
     };
 
     const handleTaskNameConfirm = async (name) => {
+    handleTaskNameCancel();
         try {
             const newTask = {
                 column_id: board.columns[currentDivIndex].column_id,
@@ -1178,8 +1178,6 @@ const Board = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-
-            handleTaskNameCancel();
         } catch (e) {
             if (e?.response?.status === 401 || e?.response?.status === 500) {
                 setError({

@@ -256,14 +256,13 @@ export default function Dashboard() {
 
   // Function to delete a board from a team
   const deleteBoardFromTeam = async () => {
+    handleBoardDeleteCancel();
     try {
       await axios.delete(`/dashboard/board/${selectedBoardId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      handleBoardDeleteCancel();
     } catch (e) {
       console.error(e);
       if (e?.response?.status === 401 || e?.response?.status === 500) {
