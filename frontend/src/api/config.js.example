@@ -1,4 +1,4 @@
-export const REACT_APP_PUSHER_APP_ID = "";
 export const REACT_APP_PUSHER_KEY = "";
-export const REACT_APP_PUSHER_SECRET = "";
 export const REACT_APP_PUSHER_CLUSTER = "";
+export const REACT_APP_PUSHER_HOST = "";
+export const REACT_APP_PUSHER_PORT = 6001;
