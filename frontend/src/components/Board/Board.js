@@ -1163,6 +1163,9 @@ const Board = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
+
+            console.log("NEW TASK");
+            console.log(res.data);
         } catch (e) {
             if (e?.response?.status === 401 || e?.response?.status === 500) {
                 setError({

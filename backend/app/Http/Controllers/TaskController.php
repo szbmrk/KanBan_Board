@@ -134,6 +134,7 @@ class TaskController extends Controller
         $data = [
             'task' => $taskWithSubtasksAndTags
         ];
+
         broadcast(new BoardChange($board_id, "CREATED_TASK", $data));
 
         return response()->json(['message' => 'Task created successfully', 'task' => $taskWithSubtasksAndTags]);
