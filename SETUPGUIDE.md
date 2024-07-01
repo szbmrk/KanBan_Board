@@ -147,8 +147,9 @@ kill {PID}
 A csomagok telepítését végző parancsokhoz szükség lehet “sudo” előtag vagy SUPERUSER használatára. A többi parancsot a projekt könyvtárhoz hozzáférő bármelyik felhasználó futtathatja.
 
 # Websocket indítása
-## serveren dockerrel: 
-docker run -d --name soketi -p 6001:6001 -e APP_ID=my-app-id -e APP_KEY=my-app-key -e APP_SECRET=my-app-secret -e DEBUG=soketi* --restart always quay.io/soketi/soketi:latest
 
-## localhost:
-terminálba: soketi start --config soketi.yaml
+## server:
+docker run -d --name soketi -p 6001:6001 -e APP_ID=app-id -e APP_KEY=app-key -e APP_SECRET=app-secret -e DEBUG=soketi* --restart always quay.io/soketi/soketi:latest
+
+## local:
+soketi start --config="./soketi-config.json"
