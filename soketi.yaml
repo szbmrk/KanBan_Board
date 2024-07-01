@@ -1,6 +1,0 @@
-app:
-  id: app-id
-  key: app-key
-  secret: app-secret
-  host: 127.0.0.1
-  port: 6001
