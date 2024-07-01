@@ -538,7 +538,7 @@ class TaskController extends Controller
         ];
         broadcast(new BoardChange($board->board_id, "UPDATED_TASK", $data));
 
-        $user_ids;
+        $user_ids = null;
         if ($subTask->parent_task_id !== null) {
             $user_ids = UserTask::where('task_id', $subtask_id)->orWhere('task_id', $subTask->parent_task_id)->pluck('user_id')->toArray();
         } else {
