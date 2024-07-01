@@ -51,7 +51,7 @@ import {
   REACT_APP_PUSHER_KEY,
   REACT_APP_PUSHER_CLUSTER,
   REACT_APP_PUSHER_PORT,
-  REACT_APP_PUSHER_HOST
+  REACT_APP_PUSHER_HOST,
 } from "../../api/config.js";
 
 export const documentationIcon = <FontAwesomeIcon icon={faFileLines} />;
@@ -631,18 +631,21 @@ const Board = () => {
     const columnIndex = newTaskData.findIndex(
       (column) => column.column_id === data.task.column_id
     );
-    const taskIndex = newTaskData[columnIndex].tasks.findIndex(
-      (currentTask) => currentTask.task_id === data.task.task_id
-    );
-    if (!newTaskData[columnIndex].tasks[taskIndex].comments) {
-      newTaskData[columnIndex].tasks[taskIndex].comments = [];
+    if (columnIndex === -1) {
+      return;
     }
-
-    newTaskData[columnIndex].tasks[taskIndex].comments = newTaskData[
-      columnIndex
-    ].tasks[taskIndex].comments.filter(
-      (comment) => comment.comment_id !== data.comment.comment_id
+    const taskExists = findTaskById(
+      newTaskData[columnIndex].tasks,
+      data.task.task_id
     );
+    if (!taskExists) {
+      return;
+    }
+    if (taskExists.comments) {
+      taskExists.comments = taskExists.comments.filter(
+        (comment) => comment.comment_id !== data.comment.comment_id
+      );
+    }
 
     setBoard({ ...boardRef.current, columns: newTaskData });
   };
@@ -2801,27 +2804,31 @@ const Board = () => {
                               ref={editBoxRef} // Set the ref to the title edit input box
                               onClick={(e) => e.stopPropagation()}
                               onKeyDown={(e) => {
-                                if (e.key === "Enter") {
+                                if (
+                                  e.key === "Enter" &&
+                                  columnNewTitle?.length > 0
+                                ) {
                                   handleColumnTitleBlur(index);
                                 } else if (e.key === "Escape") {
                                   handleColumnTitleBlur(index, true); // Pass `true` to indicate that changes are cancelled
                                 }
                               }}
                             />
-                            <span
+                            <button
                               className="edit-action-button"
                               id="check-button"
+                              disabled={columnNewTitle?.length < 1}
                               onClick={() => handleColumnTitleBlur(index)}
                             >
                               {checkIcon}
-                            </span>
-                            <span
+                            </button>
+                            <button
                               className="edit-action-button"
                               id="cancel-button"
                               onClick={() => handleColumnTitleBlur(index, true)}
                             >
                               {xMarkIcon}
-                            </span>
+                            </button>
                           </div>
                         ) : (
                           <>
@@ -3484,12 +3491,14 @@ const Board = () => {
           {showTaskNamePopup && (
             <SimpleTextPopup
               title={"Task name:"}
+              minLength={1}
               onConfirm={handleTaskNameConfirm}
               onCancel={handleTaskNameCancel}
             />
           )}
           {showColumnNamePopup && (
             <AddColumnPopup
+              minLength={1}
               onConfirm={handleColumnNameConfirm}
               onCancel={handleColumnNameCancel}
             />
