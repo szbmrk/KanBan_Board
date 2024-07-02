@@ -17,6 +17,7 @@ const Tag = ({ name, color, extraClassName, enableClickBehavior, onClick }) => {
             setIsClicked(!isClicked);
         }
     };
+
     const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
     useEffect(() => {
         //ez

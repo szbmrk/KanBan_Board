@@ -81,6 +81,16 @@ export default function Subtask({
         changeIsDoneSubTask(e.target.checked);
     }
 
+    const [activeTags, setActiveTags] = useState([]);
+
+    const handleTagClick = (clickedTag) => {
+        if (activeTags.includes(clickedTag)) {
+            setActiveTags(activeTags.filter((tags) => tags !== clickedTag));
+        } else {
+            setActiveTags([...activeTags, clickedTag]);
+        }
+    };
+
     return (
         <>
             <div
@@ -94,6 +104,14 @@ export default function Subtask({
                 <div className='task-title'>{subTask.title}</div>
                 <div>
                     <input className='isDone-checkbox' type='checkbox' checked={subTask.completed} onChange={handleIsDoneChange}></input>
+                </div>
+                <div className='tags-container'>
+                    {subTask.tags &&
+                        subTask.tags.map((tag, tagIndex) => (
+                            <Tag key={tagIndex} name={tag.name} color={tag.color} enableClickBehavior={true}
+                                extraClassName={`tag-on-subtask ${activeTags.includes(subTask.tags) ? "clicked" : ""
+                                    }`} onClick={() => handleTagClick(subTask.tags)} />
+                        ))}
                 </div>
                 <div
                     className='subtask-options'
@@ -109,12 +127,6 @@ export default function Subtask({
                     >
                         {dotsIcon}
                     </span>
-                </div>
-                <div className='tags-container'>
-                    {subTask.tags &&
-                        subTask.tags.map((tag, tagIndex) => (
-                            <Tag key={tagIndex} name={tag.name} color={tag.color} extraClassName='tag-on-board' />
-                        ))}
                 </div>
             </div>
             {showIconContainer && (

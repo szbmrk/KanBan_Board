@@ -3,13 +3,23 @@
     color: white;
     transition: 0.4s ease-in-out;
     overflow: hidden;
-    white-space: nowrap; /* Nem engedi, hogy a tag több sorba kerüljön */
+    white-space: nowrap;
+    /* Nem engedi, hogy a tag több sorba kerüljön */
 }
 
 .tag-on-board {
     height: 12px;
     cursor: pointer;
     min-width: 50px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.tag-on-subtask {
+    height: 12px;
+    cursor: pointer;
+    min-width: 50px;
+    margin: 10px;
     overflow: hidden;
     white-space: nowrap;
 }
