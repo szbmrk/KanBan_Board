@@ -148,9 +148,6 @@ docker run -d --name soketi -p 6001:6001 -e APP_ID=app-id -e APP_KEY=app-key -e 
 ## local:
 soketi start --config="./soketi-config.json"
 
-# megjegyzés:
-ha nem működik a websocket akkor composer update és npm install
-esetleg npm uninstall laravel-echo és npm install laravel-echo
 backend .env fájlba:
 BROADCAST_DRIVER=pusher
 PUSHER_APP_ID=app-id
@@ -160,3 +157,7 @@ PUSHER_HOST=127.0.0.1
 PUSHER_PORT=6001
 PUSHER_SCHEME=http
 PUSHER_APP_CLUSTER=eu
+
+# megjegyzés:
+ha nem működik a websocket akkor composer update és npm install
+esetleg npm uninstall laravel-echo és npm install laravel-echo
