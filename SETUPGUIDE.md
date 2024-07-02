@@ -24,12 +24,6 @@ cd frontend -> npm install (ez először kell csak /
 - php artisan key:generate
 - php artisan serve
 - php artisan migrate:db
-# Pusher 
-- pusher oldal regisztráció
-- Csinálni kell egy channelt a Pusheren belül úgy, hogy a frontend react, backend laravel
-- a channel által adott app key-eket a generált .env és config.js fájlba be kell írni
-- a .env fájlban a BROADCAST_DRIVER = log helyett pusher
-
 
 ## main:
 cd backend
@@ -157,3 +151,12 @@ soketi start --config="./soketi-config.json"
 # megjegyzés:
 ha nem működik a websocket akkor composer update és npm install
 esetleg npm uninstall laravel-echo és npm install laravel-echo
+backend .env fájlba:
+BROADCAST_DRIVER=pusher
+PUSHER_APP_ID=app-id
+PUSHER_APP_KEY=app-key
+PUSHER_APP_SECRET=app-secret
+PUSHER_HOST=127.0.0.1
+PUSHER_PORT=6001
+PUSHER_SCHEME=http
+PUSHER_APP_CLUSTER=eu
