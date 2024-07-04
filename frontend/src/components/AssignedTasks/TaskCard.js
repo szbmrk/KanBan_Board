@@ -37,7 +37,6 @@ const TaskCard = ({ task }) => {
         return () => {
             window.removeEventListener('ChangingTheme', ResetTheme)
         }
-        console.log(task);
     });
     return (
         <div className='task-card' data-theme={theme}>
@@ -129,26 +128,6 @@ const TaskCard = ({ task }) => {
                             ))}
                         </div>
                     </div>
-                </>
-            )}
-            {task.subtasks && task.subtasks.length > 0 && (
-                <>
-                    <div className='subtitle'>
-                        <span className='icon'>{subtaskIcon}</span>
-                        <h3>Subtasks:</h3>
-                    </div>
-                    {task.subtasks.map((subtask, index) =>
-                        subtask && subtask.title ? (
-                            <div classname='subtaskCard' style={{ border: '1px solid black' }}>
-                                <p key={index} className='subtask'>
-                                    {subtask.title}
-                                </p>
-                                {subtask.subtasks && subtask.subtasks.length > 0 && (
-                                    <p>subtask count: {subtask.subtasks.length}</p>
-                                )}
-                            </div>
-                        ) : null
-                    )}
                 </>
             )}
         </div>

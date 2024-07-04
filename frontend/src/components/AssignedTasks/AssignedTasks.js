@@ -319,12 +319,6 @@ const AssignedTasks = () => {
                 tempData[index] = task.task;
             });
 
-            tempData.map((task, index) => {
-                if (task.parent_task_id !== null) {
-                    tempData.splice(index, 1);
-                }
-            });
-
             console.log(tempData);
             setTasks(tempData);
         } catch (e) {
