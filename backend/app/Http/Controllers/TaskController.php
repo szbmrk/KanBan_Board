@@ -372,6 +372,7 @@ class TaskController extends Controller
                             return response()->json(['error' => 'Task limit for the new column has been reached'], 403);
                         }
                         $taskToUpdate->column_id = $task['column_id'];
+                        $taskToUpdate->completed = $newColumn->is_finished;
                         if (isset($taskToUpdate->subtasks)) {
                             self::updateColumnIdForSubtasks($taskToUpdate->subtasks, $task['column_id']);
                         }

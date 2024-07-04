@@ -314,10 +314,12 @@ const AssignedTasks = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            const tempData = response.data.assigned_tasks;
+            let tempData = response.data.assigned_tasks;
             tempData.map((task, index) => {
                 tempData[index] = task.task;
             });
+
+            tempData = tempData.filter((task) => task.completed === 0);
 
             console.log(tempData);
             setTasks(tempData);
