@@ -1,84 +1,133 @@
 .task-card {
-  background-color: var(--bg-dark);
-  border: 1px solid var(--dark-gray);
-  border-radius: 10px;
-  padding: 15px 20px;
-  min-width: 300px;
-  max-width: 400px;
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
-  color: var(--light-gray);
+    background-color: var(--bg-dark);
+    border: 1px solid var(--dark-gray);
+    border-radius: 10px;
+    padding: 15px 20px;
+    min-width: 300px;
+    max-width: 400px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    color: var(--light-gray);
 }
 
-.subtitle{
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 5px;
+.opentask {
+    background-color: var(--bg-dark);
+    border: 1px solid var(--dark-gray);
+    border-radius: 10px;
+    padding: 15px 20px;
+    min-width: 300px;
+    max-width: 400px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    color: var(--light-gray);
+    margin-bottom: -10px;
+}
+
+.subtitle {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
+}
+
+.task-card .subtitle {
+    margin-top: 20px;
 }
 
 .task-card div:nth-child(2) {
-  margin-top: 0;
+    margin-top: 0;
 }
 
+
 .task-card h2 {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .task-card h3 {
-  font-size: 1.1em;
-  align-self: flex-start;
-}
-
-.tags {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 5px;
+    font-size: 1.1em;
+    align-self: flex-start;
 }
 
 .description {
-  min-height: 80px;
-  margin: 0 20px 0 30px;
-  border: 1px solid var(--bg-dark);
-  border-radius: 5px;
-  overflow-x: none;
-  overflow-y: auto;
-  background-color: var(--bg-dark);
+    background-color: var(--bg-dark);
+    border: 1px solid var(--dark-gray);
+    border-radius: 10px;
+    padding: 15px 20px;
+    min-width: 300px;
+    max-width: 400px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 
 .description p {
-  margin: 5px;
-  float: left;
-  font-size: 12px;
+    margin: 5px;
+    float: left;
+    font-size: 12px;
+    text-align: justify;
+}
+
+.comments-container {
+    max-height: 250px;
 }
 
 .comment {
-  margin: 5px 0;
+    margin: 5px 0;
 }
 
 .user {
-  font-weight: bold;
-  color: #007bff;
-  margin-right: 5px;
+    font-weight: bold;
+    color: #007bff;
+    margin-right: 5px;
 }
+
 .scrollable-container {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 30px; /* Set a maximum height for scrollability */
-  padding: 15px; /* Add padding to make the content breathe */
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 30px;
+    padding: 15px;
 }
 
 .attachment-text {
-  display: block;
-  width: 80%; /* Az attachment szélességét itt állíthatod be */
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  margin-left: 40px;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
+.section {
+    background-color: var(--bg-dark);
+    border: 1px solid var(--dark-gray);
+    border-radius: 10px;
+    padding: 15px 20px;
+    min-width: 300px;
+    max-width: 400px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.attachments-onassignedtask {
+    background-color: var(--bg-dark);
+    border: 1px solid var(--dark-gray);
+    border-radius: 10px;
+    padding: 15px 20px;
+    min-width: 300px;
+    max-width: 400px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}

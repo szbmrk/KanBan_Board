@@ -40,8 +40,11 @@ const TaskCard = ({ task }) => {
     });
     return (
         <div className='task-card' data-theme={theme}>
+            <h2 className='card-title'>{task.title}</h2>
             <Link to={`/board/${task.board_id}/${task.column_id}/${task.task_id}`}>
-                <h2 className='card-title'>{task.title}</h2>
+                <h2 className='opentask'>
+                    Open Task
+                </h2>
             </Link>
             {task.tags && task.tags.length > 0 && (
                 <>
@@ -49,7 +52,7 @@ const TaskCard = ({ task }) => {
                         <span className='icon'>{tagsIcon}</span>
                         <h3>Tags:</h3>
                     </div>
-                    <div className='tags'>
+                    <div className='section'>
                         {task.tags.map((tag, index) =>
                             tag && tag.name && tag.color ? (
                                 <Tag
@@ -64,22 +67,32 @@ const TaskCard = ({ task }) => {
                     </div>
                 </>
             )}
-            <div className='subtitle'>
-                <span className='icon'>{fileIcon}</span>
-                <h3>Description:</h3>
-            </div>
-            <div className='description'>{task.description && <p>{task.description}</p>}</div>
-            <div className='subtitle'>
-                <span className='icon'>{stopwatchIcon}</span>
-                <h3>Due Date:</h3>
-            </div>
-            <div className='datetime'>{task.due_date && <p>{task.due_date}</p>}</div>
+            {task.description !== null &&
+                <>
+                    <div className='subtitle'>
+                        <span className='icon'>{fileIcon}</span>
+                        <h3>Description:</h3>
+                    </div>
+                    <div className='description'>{task.description && <p>{task.description}</p>}</div>
+                </>
+            }
+            {task.due_date !== null &&
+                <>
+                    <div className='subtitle'>
+                        <span className='icon'>{stopwatchIcon}</span>
+                        <h3>Due Date:</h3>
+                    </div>
+                    <div className='section'>{task.due_date && <p>{task.due_date}</p>}</div>
+                </>}
 
-            <div className='subtitle'>
-                <span className='icon'>{priorityIcon}</span>
-                <h3>Priority:</h3>
-            </div>
-            <div className='priority' style={{ cursor: "default" }}>{task.priority && <p>{task.priority.priority}</p>}</div>
+            {task.priority !== null &&
+                <>
+                    <div className='subtitle'>
+                        <span className='icon'>{priorityIcon}</span>
+                        <h3>Priority:</h3>
+                    </div>
+                    <div className='section'>{task.priority && <p>{task.priority.priority}</p>}</div>
+                </>}
 
             {task.attachments && task.attachments.length > 0 && (
                 <>
@@ -88,7 +101,7 @@ const TaskCard = ({ task }) => {
                         <h3>Attachments:</h3>
                     </div>
 
-                    <div className='attachments'>
+                    <div className='attachments-onassignedtask'>
                         {task.attachments.map((attachment, index) =>
                             attachment && attachment.link ? (
                                 <p key={index}>
@@ -101,6 +114,7 @@ const TaskCard = ({ task }) => {
                     </div>
                 </>
             )}
+
             {task.comments && task.comments.length > 0 && (
                 <>
                     <div className='subtitle'>
