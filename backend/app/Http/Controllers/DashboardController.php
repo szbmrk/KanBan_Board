@@ -106,7 +106,7 @@ class DashboardController extends Controller
                 broadcast(new DashboardChange($user_id, "CREATED_BOARD", $data));
             }
 
-            LogRequest::instance()->logAction('CREATED BOARD', $user->user_id, "Created a BOARD named: $board->name", $team_id, $board->board_id, null);
+            LogRequest::instance()->logAction('CREATED BOARD', $user->user_id, "Created a BOARD named: '$board->name'", $team_id, $board->board_id, null);
 
             return response()->json(['board' => $board], 201);
 
@@ -143,7 +143,7 @@ class DashboardController extends Controller
             if (in_array('system_admin', $permissions) || !empty($boardManagerRoles)) {
                 $board->name = $request->name;
                 $board->save();
-                LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "Changed the BOARD named $old_board_name to $board->name", $board->team_id, $board_id, null);
+                LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "Changed the BOARD named '$old_board_name' to '$board->name'", $board->team_id, $board_id, null);
 
                 $user_ids = TeamMember::whereIn('user_id', function ($query) use ($board_id) {
                     $query->select('user_id')
@@ -213,7 +213,7 @@ class DashboardController extends Controller
                     broadcast(new DashboardChange($user_id, "DELETED_BOARD", $data));
                 }
 
-                LogRequest::instance()->logAction('DELETED BOARD', $user->user_id, "Deleted a BOARD named: $board->name", $board->team_id, $board_id, null);
+                LogRequest::instance()->logAction('DELETED BOARD', $user->user_id, "Deleted a BOARD named: '$board->name'", $board->team_id, $board_id, null);
                 return response()->json(['message' => 'Board successfully deleted'], 200);
             }
         }

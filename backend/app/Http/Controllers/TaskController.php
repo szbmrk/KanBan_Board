@@ -129,7 +129,7 @@ class TaskController extends Controller
 
         $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task->task_id);
 
-        LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Created a TASK named: $task->title", $teamId, $board_id, $task->task_id);
+        LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Created a TASK named: '$task->title'", $teamId, $board_id, $task->task_id);
 
         $data = [
             'task' => $taskWithSubtasksAndTags
@@ -213,11 +213,11 @@ class TaskController extends Controller
         $task->save();
 
         if ($task->completed != $originalCompletedStatus && $task->completed == 1) {
-            LogRequest::instance()->logAction('FINISHED TASK', $user->user_id, "$user->username finished a TASK named: $task->title", $teamId, $board_id, $task->task_id);
+            LogRequest::instance()->logAction('FINISHED TASK', $user->user_id, "$user->username finished a TASK named: '$task->title'", $teamId, $board_id, $task->task_id);
         } elseif ($task->completed != $originalCompletedStatus && $task->completed == 0) {
-            LogRequest::instance()->logAction('REVERTED FINISHED TASK', $user->user_id, "$user->username changed a TASK named: $task->title to not completed", $teamId, $board_id, $task->task_id);
+            LogRequest::instance()->logAction('REVERTED FINISHED TASK', $user->user_id, "$user->username changed a TASK named: '$task->title' to not completed", $teamId, $board_id, $task->task_id);
         } else {
-            LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "$user->username updated a TASK named: $task->title", $teamId, $board_id, $task->task_id);
+            LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "$user->username updated a TASK named: '$task->title'", $teamId, $board_id, $task->task_id);
         }
 
         $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task_id);
@@ -311,7 +311,7 @@ class TaskController extends Controller
             broadcast(new AssignedTaskChange($user_id, "UNASSIGNED_FROM_TASK", $data));
         }
 
-        LogRequest::instance()->logAction('DELETED TASK', $user->user_id, "Deleted a TASK named: $task->title", $teamId, $board_id, null);
+        LogRequest::instance()->logAction('DELETED TASK', $user->user_id, "Deleted a TASK named: '$task->title'", $teamId, $board_id, null);
 
         return response()->json(['message' => 'Task deleted successfully']);
     }
@@ -386,13 +386,13 @@ class TaskController extends Controller
                 }
 
                 if ($taskToUpdate->completed == 1 && $oldColumnId != $taskToUpdate->column_id) {
-                    LogRequest::instance()->logAction('FINISHED TASK', $user->user_id, "Finished a TASK named: $taskToUpdate->title", $teamId, $board->board_id, $taskToUpdate->task_id);
+                    LogRequest::instance()->logAction('FINISHED TASK', $user->user_id, "Finished a TASK named: '$taskToUpdate->title'", $teamId, $board->board_id, $taskToUpdate->task_id);
                 } else if ($taskToUpdate->completed == 0 && $oldColumn->is_finished == 1) {
-                    LogRequest::instance()->logAction('REVERTED FINISHED TASK', $user->user_id, "Changed a TASK named: $taskToUpdate->title to not completed", $teamId, $board->board_id, $taskToUpdate->task_id);
+                    LogRequest::instance()->logAction('REVERTED FINISHED TASK', $user->user_id, "Changed a TASK named: '$taskToUpdate->title' to not completed", $teamId, $board->board_id, $taskToUpdate->task_id);
                 } else if ($oldColumnId != $taskToUpdate->column_id) {
-                    LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "Moved a TASK named: $taskToUpdate->title from COLUMN $oldColumn->name TO $newColumn->name", $teamId, $board->board_id, $taskToUpdate->task_id);
+                    LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "Moved a TASK named: '$taskToUpdate->title' from COLUMN '$oldColumn->name' TO '$newColumn->name'", $teamId, $board->board_id, $taskToUpdate->task_id);
                 } else if ($oldColumnId == $taskToUpdate->column_id) {
-                    LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "Moved a TASK named: $taskToUpdate->title in it's own column", $teamId, $board->board_id, $taskToUpdate->task_id);
+                    LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "Moved a TASK named: '$taskToUpdate->title' in it's own column", $teamId, $board->board_id, $taskToUpdate->task_id);
                 }
 
                 $taskToUpdate->save();
@@ -514,7 +514,7 @@ class TaskController extends Controller
         ];
         broadcast(new BoardChange($board->board_id, "CREATED_SUBTASK", $data));
 
-        LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Created a SUBTASK named: $subTask->title in TASK: $parentTask->title", $teamId, $board_id, $subTask->task_id);
+        LogRequest::instance()->logAction('CREATED TASK', $user->user_id, "Created a SUBTASK named: '$subTask->title' in TASK: '$parentTask->title'", $teamId, $board_id, $subTask->task_id);
 
         $user_ids = UserTask::where('task_id', $parent_task_id)->pluck('user_id')->toArray();
 
@@ -560,7 +560,7 @@ class TaskController extends Controller
         ];
         broadcast(new BoardChange($board->board_id, "UPDATED_TASK", $data));
 
-        LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "Updated a SUBTASK named: $subTask->title", $teamId, $board_id, $subtask_id);
+        LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "Updated a SUBTASK named: '$subTask->title'", $teamId, $board_id, $subtask_id);
 
         $user_ids = null;
         if ($subTask->parent_task_id !== null) {
@@ -609,7 +609,7 @@ class TaskController extends Controller
         ];
         broadcast(new BoardChange($board->board_id, "DELETED_SUBTASK", $data));
 
-        LogRequest::instance()->logAction('DELETED TASK', $user->user_id, "Deleted a SUBTASK named: $subTask->title", $teamId, $board_id, $subtask_id);
+        LogRequest::instance()->logAction('DELETED TASK', $user->user_id, "Deleted a SUBTASK named: '$subTask->title'", $teamId, $board_id, $subtask_id);
 
         foreach ($user_ids as $user_id) {
             broadcast(new AssignedTaskChange($user_id, "DELETED_SUBTASK_FOR_ASSIGNED_TASK", $data));

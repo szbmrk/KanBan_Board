@@ -952,8 +952,13 @@ const Board = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log(response.data.logs);
-            setLogs(response.data.logs);
+
+            const sortedLogs = response.data.logs.sort(
+                (a, b) => new Date(b.created_at) - new Date(a.created_at)
+            );
+
+            console.log(sortedLogs);
+            setLogs(sortedLogs);
         } catch (e) {
             console.error(e);
             if (e?.response?.status === 401 || e?.response?.status === 500) {
