@@ -37,43 +37,43 @@ class ColumnController extends Controller
         $board = Board::find($board_id);
         $teamModel = new Team();
         $teamId = $teamModel->findTeamIdByBoardId($board_id);
-    
+
         if (!$board) {
             LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found'], 404);
         }
-    
+
         if (!$user->isMemberOfBoard($board_id)) {
             LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of this board. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
-    
+
         $permissions = $user->getPermissions();
-    
+
         if (!in_array('system_admin', $permissions)) {
             if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
                 LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of the team that owns this board. -> board_id: $board_id", $teamId, $board_id, null);
                 return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
             }
-    
+
             $rolesOnBoard = $user->getRoles($board_id);
-    
+
             $hasColumnManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
                 return in_array('column_management', $role->permissions->pluck('name')->toArray());
             });
-    
+
             if (!$hasColumnManagementPermission) {
                 LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission for column management.", $teamId, $board_id, null);
                 return response()->json(['error' => 'You don\'t have permission to manage columns on this board.'], 403);
             }
         }
-    
+
         $this->validate($request, [
             'name' => 'required|string|max:50',
         ]);
-    
+
         $maxPosition = $board->columns()->max('position');
-    
+
         $column = new Column([
             'name' => $request->input('name'),
             'position' => $maxPosition !== null ? $maxPosition + 1 : 0,
@@ -81,10 +81,10 @@ class ColumnController extends Controller
             'is_finished' => $request->input('is_finished', false),
             'task_limit' => $request->input('task_limit', null),
         ]);
-    
+
         $board->columns()->save($column);
-    
-        LogRequest::instance()->logAction('CREATED COLUMN', $user->user_id, "Column Created successfully!", $teamId, $board_id, null);
+
+        LogRequest::instance()->logAction('CREATED COLUMN', $user->user_id, "$user->username created a column named: $column->name", $teamId, $board_id, null);
 
         $data = [
             'column' => $column,
@@ -92,7 +92,7 @@ class ColumnController extends Controller
             'task_limit' => $request->input('task_limit'),
         ];
         broadcast(new BoardChange($board_id, "CREATED_COLUMN", $data));
-    
+
         return response()->json(['message' => 'Column created successfully', 'column' => $column]);
     }
 
@@ -139,7 +139,7 @@ class ColumnController extends Controller
             }
             $column->save();
 
-            LogRequest::instance()->logAction('UPDATED COLUMN', $user->user_id, "Column Updated successfully!", $teamId, $column->board_id, null);
+            LogRequest::instance()->logAction('UPDATED COLUMN', $user->user_id, "$user->username updated a column named: $column->name", $teamId, $column->board_id, null);
 
             $data = [
                 'column' => $column
@@ -196,7 +196,7 @@ class ColumnController extends Controller
                 return response()->json(['error' => 'Column not found or not belong to this board'], 404);
             }
         }
-        LogRequest::instance()->logAction('UPDATED COLUMN', $user->user_id, "Columns position updated successfully.", $teamId, $column->board_id, null);
+        LogRequest::instance()->logAction('UPDATED COLUMN', $user->user_id, "$user->username updated a columns position named: $column->name", $teamId, $column->board_id, null);
 
         $data = [
             'columns' => $columns
@@ -212,33 +212,33 @@ class ColumnController extends Controller
         $board = Board::find($board_id);
         $teamModel = new Team();
         $teamId = $teamModel->findTeamIdByBoardId($board_id);
-    
+
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
         }
-    
+
         if (!$user->isMemberOfBoard($board_id)) {
             return response()->json(['error' => 'You are not a member of this board'], 403);
         }
-    
+
         $permissions = $user->getPermissions();
-    
+
         if (!in_array('system_admin', $permissions)) {
             $boardId = $board_id;
             $rolesOnBoard = $user->getRoles($boardId);
-    
+
             // Check if the user has the necessary permission for column management
             $hasColumnManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
                 return in_array('column_management', $role->permissions->pluck('name')->toArray());
             });
-    
+
             if (!$hasColumnManagementPermission) {
                 return response()->json(['error' => 'You don\'t have permission to manage columns on this board.'], 403);
             }
         }
-    
+
         $column = Column::where('board_id', $board_id)->find($column_id);
-    
+
         if (!$column) {
             return response()->json(['error' => 'Column not found'], 404);
         }
@@ -266,7 +266,7 @@ class ColumnController extends Controller
 
         $column->delete();
 
-        LogRequest::instance()->logAction('DELETED COLUMN', $user->user_id, "Column deleted successfully! Column: $column->name", $teamId, $column->board_id, null);
+        LogRequest::instance()->logAction('DELETED COLUMN', $user->user_id, "$user->username deleted a column named: $column->name", $teamId, $column->board_id, null);
 
         $data = [
             'column' => $column
