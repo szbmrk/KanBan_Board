@@ -44,7 +44,7 @@ class ChangeIsDoneTaskController extends Controller
             'subtask' => $subTaskWithSubtasksAndTags
         ];
 
-        LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "Finished a SUBTASK named: $taskInBoard->title", $teamId, $board_id, $subtask_id);
+        LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "Finished a SUBTASK named: '$taskInBoard->title'", $teamId, $board_id, $subtask_id);
         broadcast(new BoardChange($board->board_id, "CHANGE_ISDONE_SUBTASK", $data));
 
         return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTaskWithSubtasksAndTags]);
@@ -84,7 +84,7 @@ class ChangeIsDoneTaskController extends Controller
         ];
         broadcast(new BoardChange($board->board_id, "CHANGE_ISDONE_SUBTASK", $data));
 
-        LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "Changed a SUBTASK named: $taskInBoard->title to not completed", $teamId, $board_id, $subtask_id);
+        LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "Changed a SUBTASK named: '$taskInBoard->title' to not completed", $teamId, $board_id, $subtask_id);
 
         return response()->json(['message' => 'Subtask updated successfully', 'task' => $subTaskWithSubtasksAndTags]);
     }
