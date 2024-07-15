@@ -21,6 +21,7 @@ import {
     faArrowDownAZ,
     faCalendarDays,
     faCircleExclamation,
+    faBook,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "../../styles/board.css";
@@ -58,6 +59,7 @@ export const documentationIcon = <FontAwesomeIcon icon={faFileLines} />;
 export const aiIcon = <FontAwesomeIcon icon={faWandMagicSparkles} />;
 export const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
 export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
+export const bookIcon = <FontAwesomeIcon icon={faBook} />;
 
 const Board = () => {
     const { board_id, column_to_show_id, task_to_show_id } = useParams();
@@ -127,6 +129,7 @@ const Board = () => {
     const [craftedPromptsTask, setCraftedPromptsTask] = useState([]);
     const craftedPromptsTaskRef = useRef(craftedPromptsTask);
     const [isHoveredAITitleBar, setIsHoveredAITitleBar] = useState(false);
+    const [isHoveredLogTitleBar, setIsHoveredLogTitleBar] = useState(false);
     const [codeReviewOrDocumentations, setCodeReviewOrDocumentation] = useState(
         []
     );
@@ -134,6 +137,7 @@ const Board = () => {
     const navigate = useNavigate();
     const [hoveredColumnId, setHoveredColumnId] = useState(null);
     const [isAGIOpen, setIsAGIOpen] = useState(false);
+    const [isLogOpen, setIsLogOpen] = useState(false);
     const [taskIsClickable, setTaskIsClickable] = useState(true);
     const [childData, setChildData] = useState(null);
     const [iconContainerOptions, setIconContainerOptions] = useState(null);
@@ -183,6 +187,8 @@ const Board = () => {
     const [deadlineFilter, setDeadlineFilter] = useState(null);
     const [isFilterActive, setIsFilterActive] = useState(false);
     const [filterCount, setFilterCount] = useState(0);
+
+    const [logs, setLogs] = useState([]);
 
     const [boardTitle, setBoardTitle] = useState("");
     const [showBoardTitleEdit, setShowBoardTitleEdit] = useState(false);
@@ -841,6 +847,18 @@ const Board = () => {
         }
     };
 
+    function formatTimestamp(timestamp) {
+        const date = new Date(timestamp);
+
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const hours = String(date.getUTCHours()).padStart(2, '0');
+        const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    }
+
     const reloadPriorities = async () => {
         try {
             const prioritiesResponse = await axios.get("/priorities", {
@@ -924,6 +942,28 @@ const Board = () => {
             if (e?.response?.status === 403) setError(e);
             else setError(e);
             setPermission(false);
+        }
+    };
+
+    const getLogs = async () => {
+        try {
+            const response = await axios.get(`/boards/${board_id}/logs`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log(response.data.logs);
+            setLogs(response.data.logs);
+        } catch (e) {
+            console.error(e);
+            if (e?.response?.status === 401 || e?.response?.status === 500) {
+                setError({
+                    message: "You are not logged in! Redirecting to login page...",
+                });
+                setRedirect(true);
+            } else {
+                setError(e);
+            }
         }
     };
 
@@ -2259,6 +2299,11 @@ const Board = () => {
         setIsAGIOpen(!isAGIOpen);
     };
 
+    const toggleLogDropdown = () => {
+        getLogs();
+        setIsLogOpen(!isLogOpen);
+    };
+
     const toggleSortDropdown = () => {
         setIsSortOpen(!isSortOpen);
     };
@@ -2774,6 +2819,30 @@ const Board = () => {
                                                 {aiIcon}
                                             </span>
                                             <p>Magic</p>
+                                        </li>
+                                        <li
+                                            onMouseEnter={() => setIsHoveredLogTitleBar(true)}
+                                            onMouseLeave={() => setIsHoveredLogTitleBar(false)}
+                                            onClick={toggleLogDropdown}
+                                            style={{
+                                                color:
+                                                    isHoveredLogTitleBar || isLogOpen
+                                                        ? "var(--off-white)"
+                                                        : "var(--dark-gray)",
+                                            }}
+                                        >
+                                            <span
+                                                className="log-button-on-title-bar"
+                                                style={{
+                                                    color:
+                                                        isHoveredLogTitleBar || isLogOpen
+                                                            ? "var(--off-white)"
+                                                            : "var(--dark-gray)",
+                                                }}
+                                            >
+                                                {bookIcon}
+                                            </span>
+                                            <p>Log</p>
                                         </li>
                                     </ul>
                                 </div>
@@ -3338,6 +3407,39 @@ const Board = () => {
                             </div>
                         </>
                     )}
+                    {isLogOpen && (
+                        <>
+                            <div
+                                className="overlay3"
+                                onClick={() => {
+                                    setIsLogOpen(false);
+                                }}
+                            ></div>
+                            <div className="log-submenu" data-theme={theme}>
+                                <div className="log-header">
+                                    <p className="log-menu-title">Log</p>
+                                    <div className="log-info">
+                                        <p>Username</p>
+                                        <p>Details</p>
+                                        <p>Created at</p>
+                                    </div>
+                                </div>
+                                {logs && logs.length > 0 &&
+                                    <ul className="log-container">
+                                        {logs.map((log, index) => (
+                                            <li key={index} className="log-item">
+                                                <div className="log">
+                                                    <p className="log-creator">{log.user.username}:</p>
+                                                    <p className="log-details">{log.details}</p>
+                                                    <p className="log-date">{formatTimestamp(log.created_at)}</p>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                }
+                            </div>
+                        </>
+                    )}
                     {showIconContainer && (
                         <div
                             className="overlay"
@@ -3548,44 +3650,48 @@ const Board = () => {
                             onCancel={() => setShowSuccessfulDeletePopup(false)}
                         />
                     )}
-                </DndProvider>
+                </DndProvider >
             )}
-            {showPopup && (
-                <Popup
-                    task={inspectedTask}
-                    onClose={handleClosePopup}
-                    onSave={handleSavePopup}
-                    board_id={board_id}
-                    addSubtask={handleAddSubtask}
-                    deleteSubtask={handleDeleteSubtask}
-                    changeIsDoneSubTask={handleIsDoneSubTask}
-                    favouriteSubtask={handleFavouriteSubtask}
-                    unFavouriteSubtask={handleUnFavouriteSubtask}
-                    handlePostComment={postComment}
-                    handleDeleteComment={deleteComment}
-                    setTaskAsInspectedTask={setTaskAsInspectedTask}
-                    onPreviousTask={handleOpenPreviousTask}
-                    priorities={priorities}
-                    modifyPriority={handleModifyPriority}
-                    modifyDeadline={handleModifyDeadline}
-                    addAttachment={handleAddAttachment}
-                    deleteAttachment={handleDeleteAttachment}
-                    addMember={handleAddMember}
-                    deleteMember={handleDeleteMember}
-                    tags={inspectedTask.tags}
-                    placeTagOnTask={handlePlaceTagOnTask}
-                    removeTagFromTask={handleRemoveTagFromTask}
-                    ref={popupRef}
-                />
-            )}
-            {error && (
-                <ErrorWrapper
-                    originalError={error}
-                    onClose={() => {
-                        setError(null);
-                    }}
-                />
-            )}
+            {
+                showPopup && (
+                    <Popup
+                        task={inspectedTask}
+                        onClose={handleClosePopup}
+                        onSave={handleSavePopup}
+                        board_id={board_id}
+                        addSubtask={handleAddSubtask}
+                        deleteSubtask={handleDeleteSubtask}
+                        changeIsDoneSubTask={handleIsDoneSubTask}
+                        favouriteSubtask={handleFavouriteSubtask}
+                        unFavouriteSubtask={handleUnFavouriteSubtask}
+                        handlePostComment={postComment}
+                        handleDeleteComment={deleteComment}
+                        setTaskAsInspectedTask={setTaskAsInspectedTask}
+                        onPreviousTask={handleOpenPreviousTask}
+                        priorities={priorities}
+                        modifyPriority={handleModifyPriority}
+                        modifyDeadline={handleModifyDeadline}
+                        addAttachment={handleAddAttachment}
+                        deleteAttachment={handleDeleteAttachment}
+                        addMember={handleAddMember}
+                        deleteMember={handleDeleteMember}
+                        tags={inspectedTask.tags}
+                        placeTagOnTask={handlePlaceTagOnTask}
+                        removeTagFromTask={handleRemoveTagFromTask}
+                        ref={popupRef}
+                    />
+                )
+            }
+            {
+                error && (
+                    <ErrorWrapper
+                        originalError={error}
+                        onClose={() => {
+                            setError(null);
+                        }}
+                    />
+                )
+            }
         </>
     );
 };

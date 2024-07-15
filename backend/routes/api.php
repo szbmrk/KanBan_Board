@@ -33,6 +33,7 @@ use App\Http\Controllers\AGIAnswersController;
 use App\Http\Controllers\FavouriteTaskController;
 use App\Http\Controllers\ChangeIsDoneTaskController;
 use App\Http\Controllers\RolePermissionController;
+use App\Http\Controllers\LogController;
 
 /*
 
@@ -125,6 +126,8 @@ Route::delete('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskCont
 
 Route::post('/boards/{board_id}/tasks/{subtask_id}/isDone', [ChangeIsDoneTaskController::class, 'store'])->middleware('api');
 Route::delete('/boards/{board_id}/tasks/{subtask_id}/isDone', [ChangeIsDoneTaskController::class, 'destroy'])->middleware('api');
+
+Route::get('boards/{board_id}/logs', [LogController::class, 'index'])->middleware('api');
 
 Route::get('/boards/{boardId}/roles', [RoleController::class, 'index'])->middleware('api');
 Route::post('/boards/{boardId}/roles', [RoleController::class, 'store'])->middleware('api');

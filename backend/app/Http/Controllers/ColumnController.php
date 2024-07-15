@@ -84,7 +84,7 @@ class ColumnController extends Controller
 
         $board->columns()->save($column);
 
-        LogRequest::instance()->logAction('CREATED COLUMN', $user->user_id, "$user->username created a COLUMN named: $column->name", $teamId, $board_id, null);
+        LogRequest::instance()->logAction('CREATED COLUMN', $user->user_id, "Created a COLUMN named: $column->name", $teamId, $board_id, null);
 
         $data = [
             'column' => $column,
@@ -139,7 +139,7 @@ class ColumnController extends Controller
             }
             $column->save();
 
-            LogRequest::instance()->logAction('UPDATED COLUMN', $user->user_id, "$user->username updated a COLUMN named: $column->name", $teamId, $column->board_id, null);
+            LogRequest::instance()->logAction('UPDATED COLUMN', $user->user_id, "Updated a COLUMN named: $column->name", $teamId, $column->board_id, null);
 
             $data = [
                 'column' => $column
@@ -196,7 +196,7 @@ class ColumnController extends Controller
                 return response()->json(['error' => 'Column not found or not belong to this board'], 404);
             }
         }
-        LogRequest::instance()->logAction('UPDATED COLUMN', $user->user_id, "$user->username updated a COLUMN'S position named: $column->name", $teamId, $column->board_id, null);
+        LogRequest::instance()->logAction('UPDATED COLUMN', $user->user_id, "Updated a COLUMN'S position named: $column->name", $teamId, $column->board_id, null);
 
         $data = [
             'columns' => $columns
@@ -266,7 +266,7 @@ class ColumnController extends Controller
 
         $column->delete();
 
-        LogRequest::instance()->logAction('DELETED COLUMN', $user->user_id, "$user->username deleted a COLUMN named: $column->name", $teamId, $column->board_id, null);
+        LogRequest::instance()->logAction('DELETED COLUMN', $user->user_id, "Deleted a COLUMN named: $column->name", $teamId, $column->board_id, null);
 
         $data = [
             'column' => $column
