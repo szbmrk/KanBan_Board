@@ -42,41 +42,41 @@ class DashboardController extends Controller
             //'response' => $response,
         ]);
     }
-    
+
     public function store(Request $request)
     {
         $user = auth()->user();
-    
+
         $team_id = $request->team_id;
         if ($user->teams()->where('teams.team_id', $team_id)->exists()) {
-    
+
             $board = new Board;
             $board->name = $request->name;
             $board->team_id = $team_id;
             $board->save();
-    
+
             $boardManagerRole = Role::firstOrCreate(['name' => 'Board Manager', 'board_id' => $board->board_id]);
-    
+
             $teamMember = TeamMember::where('user_id', $user->user_id)->where('team_id', $team_id)->first();
             if ($teamMember) {
                 $teamMember->roles()->attach($boardManagerRole->role_id);
             }
-    
+
             $boardManagementPermission = Permission::firstOrCreate(['name' => 'board_management']);
             $roleManagementPermission = Permission::firstOrCreate(['name' => 'role_management']);
             $teamMemberRoleManagementPermission = Permission::firstOrCreate(['name' => 'team_member_role_management']);
             $columnManagementPermission = Permission::firstOrCreate(['name' => 'column_management']);
             $rolesPermissionsManagementPermission = Permission::firstOrCreate(['name' => 'roles_permissions_management']);
             $taskManagementPermission = Permission::firstOrCreate(['name' => 'task_management']);
-    
+
             if (!$boardManagerRole->permissions->contains($boardManagementPermission)) {
                 $boardManagerRole->permissions()->attach($boardManagementPermission->id);
             }
-    
+
             if (!$boardManagerRole->permissions->contains($roleManagementPermission)) {
                 $boardManagerRole->permissions()->attach($roleManagementPermission->id);
             }
-    
+
             if (!$boardManagerRole->permissions->contains($teamMemberRoleManagementPermission)) {
                 $boardManagerRole->permissions()->attach($teamMemberRoleManagementPermission->id);
             }
@@ -88,7 +88,7 @@ class DashboardController extends Controller
             if (!$boardManagerRole->permissions->contains($rolesPermissionsManagementPermission)) {
                 $boardManagerRole->permissions()->attach($rolesPermissionsManagementPermission->id);
             }
-            
+
             if (!$boardManagerRole->permissions->contains($taskManagementPermission)) {
                 $boardManagerRole->permissions()->attach($taskManagementPermission->id);
             }
@@ -101,15 +101,15 @@ class DashboardController extends Controller
             $data = [
                 'board' => $board
             ];
-                
+
             foreach ($user_ids as $user_id) {
                 broadcast(new DashboardChange($user_id, "CREATED_BOARD", $data));
-            } 
-    
-            LogRequest::instance()->logAction('CREATED BOARD', $user->user_id, "Board created successfully!", $team_id, $board->board_id, null);
-    
+            }
+
+            LogRequest::instance()->logAction('CREATED BOARD', $user->user_id, "$user->username created a board named: $board->name", $team_id, $board->board_id, null);
+
             return response()->json(['board' => $board], 201);
-    
+
         } else {
             LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not belong to this team. -> Create Board", null, null, null);
             return response()->json(['error' => 'User does not belong to this team.'], 403);
@@ -136,14 +136,14 @@ class DashboardController extends Controller
             $roles = $user->getRoles();
             $permissions = $user->getPermissions();
 
-            $boardManagerRoles = array_filter($roles, function($role) use ($board_id) {
+            $boardManagerRoles = array_filter($roles, function ($role) use ($board_id) {
                 return $role['name'] == 'Board Manager' && $role['board_id'] == $board_id;
             });
 
             if (in_array('system_admin', $permissions) || !empty($boardManagerRoles)) {
                 $board->name = $request->name;
                 $board->save();
-                LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "Board Updated successfully!", $board->team_id, $board_id, null);
+                LogRequest::instance()->logAction('UPDATED BOARD', $user->user_id, "$user->username changed the board name of $old_board_name to $board->name", $board->team_id, $board_id, null);
 
                 $user_ids = TeamMember::whereIn('user_id', function ($query) use ($board_id) {
                     $query->select('user_id')
@@ -155,11 +155,11 @@ class DashboardController extends Controller
                 $data = [
                     'board' => $board
                 ];
-                
+
                 foreach ($user_ids as $user_id) {
                     broadcast(new DashboardChange($user_id, "UPDATED_BOARD", $data));
-                    NotificationController::createNotification(NotificationType::BOARD, "A board you are member of got renamed from ".$old_board_name." to ".$request->name, $user_id);
-                }  
+                    NotificationController::createNotification(NotificationType::BOARD, "A board you are member of got renamed from " . $old_board_name . " to " . $request->name, $user_id);
+                }
 
                 $data = [
                     'name' => $board->name
@@ -177,7 +177,7 @@ class DashboardController extends Controller
     public function destroy($board_id)
     {
         $user = auth()->user();
-        
+
         if (!$user) {
             return response()->json(['error' => 'User not authenticated'], 401);
         }
@@ -187,13 +187,13 @@ class DashboardController extends Controller
             LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found on Delete. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found.'], 404);
         }
-        
+
         if ($user->teams()->where('teams.team_id', $board->team_id)->exists()) {
             $roles = $user->getRoles();
             $permissions = $user->getPermissions();
-        
+
             $hasSystemAdminPermission = in_array('system_admin', $permissions);
-            $hasBoardManagerRole = array_filter($roles, function($role) use ($board_id) {
+            $hasBoardManagerRole = array_filter($roles, function ($role) use ($board_id) {
                 return $role['name'] == 'Board Manager' && $role['board_id'] == $board_id;
             });
 
@@ -208,12 +208,12 @@ class DashboardController extends Controller
                 $data = [
                     'board' => $board
                 ];
-                
+
                 foreach ($user_ids as $user_id) {
                     broadcast(new DashboardChange($user_id, "DELETED_BOARD", $data));
-                } 
-                
-                LogRequest::instance()->logAction('DELETED BOARD', $user->user_id, "Board Deleted successfully! -> board_id: $board_id", $board->team_id, $board_id, null);
+                }
+
+                LogRequest::instance()->logAction('DELETED BOARD', $user->user_id, "$user->username deleted a board named: $board->name", $board->team_id, $board_id, null);
                 return response()->json(['message' => 'Board successfully deleted'], 200);
             }
         }
