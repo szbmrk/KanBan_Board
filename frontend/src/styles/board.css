@@ -570,6 +570,10 @@
     margin: 0 0 8px;
 }
 
+.log-container :last-child {
+    margin-bottom: 10px;
+}
+
 .log-item {
     background-color: var(--bg-mostly-black);
     padding: 10px;
