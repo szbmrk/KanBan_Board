@@ -360,12 +360,14 @@ class TaskController extends Controller
             return response()->json(['error' => 'Duplicate positions are not allowed'], 403);
         }
 
-
         foreach ($tasks as &$task) {
             $taskToUpdate = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task['task_id']);
             if ($taskToUpdate) {
                 $task['old_column_id'] = $taskToUpdate->column_id;
+                $oldColumnId = $taskToUpdate->column_id;
+                $oldColumn = Column::find($oldColumnId);
                 $task['task'] = $taskToUpdate;
+
                 $taskToUpdate->position = $task['position'];
                 if (isset($task['column_id']) && $task['column_id'] != $taskToUpdate->column_id) {
                     $newColumn = Column::find($task['column_id']);
@@ -382,6 +384,17 @@ class TaskController extends Controller
                         return response()->json(['error' => 'Column not found or you are not a member of this board'], 404);
                     }
                 }
+
+                if ($taskToUpdate->completed == 1 && $oldColumnId != $taskToUpdate->column_id) {
+                    LogRequest::instance()->logAction('FINISHED TASK', $user->user_id, "$user->username finished a TASK named: $taskToUpdate->title", $teamId, $board->board_id, $taskToUpdate->task_id);
+                } else if ($taskToUpdate->completed == 0 && $oldColumn->is_finished == 1) {
+                    LogRequest::instance()->logAction('REVERTED FINISHED TASK', $user->user_id, "$user->username changed a TASK named: $taskToUpdate->title to not completed", $teamId, $board->board_id, $taskToUpdate->task_id);
+                } else if ($oldColumnId != $taskToUpdate->column_id) {
+                    LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "$user->username moved a TASK named: $taskToUpdate->title from COLUMN $oldColumn->name TO $newColumn->name", $teamId, $board->board_id, $taskToUpdate->task_id);
+                } else if ($oldColumnId == $taskToUpdate->column_id) {
+                    LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "$user->username moved a TASK named: $taskToUpdate->title in it's own column", $teamId, $board->board_id, $taskToUpdate->task_id);
+                }
+
                 $taskToUpdate->save();
             } else {
                 return response()->json(['error' => 'Task not found'], 404);
@@ -391,7 +404,7 @@ class TaskController extends Controller
         $data = [
             'tasks' => $tasks
         ];
-        LogRequest::instance()->logAction('UPDATED TASK POSITION', $user->user_id, "$user->username changed the position of TASKS in COLUMN named: $column->name", $teamId, $board->board_id, null);
+
         broadcast(new BoardChange($board->board_id, "POSITION_UPDATED_TASK", $data));
 
         return response()->json(['message' => 'Tasks position updated successfully.']);
