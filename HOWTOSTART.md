@@ -14,5 +14,5 @@ soketi start --config="./soketi-config.json"
 # 2. módszer
 root dir -> ./run_project.bat
 
-# 3. módszer
+# 3. módszer (vs code only)
 ctrl + shift + P -> run task -> start kanban
