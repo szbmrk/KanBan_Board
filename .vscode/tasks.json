@@ -1,0 +1,41 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start Frontend",
+            "type": "shell",
+            "command": "npm start",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Start Backend",
+            "type": "shell",
+            "command": "php artisan serve",
+            "options": {
+                "cwd": "${workspaceFolder}/backend"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Start Websocket",
+            "type": "shell",
+            "command": "soketi start --config=\"./soketi-config.json\"",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Start KanBan",
+            "dependsOrder": "parallel",
+            "dependsOn": [
+                "Start Frontend",
+                "Start Backend",
+                "Start Websocket"
+            ]
+        }
+    ]
+}
