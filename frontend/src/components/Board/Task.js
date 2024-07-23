@@ -74,7 +74,7 @@ export const Task = forwardRef(
         const [cardIndex, setCardIndex] = useState(null);
 
         const [profileImageUrl, setProfileImageUrl] = useState(
-            "https://www.pngitem.com/pimgs/m/30-307416_profile-icon-png-image-free-download-searchpng-employee.png"
+            "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
         );
 
         const [{ isDragging: dragging }, drag] = useDrag({
