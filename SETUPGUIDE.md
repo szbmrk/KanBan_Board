@@ -37,6 +37,9 @@ cd backend
 - php artisan serve
 PHP Beállítások:
 
+## websocket
+npm install -g @soketi/soketi
+
 php.ini fájlban:
 
 EZEKET A SOROKAT KI KELL VENNI KOMMENTBŐL:
