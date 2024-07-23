@@ -27,8 +27,8 @@ cd frontend -> npm install (ez először kell csak /
 
 ## main:
 cd backend
-- php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
 - composer require tymon/jwt-auth
+- php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
 - php artisan jwt:secret (.env-be a konzolba kidobott értéket bele kell tenni a JWT_SECRET= után)
 -pip install requests 
 
