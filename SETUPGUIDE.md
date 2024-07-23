@@ -23,7 +23,7 @@ cd frontend -> npm install (ez először kell csak /
 - ezen belül: DB_DATABASE=kanban_board
 - php artisan key:generate
 - php artisan serve
-- php artisan migrate:db
+- php artisan migrate:fresh
 
 ## main:
 cd backend
