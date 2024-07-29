@@ -84,7 +84,7 @@ class ColumnController extends Controller
 
         $board->columns()->save($column);
 
-        LogRequest::instance()->logAction('CREATED COLUMN', $user->user_id, "Created a COLUMN named: '$column->name'", $teamId, $board_id, null);
+        LogRequest::instance()->logAction('CREATED COLUMN', $user->user_id, "Created a COLUMN named: '$column->name'.", $teamId, $board_id, null);
 
         $data = [
             'column' => $column,
