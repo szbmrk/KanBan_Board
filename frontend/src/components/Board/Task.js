@@ -11,6 +11,7 @@ import {
     faClipboard,
     faLink,
     faListCheck,
+    faTags,
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as faRegularStar } from "@fortawesome/free-regular-svg-icons";
 import Tag from "../Tag";
@@ -19,6 +20,7 @@ const ItemTypes = {
     CARD: "card",
 };
 
+export const tagsIcon = <FontAwesomeIcon icon={faTags} />;
 export const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 export const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
@@ -48,6 +50,7 @@ export const Task = forwardRef(
             moveCardFrontend,
             moveCardBackend,
             setTaskAsInspectedTask,
+            addTags,
             generateDocumentationForTask,
             generateTasks,
             generateAttachmentLinks,
@@ -168,9 +171,6 @@ export const Task = forwardRef(
         const handleDocumentation = () => {
             generateDocumentationForTask(task);
         };
-        const addTags = () => {
-            console.log("add tags");
-        };
 
         const handleAI = () => {
             generateTasks(task, column);
@@ -234,12 +234,12 @@ export const Task = forwardRef(
                 label: "Generate documentation for task",
             },
             {
-                onClick: () => addTags(),
+                onClick: () => addTags(task),
                 animation: "rotate 0.5s",
                 iconClassName: "ai-button",
                 hoverColor: "var(--edit)",
-                icon: documentationIcon,
-                hoveredIcon: documentationIcon,
+                icon: tagsIcon,
+                hoveredIcon: tagsIcon,
                 label: "Add tags",
 
             },

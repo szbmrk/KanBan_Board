@@ -100,6 +100,7 @@ const Board = () => {
         x: 0,
         y: 0,
     });
+    const [openTagsOnStart, setOpenTagsOnStart] = useState(false);
     const [showIconContainer, setShowIconContainer] = useState(false);
     const [showIconContainer1, setShowIconContainer1] = useState(false);
     const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
@@ -1772,10 +1773,17 @@ const Board = () => {
         setInspectedTask(task);
         setShowPopup(true);
     };
+    const addTags = (task) => {
+        setOpenTagsOnStart(true);
+        setInspectedTask(task);
+        setShowPopup(true);
+    };
 
     const handleClosePopup = () => {
         setShowPopup(false);
+        setOpenTagsOnStart(false);
     };
+
 
     const handleOpenPreviousTask = (previousTask_id, column_id) => {
         setShowPopup(false);
@@ -3028,6 +3036,8 @@ const Board = () => {
                                                                     handleTaskDoubleClick={() =>
                                                                         setTaskAsInspectedTask(task)
                                                                     }
+                                                                    addTags={addTags}
+                                                                    openTagsOnStart={openTagsOnStart}
                                                                     onChildData={handleChildData}
                                                                     showIconContainer={showIconContainer}
                                                                     zIndex={cardZIndex}

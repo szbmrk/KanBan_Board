@@ -44,6 +44,7 @@ const xMarkIcon = <FontAwesomeIcon icon={faXmark} />;
 const Popup = (
   {
     task,
+    openTagsOnStart,
     onClose,
     onSave,
     addSubtask,
@@ -99,17 +100,17 @@ const Popup = (
 
   const [error, setError] = useState(null);
 
-    const validateLink = (inputLink) => {
-        const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?([?#][^\s]*)?$/i;
+  const validateLink = (inputLink) => {
+    const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?([?#][^\s]*)?$/i;
 
-        return urlPattern.test(inputLink);
-    };
-    
-    const handleLinkChange = (event) => {
-        const inputValue = event.target.value;
-        setNewAttachmentLink(inputValue);
-        setLinkIsValid(validateLink(inputValue));
-    };
+    return urlPattern.test(inputLink);
+  };
+
+  const handleLinkChange = (event) => {
+    const inputValue = event.target.value;
+    setNewAttachmentLink(inputValue);
+    setLinkIsValid(validateLink(inputValue));
+  };
 
   const handleChange = (event) => {
     setShowEditTitle(true);
@@ -197,6 +198,7 @@ const Popup = (
     setEditedText(task.title);
     setEditedDescription(task.description);
     handleGetBoardTags();
+    setShowTagEditorPopup(openTagsOnStart);
   }, [task]);
 
   const setTask = (updatedTask) => {
