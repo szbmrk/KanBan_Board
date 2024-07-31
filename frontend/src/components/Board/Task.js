@@ -168,6 +168,9 @@ export const Task = forwardRef(
         const handleDocumentation = () => {
             generateDocumentationForTask(task);
         };
+        const addTags = () => {
+            console.log("add tags");
+        };
 
         const handleAI = () => {
             generateTasks(task, column);
@@ -229,6 +232,16 @@ export const Task = forwardRef(
                 icon: documentationIcon,
                 hoveredIcon: documentationIcon,
                 label: "Generate documentation for task",
+            },
+            {
+                onClick: () => addTags(),
+                animation: "rotate 0.5s",
+                iconClassName: "ai-button",
+                hoverColor: "var(--edit)",
+                icon: documentationIcon,
+                hoveredIcon: documentationIcon,
+                label: "Add tags",
+
             },
             {
                 onClick: () => handleAI(),
