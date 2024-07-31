@@ -3037,7 +3037,6 @@ const Board = () => {
                                                                         setTaskAsInspectedTask(task)
                                                                     }
                                                                     addTags={addTags}
-                                                                    openTagsOnStart={openTagsOnStart}
                                                                     onChildData={handleChildData}
                                                                     showIconContainer={showIconContainer}
                                                                     zIndex={cardZIndex}
@@ -3671,6 +3670,7 @@ const Board = () => {
                 showPopup && (
                     <Popup
                         task={inspectedTask}
+                        openTagsOnStart={openTagsOnStart}
                         onClose={handleClosePopup}
                         onSave={handleSavePopup}
                         board_id={board_id}
