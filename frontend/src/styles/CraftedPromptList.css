@@ -1,0 +1,44 @@
+.crafted-prompt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.crafted-prompt-type {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.crafted-prompt-content {
+  margin: 0;
+}
+
+.crafted-prompt-button {
+  border: none;
+  border-radius: 5px;
+  padding: 2px 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 5px;
+}
+
+.edit-crafted-prompt-button {
+  background-color: #23dd51;
+  color: white;
+}
+
+.edit-crafted-prompt-button:hover {
+  background-color: #0b7035;
+}
+
+.delete-crafted-prompt-button {
+  background-color: #ff6347;
+  color: white;
+}
+
+.delete-crafted-prompt-button:hover {
+  background-color: #dc143c;
+}

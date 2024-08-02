@@ -25,6 +25,18 @@ class CraftedPrompt extends Model
         'created_by',
     ];
 
+    protected $appends = ['agiBehaviour'];
+    protected $hidden = ['agiBehavior'];
+
+    public function agiBehavior()
+    {
+        return $this->belongsTo(AgiBehavior::class, 'agi_behavior_id');
+    }
+    
+    public function getAgiBehaviourAttribute()
+    {
+        return $this->agiBehavior;
+    }
 
     // Define relationships with other tables (if any)
     

@@ -4,7 +4,6 @@
   max-height: 80vw;
   margin: 0 auto;
   padding: 20px;
-  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -15,6 +14,7 @@
   border: 1px solid var(--bg-dark);
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
   overflow-y: auto;
+  height: 75vh;
 }
 
 .container-header {
@@ -99,17 +99,19 @@
   padding: 5px 10px;
   cursor: pointer;
   /*Extra kinézethez*/
-  transition: transform 0.1s ease; 
+  transition: transform 0.1s ease;
 }
 
 .mark-all-button:active,
 .mark-seen-button:active {
-  transform: scale(0.95); /* Az aktív állapotban a gomb mérete kicsit összenyomódik */
+  transform: scale(
+    0.95
+  ); /* Az aktív állapotban a gomb mérete kicsit összenyomódik */
 }
 
 .mark-all-button:hover,
 .mark-seen-button:hover {
-  color: #4CAF50;
+  color: #4caf50;
 }
 
 [data-theme="light"] .mark-all-button:hover,

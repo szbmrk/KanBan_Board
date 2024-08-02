@@ -8,6 +8,7 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import ErrorWrapper from "../ErrorWrapper";
+import SimpleLabelPopup from "./SimpleLabelPopup";
 
 const GenerateAttachmentLinkWithAGIPopup = ({
   task,
@@ -39,6 +40,7 @@ const GenerateAttachmentLinkWithAGIPopup = ({
     { value: "10", label: "10" },
   ];
   let [taskCounter, setTaskCounter] = useState(counterOptions[0]);
+  const [showSuccessfulSavePopup, setShowSuccessfulSavePopup] = useState(false);
 
   const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
@@ -80,6 +82,7 @@ const GenerateAttachmentLinkWithAGIPopup = ({
       );
 
       console.log(res);
+      setShowSuccessfulSavePopup(true);
     } catch (e) {
       setError(e?.response?.data);
     }
@@ -227,6 +230,12 @@ const GenerateAttachmentLinkWithAGIPopup = ({
           )}
         </div>
       </div>
+      {showSuccessfulSavePopup && (
+        <SimpleLabelPopup
+          title={"Successfully saved"}
+          onCancel={() => onCancel()}
+        />
+      )}
       {error && (
         <ErrorWrapper
           originalError={error}

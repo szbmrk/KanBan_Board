@@ -44,7 +44,7 @@ class PromptCraftController extends Controller
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
-        $craftedPrompts = CraftedPrompt::where('board_id', $boardId)->get();
+        $craftedPrompts = CraftedPrompt::where('board_id', $boardId)->with('agiBehavior')->get();
         
 
         return response()->json($craftedPrompts, 200);
@@ -122,6 +122,7 @@ class PromptCraftController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
+            'crafted_prompt_title' => 'string',
             'crafted_prompt_text' => 'string',
             'craft_with' => 'in:CHATGPT,LLAMA,BARD',
             'action' => 'in:GENERATETASK,GENERATESUBTASK,GENERATEATTACHMENTLINK',
@@ -132,8 +133,11 @@ class PromptCraftController extends Controller
         if ($validator->fails()) {
             $errorMessages = [];
             
-            if ($validator->errors()->hasAny(['crafted_prompt_text', 'craft_with', 'action'])) {
+            if ($validator->errors()->hasAny(['crafted_prompt_title', 'crafted_prompt_text', 'craft_with', 'action'])) {
             
+                if ($validator->errors()->has('crafted_prompt_title')) {
+                    $errorMessages[] = $validator->errors()->first('crafted_prompt_title');
+                }
                 
                 if ($validator->errors()->has('crafted_prompt_text')) {
                     $errorMessages[] = $validator->errors()->first('crafted_prompt_text');
@@ -166,6 +170,10 @@ class PromptCraftController extends Controller
             return response()->json(['error' => 'Prompt not found on this board.'], 404);
         }
 
+        if ($request->has('crafted_prompt_title')) {
+            $prompt->crafted_prompt_title = $request->input('crafted_prompt_title');
+        }
+
         if ($request->has('crafted_prompt_text')) {
             $prompt->crafted_prompt_text = $request->input('crafted_prompt_text');
         }
@@ -187,13 +195,17 @@ class PromptCraftController extends Controller
             $request->input('agi_behavior'),
             $boardId);
         
-        
         $prompt->save();
+
+        $data = [
+            'craftedPrompt' => $prompt
+        ];
+        broadcast(new BoardChange($boardId, "UPDATED_PROMPT", $data));
 
         return response()->json(['message' => 'Prompt updated successfully.'], 200);
     }
 
-    public function destroyPrompts($boardId, $promptId)
+    public function destroyPrompts(Request $request, $boardId, $promptId)
     {
         $user = auth()->user();
 
@@ -218,6 +230,11 @@ class PromptCraftController extends Controller
         }
 
         $prompt->delete();
+
+        $data = [
+            'craftedPrompt' => $prompt
+        ];
+        broadcast(new BoardChange($boardId, "DELETED_PROMPT", $data));
 
         return response()->json(['message' => 'Prompt deleted successfully.'], 200);
     }
@@ -294,7 +311,7 @@ class PromptCraftController extends Controller
 
     public static function CheckAndGenerateAlreadyExistingBehavior($request, $agiBehavior, $boardId) 
     {
-        if($agiBehavior != null)
+        if($agiBehavior != null && $agiBehavior != "null")
         {
             $agiBehaviors = AgiBehavior::where('act_as_a', $request->input('agi_behavior'))->get();
             $exists = false;

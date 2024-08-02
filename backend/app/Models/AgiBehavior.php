@@ -18,5 +18,10 @@ class AgiBehavior extends Model
         'act_as_a',
     ];
 
+    public function craftedPrompts()
+    {
+        return $this->hasMany(CraftedPrompt::class, 'agi_behavior_id');
+    }
+
     // Define any additional model methods or attributes as needed
 }

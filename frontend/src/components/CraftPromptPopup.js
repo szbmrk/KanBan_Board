@@ -9,8 +9,9 @@ import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import BasicAutocomplete from "./BasicAutocomplete";
 import ErrorWrapper from "../ErrorWrapper";
+import SimpleLabelPopup from "./SimpleLabelPopup";
 
-const CraftPromptPopup = ({ board_id, onCancel }) => {
+const CraftPromptPopup = ({ craftedPrompt, board_id, onCancel }) => {
   const [error, setError] = useState(null);
   const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
 
@@ -53,9 +54,16 @@ const CraftPromptPopup = ({ board_id, onCancel }) => {
 
       console.log(res);
       setBehaviourOptions(formatBehaviourToOptions(res.data));
+      console.log(behaviourOptions);
     } catch (e) {
       setError(e?.response?.data);
     }
+  };
+
+  const SearchListForValue = (list, searchValue) => {
+    return list.find(
+      (option) => option.value.toLowerCase() === searchValue.toLowerCase()
+    );
   };
 
   const formatBehaviourToOptions = (behaviours) => {
@@ -63,21 +71,35 @@ const CraftPromptPopup = ({ board_id, onCancel }) => {
   };
 
   const [behaviourOptions, setBehaviourOptions] = useState([]);
-  const promptInputRef = useRef(null);
-  const titleInputRef = useRef(null);
+  const [promptText, setPromptText] = useState(
+    craftedPrompt ? craftedPrompt.crafted_prompt_text : ""
+  );
+  const [promptTitle, setPromptTitle] = useState(
+    craftedPrompt ? craftedPrompt.crafted_prompt_title : ""
+  );
+  const promptTextRef = useRef(promptText);
+  const promptTitleRef = useRef(promptTitle);
   const popupRef = useRef(null);
   const aiOptions = [
     { value: "CHATGPT", label: "ChatGPT" },
     { value: "LLAMA", label: "Llama" },
     { value: "BARD", label: "Bard" },
   ];
-  let [chosenAI, setChosenAI] = useState(aiOptions[0]);
+  let [chosenAI, setChosenAI] = useState(
+    craftedPrompt
+      ? SearchListForValue(aiOptions, craftedPrompt.craft_with)
+      : aiOptions[0]
+  );
   const actionOptions = [
     { value: "GENERATETASK", label: "Generate Task" },
     { value: "GENERATESUBTASK", label: "Generate Subtask" },
     { value: "GENERATEATTACHMENTLINK", label: "Generate Attachment Link" },
   ];
-  let [chosenAction, setChosenAction] = useState(actionOptions[0]);
+  let [chosenAction, setChosenAction] = useState(
+    craftedPrompt
+      ? SearchListForValue(actionOptions, craftedPrompt.action)
+      : actionOptions[0]
+  );
   const counterOptions = [
     { value: "1", label: "1" },
     { value: "2", label: "2" },
@@ -90,10 +112,40 @@ const CraftPromptPopup = ({ board_id, onCancel }) => {
     { value: "9", label: "9" },
     { value: "10", label: "10" },
   ];
-  let [taskCounter, setTaskCounter] = useState(counterOptions[0]);
-  let [chosenBehaviour, setChosenBehaviour] = useState("");
+  let [taskCounter, setTaskCounter] = useState(
+    craftedPrompt
+      ? SearchListForValue(
+          counterOptions,
+          craftedPrompt.response_counter.toString()
+        )
+      : counterOptions[0]
+  );
+  let [chosenBehaviour, setChosenBehaviour] = useState(
+    craftedPrompt &&
+      craftedPrompt.agiBehaviour &&
+      craftedPrompt.agiBehaviour.act_as_a
+      ? craftedPrompt.agiBehaviour.act_as_a
+      : ""
+  );
+  const [showSuccessfulSavePopup, setShowSuccessfulSavePopup] = useState(false);
 
   const closeIcon = <FontAwesomeIcon icon={faXmark} />;
+
+  useEffect(() => {
+    promptTextRef.current = promptText;
+  }, [promptText]);
+
+  useEffect(() => {
+    promptTitleRef.current = promptTitle;
+  }, [promptTitle]);
+
+  const handlePromptTitleInputChange = (event) => {
+    setPromptTitle(event.target.value);
+  };
+
+  const handlePromptTextInputChange = (event) => {
+    setPromptText(event.target.value);
+  };
 
   const SavePrompt = async (
     title,
@@ -107,30 +159,50 @@ const CraftPromptPopup = ({ board_id, onCancel }) => {
     try {
       const token = sessionStorage.getItem("token");
       console.log(board_id);
+      console.log(title);
       console.log(crafted_prompt_text);
       console.log(ai);
       console.log(action);
       console.log(counter);
       console.log(token);
-      const res = await axios.post(
-        `/boards/${board_id}/AGI/crafted-prompts`,
-        {
-          crafted_prompt_title: `${title}`,
-          crafted_prompt_text: `${crafted_prompt_text}`,
-          craft_with: `${ai}`,
-          action: `${action}`,
-          agi_behavior: `${chosenBehaviour ? chosenBehaviour : null}`,
-          response_counter: `${counter}`,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+      let res;
+      if (craftedPrompt) {
+        res = await axios.put(
+          `/boards/${board_id}/crafted_prompts/${craftedPrompt.crafted_prompt_id}`,
+          {
+            crafted_prompt_title: `${title}`,
+            crafted_prompt_text: `${crafted_prompt_text}`,
+            craft_with: `${ai}`,
+            action: `${action}`,
+            agi_behavior: `${chosenBehaviour ? chosenBehaviour : null}`,
+            response_counter: `${counter}`,
           },
-        }
-      );
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else {
+        res = await axios.post(
+          `/boards/${board_id}/AGI/crafted-prompts`,
+          {
+            crafted_prompt_title: `${title}`,
+            crafted_prompt_text: `${crafted_prompt_text}`,
+            craft_with: `${ai}`,
+            action: `${action}`,
+            agi_behavior: `${chosenBehaviour ? chosenBehaviour : null}`,
+            response_counter: `${counter}`,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
       if (res) {
-        alert("Crafted prompt saved!");
-        onCancel();
+        setShowSuccessfulSavePopup(true);
       }
 
       console.log(res);
@@ -168,7 +240,8 @@ const CraftPromptPopup = ({ board_id, onCancel }) => {
               <input
                 type="text"
                 placeholder="Enter the title of this prompt"
-                ref={titleInputRef}
+                value={promptTitle}
+                onChange={handlePromptTitleInputChange}
               />
             </div>
             <div className="gt-input-prompt">
@@ -176,7 +249,8 @@ const CraftPromptPopup = ({ board_id, onCancel }) => {
               <input
                 type="text"
                 placeholder="Enter your own prompt"
-                ref={promptInputRef}
+                value={promptText}
+                onChange={handlePromptTextInputChange}
               />
             </div>
             <div className="gt-action-buttons">
@@ -202,7 +276,7 @@ const CraftPromptPopup = ({ board_id, onCancel }) => {
                 <p>AI should act as a...:</p>
                 <BasicAutocomplete
                   placeholder={"Type in a behaviour"}
-                  setValue={chosenBehaviour}
+                  selectedValue={chosenBehaviour ? chosenBehaviour : ""}
                   setSelectedValue={setChosenBehaviour}
                   behaviourOptions={behaviourOptions}
                   setBehaviourOptions={setBehaviourOptions}
@@ -220,20 +294,26 @@ const CraftPromptPopup = ({ board_id, onCancel }) => {
                 className="generate-button"
                 onClick={() =>
                   SavePrompt(
-                    titleInputRef.current.value,
-                    promptInputRef.current.value,
+                    promptTitle,
+                    promptText,
                     chosenAI.value,
                     chosenAction.value,
                     taskCounter.value
                   )
                 }
               >
-                Generate
+                Save
               </button>
             </div>
           </div>
         </div>
       </div>
+      {showSuccessfulSavePopup && (
+        <SimpleLabelPopup
+          title={"Successfully saved"}
+          onCancel={() => onCancel()}
+        />
+      )}
       {error && (
         <ErrorWrapper
           originalError={error}

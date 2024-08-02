@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
 import ErrorWrapper from "../ErrorWrapper";
+import SimpleLabelPopup from "./SimpleLabelPopup";
 
 const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
   let [editedTasks, setEditedTasks] = useState(tasks ? [...tasks] : []);
@@ -33,6 +34,7 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
     { value: "10", label: "10" },
   ];
   let [taskCounter, setTaskCounter] = useState(counterOptions[0]);
+  const [showSuccessfulSavePopup, setShowSuccessfulSavePopup] = useState(false);
 
   const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
@@ -104,8 +106,7 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
 
       console.log(res);
       console.log(res.data);
-      alert("Saved!");
-      oncancel();
+      setShowSuccessfulSavePopup(true);
     } catch (e) {
       setError(e?.response?.data);
     }
@@ -311,6 +312,12 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
           )}
         </div>
       </div>
+      {showSuccessfulSavePopup && (
+        <SimpleLabelPopup
+          title={"Successfully saved"}
+          onCancel={() => onCancel()}
+        />
+      )}
       {error && (
         <ErrorWrapper
           originalError={error}

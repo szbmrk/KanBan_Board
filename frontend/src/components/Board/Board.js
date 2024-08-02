@@ -37,6 +37,7 @@ import cloneDeep from "lodash/cloneDeep";
 import GenerateTaskWithAGIPopup from "../GenerateTaskWithAGIPopup";
 import GenerateAttachmentLinkWithAGIPopup from "../GenerateAttachmentLinkWithAGIPopup";
 import CraftPromptPopup from "../CraftPromptPopup";
+import CraftedPromptListPopup from "../CraftedPromptListPopup";
 import { useNavigate } from "react-router-dom";
 import CodePopup from "../CodePopup";
 import IconContainer from "./IconContainer";
@@ -103,6 +104,8 @@ const Board = () => {
     const [openTagsOnStart, setOpenTagsOnStart] = useState(false);
     const [showIconContainer, setShowIconContainer] = useState(false);
     const [showIconContainer1, setShowIconContainer1] = useState(false);
+  const [showCraftedPromptListPopup, setShowCraftedPromptListPopup] =
+    useState(false);
     const [showCraftPromptPopup, setShowCraftPromptPopup] = useState(false);
     const [
         showGeneratePerformanceSummaryPopup,
@@ -115,6 +118,7 @@ const Board = () => {
     const [isHoveredAI, setIsHoveredAI] = useState(-1);
     const [isHoveredClipboard, setIsHoveredClipboard] = useState(-1);
     const [isHoveredCode, setIsHoveredCode] = useState(false);
+  const [isHoveredCraftList, setIsHoveredCraftList] = useState(false);
     const [isHoveredCraft, setIsHoveredCraft] = useState(false);
     const [isHoveredPerformanceSummary, setIsHoveredPerformanceSummary] =
         useState(false);
@@ -226,7 +230,7 @@ const Board = () => {
         window.Pusher.logToConsole = true;
 
         const echo = new Echo({
-            broadcaster: 'pusher',
+      broadcaster: "pusher",
             key: REACT_APP_PUSHER_KEY,
             cluster: REACT_APP_PUSHER_CLUSTER,
             forceTLS: false,
@@ -234,8 +238,8 @@ const Board = () => {
             wsPort: REACT_APP_PUSHER_PORT || 6001,
             wssPort: REACT_APP_PUSHER_PORT || 6001,
             disableStats: true,
-            enabledTransports: ['ws', 'wss'],
-        })
+      enabledTransports: ["ws", "wss"],
+    });
 
         const channel = echo.channel(`BoardChange`);
 
@@ -382,6 +386,12 @@ const Board = () => {
             case "CREATED_PROMPT":
                 webSocketCreatePrompt(websocket.data);
                 break;
+      case "UPDATED_PROMPT":
+        webSocketUpdatePrompt(websocket.data);
+        break;
+      case "DELETED_PROMPT":
+        webSocketDeletePrompt(websocket.data);
+        break;
             default:
                 break;
         }
@@ -848,6 +858,55 @@ const Board = () => {
         }
     };
 
+  const webSocketUpdatePrompt = async (data) => {
+    craftedPromptsRef.current.forEach((currentPrompt, index) => {
+      if (
+        data.craftedPrompt.crafted_prompt_id === currentPrompt.crafted_prompt_id
+      ) {
+        craftedPromptsRef.current[index] = data.craftedPrompt;
+      }
+    });
+    setCraftedPrompts(craftedPromptsRef.current);
+
+    craftedPromptsBoardRef.current.forEach((currentPrompt, index) => {
+      if (
+        data.craftedPrompt.crafted_prompt_id === currentPrompt.crafted_prompt_id
+      ) {
+        craftedPromptsBoardRef.current[index] = data.craftedPrompt;
+      }
+    });
+    setCraftedPromptsBoard(craftedPromptsBoardRef.current);
+
+    craftedPromptsTaskRef.current.forEach((currentPrompt, index) => {
+      if (
+        data.craftedPrompt.crafted_prompt_id === currentPrompt.crafted_prompt_id
+      ) {
+        craftedPromptsTaskRef.current[index] = data.craftedPrompt;
+      }
+    });
+    setCraftedPromptsTask(craftedPromptsTaskRef.current);
+  };
+
+  const webSocketDeletePrompt = async (data) => {
+    craftedPromptsRef.current = craftedPromptsRef.current.filter(
+      (currentPrompt) =>
+        data.craftedPrompt.crafted_prompt_id !== currentPrompt.crafted_prompt_id
+    );
+    setCraftedPrompts(craftedPromptsRef.current);
+
+    craftedPromptsBoardRef.current = craftedPromptsBoardRef.current.filter(
+      (currentPrompt) =>
+        data.craftedPrompt.crafted_prompt_id !== currentPrompt.crafted_prompt_id
+    );
+    setCraftedPromptsBoard(craftedPromptsBoardRef.current);
+
+    craftedPromptsTaskRef.current = craftedPromptsTaskRef.current.filter(
+      (currentPrompt) =>
+        data.craftedPrompt.crafted_prompt_id !== currentPrompt.crafted_prompt_id
+    );
+    setCraftedPromptsTask(craftedPromptsTaskRef.current);
+  };
+
     function formatTimestamp(timestamp) {
         const date = new Date(timestamp);
 
@@ -858,9 +917,7 @@ const Board = () => {
         const minutes = String(date.getUTCMinutes()).padStart(2, '0');
 
         return `${year}-${month}-${day} ${hours}:${minutes}`;
-    }
-
-    const reloadPriorities = async () => {
+    }    const reloadPriorities = async () => {
         try {
             const prioritiesResponse = await axios.get("/priorities", {
                 headers: {
@@ -897,6 +954,8 @@ const Board = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
+      console.log("BÓÓÓÓD");
+      console.log(response);
 
             setPermission(true);
             let tempBoard = response.data.board;
@@ -2240,6 +2299,12 @@ const Board = () => {
         setIsHoveredCraft(false);
     };
 
+  const handleShowCraftedPromptListPopup = () => {
+    setShowCraftedPromptListPopup(true);
+    setIsAGIOpen(false);
+    setIsHoveredCraftList(false);
+  };
+
     const handleShowGeneratePerformanceSummaryPopup = () => {
         setShowGeneratePerformanceSummaryPopup(true);
         setIsAGIOpen(false);
@@ -3343,6 +3408,23 @@ const Board = () => {
                                         <span>Craft Prompt</span>
                                     </li>
                                     <li
+                    onMouseEnter={() => setIsHoveredCraftList(true)}
+                    onMouseLeave={() => setIsHoveredCraftList(false)}
+                    onClick={() => {
+                      handleShowCraftedPromptListPopup();
+                    }}
+                  >
+                    <span
+                      className="craft-button"
+                      style={{
+                        color: isHoveredCraftList ? "var(--craft)" : "",
+                      }}
+                    >
+                      {craftIcon}
+                    </span>
+                    <span>Crafted Prompts</span>
+                  </li>
+                  <li
                                         onMouseEnter={() => setIsHoveredDocumentation(true)}
                                         onMouseLeave={() => setIsHoveredDocumentation(false)}
                                         onClick={() => {
@@ -3646,6 +3728,13 @@ const Board = () => {
                             onConfirm={handleDeleteCodeReviewOrDocumentationConfirm}
                         />
                     )}
+          {showCraftedPromptListPopup && (
+            <CraftedPromptListPopup
+              board_id={board_id}
+              craftedPrompts={craftedPrompts}
+              onCancel={() => setShowCraftedPromptListPopup(false)}
+            />
+          )}
                     {showCraftPromptPopup && (
                         <CraftPromptPopup
                             board_id={board_id}
@@ -3666,8 +3755,7 @@ const Board = () => {
                     )}
                 </DndProvider >
             )}
-            {
-                showPopup && (
+      {showPopup && (
                     <Popup
                         task={inspectedTask}
                         openTagsOnStart={openTagsOnStart}
@@ -3695,18 +3783,15 @@ const Board = () => {
                         removeTagFromTask={handleRemoveTagFromTask}
                         ref={popupRef}
                     />
-                )
-            }
-            {
-                error && (
+      )}
+      {error && (
                     <ErrorWrapper
                         originalError={error}
                         onClose={() => {
                             setError(null);
                         }}
                     />
-                )
-            }
+      )}
         </>
     );
 };
