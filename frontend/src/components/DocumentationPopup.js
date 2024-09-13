@@ -7,6 +7,7 @@ import "../styles/popup.css";
 import "../styles/documentPopup.css";
 import hljs from "highlight.js";
 import ErrorWrapper from "../ErrorWrapper";
+import SimpleLoaderPopup from "./SimpleLoaderPopup";
 
 const DocumentationPopup = ({ board_id, task, column, onCancel }) => {
   const aiOptions = [
@@ -17,6 +18,8 @@ const DocumentationPopup = ({ board_id, task, column, onCancel }) => {
   let [chosenAI, setChosenAI] = useState(aiOptions[0].value);
 
   const [output, setOutput] = useState("");
+  const [showAIGeneratingLoaderPopup, setShowAIGeneratingLoaderPopup] =
+    useState(false);
 
   const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
@@ -51,6 +54,7 @@ const DocumentationPopup = ({ board_id, task, column, onCancel }) => {
   const GenerateTaskDocumentationPerTask = async () => {
     try {
       const token = sessionStorage.getItem("token");
+      setShowAIGeneratingLoaderPopup(true);
 
       const res = await axios.get(
         `/AGI/generate-documentation-task/board/${board_id}/task/${task.task_id}`,
@@ -63,10 +67,12 @@ const DocumentationPopup = ({ board_id, task, column, onCancel }) => {
         }
       );
 
+      setShowAIGeneratingLoaderPopup(false);
       console.log(res);
       console.log(res.data.response);
       setOutput(res.data.response);
     } catch (e) {
+      setShowAIGeneratingLoaderPopup(false);
       setError(e?.response?.data);
     }
   };
@@ -74,6 +80,7 @@ const DocumentationPopup = ({ board_id, task, column, onCancel }) => {
   const GenerateTaskDocumentationPerColumn = async () => {
     try {
       const token = sessionStorage.getItem("token");
+      setShowAIGeneratingLoaderPopup(true);
 
       const res = await axios.get(
         `/AGI/generate-documentation-column/board/${board_id}/column/${column.column_id}`,
@@ -86,10 +93,12 @@ const DocumentationPopup = ({ board_id, task, column, onCancel }) => {
         }
       );
 
+      setShowAIGeneratingLoaderPopup(false);
       console.log(res);
       console.log(res.data.response);
       setOutput(res.data.response);
     } catch (e) {
+      setShowAIGeneratingLoaderPopup(false);
       setError(e?.response?.data);
     }
   };
@@ -97,6 +106,7 @@ const DocumentationPopup = ({ board_id, task, column, onCancel }) => {
   const GenerateTaskDocumentationPerBoard = async () => {
     try {
       const token = sessionStorage.getItem("token");
+      setShowAIGeneratingLoaderPopup(true);
 
       const res = await axios.get(
         `/AGI/generate-documentation-board/${board_id}`,
@@ -109,10 +119,12 @@ const DocumentationPopup = ({ board_id, task, column, onCancel }) => {
         }
       );
 
+      setShowAIGeneratingLoaderPopup(false);
       console.log(res);
       console.log(res.data.response);
       setOutput(res.data.response);
     } catch (e) {
+      setShowAIGeneratingLoaderPopup(false);
       setError(e?.response?.data);
     }
   };
@@ -150,9 +162,14 @@ const DocumentationPopup = ({ board_id, task, column, onCancel }) => {
               Run
             </button>
           </div>
-          <textarea className="output-textarea" value={output} disabled />
+          <div>
+            <textarea className="output-textarea" value={output} disabled />
+          </div>
         </div>
       </div>
+      {showAIGeneratingLoaderPopup && (
+        <SimpleLoaderPopup title={"Generating..."} />
+      )}
       {error && (
         <ErrorWrapper
           originalError={error}

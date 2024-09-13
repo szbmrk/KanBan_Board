@@ -9,6 +9,7 @@ import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import ErrorWrapper from "../ErrorWrapper";
 import SimpleLabelPopup from "./SimpleLabelPopup";
+import SimpleLoaderPopup from "./SimpleLoaderPopup";
 
 const GenerateAttachmentLinkWithAGIPopup = ({
   task,
@@ -45,6 +46,8 @@ const GenerateAttachmentLinkWithAGIPopup = ({
   const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
   const [error, setError] = useState(null);
+  const [showAIGeneratingLoaderPopup, setShowAIGeneratingLoaderPopup] =
+    useState(false);
 
   const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
   useEffect(() => {
@@ -91,6 +94,7 @@ const GenerateAttachmentLinkWithAGIPopup = ({
   const generateAttachment = async (task, ai, counter) => {
     try {
       const token = sessionStorage.getItem("token");
+      setShowAIGeneratingLoaderPopup(true);
 
       console.log("task");
       console.log(task);
@@ -106,12 +110,14 @@ const GenerateAttachmentLinkWithAGIPopup = ({
         },
       });
 
+      setShowAIGeneratingLoaderPopup(false);
       console.log(res);
       console.log(res.data);
 
       setAttachments(res.data);
       //setNeedLoader(false);
     } catch (e) {
+      setShowAIGeneratingLoaderPopup(false);
       setError(e?.response?.data);
     }
   };
@@ -235,6 +241,9 @@ const GenerateAttachmentLinkWithAGIPopup = ({
           title={"Successfully saved"}
           onCancel={() => onCancel()}
         />
+      )}
+      {showAIGeneratingLoaderPopup && (
+        <SimpleLoaderPopup title={"Generating..."} />
       )}
       {error && (
         <ErrorWrapper

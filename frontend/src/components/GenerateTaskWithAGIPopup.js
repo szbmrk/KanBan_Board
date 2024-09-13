@@ -9,6 +9,7 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
 import ErrorWrapper from "../ErrorWrapper";
 import SimpleLabelPopup from "./SimpleLabelPopup";
+import SimpleLoaderPopup from "./SimpleLoaderPopup";
 
 const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
   let [editedTasks, setEditedTasks] = useState(tasks ? [...tasks] : []);
@@ -39,6 +40,8 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
   const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
   const [error, setError] = useState(null);
+  const [showAIGeneratingLoaderPopup, setShowAIGeneratingLoaderPopup] =
+    useState(false);
 
   const handleTitleChange = (task, title) => {
     const updatedTask = (task.title = title);
@@ -115,6 +118,7 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
   const generateTask = async (taskPrompt, task, ai, counter) => {
     try {
       const token = sessionStorage.getItem("token");
+      setShowAIGeneratingLoaderPopup(true);
 
       console.log(taskPrompt);
       console.log(counter);
@@ -127,6 +131,7 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
         },
       });
 
+      setShowAIGeneratingLoaderPopup(false);
       console.log(res);
       console.log(res.data);
 
@@ -143,7 +148,11 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
         setEditedTasks(res.data);
       }
     } catch (e) {
+      console.log("We got an error. YAAAY");
+      console.log(e);
+      setShowAIGeneratingLoaderPopup(false);
       setError(e?.response?.data);
+      console.log(error);
     }
   };
 
@@ -190,6 +199,7 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
   const generateSubtask = async (taskPrompt, task, ai, counter) => {
     try {
       const token = sessionStorage.getItem("token");
+      setShowAIGeneratingLoaderPopup(true);
 
       console.log(taskPrompt);
       console.log(counter);
@@ -202,6 +212,7 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
         },
       });
 
+      setShowAIGeneratingLoaderPopup(false);
       console.log(res);
       console.log(res.data);
 
@@ -218,6 +229,8 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
         setEditedTasks(res.data);
       }
     } catch (e) {
+      setShowAIGeneratingLoaderPopup(false);
+      console.log("GENERATE SUBTASK ERROR");
       setError(e?.response?.data);
     }
   };
@@ -231,25 +244,29 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
         <div className="gt-popup-content">
           {editedTasks.length > 0 ? (
             <>
-              {editedTasks.map((editedTask, index) => (
-                <TaskRecursive
-                  deepness={0}
-                  key={index}
-                  task={editedTask}
-                  aiOptions={aiOptions}
-                  counterOptions={counterOptions}
-                  generateSubtask={generateSubtask}
-                  handleTitleChange={handleTitleChange}
-                  handleDescriptionChange={handleDescriptionChange}
-                  handleDueDateChange={handleDueDateChange}
-                  handleTagChange={handleTagChange}
-                  editedTasks={editedTasks}
-                />
-              ))}
-              <div className="gt-button-container">
-                <button className="save-button" onClick={saveToDatabase}>
-                  Save
-                </button>
+              <div>
+                <div>
+                  {editedTasks.map((editedTask, index) => (
+                    <TaskRecursive
+                      deepness={0}
+                      key={index}
+                      task={editedTask}
+                      aiOptions={aiOptions}
+                      counterOptions={counterOptions}
+                      generateSubtask={generateSubtask}
+                      handleTitleChange={handleTitleChange}
+                      handleDescriptionChange={handleDescriptionChange}
+                      handleDueDateChange={handleDueDateChange}
+                      handleTagChange={handleTagChange}
+                      editedTasks={editedTasks}
+                    />
+                  ))}
+                  <div className="gt-button-container">
+                    <button className="save-button" onClick={saveToDatabase}>
+                      Save
+                    </button>
+                  </div>
+                </div>
               </div>
             </>
           ) : (
@@ -317,6 +334,9 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
           title={"Successfully saved"}
           onCancel={() => onCancel()}
         />
+      )}
+      {showAIGeneratingLoaderPopup && (
+        <SimpleLoaderPopup title={"Generating..."} />
       )}
       {error && (
         <ErrorWrapper

@@ -9,6 +9,7 @@ import hljs from "highlight.js";
 import ErrorWrapper from "../ErrorWrapper";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import SimpleLoaderPopup from "./SimpleLoaderPopup";
 
 const GeneratePerformanceSummaryPopup = ({ board_id, onCancel }) => {
   const currentDate = new Date();
@@ -46,10 +47,13 @@ const GeneratePerformanceSummaryPopup = ({ board_id, onCancel }) => {
   const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
   const [error, setError] = useState(null);
+  const [showAIGeneratingLoaderPopup, setShowAIGeneratingLoaderPopup] =
+    useState(false);
 
   const handleRunClick = async () => {
     try {
       const token = sessionStorage.getItem("token");
+      setShowAIGeneratingLoaderPopup(true);
 
       const res = await axios.post(
         `/AGI/generate-performance-summary`,
@@ -67,10 +71,12 @@ const GeneratePerformanceSummaryPopup = ({ board_id, onCancel }) => {
         }
       );
 
+      setShowAIGeneratingLoaderPopup(false);
       console.log(res);
       console.log(res.data.response);
       setOutput(res.data.response);
     } catch (e) {
+      setShowAIGeneratingLoaderPopup(false);
       setError(e?.response?.data);
     }
   };
@@ -144,9 +150,14 @@ const GeneratePerformanceSummaryPopup = ({ board_id, onCancel }) => {
               Run
             </button>
           </div>
-          <textarea className="output-textarea" value={output} disabled />
+          <div>
+            <textarea className="output-textarea" value={output} disabled />
+          </div>
         </div>
       </div>
+      {showAIGeneratingLoaderPopup && (
+        <SimpleLoaderPopup title={"Generating..."} />
+      )}
       {error && (
         <ErrorWrapper
           originalError={error}

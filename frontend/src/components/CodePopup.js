@@ -7,6 +7,7 @@ import "../styles/popup.css";
 import "../styles/CodePopup.css";
 import hljs from "highlight.js";
 import ErrorWrapper from "../ErrorWrapper";
+import SimpleLoaderPopup from "./SimpleLoaderPopup";
 
 const CodePopup = ({
   board_id,
@@ -73,10 +74,13 @@ const CodePopup = ({
   const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
   const [error, setError] = useState(null);
+  const [showAIGeneratingLoaderPopup, setShowAIGeneratingLoaderPopup] =
+    useState(false);
 
   const handleRunClick = async () => {
     try {
       const token = sessionStorage.getItem("token");
+      setShowAIGeneratingLoaderPopup(true);
       console.log("selectedOption");
       console.log(selectedOption);
       console.log(inputCode);
@@ -98,10 +102,12 @@ const CodePopup = ({
         }
       );
 
+      setShowAIGeneratingLoaderPopup(false);
       console.log(res);
       console.log(res.data.review);
       setOutput(res.data.review);
     } catch (e) {
+      setShowAIGeneratingLoaderPopup(false);
       setError(e?.response?.data);
     }
   };
@@ -151,9 +157,14 @@ const CodePopup = ({
               Run
             </button>
           </div>
-          <textarea className="output-textarea" value={output} disabled />
+          <div>
+            <textarea className="output-textarea" value={output} disabled />
+          </div>
         </div>
       </div>
+      {showAIGeneratingLoaderPopup && (
+        <SimpleLoaderPopup title={"Generating..."} />
+      )}
       {error && (
         <ErrorWrapper
           originalError={error}
