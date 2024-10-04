@@ -61,9 +61,12 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsToMany(Team::class, 'team_members', 'user_id', 'team_id');
     }
-    
+
     public function isMemberOfBoard($board_id)
     {
+        if ($this->hasPermission('system_admin')) {
+            return true;
+        }
         // Check if the user's teams have the specified board
         return $this->teams()->whereHas('boards', function ($query) use ($board_id) {
             $query->where('board_id', $board_id);
@@ -80,7 +83,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Mention::class);
     }
 
-    public function feedback() 
+    public function feedback()
     {
         return $this->hasMany(Feedback::class, 'task_id');
     }
@@ -92,12 +95,12 @@ class User extends Authenticatable implements JWTSubject
 
     public function userTasks()
     {
-        return $this->hasMany(UserTask::class, 'user_id'); 
+        return $this->hasMany(UserTask::class, 'user_id');
     }
 
     public function favouriteTasks()
     {
-        return $this->hasMany(FavouriteTask::class, 'user_id'); 
+        return $this->hasMany(FavouriteTask::class, 'user_id');
     }
 
     public function teamMembers()
@@ -116,11 +119,11 @@ class User extends Authenticatable implements JWTSubject
             'team_member_id'
         );
     }
-    
+
     public function hasPermission($permission)
     {
         $allRoles = $this->teamMembers->flatMap->roles;
-    
+
         foreach ($allRoles as $role) {
             if ($role->permissions->contains('name', $permission)) {
                 return true;
@@ -128,19 +131,19 @@ class User extends Authenticatable implements JWTSubject
         }
         return false;
     }
-    
+
     public function getRoles($boardId = null)
     {
-        return $this->teamMembers->flatMap(function($teamMember) use ($boardId) {
-            return $teamMember->roles->filter(function($role) use ($boardId) {
+        return $this->teamMembers->flatMap(function ($teamMember) use ($boardId) {
+            return $teamMember->roles->filter(function ($role) use ($boardId) {
                 return $boardId ? $role->board_id == $boardId : true;
             });
         })->unique('role_id')->values()->all();
     }
-    
+
     public function getPermissions()
     {
-        return $this->teamMembers->flatMap(function($teamMember) {
+        return $this->teamMembers->flatMap(function ($teamMember) {
             return $teamMember->roles->flatMap->permissions->pluck('name');
         })->unique()->all();
     }
