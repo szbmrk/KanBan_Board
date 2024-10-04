@@ -12,7 +12,7 @@ class BoardController extends Controller
     public function show($board_id)
     {
         $user = auth()->user();
-        
+
         $board = Board::with([
             'columns.tasks.tags' => function ($query) {
                 // Add an orderBy clause to sort tags by tag_id
@@ -28,6 +28,10 @@ class BoardController extends Controller
         if (!$board) {
             LogRequest::instance()->logAction('BOARD NOT FOUND', $user->user_id, "Board not found. -> board_id: $board_id", null, null, null);
             return response()->json(['error' => 'Board not found'], 404);
+        }
+
+        if ($user->hasPermission('system_admin')) {
+            return response()->json(['board' => $board]);
         }
 
         if (!$user->isMemberOfBoard($board_id)) {
