@@ -515,6 +515,37 @@
     }
 }
 
+/* Style for the filter dropdown */
+.log-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 20px;
+    color: var(--light-gray);
+}
+
+.log-filter label {
+    font-weight: bold;
+}
+
+.log-filter select {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid var(--light-gray);
+    background-color: var(--dark-gray);
+    color: var(--light-gray);
+    outline: none;
+}
+
+/* Activity count display */
+.log-activity-count {
+    color: var(--light-gray);
+    font-size: 14px;
+    margin: 10px 20px;
+    font-style: italic;
+}
+
+/* Keep the same styles for the rest of the log UI */
 .log-submenu {
     width: max-content;
     min-width: 500px;
@@ -545,18 +576,8 @@
     border-bottom: 1px solid var(--light-gray);
     position: sticky;
     top: 0;
-    /* Stick to the top of the .log-header */
     background-color: var(--dark-gray);
-    /* Match the background color */
     z-index: 102;
-    /* Ensure it is above other content */
-}
-
-.log-menu {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
 }
 
 .log-container {
@@ -568,10 +589,6 @@
 .log-container p {
     color: var(--light-gray);
     margin: 0 0 8px;
-}
-
-.log-container :last-child {
-    margin-bottom: 10px;
 }
 
 .log-item {
@@ -615,6 +632,62 @@
     padding: 5px;
     font-weight: bold;
     margin: 5px;
+}
+
+/* Dropdown filter styling */
+.log-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 20px;
+    color: var(--light-gray);
+}
+
+.log-filter label {
+    font-weight: bold;
+}
+
+.log-filter select {
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--light-gray);
+    background-color: var(--bg-mostly-black);
+    color: var(--light-gray);
+    outline: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.log-filter select:hover {
+    background-color: var(--light-gray);
+    color: var(--bg-mostly-black);
+}
+
+/* Activity count styling */
+.log-activity-count {
+    color: var(--light-gray);
+    font-size: 15px;
+    margin: 12px 20px;
+    font-weight: 600;
+    border-left: 3px solid var(--highlight-color);
+    padding-left: 10px;
+    font-style: italic;
+}
+
+/* Keep the same styles for the rest of the log UI */
+.log-submenu {
+    width: max-content;
+    min-width: 500px;
+    max-height: 80%;
+    position: absolute;
+    top: 100px;
+    right: 0;
+    background-color: var(--dark-gray);
+    border: 1px solid var(--dark-gray);
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+    margin: 10px;
+    z-index: 100;
+    overflow-y: scroll;
 }
 
 
