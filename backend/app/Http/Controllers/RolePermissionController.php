@@ -13,36 +13,41 @@ class RolePermissionController extends Controller
     public function index(Request $request, $boardId)
     {
         $user = auth()->user();
-    
+
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-    
+
         $board = Board::find($boardId);
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
         }
-    
+
+        if ($user->hasPermission('system_admin')) {
+            $roles = Role::where('board_id', $boardId)->with('permissions')->get();
+            return response()->json(['roles' => $roles]);
+        }
+
         $isTeamMember = $board->team->teamMembers->contains('user_id', $user->user_id);
         $rolesOnBoard = $user->getRoles($boardId);
-        $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function($role) {
+        $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
             return in_array('roles_permissions_management', $role->permissions->pluck('name')->toArray());
         });
 
-        $hasRoleTeam_Management = collect($rolesOnBoard)->contains(function($role) {
+        $hasRoleTeam_Management = collect($rolesOnBoard)->contains(function ($role) {
             return in_array('team_management', $role->permissions->pluck('name')->toArray());
         });
 
-        $hasRoleRole_Management = collect($rolesOnBoard)->contains(function($role) {
+        $hasRoleRole_Management = collect($rolesOnBoard)->contains(function ($role) {
             return in_array('role_management', $role->permissions->pluck('name')->toArray());
         });
-    
+
         if (!$isTeamMember || (!$hasRoleTeam_Management && !$hasRoleManagementPermission && !$hasRoleRole_Management)) {
             return response()->json(['error' => 'You don\'t have permission to view role-permissions on this board.'], 403);
         }
 
         $roles = Role::where('board_id', $boardId)->with('permissions')->get();
-    
+
         return response()->json(['roles' => $roles]);
     }
 
@@ -74,7 +79,7 @@ class RolePermissionController extends Controller
 
         $isTeamMember = $board->team->teamMembers->contains('user_id', $user->user_id);
         $rolesOnBoard = $user->getRoles($boardId);
-        $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function($role) {
+        $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
             return in_array('roles_permissions_management', $role->permissions->pluck('name')->toArray());
         });
 
@@ -121,7 +126,7 @@ class RolePermissionController extends Controller
 
         $isTeamMember = $board->team->teamMembers->contains('user_id', $user->user_id);
         $rolesOnBoard = $user->getRoles($boardId);
-        $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function($role) {
+        $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
             return in_array('roles_permissions_management', $role->permissions->pluck('name')->toArray());
         });
 
