@@ -3,7 +3,7 @@ import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 import Loader from "../Loader";
 import Error from "../Error";
-import { SetRoles, checkPermissionForBoard, checkPermisson } from "../../roles/Roles";
+import { SetRoles, checkIfAdmin, checkPermissionForBoard, checkPermisson } from "../../roles/Roles";
 import "../../styles/dashboard.css";
 
 export default function ManageBoardPermissions() {
@@ -22,14 +22,27 @@ export default function ManageBoardPermissions() {
 
         const fetchDashboardData = async () => {
             try {
-                const response = await axios.get("/dashboard", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                const teamData = response.data.teams;
-                setTeams(teamData);
                 await SetRoles(token);
+
+                if (checkIfAdmin()) {
+                    const response = await axios.get("/dashboard/boards", {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    const teamData = response.data.teams;
+                    setTeams(teamData);
+                }
+
+                else {
+                    const response = await axios.get("/dashboard", {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    const teamData = response.data.teams;
+                    setTeams(teamData);
+                }
             } catch (e) {
                 handleFetchError(e);
             }
