@@ -29,6 +29,7 @@ const Teams = () => {
 
     useEffect(() => {
         document.title = "KanBan | Teams";
+        ResetRoles();
         getTeams();
         //ez
         const ResetTheme = () => {
@@ -46,7 +47,6 @@ const Teams = () => {
 
     useEffect(() => {
         teamsRef.current = teams;
-        ResetRoles();
     }, [teams]);
 
     useEffect(() => {
@@ -368,6 +368,7 @@ const Teams = () => {
 
     const getTeams = async () => {
         try {
+            await SetRoles(token);
             if (checkIfAdmin()) {
                 const response = await axios.get(`/teams`, {
                     headers: {
