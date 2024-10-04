@@ -51,7 +51,7 @@ class ColumnController extends Controller
         $permissions = $user->getPermissions();
 
         if (!in_array('system_admin', $permissions)) {
-            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            if (!$user->isMemberOfBoard($board->board_id)) {
                 LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User is not a member of the team that owns this board. -> board_id: $board_id", $teamId, $board_id, null);
                 return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
             }

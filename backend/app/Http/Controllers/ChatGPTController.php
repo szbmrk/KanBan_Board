@@ -26,9 +26,9 @@ class ChatGPTController extends Controller
 {
     public static function GenerateTaskChatGPT($request, $craftedPrompt)
     {
-        $prompt = Self::PromptAssembly($request, $craftedPrompt);
+        $prompt = self::PromptAssembly($request, $craftedPrompt);
 
-        return Self::CallPythonAndFormatResponse($prompt);
+        return self::CallPythonAndFormatResponse($prompt);
     }
 
     public static function PromptAssembly($request, $craftedPrompt)
@@ -72,7 +72,7 @@ class ChatGPTController extends Controller
 
         $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
 
-        return Self::CallPythonAndFormatResponse($prompt);
+        return self::CallPythonAndFormatResponse($prompt);
 
 
     }
@@ -93,7 +93,7 @@ class ChatGPTController extends Controller
             $prompt = "Generate $taskCounter task kanban board tickets. JSON structure in a list. title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list). '$taskPrompt'. ";
 
             // Call the Python script and get the formatted response
-            $formattedResponse = Self::CallPythonAndFormatResponse($prompt);
+            $formattedResponse = self::CallPythonAndFormatResponse($prompt);
 
 
             // Store the response for this variant
@@ -115,16 +115,16 @@ class ChatGPTController extends Controller
         $prompt = "Generate $taskCounter subtask kanban tickets in JSON structure in a list with title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list) attributes for this ticket: '$taskPrompt'";
         // Construct the Python command with the required arguments and path to the script
 
-        return Self::CallPythonAndFormatResponse($prompt);
+        return self::CallPythonAndFormatResponse($prompt);
     }
 
     public static function GenerateAttachmentLinkChatGPT($request, $promptCraft)
     {
         $user = auth()->user();
 
-        $prompt = Self::PromptAssembly($request, $promptCraft);
+        $prompt = self::PromptAssembly($request, $promptCraft);
 
-        return Self::CallPythonAndFormatResponse($prompt);
+        return self::CallPythonAndFormatResponse($prompt);
     }
 
     public static function CallPythonAndFormatResponse($prompt)
@@ -288,7 +288,7 @@ class ChatGPTController extends Controller
             ]);
         }
         $board = Board::where('board_id', $boardId)->first();
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
@@ -350,7 +350,7 @@ class ChatGPTController extends Controller
         }
 
         $board = Board::where('board_id', $boardId)->first();
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 

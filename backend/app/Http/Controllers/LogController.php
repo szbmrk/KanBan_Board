@@ -24,7 +24,7 @@ class LogController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 

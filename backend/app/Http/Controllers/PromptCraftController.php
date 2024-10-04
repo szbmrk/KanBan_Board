@@ -40,12 +40,12 @@ class PromptCraftController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
         $craftedPrompts = CraftedPrompt::where('board_id', $boardId)->with('agiBehavior')->get();
-        
+
 
         return response()->json($craftedPrompts, 200);
     }
@@ -62,29 +62,29 @@ class PromptCraftController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
-        try{ 
+        try {
             $this->validate($request, [
-            'crafted_prompt_title' => 'required|string',
-            'crafted_prompt_text' => 'required|string',
-            'craft_with' => 'required|in:CHATGPT,LLAMA,BARD', 
-            'action' => 'required|in:GENERATETASK,GENERATESUBTASK,GENERATEATTACHMENTLINK', 
-            'response_counter' => 'required|integer',
+                'crafted_prompt_title' => 'required|string',
+                'crafted_prompt_text' => 'required|string',
+                'craft_with' => 'required|in:CHATGPT,LLAMA,BARD',
+                'action' => 'required|in:GENERATETASK,GENERATESUBTASK,GENERATEATTACHMENTLINK',
+                'response_counter' => 'required|integer',
             ]);
-        }
-        catch (ValidationException) 
-        {
+        } catch (ValidationException) {
             return response()->json(['error' => 'Invalid craft with or action value'], 400);
         }
 
         $craftedPrompt = new CraftedPrompt();
-        $craftedPrompt->agi_behavior_id = PromptCraftController::CheckAndGenerateAlreadyExistingBehavior($request,
-                                                                            $request->input('agi_behavior'),
-                                                                            $boardId);
-                                                                            
+        $craftedPrompt->agi_behavior_id = PromptCraftController::CheckAndGenerateAlreadyExistingBehavior(
+            $request,
+            $request->input('agi_behavior'),
+            $boardId
+        );
+
 
         $craftedPrompt->crafted_prompt_title = $request->input('crafted_prompt_title');
         $craftedPrompt->crafted_prompt_text = $request->input('crafted_prompt_text');
@@ -117,7 +117,7 @@ class PromptCraftController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
@@ -132,21 +132,21 @@ class PromptCraftController extends Controller
 
         if ($validator->fails()) {
             $errorMessages = [];
-            
+
             if ($validator->errors()->hasAny(['crafted_prompt_title', 'crafted_prompt_text', 'craft_with', 'action'])) {
-            
+
                 if ($validator->errors()->has('crafted_prompt_title')) {
                     $errorMessages[] = $validator->errors()->first('crafted_prompt_title');
                 }
-                
+
                 if ($validator->errors()->has('crafted_prompt_text')) {
                     $errorMessages[] = $validator->errors()->first('crafted_prompt_text');
                 }
-                
+
                 if ($validator->errors()->has('craft_with')) {
                     $errorMessages[] = $validator->errors()->first('craft_with');
                 }
-                
+
                 if ($validator->errors()->has('action')) {
                     $errorMessages[] = $validator->errors()->first('action');
                 }
@@ -155,7 +155,7 @@ class PromptCraftController extends Controller
                     $errorMessages[] = $validator->errors()->first('response_counter');
                 }
             }
-            
+
             return response()->json(['error' => implode(', ', $errorMessages)], 422);
         }
 
@@ -165,8 +165,7 @@ class PromptCraftController extends Controller
             return response()->json(['error' => 'Prompt not found.'], 404);
         }
 
-        if($prompt->board_id != $boardId) 
-        {
+        if ($prompt->board_id != $boardId) {
             return response()->json(['error' => 'Prompt not found on this board.'], 404);
         }
 
@@ -184,17 +183,19 @@ class PromptCraftController extends Controller
 
         if ($request->has('action')) {
             $prompt->action = $request->input('action');
-        } 
+        }
 
         if ($request->has('response_counter')) {
             $prompt->response_counter = $request->input('response_counter');
-        } 
+        }
 
-        
-        $prompt->agi_behavior_id = PromptCraftController::CheckAndGenerateAlreadyExistingBehavior($request,
+
+        $prompt->agi_behavior_id = PromptCraftController::CheckAndGenerateAlreadyExistingBehavior(
+            $request,
             $request->input('agi_behavior'),
-            $boardId);
-        
+            $boardId
+        );
+
         $prompt->save();
 
         $data = [
@@ -219,7 +220,7 @@ class PromptCraftController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
@@ -239,7 +240,7 @@ class PromptCraftController extends Controller
         return response()->json(['message' => 'Prompt deleted successfully.'], 200);
     }
 
-   
+
     public function usePrompts(Request $request, $boardId, $craftedPromptId)
     {
         $user = auth()->user();
@@ -253,19 +254,17 @@ class PromptCraftController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
         $craftedPrompt = CraftedPrompt::where('crafted_prompt_id', $craftedPromptId)->get()->first();
 
-        if($craftedPrompt == null) 
-        {
+        if ($craftedPrompt == null) {
             return response()->json(['error' => 'Prompt not found.'], 404);
         }
 
-        if($craftedPrompt->board_id != $boardId) 
-        {
+        if ($craftedPrompt->board_id != $boardId) {
             return response()->json(['error' => 'Prompt not found on this board.'], 404);
         }
 
@@ -274,8 +273,7 @@ class PromptCraftController extends Controller
         $request->headers->set('TaskCounter', $craftedPrompt->response_counter);
         //$request->headers->set('PrecraftedPrompt', $craftedPrompt->crafted_prompt_text);
 
-        if($craftedPrompt->craft_with == "CHATGPT") 
-        {
+        if ($craftedPrompt->craft_with == "CHATGPT") {
             switch ($craftedPrompt->action) {
                 case "GENERATESUBTASK":
                     //ez azért ugyanaz mint a GenerateCraftedTaskChatGPT, mert nincs kiválasztva a frontenden, hogy mi az a taszk amihez a subtaskok kellenek
@@ -288,9 +286,7 @@ class PromptCraftController extends Controller
                     $response = ChatGPTController::GenerateTaskChatGPT($request, $craftedPrompt);
                     break;
             }
-        }
-        else if($craftedPrompt->craft_with == "BARD") 
-        {
+        } else if ($craftedPrompt->craft_with == "BARD") {
             switch ($craftedPrompt->action) {
                 case "GENERATESUBTASK":
                     $response = BardController::generateTaskBard($request, $craftedPrompt);
@@ -309,35 +305,29 @@ class PromptCraftController extends Controller
     }
 
 
-    public static function CheckAndGenerateAlreadyExistingBehavior($request, $agiBehavior, $boardId) 
+    public static function CheckAndGenerateAlreadyExistingBehavior($request, $agiBehavior, $boardId)
     {
-        if($agiBehavior != null && $agiBehavior != "null")
-        {
+        if ($agiBehavior != null && $agiBehavior != "null") {
             $agiBehaviors = AgiBehavior::where('act_as_a', $request->input('agi_behavior'))->get();
             $exists = false;
-        
-            foreach($agiBehaviors as $behavior) 
-            {
-                if($behavior->board_id == $boardId) 
-                {
+
+            foreach ($agiBehaviors as $behavior) {
+                if ($behavior->board_id == $boardId) {
                     $agi_behavior_id = $behavior->agi_behavior_id;
                     $exists = true;
                     break;
                 }
             }
-    
-            if(!$exists) 
-            {
+
+            if (!$exists) {
                 $agiBehavior = new AgiBehavior();
                 $agiBehavior->act_as_a = $request->input('agi_behavior');
                 $agiBehavior->board_id = $boardId;
                 $agiBehavior->save();
                 $agi_behavior_id = $agiBehavior->agi_behavior_id;
             }
-        
-        }  
-        else 
-        {
+
+        } else {
             $agi_behavior_id = null;
         }
 

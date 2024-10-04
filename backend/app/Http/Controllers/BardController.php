@@ -24,44 +24,37 @@ class BardController extends Controller
 
     public static function generateTaskBard(Request $request, $craftedPrompt)
     {
-        
-        $prompt = Self::AssemblyPrompt($request, $craftedPrompt);
 
-        return Self::CallPythonAndFormatResponse($prompt);
+        $prompt = self::AssemblyPrompt($request, $craftedPrompt);
+
+        return self::CallPythonAndFormatResponse($prompt);
     }
 
-    public static function AssemblyPrompt($request, $craftedPrompt) 
+    public static function AssemblyPrompt($request, $craftedPrompt)
     {
 
-        if(!$craftedPrompt) 
-        {
+        if (!$craftedPrompt) {
             $taskPrompt = $request->header('TaskPrompt');
             $taskCounter = $request->header('TaskCounter');
             $behavior = "";
-        }
-        else
-        {
+        } else {
             $taskPrompt = $craftedPrompt->crafted_prompt_text;
             $taskCounter = $craftedPrompt->response_counter;
             $behavior = AgiBehavior::where('agi_behavior_id', $craftedPrompt->agi_behavior_id)->first();
-            if(!$behavior) 
-            {
+            if (!$behavior) {
                 $behavior = "";
-            }
-            else 
-            {
+            } else {
                 $behavior = $behavior->act_as_a;
                 $behavior = "In your response act as a $behavior!!";
             }
 
-            if($craftedPrompt->action == "GENERATEATTACHMENTLINK") 
-            {
+            if ($craftedPrompt->action == "GENERATEATTACHMENTLINK") {
                 $prompt = "You are now a backend, which only responds with JSON structure. $behavior Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
                 return $prompt;
             }
-                
+
         }
-        
+
         $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
 
         $prompt = "You are now a backend which only respond in JSON stucture. $behavior Generate at least $taskCounter kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now '{$currentTime}' in yyyy-mm-dd) and tags (as a list) attributes for this task: $taskPrompt Focus on the tasks and do not write a summary at the end";
@@ -79,7 +72,7 @@ class BardController extends Controller
         // API call
         $prompt = "You are now a backend which only respond in JSON stucture. Generate at least $taskCounter kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now '{$currentTime}' in yyyy-mm-dd) and tags (as a list) attributes for this task: $taskPrompt Focus on the tasks and do not write a summary at the end";
 
-        return Self::CallPythonAndFormatResponse($prompt);
+        return self::CallPythonAndFormatResponse($prompt);
     }
 
 
@@ -87,19 +80,19 @@ class BardController extends Controller
     public static function parseSubtaskResponse($response)
     {
         preg_match_all('/\{\s*"title":\s*"(.*?)",\s*"description":\s*"(.*?)",\s*"due_date":\s*"(.*?)",\s*"tags":\s*\[(.*?)\]\s*\}/', $response, $matches, PREG_SET_ORDER);
-    
+
         $parsedData = [];
-    
+
         foreach ($matches as $match) {
             $title = trim($match[1]);
             $description = trim($match[2]);
             $dueDate = trim($match[3]);
             $tags = array_map('trim', explode(",", str_replace('"', '', $match[4])));
-    
+
             $tags = array_filter($tags, function ($tag) {
                 return strpos($tag, "Task") === false;
             });
-    
+
             $parsedData[] = [
                 "title" => $title,
                 "description" => $description,
@@ -107,41 +100,41 @@ class BardController extends Controller
                 "tags" => $tags
             ];
         }
-    
+
         return $parsedData;
     }
 
-    public static function generateTaskDraftBard(Request $request) 
+    public static function generateTaskDraftBard(Request $request)
     {
         $taskPrompt = $request->header('TaskPrompt');
         $taskCounter = $request->header('TaskCounter');
         $responseCounter = $request->header('ResponseCounter');
         $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
-    
+
         $prompt = "You are now a backend which only respond in JSON structure. Generate at least $taskCounter kanban tasks in JSON structure in a list with title, description, due_date (if the start date is now '{$currentTime}' in yyyy-mm-dd) and tags (as a list) attributes for this task: $taskPrompt Focus on the tasks and do not write a summary at the end";
-    
-        $array = Self::CallPythonAndFormatResponseDraft($prompt, $responseCounter);
-        
+
+        $array = self::CallPythonAndFormatResponseDraft($prompt, $responseCounter);
+
         return $array;
     }
 
     public static function parseTaskResponseDraft($response)
     {
         preg_match_all('/\{\s*"title":\s*"(.*?)",\s*"description":\s*"(.*?)",\s*"due_date":\s*"(.*?)",\s*"tags":\s*\[(.*?)\]\s*\}/', $response, $matches, PREG_SET_ORDER);
-    
+
         $parsedData = [];
 
-    
+
         foreach ($matches as $match) {
             $title = trim($match[1]);
             $description = trim($match[2]);
             $dueDate = trim($match[3]);
             $tags = array_map('trim', explode(",", str_replace('"', '', $match[4])));
-    
+
             $tags = array_filter($tags, function ($tag) {
                 return strpos($tag, "Task") === false;
             });
-    
+
             $parsedData[] = [
                 "title" => $title,
                 "description" => $description,
@@ -149,7 +142,7 @@ class BardController extends Controller
                 "tags" => $tags
             ];
         }
-    
+
         return $parsedData;
     }
 
@@ -157,23 +150,23 @@ class BardController extends Controller
     public static function GenerateTaskDocumentationPerTask($boardId, $taskId)
     {
         $user = auth()->user();
-        if(!$user){
+        if (!$user) {
             return response()->json([
                 'error' => 'Unauthorized!',
             ]);
         }
 
         $task = Task::find($taskId);
-        if(!$task){
+        if (!$task) {
             return response()->json([
                 'error' => 'Task not found!',
             ]);
         }
         $board = Board::where('board_id', $boardId)->first();
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
-        
+
         $prompt = "Generate documentation or a longer description for the task with the following title: {$task->title}, description: {$task->description}.";
         $path = env('BARD_PYTHON_SCRIPT_PATH');
         $command = "python {$path} \"{$prompt}\"";
@@ -234,7 +227,7 @@ class BardController extends Controller
         }
 
         $board = Board::where('board_id', $boardId)->first();
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
@@ -261,11 +254,11 @@ class BardController extends Controller
 
         for ($i = 1; $i <= $responseCounter; $i++) {
             $command = "python {$pythonScriptPath} \"{$prompt}\"";
-                $answer = shell_exec($command);
-            
-                $answer = Self::parseTaskResponseDraft($answer);
+            $answer = shell_exec($command);
+
+            $answer = self::parseTaskResponseDraft($answer);
             //  $parsedResponse = json_decode($answer, true); // Parse the JSON response
-                $responseArrays[$i] = $answer;
+            $responseArrays[$i] = $answer;
         }
         //dd($responseArrays);
 
@@ -276,10 +269,10 @@ class BardController extends Controller
     {
         $pythonScriptPath = env('BARD_PYTHON_SCRIPT_PATH'); // Path to your Python script
         $command = "python {$pythonScriptPath} \"{$prompt}\"";
-        
+
         try {
-            $answer = shell_exec($command);   
-            $parsedData = Self::parseTaskResponseDraft($answer);
+            $answer = shell_exec($command);
+            $parsedData = self::parseTaskResponseDraft($answer);
             return response()->json($parsedData);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
@@ -292,25 +285,25 @@ class BardController extends Controller
         $command = "python {$pythonScriptPath} \"{$prompt}\"";
 
         try {
-            $answer = shell_exec($command);   
-            $parsedData = Self::parseLinkResponse($answer);
+            $answer = shell_exec($command);
+            $parsedData = self::parseLinkResponse($answer);
             return response()->json($parsedData);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
         }
     }
 
-    public static function GenerateAttachmentLinkBard($request, $craftedPrompt) 
-    {  
-        $prompt = Self::AssemblyPrompt($request, $craftedPrompt);
+    public static function GenerateAttachmentLinkBard($request, $craftedPrompt)
+    {
+        $prompt = self::AssemblyPrompt($request, $craftedPrompt);
 
-        if(!$craftedPrompt) {
+        if (!$craftedPrompt) {
             $taskPrompt = $request->header('TaskPrompt');
             $taskCounter = $request->header('TaskCounter');
             $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
         }
 
-        return Self::CallPythonAndFormatResponseAttachment($prompt);
+        return self::CallPythonAndFormatResponseAttachment($prompt);
     }
 
     public static function parseLinkResponse($response)
@@ -331,11 +324,10 @@ class BardController extends Controller
         return $parsedData;
     }
 
-    public static function GenerateCodeReviewOrDocumentation(Request $request, $boardId, $expectedType) 
+    public static function GenerateCodeReviewOrDocumentation(Request $request, $boardId, $expectedType)
     {
         $user = auth()->user();
-        if(!$user)
-        {
+        if (!$user) {
             return response()->json([
                 'error' => 'Unauthorized!',
             ]);
@@ -355,10 +347,10 @@ class BardController extends Controller
 
         //get the code from the request body
 
-        $code = $request->input('code');        
+        $code = $request->input('code');
         $promptCodeReview = "Use only UTF-8 chars! In your response use 'Code review:'! Act as a Code reviewer programmer and generate a code review for the following code: '''$code'''. Do NOT send back any code!";
         $promptDocumentation = "Use only UTF-8 chars! In your response use 'Documentation:'! Act as an senior programmer and generate a documentation for the following code: '$code'. Do NOT send back any code!";
-    
+
         if ($expectedType === 'Code review') {
             $prompt = $promptCodeReview;
         } elseif ($expectedType === 'Documentation') {
@@ -368,8 +360,8 @@ class BardController extends Controller
                 'error' => 'Invalid expected type.',
             ], 400);
         }
-    
-        return Self::CallPythonAndFormatCodeReviewOrDocResponse($prompt, $boardId, $expectedType, $code);
+
+        return self::CallPythonAndFormatCodeReviewOrDocResponse($prompt, $boardId, $expectedType, $code);
     }
 
     public static function parseResponse($response)
@@ -389,47 +381,47 @@ class BardController extends Controller
         try {
             $answer = shell_exec($command);
 
-            $parsedData = Self::parseResponse($answer);
+            $parsedData = self::parseResponse($answer);
 
             $user = auth()->user();
             $board = Board::where('board_id', $boardId)->first();
             $chosenAI = request()->header('ChosenAI');
-            
+
             $agiAnswerId = request()->header('agi_answer_id');
-        
+
             if (!empty($agiAnswerId)) {
                 $agiAnswer = AGIAnswers::where('board_id', $board->board_id)
-                                    ->where('user_id', $user->user_id)
-                                    ->where('agi_answer_id', $agiAnswerId)
-                                    ->first();
-        
-                    if ($agiAnswer) {
-                        $agiAnswer->chosenAI = $chosenAI;
-                        $agiAnswer->codeReviewOrDocumentationType = $expectedType;
-                        $agiAnswer->codeReviewOrDocumentation = $parsedData;
-                        $agiAnswer->codeReviewOrDocumentationText = $code;
-                
-                        $agiAnswer->save();
-                    } else {
-                        return response()->json([
-                            'error' => 'AGI answer not found.',
-                        ], 404);
-                    }
-                } else {
-                    $agiAnswer = new AGIAnswers([
-                        'chosenAI' => $chosenAI,
-                        'codeReviewOrDocumentationType' => $expectedType,
-                        'codeReviewOrDocumentation' => $parsedData,
-                        'codeReviewOrDocumentationText' => $code,
-                        'board_id' => $board->board_id,
-                        'user_id' => $user->user_id,
-                    ]);
-                
-            
+                    ->where('user_id', $user->user_id)
+                    ->where('agi_answer_id', $agiAnswerId)
+                    ->first();
+
+                if ($agiAnswer) {
+                    $agiAnswer->chosenAI = $chosenAI;
+                    $agiAnswer->codeReviewOrDocumentationType = $expectedType;
+                    $agiAnswer->codeReviewOrDocumentation = $parsedData;
+                    $agiAnswer->codeReviewOrDocumentationText = $code;
+
                     $agiAnswer->save();
+                } else {
+                    return response()->json([
+                        'error' => 'AGI answer not found.',
+                    ], 404);
                 }
-            
-                
+            } else {
+                $agiAnswer = new AGIAnswers([
+                    'chosenAI' => $chosenAI,
+                    'codeReviewOrDocumentationType' => $expectedType,
+                    'codeReviewOrDocumentation' => $parsedData,
+                    'codeReviewOrDocumentationText' => $code,
+                    'board_id' => $board->board_id,
+                    'user_id' => $user->user_id,
+                ]);
+
+
+                $agiAnswer->save();
+            }
+
+
             $response = response()->json([
                 'reviewType' => $expectedType,
                 'review' => $parsedData,

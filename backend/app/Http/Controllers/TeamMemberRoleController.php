@@ -25,28 +25,28 @@ class TeamMemberRoleController extends Controller
     public function index($boardId)
     {
         $user = auth()->user();
-        
+
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        
+
         $board = Board::find($boardId);
-        
+
         if (!$board) {
             return response()->json(['error' => 'Board not found'], 404);
         }
-        
+
         $rolesOnBoard = $user->getRoles($boardId);
-        $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function($role) {
+        $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
             return in_array('team_member_role_management', $role->permissions->pluck('name')->toArray());
         });
-        
+
         if (!$hasRoleManagementPermission) {
             return response()->json(['error' => 'You don\'t have permission to manage team member roles on this board.'], 403);
         }
-        
+
         $allRoles = Role::where('board_id', $boardId)->get(); // Módosított lekérdezés
-        
+
         return response()->json(['roles' => $allRoles]);
     }
 
@@ -72,7 +72,7 @@ class TeamMemberRoleController extends Controller
         }
 
         $rolesOnBoard = $user->getRoles($boardId);
-        $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function($role) {
+        $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
             return in_array('team_member_role_management', $role->permissions->pluck('name')->toArray());
         });
 
@@ -108,22 +108,22 @@ class TeamMemberRoleController extends Controller
         $permissions = $user->getPermissions();
 
         if (!in_array('system_admin', $permissions)) {
-            if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+            if (!$user->isMemberOfBoard($board->board_id)) {
                 return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
             }
-            
+
             $rolesOnBoard = $user->getRoles($boardId);
-    
-            $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function($role) {
+
+            $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
                 return in_array('team_member_role_management', $role->permissions->pluck('name')->toArray());
             });
-    
+
             if (!$hasRoleManagementPermission) {
                 return response()->json(['error' => 'You don\'t have permission to create a new role on this board.'], 403);
             }
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
@@ -145,10 +145,10 @@ class TeamMemberRoleController extends Controller
         }
 
         $existingEntry = TeamMemberRole::where('team_member_id', $teamMember->team_members_id)
-                                        ->where('role_id', $roleId)
-                                        ->first();
+            ->where('role_id', $roleId)
+            ->first();
         if ($existingEntry) {
-        return response()->json(['error' => 'An entry with the same team member and role already exists.'], 400);
+            return response()->json(['error' => 'An entry with the same team member and role already exists.'], 400);
         }
 
         $teamMemberRole = new TeamMemberRole();
@@ -156,16 +156,16 @@ class TeamMemberRoleController extends Controller
         $teamMemberRole->role_id = $roleId;
         $teamMemberRole->save();
 
-        $newTeamMember=TeamMember::with(["user", "roles.permissions", "roles.board"])->where('team_id', $teamMember->team_id)
+        $newTeamMember = TeamMember::with(["user", "roles.permissions", "roles.board"])->where('team_id', $teamMember->team_id)
             ->where('user_id', $teamMember->user_id)
             ->first();
-            
+
         foreach ($newTeamMember->roles as &$role) {
             // Kérdezd le a team_members_role_id-t a megfelelő kritériumok alapján
             $teamMembersRoleId = TeamMemberRole::where('team_member_id', $newTeamMember->team_members_id)
                 ->where('role_id', $role->role_id)
                 ->value('team_members_role_id');
-    
+
             // Ha találtál értéket, adjuk hozzá a szerephez
             if ($teamMembersRoleId !== null) {
                 $role->team_members_role_id = $teamMembersRoleId;
@@ -183,7 +183,7 @@ class TeamMemberRoleController extends Controller
         ];
         foreach ($user_ids as $user_id) {
             broadcast(new TeamChange($user_id, "CREATED_USER_ROLE", $data));
-        } 
+        }
 
         return response()->json(['message' => 'Role assigned successfully', 'team_member' => $newTeamMember]);
     }
@@ -192,54 +192,54 @@ class TeamMemberRoleController extends Controller
     {
         try {
             $user = auth()->user();
-            
+
             if (!$user) {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
-    
+
             $board = Board::find($boardId);
-    
+
             if (!$board) {
                 return response()->json(['error' => 'Board not found'], 404);
             }
-    
+
             $permissions = $user->getPermissions();
-    
+
             if (!in_array('system_admin', $permissions)) {
-                if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+                if (!$user->isMemberOfBoard($board->board_id)) {
                     return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
                 }
-    
+
                 $rolesOnBoard = $user->getRoles($boardId);
-                
+
                 // Check if the user has the necessary permission for role management
-                $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function($role) {
+                $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
                     return in_array('team_member_role_management', $role->permissions->pluck('name')->toArray());
                 });
-    
+
                 if (!$hasRoleManagementPermission) {
                     return response()->json(['error' => 'You don\'t have permission to delete a role on this board.'], 403);
                 }
             }
-    
+
             $teamMemberRole = TeamMemberRole::find($teamMemberRoleId);
             if (!$teamMemberRole) {
                 return response()->json(['error' => 'Team member role not found'], 404);
             }
-    
+
             $roleExists = Role::where('role_id', $teamMemberRole->role_id)->exists();
             if (!$roleExists) {
                 return response()->json(['error' => 'Role not found'], 404);
             }
-    
+
             $teamMember = TeamMember::where('user_id', $teamMemberRole->teamMember->user_id)
                 ->where('team_id', $board->team_id)
                 ->first();
-    
+
             if (!$teamMember) {
                 return response()->json(['error' => 'The selected team member is not part of the team that owns this board.'], 403);
             }
-    
+
             $teamMemberRole->delete();
 
             $user_ids = TeamMember::where('team_id', $board->team_id)
@@ -253,13 +253,13 @@ class TeamMemberRoleController extends Controller
             ];
             foreach ($user_ids as $user_id) {
                 broadcast(new TeamChange($user_id, "DELETED_USER_ROLE", $data));
-            }  
-    
+            }
+
             return response()->json(['message' => 'Team member role deleted successfully']);
         } catch (\Exception $e) {
             return response()->json(['error' => 'An error occurred'], 500);
         }
     }
-    
+
 
 }

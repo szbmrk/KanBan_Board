@@ -38,7 +38,7 @@ class TagController extends Controller
             return response()->json(['tags' => $tags], 200);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 

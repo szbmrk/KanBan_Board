@@ -79,11 +79,11 @@ class UserTasksController extends Controller
         ];
         broadcast(new AssignedTaskChange($new_user_id, "ASSIGNED_TO_TASK", $data));
 
-        NotificationController::createNotification(NotificationType::BOARD, "You are assigned to the following task: ".$task->title, $new_user_id);
+        NotificationController::createNotification(NotificationType::BOARD, "You are assigned to the following task: " . $task->title, $new_user_id);
 
         return response()->json(['message' => 'Task assigned successfully', 'member' => $member]);
     }
-    
+
     public function destroy($task_id, $user_id)
     {
         $user = auth()->user();
@@ -118,7 +118,7 @@ class UserTasksController extends Controller
         ];
         broadcast(new AssignedTaskChange($user_id, "UNASSIGNED_FROM_TASK", $data));
 
-        NotificationController::createNotification(NotificationType::BOARD, "You are unassigned from the following task: ".$task->title, $user_id);
+        NotificationController::createNotification(NotificationType::BOARD, "You are unassigned from the following task: " . $task->title, $user_id);
 
         return response()->json(['message' => 'Task unassigned successfully']);
     }
@@ -136,7 +136,7 @@ class UserTasksController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 

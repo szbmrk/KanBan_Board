@@ -36,14 +36,14 @@ class AGIAnswersController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
         $answers = $board->AGIAnswers->filter(function ($answer) {
             return $answer->codeReviewOrDocumentationType === null && $answer->codeReviewOrDocumentation === null;
         })->map(function ($answer) {
-            return $answer->only(['chosenAI','taskDocumentation','taskDocumentationText' ,'task_id', 'board_id', 'column_id', 'user_id', 'created_at', 'updated_at']);
+            return $answer->only(['chosenAI', 'taskDocumentation', 'taskDocumentationText', 'task_id', 'board_id', 'column_id', 'user_id', 'created_at', 'updated_at']);
         })->values();
 
         if ($answers->isEmpty()) {
@@ -66,7 +66,7 @@ class AGIAnswersController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
@@ -79,7 +79,7 @@ class AGIAnswersController extends Controller
         if ($task->board_id !== $board->board_id) {
             return response()->json(['error' => 'Task does not belong to the specified board.'], 400);
         }
-        try { 
+        try {
             $this->validate($request, [
                 'taskDocumentation' => 'string',
             ]);
@@ -101,7 +101,7 @@ class AGIAnswersController extends Controller
         return response()->json(['message' => 'Answer added successfully.'], 201);
     }
 
-    public function storePerColumn(Request $request, $boardId,$columnId)
+    public function storePerColumn(Request $request, $boardId, $columnId)
     {
         $user = auth()->user();
         if (!$user) {
@@ -114,7 +114,7 @@ class AGIAnswersController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
@@ -124,7 +124,7 @@ class AGIAnswersController extends Controller
             return response()->json(['error' => 'Task not found.'], 404);
         }
 
-        try { 
+        try {
             $this->validate($request, [
                 'taskDocumentation' => 'string',
             ]);
@@ -159,11 +159,11 @@ class AGIAnswersController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
-        try { 
+        try {
             $this->validate($request, [
                 'taskDocumentation' => 'string',
             ]);
@@ -197,11 +197,11 @@ class AGIAnswersController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
-        }  
+        }
 
-        try { 
+        try {
             $this->validate($request, [
                 'taskDocumentation' => 'string',
             ]);
@@ -240,7 +240,7 @@ class AGIAnswersController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
@@ -281,20 +281,20 @@ class AGIAnswersController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
         $answers = $board->AGIAnswers->filter(function ($answer) {
             return $answer->codeReviewOrDocumentationType !== null && $answer->codeReviewOrDocumentation !== null;
         })->map(function ($answer) {
-            return $answer->only(['chosenAI','agi_answer_id', 'codeReviewOrDocumentationType', 'codeReviewOrDocumentation','codeReviewOrDocumentationText' ,'board_id', 'user_id', 'created_at', 'updated_at']);
-        })->values(); 
-    
+            return $answer->only(['chosenAI', 'agi_answer_id', 'codeReviewOrDocumentationType', 'codeReviewOrDocumentation', 'codeReviewOrDocumentationText', 'board_id', 'user_id', 'created_at', 'updated_at']);
+        })->values();
+
         return response()->json($answers, 200);
     }
 
-     public function storeCodeReviewOrDocumentation(Request $request, $boardId)
+    public function storeCodeReviewOrDocumentation(Request $request, $boardId)
     {
         $user = auth()->user();
         if (!$user) {
@@ -307,19 +307,17 @@ class AGIAnswersController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
-        try{ 
+        try {
             $this->validate($request, [
-            'codeReviewOrDocumentationType' => 'required|in:DOCUMENTATION,CODE REVIEW',
-            'codeReviewOrDocumentation' => 'required|string',
+                'codeReviewOrDocumentationType' => 'required|in:DOCUMENTATION,CODE REVIEW',
+                'codeReviewOrDocumentation' => 'required|string',
             ]);
-            
-        }
-        catch (ValidationException) 
-        {
+
+        } catch (ValidationException) {
             return response()->json(['error' => 'Invalid code review or documentation type Or code review or documentation'], 400);
         }
 
@@ -336,7 +334,7 @@ class AGIAnswersController extends Controller
         $answer->save();
 
         return response()->json(['message' => 'Answer created successfully'], 201);
-    } 
+    }
 
     public function updateCodeReviewOrDocumentation(Request $request, $boardId, $answerId)
     {
@@ -351,11 +349,11 @@ class AGIAnswersController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
-        try { 
+        try {
             $this->validate($request, [
                 'codeReviewOrDocumentationType' => 'in:DOCUMENTATION,CODE REVIEW',
                 'codeReviewOrDocumentation' => 'string',
@@ -372,14 +370,16 @@ class AGIAnswersController extends Controller
         if (!$answer) {
             return response()->json(['error' => 'Answer not found.'], 404);
         }
-    
+
         foreach ($data as $key => $value) {
             if (!is_null($value)) {
-                $answer->$key = $value;}}
-    
+                $answer->$key = $value;
+            }
+        }
+
         $answer->save();
-    
-        return response()->json(['message' => 'Answer updated successfully'], 200);   
+
+        return response()->json(['message' => 'Answer updated successfully'], 200);
     }
 
     public function destroyCodeReviewOrDocumentation($boardId, $answerId)
@@ -395,7 +395,7 @@ class AGIAnswersController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
@@ -414,7 +414,7 @@ class AGIAnswersController extends Controller
         ];
         broadcast(new BoardChange($boardId, "DELETED_CODE_REVIEW_OR_DOCUMENTATION", $data));
 
-        return response()->json(['message' => 'Answer deleted successfully'], 200);   
+        return response()->json(['message' => 'Answer deleted successfully'], 200);
     }
 
 }

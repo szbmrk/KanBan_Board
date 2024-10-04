@@ -26,16 +26,16 @@ class AgiBehaviorController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
         // Get all crafted prompts for this board
         $behaviors = AgiBehavior::where('board_id', $boardId)->get();
-    
+
         // Initialize an empty array to store the agiBehaviors
-    
-    
+
+
         return response()->json($behaviors);
     }
 
@@ -52,7 +52,7 @@ class AgiBehaviorController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
@@ -62,26 +62,26 @@ class AgiBehaviorController extends Controller
 
         if ($validator->fails()) {
             $errorMessages = [];
-            
+
             if ($validator->errors()->hasAny(['agi_behavior'])) {
-                $errorMessages[] = $validator->errors()->first('agi_behavior');    
+                $errorMessages[] = $validator->errors()->first('agi_behavior');
             }
-            
+
             return response()->json(['error' => implode(', ', $errorMessages)], 422);
         }
-        
-        
+
+
 
         //find agi behaviorid by the act_as_a value
         $agiBehaviors = AgiBehavior::where('act_as_a', $request->input('agi_behavior'))->get();
 
         foreach ($agiBehaviors as $agiBehavior) {
-            if($agiBehavior->board_id == $boardId) {
+            if ($agiBehavior->board_id == $boardId) {
                 return response()->json(['error' => 'Behavior already exists on this board!'], 422);
             }
-        }           
-        
-        
+        }
+
+
         $agiBehavior = new AgiBehavior();
         $agiBehavior->act_as_a = $request->input('agi_behavior');
         $agiBehavior->board_id = $boardId;
@@ -103,7 +103,7 @@ class AgiBehaviorController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
@@ -113,47 +113,47 @@ class AgiBehaviorController extends Controller
 
         if ($validator->fails()) {
             $errorMessages = [];
-            
+
             if ($validator->errors()->hasAny(['agi_behavior'])) {
-                $errorMessages[] = $validator->errors()->first('agi_behavior');    
+                $errorMessages[] = $validator->errors()->first('agi_behavior');
             }
-            
+
             return response()->json(['error' => implode(', ', $errorMessages)], 422);
         }
 
-        if($request->input('agi_behavior') == null) {
+        if ($request->input('agi_behavior') == null) {
             return response()->json(['error' => 'Behavior is required!'], 422);
         }
 
-        
+
         $agiBehavior = AgiBehavior::find($behaviorId);
-        
-        if($agiBehavior == null) {
+
+        if ($agiBehavior == null) {
             return response()->json(['error' => 'Behavior does not exist!'], 422);
         }
 
-        if($agiBehavior->board_id != $boardId) {
+        if ($agiBehavior->board_id != $boardId) {
             return response()->json(['error' => 'Behavior does not exist on this board!'], 422);
         }
 
         $agiBehaviors = AgiBehavior::where('act_as_a', $request->input('agi_behavior'))->get();
 
 
-        if($agiBehaviors) {
+        if ($agiBehaviors) {
             foreach ($agiBehaviors as $agiBehavior) {
-                if($agiBehavior->board_id == $boardId) {
+                if ($agiBehavior->board_id == $boardId) {
                     return response()->json(['error' => 'Behavior already exists on this board!'], 422);
                 }
 
-            }           
+            }
         }
 
         $agiBehavior->act_as_a = $request->input('agi_behavior');
 
-        $agiBehavior->save(); 
+        $agiBehavior->save();
 
-   
-        
+
+
         return response()->json(['message' => 'Behavior Updated successfully.'], 200);
     }
 
@@ -170,7 +170,7 @@ class AgiBehaviorController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if (!$board->team->teamMembers->contains('user_id', $user->user_id)) {
+        if (!$user->isMemberOfBoard($board->board_id)) {
             return response()->json(['error' => 'You are not a member of the team that owns this board.'], 403);
         }
 
@@ -180,26 +180,26 @@ class AgiBehaviorController extends Controller
 
         if ($validator->fails()) {
             $errorMessages = [];
-            
+
             if ($validator->errors()->hasAny(['agi_behavior'])) {
-                $errorMessages[] = $validator->errors()->first('agi_behavior');    
+                $errorMessages[] = $validator->errors()->first('agi_behavior');
             }
-            
+
             return response()->json(['error' => implode(', ', $errorMessages)], 422);
         }
-        
+
         $agiBehavior = AgiBehavior::find($behaviorId);
-        
-        if($agiBehavior == null) {
+
+        if ($agiBehavior == null) {
             return response()->json(['error' => 'Behavior does not exist!'], 422);
         }
 
-        if($agiBehavior->board_id != $boardId) {
+        if ($agiBehavior->board_id != $boardId) {
             return response()->json(['error' => 'Behavior does not exist on this board!'], 422);
         }
 
-        $agiBehavior->delete();          
-        
+        $agiBehavior->delete();
+
         return response()->json(['message' => 'Behavior Deleted successfully.'], 200);
     }
 }
