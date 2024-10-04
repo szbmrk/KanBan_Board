@@ -61,8 +61,7 @@ Route::delete('/profile', [UserController::class, 'destroy'])->middleware('api')
 Route::post('/user/check-email', [UserController::class, 'checkEmail']);
 Route::post('/user/check-username', [UserController::class, 'checkUsername']);
 
-
-
+Route::get('/dashboard/boards', [DashboardController::class, 'getAllBoards'])->middleware('api');
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('api');
 Route::post('/dashboard/board', [DashboardController::class, 'store'])->middleware('api');
 Route::put('/dashboard/board/{board}', [DashboardController::class, 'update'])->middleware('api');
@@ -77,6 +76,7 @@ Route::get('/team/{team_id}/management', [TeamManagementController::class, 'show
 Route::post('/team/{team_id}/management', [TeamManagementController::class, 'storeTeamMember'])->middleware('api');
 Route::delete('/team/{team_id}/management/{user_id}', [TeamManagementController::class, 'destroyTeamMember'])->middleware('api');
 Route::get('/user/{id}/teams', [TeamManagementController::class, 'teamsByUser'])->middleware('api');
+Route::get('/teams', [TeamController::class, 'getAllTeams'])->middleware('api');
 Route::get('/team/{team_id}/management/no_members', [TeamManagementController::class, 'showNotTeamMembers'])->middleware('api');
 
 Route::get('/boards/{board_id}', [BoardController::class, 'show'])->middleware('api');

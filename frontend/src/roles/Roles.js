@@ -10,6 +10,7 @@ export const SetRoles = async (token) => {
                 Authorization: `Bearer ${token}`,
             }
         });
+        console.log(response.data);
         sessionStorage.setItem('permissions', roleHandler(response.data));
         const rolesData = JSON.parse(sessionStorage.getItem('permissions'));
         teamPermissions = rolesData.teams;
@@ -17,6 +18,16 @@ export const SetRoles = async (token) => {
     } catch (error) {
         console.log(error);
     }
+}
+
+export const checkIfAdmin = () => {
+    if (ownPermissions === undefined) {
+        return false;
+    }
+    if (ownPermissions.includes('system_admin')) {
+        return true;
+    }
+    return false;
 }
 
 export const checkPermisson = (team_id, permissionToCheck) => {

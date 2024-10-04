@@ -43,6 +43,15 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function getAllBoards()
+    {
+        $user = auth()->user();
+        $teams = Team::with('boards')->get();
+        return response()->json([
+            'teams' => $teams,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $user = auth()->user();

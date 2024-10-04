@@ -4,7 +4,7 @@ import TeamCard from "./TeamCard";
 import TeamManager from "./TeamManager";
 import Loader from "../Loader";
 import Error from "../Error";
-import { SetRoles } from "../../roles/Roles";
+import { checkIfAdmin, SetRoles } from "../../roles/Roles";
 import ErrorWrapper from "../../ErrorWrapper";
 import Echo from "laravel-echo";
 import {
@@ -368,15 +368,28 @@ const Teams = () => {
 
     const getTeams = async () => {
         try {
-            const response = await axios.get(`/user/${user_id}/teams`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            const tempData = response.data.teams;
-            console.log("TEAMS");
-            console.log(response.data.teams);
-            setTeams(tempData);
+            if (checkIfAdmin()) {
+                const response = await axios.get(`/teams`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const tempData = response.data.teams;
+                console.log("TEAMS");
+                console.log(response.data.teams);
+                setTeams(tempData);
+            }
+            else {
+                const response = await axios.get(`/user/${user_id}/teams`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const tempData = response.data.teams;
+                console.log("TEAMS");
+                console.log(response.data.teams);
+                setTeams(tempData);
+            }
         } catch (error) {
             setError(error?.response?.data);
         }

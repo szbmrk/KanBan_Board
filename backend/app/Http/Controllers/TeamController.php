@@ -33,6 +33,14 @@ class TeamController extends Controller
         return response()->json(['teams' => $teams]);
     }
 
+    public function getAllTeams()
+    {
+        $user = auth()->user();
+        $teams = Team::all();
+
+        return response()->json(['teams' => $teams]);
+    }
+
     public function store(Request $request)
     {
         $user = auth()->user();
@@ -47,7 +55,7 @@ class TeamController extends Controller
         $teamManagerRole = Role::where('name', 'Team Manager')->first();
         $teamManagementPermission = Permission::where('name', 'team_management')->first();
         $teamMemberManagementPermission = Permission::where('name', 'team_member_management')->first();
-      
+
         $teamMember = TeamMember::create([
             'team_id' => $team->team_id,
             'user_id' => $user->user_id,
@@ -62,9 +70,9 @@ class TeamController extends Controller
         if (!$teamManagerRole->permissions->contains($teamMemberManagementPermission)) {
             $teamManagerRole->permissions()->attach($teamMemberManagementPermission->id);
         }
-        
+
         LogRequest::instance()->logAction('CREATED TEAM', $user->user_id, "Team Created successfully! -> $team->name", $team->team_id, null, null);
-        $team=Team::with(['teamMembers.user.roles.permissions', 'teamMembers.roles.permissions'])->find($team->team_id);
+        $team = Team::with(['teamMembers.user.roles.permissions', 'teamMembers.roles.permissions'])->find($team->team_id);
 
         $data = [
             'team' => $team
@@ -72,9 +80,9 @@ class TeamController extends Controller
         broadcast(new TeamChange($user->user_id, "CREATED_TEAM", $data));
         broadcast(new DashboardChange($user->user_id, "CREATED_TEAM", $data));
 
-        return response()->json(['message' => 'Team Created successfully!', 'team' => $team]);         
-    }    
-    
+        return response()->json(['message' => 'Team Created successfully!', 'team' => $team]);
+    }
+
     public function update(Request $request, $id)
     {
         $user = auth()->user();
@@ -114,14 +122,14 @@ class TeamController extends Controller
         $data = [
             'team' => $team
         ];
-                
+
         foreach ($user_ids as $user_id) {
             broadcast(new TeamChange($user_id, "UPDATED_TEAM", $data));
             broadcast(new DashboardChange($user_id, "UPDATED_TEAM", $data));
-            if($team->name !== $old_team_name) {
-                NotificationController::createNotification(NotificationType::TEAM, "A team you are member of got renamed from ".$old_team_name." to ".$team->name, $user_id);
+            if ($team->name !== $old_team_name) {
+                NotificationController::createNotification(NotificationType::TEAM, "A team you are member of got renamed from " . $old_team_name . " to " . $team->name, $user_id);
             }
-        }  
+        }
 
         LogRequest::instance()->logAction('UPDATED TEAM', $user->user_id, "Team Updated successfully!", $team->team_id, null, null);
         return response()->json(['message' => 'Team updated successfully']);
@@ -154,16 +162,16 @@ class TeamController extends Controller
             ->toArray();
 
         $team->delete();
-        
+
         $data = [
             'team' => $team
         ];
-  
+
         foreach ($user_ids as $user_id) {
             broadcast(new TeamChange($user_id, "DELETED_TEAM", $data));
             broadcast(new DashboardChange($user_id, "DELETED_TEAM", $data));
-            NotificationController::createNotification(NotificationType::TEAM, "A team you are member of got deleted: ".$team->name, $user_id);
-        }  
+            NotificationController::createNotification(NotificationType::TEAM, "A team you are member of got deleted: " . $team->name, $user_id);
+        }
 
         LogRequest::instance()->logAction('DELETED TEAM', $user->user_id, "Team Deleted successfully! -> team_id: $team->team_id, name: $team->name", null, null, null);
 
