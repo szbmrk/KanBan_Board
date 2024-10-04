@@ -213,11 +213,11 @@ class TaskController extends Controller
         $task->save();
 
         if ($task->completed != $originalCompletedStatus && $task->completed == 1) {
-            LogRequest::instance()->logAction('FINISHED TASK', $user->user_id, "$user->username finished a TASK named: '$task->title'", $teamId, $board_id, $task->task_id);
+            LogRequest::instance()->logAction('FINISHED TASK', $user->user_id, "Finished a TASK named: '$task->title'", $teamId, $board_id, $task->task_id);
         } elseif ($task->completed != $originalCompletedStatus && $task->completed == 0) {
-            LogRequest::instance()->logAction('REVERTED FINISHED TASK', $user->user_id, "$user->username changed a TASK named: '$task->title' to not completed", $teamId, $board_id, $task->task_id);
+            LogRequest::instance()->logAction('REVERTED FINISHED TASK', $user->user_id, "Changed a TASK named: '$task->title' to not completed", $teamId, $board_id, $task->task_id);
         } else {
-            LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "$user->username updated a TASK named: '$task->title'", $teamId, $board_id, $task->task_id);
+            LogRequest::instance()->logAction('UPDATED TASK', $user->user_id, "Updated a TASK named: '$task->title'", $teamId, $board_id, $task->task_id);
         }
 
         $taskWithSubtasksAndTags = Task::with('subtasks', 'tags', 'comments', 'priority', 'attachments', 'members')->find($task_id);
