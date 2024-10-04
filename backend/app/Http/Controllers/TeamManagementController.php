@@ -225,6 +225,13 @@ class TeamManagementController extends Controller
     {
         $user = auth()->user();
 
+
+        if ($user->hasPermission('system_admin')) {
+            $team = Team::with(['teamMembers.user'])->findOrFail($teamId);
+            $users = User::whereNotIn('user_id', $team->teamMembers->pluck('user_id'))->get();
+            return response()->json(['users' => $users]);
+        }
+
         //give back those users who are not in the team
         if ($user->teams()->where('teams.team_id', $teamId)->exists()) {
             $team = Team::with(['teamMembers.user'])->findOrFail($teamId);
