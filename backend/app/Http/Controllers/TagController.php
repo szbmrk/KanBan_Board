@@ -33,7 +33,7 @@ class TagController extends Controller
             return response()->json(['error' => 'Board not found.'], 404);
         }
 
-        if ($user->hasPermission('system_admin')) {
+        if ($user->hasPermission('System Admin')) {
             $tags = Tag::where('board_id', $boardId)->get();
             return response()->json(['tags' => $tags], 200);
         }

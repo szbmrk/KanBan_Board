@@ -64,7 +64,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function isMemberOfBoard($board_id)
     {
-        if ($this->hasPermission('system_admin')) {
+        if ($this->hasPermission('System Admin')) {
             return true;
         }
         // Check if the user's teams have the specified board
