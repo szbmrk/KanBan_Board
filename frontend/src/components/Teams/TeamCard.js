@@ -177,9 +177,7 @@ const TeamCard = ({
                                 <img
                                     className="team-member-image"
                                     src={
-                                        member.user.user_image != null
-                                            ? member.user.user_image
-                                            : profileImageUrl
+                                        profileImageUrl
                                     }
                                     alt="profile"
                                 />
