@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import Loader from "../Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { SetRoles, checkPermissionForBoard } from "../../roles/Roles";
+import { SetRoles, checkIfAdmin, checkPermissionForBoard } from "../../roles/Roles";
 import Error from "../Error";
 import ErrorWrapper from "../../ErrorWrapper";
 import ConfirmationPopup from "../Board/ConfirmationPopup";
@@ -204,14 +204,26 @@ export default function Dashboard() {
 
     const fetchDashboardData = async () => {
         try {
-            const response = await axios.get("/dashboard", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            const teamData = response.data.teams;
-            setTeams(teamData);
-            ResetRoles();
+            await SetRoles(token);
+
+            if (checkIfAdmin()) {
+                const response = await axios.get("/dashboard/boards", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const teamData = response.data.teams;
+                setTeams(teamData);
+            }
+            else {
+                const response = await axios.get("/dashboard", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const teamData = response.data.teams;
+                setTeams(teamData);
+            }
         } catch (e) {
             console.error(e);
             if (e?.response?.status === 401 || e?.response?.status === 500) {
