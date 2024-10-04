@@ -8,6 +8,7 @@ use App\Helpers\LogRequest;
 use App\Models\Role;
 use App\Models\TeamMember;
 use App\Models\Permission;
+use App\Models\TeamMemberRole;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationType;
@@ -36,9 +37,26 @@ class TeamController extends Controller
     public function getAllTeams()
     {
         $user = auth()->user();
-        $teams = Team::all();
+        $teams = Team::with(['teamMembers.user', 'teamMembers.roles.permissions', 'teamMembers.roles.board'])->get();
 
-        return response()->json(['teams' => $teams]);
+        foreach ($teams as &$team) {
+            foreach ($team->teamMembers as &$member) {
+                foreach ($member->roles as &$role) {
+                    // Kérdezd le a team_members_role_id-t a megfelelő kritériumok alapján
+                    $teamMembersRoleId = TeamMemberRole::where('team_member_id', $member->team_members_id)
+                        ->where('role_id', $role->role_id)
+                        ->value('team_members_role_id');
+
+                    if ($teamMembersRoleId !== null) {
+                        $role->team_members_role_id = $teamMembersRoleId;
+                    }
+                }
+            }
+        }
+
+        // Módosított válasz létrehozása és visszaadása
+        $response = ['teams' => $teams];
+        return response()->json($response);
     }
 
     public function store(Request $request)
