@@ -65,18 +65,30 @@ export default function Dashboard() {
         window.Pusher = require("pusher-js");
         window.Pusher.logToConsole = true;
 
-        const echo = new Echo({
+        const pusherOptions = {
             broadcaster: 'pusher',
             key: REACT_APP_PUSHER_KEY,
             cluster: REACT_APP_PUSHER_CLUSTER,
             forceTLS: false,
-            wsHost: window.location.hostname,
+            wsHost: REACT_APP_PUSHER_HOST,
             wsPort: REACT_APP_PUSHER_PORT,
             wssPort: REACT_APP_PUSHER_PORT,
-            wsPath: REACT_APP_PUSHER_PATH || '',
             disableStats: true,
-            enabledTransports: ['ws'],
-        })
+            enabledTransports: ['ws', 'wss'],
+            wsPath: REACT_APP_PUSHER_PATH,
+        };
+
+        console.log('Pusher configuration:', pusherOptions);
+
+        const echo = new Echo(pusherOptions);
+
+        echo.connector.pusher.connection.bind('state_change', (states) => {
+            console.log('Connection state changed:', states);
+        });
+
+        echo.connector.pusher.connection.bind('error', (err) => {
+            console.error('Connection error:', err);
+        });
 
         const channel = echo.channel(`DashboardChange`);
 
