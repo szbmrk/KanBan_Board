@@ -11,7 +11,8 @@ import {
     REACT_APP_PUSHER_KEY,
     REACT_APP_PUSHER_CLUSTER,
     REACT_APP_PUSHER_PORT,
-    REACT_APP_PUSHER_HOST
+    REACT_APP_PUSHER_HOST,
+    REACT_APP_PUSHER_PATH
 } from "../../api/config.js";
 
 const Teams = () => {
@@ -61,6 +62,7 @@ const Teams = () => {
             wsHost: REACT_APP_PUSHER_HOST || window.location.hostname,
             wsPort: REACT_APP_PUSHER_PORT || 6001,
             wssPort: REACT_APP_PUSHER_PORT || 6001,
+            wsPath: REACT_APP_PUSHER_PATH || '/',
             disableStats: true,
             enabledTransports: ['ws', 'wss'],
         })
