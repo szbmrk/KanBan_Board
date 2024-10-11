@@ -2,4 +2,4 @@ export const REACT_APP_PUSHER_KEY = "app-key";
 export const REACT_APP_PUSHER_CLUSTER = "eu";
 export const REACT_APP_PUSHER_HOST = "127.0.0.1";
 export const REACT_APP_PUSHER_PORT = 6001;
-export const REACT_APP_PUSHER_PATH = "/";
+export const REACT_APP_PUSHER_PATH = "";

@@ -71,9 +71,9 @@ export default function Dashboard() {
             cluster: REACT_APP_PUSHER_CLUSTER,
             forceTLS: false,
             wsHost: REACT_APP_PUSHER_HOST || window.location.hostname,
-            wsPort: REACT_APP_PUSHER_PORT || 6001,
-            wssPort: REACT_APP_PUSHER_PORT || 6001,
-            wsPath: REACT_APP_PUSHER_PATH || '/',
+            wsPort: REACT_APP_PUSHER_PORT,
+            wssPort: REACT_APP_PUSHER_PORT,
+            wsPath: REACT_APP_PUSHER_PATH || '',
             disableStats: true,
             enabledTransports: ['ws', 'wss'],
         })
