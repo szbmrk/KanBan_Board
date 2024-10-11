@@ -75,7 +75,7 @@ export default function Dashboard() {
             wssPort: REACT_APP_PUSHER_PORT,
             wsPath: REACT_APP_PUSHER_PATH || '',
             disableStats: true,
-            enabledTransports: ['ws', 'wss'],
+            enabledTransports: ['ws'],
         })
 
         const channel = echo.channel(`DashboardChange`);
