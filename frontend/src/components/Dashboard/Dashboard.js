@@ -70,7 +70,7 @@ export default function Dashboard() {
             key: REACT_APP_PUSHER_KEY,
             cluster: REACT_APP_PUSHER_CLUSTER,
             forceTLS: false,
-            wsHost: REACT_APP_PUSHER_HOST || window.location.hostname,
+            wsHost: window.location.hostname,
             wsPort: REACT_APP_PUSHER_PORT,
             wssPort: REACT_APP_PUSHER_PORT,
             wsPath: REACT_APP_PUSHER_PATH || '',
