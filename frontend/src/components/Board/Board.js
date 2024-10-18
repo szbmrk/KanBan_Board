@@ -252,14 +252,14 @@ const Board = () => {
         channel.listen(
             `.board.${board_id}`,
             (e) => {
-                console.log("DADAATAT");
+                window.log("DADAATAT");
                 handleWebSocket(e);
             },
             []
         );
 
         return () => {
-            console.log("Cleanup");
+            window.log("Cleanup");
             channel.unsubscribe();
         };
     }, []);
@@ -302,8 +302,8 @@ const Board = () => {
     }, [craftedPromptsTask]);
 
     const handleWebSocket = async (websocket) => {
-        console.log("DATA");
-        console.log(websocket.data);
+        window.log("DATA");
+        window.log(websocket.data);
         switch (websocket.changeType) {
             case "FAVOURITE_TASK":
                 webSocketFavouriteTask(websocket.data);
@@ -420,9 +420,9 @@ const Board = () => {
     };
 
     const webSocketAddTask = async (data) => {
-        console.log("BOARD");
-        console.log(boardRef.current);
-        console.log(boardRef.current.columns);
+        window.log("BOARD");
+        window.log(boardRef.current);
+        window.log(boardRef.current.columns);
         const newBoardData = [...boardRef.current.columns];
         const targetColumn = newBoardData.find(
             (column) => column.column_id === data.task.column_id
@@ -434,8 +434,8 @@ const Board = () => {
     };
 
     const webSocketCreateMultipleTasks = async (data) => {
-        console.log("CreateMultipleTasks");
-        console.log(data);
+        window.log("CreateMultipleTasks");
+        window.log(data);
 
         const newBoardData = [...boardRef.current.columns];
         const targetColumn = newBoardData.find(
@@ -466,10 +466,10 @@ const Board = () => {
     };
 
     const webSocketUpdateTask = async (data) => {
-        console.log("BOARD");
-        console.log(boardRef.current);
-        console.log("UPDATED TASK");
-        console.log(data.task);
+        window.log("BOARD");
+        window.log(boardRef.current);
+        window.log("UPDATED TASK");
+        window.log(data.task);
 
         const newTaskData = [...boardRef.current.columns];
         const columnIndex = newTaskData.findIndex(
@@ -503,14 +503,14 @@ const Board = () => {
     };
 
     const webSocketPositionUpdateTask = async (data) => {
-        console.log("BOARD");
-        console.log(boardRef.current);
-        console.log("POSITION UPDATED task");
-        console.log(data);
+        window.log("BOARD");
+        window.log(boardRef.current);
+        window.log("POSITION UPDATED task");
+        window.log(data);
         const newBoardData = [...boardRef.current.columns];
 
         data.tasks.forEach((task) => {
-            console.log(boardRef.current.columns);
+            window.log(boardRef.current.columns);
             const oldColumn = newBoardData.find(
                 (column) => task.old_column_id === column.column_id
             );
@@ -523,8 +523,8 @@ const Board = () => {
                 (currentTask) => task.task_id === currentTask.task_id
             );
 
-            console.log("Task Exist");
-            console.log(taskExist);
+            window.log("Task Exist");
+            window.log(taskExist);
 
             //Ha már alapból az adott oszlopban van a task (csak sorrendet cseréltünk) akkor elég frissíteni a pozícióját majd újrarendezni az oszlopot position alapján
             if (taskExist) {
@@ -544,22 +544,22 @@ const Board = () => {
     };
 
     const webSocketCreateTaskTag = async (data) => {
-        console.log("CreatedTaskTag");
-        console.log(boardRef.current);
+        window.log("CreatedTaskTag");
+        window.log(boardRef.current);
 
         placeTagOnTask(data.task.task_id, data.tag, data.task.column_id);
     };
 
     const webSocketDeleteTaskTag = async (data) => {
-        console.log("CreatedTaskTag");
-        console.log(boardRef.current);
+        window.log("CreatedTaskTag");
+        window.log(boardRef.current);
 
         removeTagFromTask(data.task.task_id, data.tag.tag_id, data.task.column_id);
     };
 
     const webSocketUpdateTag = (data) => {
-        console.log("webSocketUpdateTag");
-        console.log(boardRef.current);
+        window.log("webSocketUpdateTag");
+        window.log(boardRef.current);
 
         let newBoardData = [...boardRef.current.columns];
 
@@ -587,8 +587,8 @@ const Board = () => {
     };
 
     const webSocketDeleteTag = (data) => {
-        console.log("webSocketDeleteTag");
-        console.log(boardRef.current);
+        window.log("webSocketDeleteTag");
+        window.log(boardRef.current);
 
         let newBoardData = [...boardRef.current.columns];
 
@@ -617,8 +617,8 @@ const Board = () => {
     };
 
     const webSocketCreateComment = async (data) => {
-        console.log("webSocketCreateComment");
-        console.log(boardRef.current);
+        window.log("webSocketCreateComment");
+        window.log(boardRef.current);
 
         const newTaskData = [...boardRef.current.columns];
         const columnIndex = newTaskData.findIndex(
@@ -643,13 +643,13 @@ const Board = () => {
     };
 
     const webSocketDeleteComment = async (data) => {
-        console.log("webSocketDeleteComment");
-        console.log(boardRef.current);
+        window.log("webSocketDeleteComment");
+        window.log(boardRef.current);
 
-        console.log("comment");
-        console.log(data.task);
-        console.log(inspectedTaskRef.current);
-        console.log(data.comment);
+        window.log("comment");
+        window.log(data.task);
+        window.log(inspectedTaskRef.current);
+        window.log(data.comment);
 
         const newTaskData = [...boardRef.current.columns];
         const columnIndex = newTaskData.findIndex(
@@ -675,21 +675,21 @@ const Board = () => {
     };
 
     const webSocketCreateAttachment = async (data) => {
-        console.log("webSocketCreateAttachment");
-        console.log(boardRef.current);
+        window.log("webSocketCreateAttachment");
+        window.log(boardRef.current);
 
         addAttachment(data.task.task_id, data.task.column_id, data.attachment);
     };
 
     const webSocketDeleteAttachment = async (data) => {
-        console.log("webSocketCreateAttachment");
-        console.log(boardRef.current);
+        window.log("webSocketCreateAttachment");
+        window.log(boardRef.current);
 
         deleteAttachment(data.task.task_id, data.task.column_id, data.attachment);
     };
 
     const webSocketCreateMultipleAttachment = async (data) => {
-        console.log(data);
+        window.log(data);
 
         addMultipleAttachment(
             data.task.task_id,
@@ -699,31 +699,31 @@ const Board = () => {
     };
 
     const webSocketCreateUserTask = async (data) => {
-        console.log("webSocketCreateUserTask");
-        console.log(boardRef.current);
+        window.log("webSocketCreateUserTask");
+        window.log(boardRef.current);
 
         addMember(data.task.task_id, data.task.column_id, data.member);
         popupRef?.current?.handleAddedMemberToTask(data.member);
     };
 
     const webSocketDeleteUserTask = async (data) => {
-        console.log("webSocketCreateUserTask");
-        console.log(boardRef.current);
+        window.log("webSocketCreateUserTask");
+        window.log(boardRef.current);
 
         popupRef?.current?.handleDeletedMemberFromTask(data.member);
     };
 
     const webSocketDeleteTask = async (data) => {
-        console.log("BOARD");
-        console.log(boardRef.current);
-        console.log(boardRef.current.columns);
+        window.log("BOARD");
+        window.log(boardRef.current);
+        window.log(boardRef.current.columns);
         const newBoardData = [...boardRef.current.columns];
         const targetColumn = newBoardData.find(
             (column) => column.column_id === data.task.column_id
         );
-        console.log("DELETE TASK");
-        console.log(inspectedTaskRef?.current);
-        console.log(data.task);
+        window.log("DELETE TASK");
+        window.log(inspectedTaskRef?.current);
+        window.log(data.task);
         if (inspectedTaskRef?.current?.task_id === data.task.task_id) {
             handleClosePopup();
         }
@@ -750,9 +750,9 @@ const Board = () => {
             newBoardData[columnIndex].tasks,
             modifiedSubtask.parent_task_id
         );
-        console.log("TASK");
+        window.log("TASK");
         task.subtasks.map((subtask) => {
-            console.log(subtask, modifiedSubtask);
+            window.log(subtask, modifiedSubtask);
             if (subtask.task_id === modifiedSubtask.task_id) {
                 subtask.completed = modifiedSubtask.completed ? 1 : 0;
             }
@@ -766,11 +766,11 @@ const Board = () => {
     };
 
     const webSocketAddColumn = async (data) => {
-        console.log("BOARD");
-        console.log(boardRef.current);
-        console.log(boardRef.current.columns);
-        console.log("NEW column");
-        console.log(data.column);
+        window.log("BOARD");
+        window.log(boardRef.current);
+        window.log(boardRef.current.columns);
+        window.log("NEW column");
+        window.log(data.column);
         data.column.is_finished = data.is_finished === "1" ? 1 : 0;
         data.column.task_limit = data.task_limit;
         data.column.tasks = [];
@@ -780,15 +780,15 @@ const Board = () => {
         tempPositions.push(data.column.column_id);
         setColumnPositions(tempPositions);
         setBoard({ ...boardRef.current, columns: newBoardData });
-        console.log("BOARDREF");
-        console.log(boardRef.current);
+        window.log("BOARDREF");
+        window.log(boardRef.current);
     };
 
     const webSocketPositionUpdateColumn = async (data) => {
-        console.log("BOARD");
-        console.log(boardRef.current);
-        console.log("POSITION UPDATED column");
-        console.log(data);
+        window.log("BOARD");
+        window.log(boardRef.current);
+        window.log("POSITION UPDATED column");
+        window.log(data);
         setColumnPositions(data.columns);
 
         const indexMap = boardRef.current.columns.reduce((acc, column, index) => {
@@ -821,9 +821,9 @@ const Board = () => {
     };
 
     const webSocketDeleteColumn = async (data) => {
-        console.log("BOARD");
-        console.log(boardRef.current);
-        console.log(boardRef.current.columns);
+        window.log("BOARD");
+        window.log(boardRef.current);
+        window.log(boardRef.current.columns);
 
         let newBoardData = [...boardRef.current.columns];
         newBoardData = newBoardData.filter(
@@ -834,8 +834,8 @@ const Board = () => {
     };
 
     const webSocketChangeBoardName = async (data) => {
-        console.log("BOARD");
-        console.log(boardRef.current);
+        window.log("BOARD");
+        window.log(boardRef.current);
         setBoardTitle(data.name);
     };
 
@@ -961,8 +961,8 @@ const Board = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log("BÓÓÓÓD");
-            console.log(response);
+            window.log("BÓÓÓÓD");
+            window.log(response);
 
             setPermission(true);
             let tempBoard = response.data.board;
@@ -1024,7 +1024,7 @@ const Board = () => {
                 (a, b) => new Date(b.created_at) - new Date(a.created_at)
             );
 
-            console.log(sortedLogs);
+            window.log(sortedLogs);
             setLogs(sortedLogs);
         } catch (e) {
             console.error(e);
@@ -1276,8 +1276,8 @@ const Board = () => {
                 },
             });
 
-            console.log("NEW TASK");
-            console.log(res.data);
+            window.log("NEW TASK");
+            window.log(res.data);
         } catch (e) {
             if (e?.response?.status === 401 || e?.response?.status === 500) {
                 setError({
@@ -1333,8 +1333,8 @@ const Board = () => {
         let from_column_id = targetDiv.column_id;
         let to_column_id = sourceDiv.column_id;
         let position;
-        console.log("FROM");
-        console.log(from_column_id);
+        window.log("FROM");
+        window.log(from_column_id);
 
         if (hoverIndex) {
             task_to_modify_id = sourceDiv.tasks[hoverIndex].task_id;
@@ -1352,8 +1352,8 @@ const Board = () => {
             }
 
             position = sourceDiv.tasks[hoverIndex].position;
-            console.log("POSITION");
-            console.log(position);
+            window.log("POSITION");
+            window.log(position);
         } else {
             task_to_modify_id = sourceDiv.tasks[0].task_id;
             position = 1;
@@ -1424,7 +1424,7 @@ const Board = () => {
             newTaskData[columnIndex].tasks[taskIndex].description = description;
             setBoard({ ...board, columns: newTaskData });
         } catch (e) {
-            console.log(e);
+            window.log(e);
             if (e?.response?.status === 401 || e?.response?.status === 500) {
                 setError({
                     message: "You are not logged in! Redirecting to login page...",
@@ -1728,7 +1728,7 @@ const Board = () => {
         parent_task_id,
         column_id
     ) => {
-        console.log("xxx");
+        window.log("xxx");
         try {
             if (isDone) {
                 axios.post(`/boards/${board_id}/tasks/${subtask_id}/isDone`, {
@@ -1780,7 +1780,7 @@ const Board = () => {
                 }
             );
         } catch (e) {
-            console.log(e);
+            window.log(e);
             if (e?.response?.status === 401 || e?.response?.status === 500) {
                 setError({
                     message: "You are not logged in! Redirecting to login page...",
@@ -1807,7 +1807,7 @@ const Board = () => {
             );
             setBoard({ ...board, columns: newBoardData });
         } catch (e) {
-            console.log(e);
+            window.log(e);
             if (e?.response?.status === 401 || e?.response?.status === 500) {
                 setError({
                     message: "You are not logged in! Redirecting to login page...",
@@ -1834,8 +1834,8 @@ const Board = () => {
     const [inspectedAttachmentLinks, setInspectedAttachmentLinks] =
         useState(null);
     const setTaskAsInspectedTask = (task) => {
-        console.log("inspected task");
-        console.log(task);
+        window.log("inspected task");
+        window.log(task);
         setInspectedTask(task);
         setShowPopup(true);
     };
@@ -2437,18 +2437,18 @@ const Board = () => {
     };
 
     const placeTagOnTask = async (task_id, tag, column_id) => {
-        console.log("placeTagOnTask");
-        console.log(task_id);
-        console.log(tag);
-        console.log(column_id);
+        window.log("placeTagOnTask");
+        window.log(task_id);
+        window.log(tag);
+        window.log(column_id);
         const newBoardData = [...boardRef.current.columns];
         const columnIndex = newBoardData.findIndex(
             (column) => column.column_id === column_id
         );
-        console.log(newBoardData);
-        console.log(columnIndex);
+        window.log(newBoardData);
+        window.log(columnIndex);
         const updatedTask = findTaskById(newBoardData[columnIndex].tasks, task_id);
-        console.log(updatedTask);
+        window.log(updatedTask);
         if (!updatedTask) {
             return;
         }
@@ -2459,7 +2459,7 @@ const Board = () => {
         if (existingTag) {
             return;
         }
-        console.log(existingTag);
+        window.log(existingTag);
         updatedTask.tags.push(tag);
         updatedTask.tags.sort((a, b) => a.tag_id - b.tag_id);
 

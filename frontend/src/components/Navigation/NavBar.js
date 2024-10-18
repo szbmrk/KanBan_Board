@@ -82,14 +82,14 @@ const Navbar = () => {
         );
 
         return () => {
-            console.log("Cleanup");
+            window.log("Cleanup");
             channel.unsubscribe();
         };
     }, []);
 
     const handleWebSocket = async (websocket) => {
-        console.log("COUNT");
-        console.log(websocket.count);
+        window.log("COUNT");
+        window.log(websocket.count);
         setUnreadNotificationCount(websocket.count);
     };
 
@@ -101,7 +101,7 @@ const Navbar = () => {
             setTheme(localStorage.getItem("darkMode"));
         };
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"));
+        window.log("Darkmode: " + localStorage.getItem("darkMode"));
         window.addEventListener("ChangingTheme", ResetTheme);
 
         return () => {
@@ -111,12 +111,12 @@ const Navbar = () => {
     }, []);
 
     function DarkMode() {
-        console.log(localStorage.getItem("darkMode"));
+        window.log(localStorage.getItem("darkMode"));
         if (localStorage.getItem("darkMode") == "dark") {
-            console.log("Switching to light mode");
+            window.log("Switching to light mode");
             localStorage.setItem("darkMode", "light");
         } else {
-            console.log("Switching to dark mode");
+            window.log("Switching to dark mode");
             localStorage.setItem("darkMode", "dark");
         }
         const event = new Event("ChangingTheme");
@@ -130,11 +130,11 @@ const Navbar = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log("NOTIFICATION COUNT");
-            console.log(res.data);
+            window.log("NOTIFICATION COUNT");
+            window.log(res.data);
             setUnreadNotificationCount(res.data);
         } catch (e) {
-            console.log(e);
+            window.log(e);
             if (e?.response?.status === 401 || e?.response?.status === 500) {
                 setError({
                     message: "You are not logged in! Redirecting to login page...",

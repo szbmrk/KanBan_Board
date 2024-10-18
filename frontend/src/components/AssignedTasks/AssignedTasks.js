@@ -54,14 +54,14 @@ const AssignedTasks = () => {
         );
 
         return () => {
-            console.log("Cleanup");
+            window.log("Cleanup");
             channel.unsubscribe();
         };
     }, []);
 
     const handleWebSocket = async (websocket) => {
-        console.log("DATA");
-        console.log(websocket.data);
+        window.log("DATA");
+        window.log(websocket.data);
         switch (websocket.changeType) {
             case "ASSIGNED_TO_TASK":
                 webSocketAssignedToTask(websocket.data);
@@ -301,7 +301,7 @@ const AssignedTasks = () => {
             setTheme(localStorage.getItem("darkMode"));
         };
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"));
+        window.log("Darkmode: " + localStorage.getItem("darkMode"));
         window.addEventListener("ChangingTheme", ResetTheme);
 
         return () => {
@@ -321,7 +321,7 @@ const AssignedTasks = () => {
                 tempData[index] = task.task;
             });
 
-            console.log(tempData);
+            window.log(tempData);
             tempData = tempData.filter((task) => task.completed === 0);
 
             setTasks(tempData);

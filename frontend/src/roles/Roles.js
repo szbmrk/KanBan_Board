@@ -10,13 +10,13 @@ export const SetRoles = async (token) => {
                 Authorization: `Bearer ${token}`,
             }
         });
-        console.log(response.data);
+        window.log(response.data);
         sessionStorage.setItem('permissions', roleHandler(response.data));
         const rolesData = JSON.parse(sessionStorage.getItem('permissions'));
         teamPermissions = rolesData.teams;
         ownPermissions = rolesData.general_role;
     } catch (error) {
-        console.log(error);
+        window.log(error);
     }
 }
 
@@ -72,7 +72,7 @@ export function checkPermissionForBoard(board_id, team_id, permissionToCheck) {
 
 
 function roleHandler(data) {
-    console.log(data);
+    window.log(data);
     let team_member = data.permissions;
     let roles = { general_role: [], teams: [] };
     for (let i = 0; i < team_member.length; i++) {
@@ -83,7 +83,7 @@ function roleHandler(data) {
             roles.teams.push(team_member[i]);
         }
     }
-    console.log(roles)
+    window.log(roles)
     return JSON.stringify(roles);
     //comment
 }

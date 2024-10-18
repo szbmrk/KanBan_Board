@@ -18,7 +18,7 @@ const TagDropdownItem = ({ data, onEdit, onDelete, onToggle, selectedTags }) => 
         }
 
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"))
+        window.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {
@@ -103,7 +103,7 @@ const TagDropdownItem = ({ data, onEdit, onDelete, onToggle, selectedTags }) => 
                 </span>
             </div>
         </div>
-    );    
+    );
 };
 
 export default TagDropdownItem;

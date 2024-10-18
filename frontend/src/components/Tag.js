@@ -26,7 +26,7 @@ const Tag = ({ name, color, extraClassName, enableClickBehavior, onClick }) => {
         }
 
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"))
+        window.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {

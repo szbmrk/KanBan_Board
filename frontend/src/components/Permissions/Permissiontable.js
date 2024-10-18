@@ -31,7 +31,7 @@ export default function Permissiontable() {
             setTheme(localStorage.getItem("darkMode"));
         };
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"));
+        window.log("Darkmode: " + localStorage.getItem("darkMode"));
         window.addEventListener("ChangingTheme", ResetTheme);
 
         return () => {
@@ -47,7 +47,7 @@ export default function Permissiontable() {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log(response.data.roles);
+            window.log(response.data.roles);
             setRoles(response.data.roles);
         } catch (error) {
             setError(error?.response?.data);
@@ -65,7 +65,7 @@ export default function Permissiontable() {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log(response.data.permissions);
+            window.log(response.data.permissions);
             setPermissions(response.data.permissions);
         } catch (error) {
             setError(error?.response?.data);
@@ -96,7 +96,7 @@ export default function Permissiontable() {
                     },
                 }
             );
-            console.log(response.data);
+            window.log(response.data);
             const newRole = response.data.role;
             newRole.permissions = [];
             setRoles([...roles, newRole]);
@@ -139,7 +139,7 @@ export default function Permissiontable() {
                     },
                 }
             );
-            console.log(response);
+            window.log(response);
             setRoles(roles.filter((role) => role.role_id !== role_id));
         } catch (error) {
             setError(error?.response?.data);
@@ -161,7 +161,7 @@ export default function Permissiontable() {
                     },
                 }
             );
-            console.log(response);
+            window.log(response);
             const newRoles = [...roles];
             for (let i = 0; i < newRoles.length; i++) {
                 if (parseInt(newRoles[i].role_id) === parseInt(role_id)) {
@@ -198,7 +198,7 @@ export default function Permissiontable() {
                     },
                 }
             );
-            console.log(response);
+            window.log(response);
             const newRoleData = [...roles];
             newRoleData.forEach((role) => {
                 if (parseInt(role.role_id) === parseInt(role_id)) {

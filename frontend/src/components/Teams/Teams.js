@@ -37,7 +37,7 @@ const Teams = () => {
             setTheme(localStorage.getItem("darkMode"));
         };
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"));
+        window.log("Darkmode: " + localStorage.getItem("darkMode"));
         window.addEventListener("ChangingTheme", ResetTheme);
 
         return () => {
@@ -79,15 +79,15 @@ const Teams = () => {
         );
 
         return () => {
-            console.log("Cleanup");
+            window.log("Cleanup");
             channel.unsubscribe();
         };
     }, []);
 
     const handleWebSocket = async (websocket) => {
-        console.log("DATA");
-        console.log(websocket.data);
-        console.log(websocket.changeType);
+        window.log("DATA");
+        window.log(websocket.data);
+        window.log(websocket.changeType);
         switch (websocket.changeType) {
             case "THIS_USER_ADDED_TO_TEAM":
                 webSocketThisUserAddedToTeam(websocket.data);
@@ -125,9 +125,9 @@ const Teams = () => {
     };
 
     const webSocketThisUserAddedToTeam = (data) => {
-        console.log("TEAM");
-        console.log(teamsRef.current);
-        console.log(data);
+        window.log("TEAM");
+        window.log(teamsRef.current);
+        window.log(data);
         let newTeamData = [...teamsRef.current];
         newTeamData.push(data.team);
         setTeams(newTeamData);
@@ -251,7 +251,7 @@ const Teams = () => {
                 },
             });
         } catch (e) {
-            console.log(e.response);
+            window.log(e.response);
             if (e?.response?.status === 401 || e?.response?.status === 500) {
                 setError({
                     message: "You are not logged in! Redirecting to login page...",
@@ -275,7 +275,7 @@ const Teams = () => {
                 }
             );
         } catch (e) {
-            console.log(e.response);
+            window.log(e.response);
             if (
                 e.response &&
                 (e?.response?.status === 401 || e?.response?.status === 500)
@@ -302,7 +302,7 @@ const Teams = () => {
                 }
             );
         } catch (e) {
-            console.log(e.response);
+            window.log(e.response);
             if (e?.response?.status === 401 || e?.response?.status === 500) {
                 setError({
                     message: "You are not logged in! Redirecting to login page...",
@@ -332,10 +332,10 @@ const Teams = () => {
                 return team;
             });
             setTeams(newTeamData);
-            console.log(response);
+            window.log(response);
         } catch (e) {
-            console.log(e.response);
-            console.log(e);
+            window.log(e.response);
+            window.log(e);
             if (e.response?.status === 401 || e.response?.status === 500) {
                 setError({
                     message: "You are not logged in! Redirecting to login page...",
@@ -356,7 +356,7 @@ const Teams = () => {
                 },
             });
         } catch (e) {
-            console.log(e.response);
+            window.log(e.response);
             if (e.response?.status === 401 || e.response?.status === 500) {
                 setError({
                     message: "You are not logged in! Redirecting to login page...",
@@ -378,8 +378,8 @@ const Teams = () => {
                     },
                 });
                 const tempData = response.data.teams;
-                console.log("TEAMS");
-                console.log(response.data.teams);
+                window.log("TEAMS");
+                window.log(response.data.teams);
                 setTeams(tempData);
             }
             else {
@@ -389,8 +389,8 @@ const Teams = () => {
                     },
                 });
                 const tempData = response.data.teams;
-                console.log("TEAMS");
-                console.log(response.data.teams);
+                window.log("TEAMS");
+                window.log(response.data.teams);
                 setTeams(tempData);
             }
         } catch (error) {
@@ -409,7 +409,7 @@ const Teams = () => {
                     },
                 }
             );
-            console.log(response);
+            window.log(response);
             const newTeamData = teams.map((team) => {
                 if (team.team_id === team_id) {
                     const newTeamMembers = team.team_members.map((member) => {
@@ -442,7 +442,7 @@ const Teams = () => {
                     },
                 }
             );
-            console.log(response);
+            window.log(response);
             const newTeamMember = response.data.team_member;
             const newTeamData = teams.map((team) => {
                 if (team.team_id === newTeamMember.team_id) {

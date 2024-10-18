@@ -34,8 +34,8 @@ export default function Notification() {
     }, [notifications]);
 
     const handleWebSocket = async (websocket) => {
-        console.log("DATA");
-        console.log(websocket.data);
+        window.log("DATA");
+        window.log(websocket.data);
         switch (websocket.changeType) {
             case "CREATED_NOTIFICATION":
                 webSocketCreateNotification(websocket.data);
@@ -97,7 +97,7 @@ export default function Notification() {
             setTheme(localStorage.getItem("darkMode"));
         };
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"));
+        window.log("Darkmode: " + localStorage.getItem("darkMode"));
         window.addEventListener("ChangingTheme", ResetTheme);
 
         window.Pusher = require("pusher-js");
@@ -128,7 +128,7 @@ export default function Notification() {
 
         return () => {
             window.removeEventListener("ChangingTheme", ResetTheme);
-            console.log("Cleanup");
+            window.log("Cleanup");
             channel.unsubscribe();
         };
         //eddig
@@ -141,12 +141,12 @@ export default function Notification() {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log("notifications");
-            console.log(res.data);
+            window.log("notifications");
+            window.log(res.data);
             setNotifications(res.data);
             countUnseenAndSeenNotifications();
         } catch (e) {
-            console.log(e);
+            window.log(e);
             if (e?.response?.status === 401 || e?.response?.status === 500) {
                 setError({
                     message: "You are not logged in! Redirecting to login page...",
@@ -186,7 +186,7 @@ export default function Notification() {
                 }
             );
         } catch (e) {
-            console.log(e);
+            window.log(e);
             if (e?.response?.status === 401 || e?.response?.status === 500) {
                 setError({
                     message: "You are not logged in! Redirecting to login page...",
@@ -212,7 +212,7 @@ export default function Notification() {
                 }
             );
         } catch (e) {
-            console.log(e);
+            window.log(e);
             if (e?.response?.status === 401 || e?.response?.status === 500) {
                 setError({
                     message: "You are not logged in! Redirecting to login page...",

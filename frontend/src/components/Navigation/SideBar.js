@@ -1,6 +1,6 @@
 // Sidebar component that using among the application
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation} from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import '../../styles/sidebar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faTable, faSignOutAlt, faListCheck, faPeopleGroup } from '@fortawesome/free-solid-svg-icons';
@@ -23,14 +23,14 @@ const Sidebar = () => {
         }
 
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"))
+        window.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {
             window.removeEventListener('ChangingTheme', ResetTheme)
         }
         //eddig
-        console.log(permissions);
+        window.log(permissions);
     }, []);
 
     return (

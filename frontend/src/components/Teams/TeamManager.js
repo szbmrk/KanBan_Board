@@ -22,7 +22,7 @@ const TeamManager = ({ teamData, onClose, ChangeTeamName, addTeam }) => {
         }
 
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"))
+        window.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {

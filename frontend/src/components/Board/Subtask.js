@@ -68,7 +68,7 @@ export default function Subtask({
         }
 
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"))
+        window.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {

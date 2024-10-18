@@ -13,7 +13,7 @@ const BasicAutocomplete = ({ placeholder, selectedValue, setSelectedValue, behav
         }
 
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"))
+        window.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {

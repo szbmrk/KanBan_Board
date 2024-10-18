@@ -21,7 +21,7 @@ const AuthForm = ({
 }) => {
     const [keyState, setKeyState] = useState(state);
     const [passwordMatchError, setPasswordMatchError] = useState(false);
-    const [passwordStrength, setPasswordStrength] = useState("");  
+    const [passwordStrength, setPasswordStrength] = useState("");
     const [isVibrating, setIsVibrating] = useState(false);
     const location = useLocation();
     const [authContainerVisibility, setAuthContainerVisibility] =
@@ -33,7 +33,7 @@ const AuthForm = ({
             prevKeyState === "login" ? "signup" : "login"
         );
     };
-    
+
     const handleConfirmPasswordChange = (e) => {
         const { name, value } = e.target;
         handleChange(e); // Így továbbítjuk az adatokat a handleChange függvénynek
@@ -45,7 +45,7 @@ const AuthForm = ({
             }
         }
     };
-    
+
     const handleSignUp = (e) => {
         e.preventDefault();
         if (passwordMatchError || emailError || usernameError) {
@@ -64,29 +64,29 @@ const AuthForm = ({
             setPasswordStrength("");
             return;
         }
-    
+
         let strength = 0;
-    
+
         // Kisbetűk ellenőrzése
         if (/[a-z]/.test(password)) {
             strength++;
         }
-    
+
         // Nagybetűk ellenőrzése
         if (/[A-Z]/.test(password)) {
             strength++;
         }
-    
+
         // Számok ellenőrzése
         if (/[0-9]/.test(password)) {
             strength++;
         }
-    
+
         // Speciális karakterek ellenőrzése
         if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
             strength++;
         }
-    
+
         if (password.length < 8 || strength < 3) {
             // Jelszó hossza szerinti és karakter típus alapú ellenőrzés
             setPasswordStrength("Weak");
@@ -115,7 +115,7 @@ const AuthForm = ({
             setTheme(localStorage.getItem("darkMode"));
         };
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"));
+        window.log("Darkmode: " + localStorage.getItem("darkMode"));
         window.addEventListener("ChangingTheme", ResetTheme);
 
         return () => {
@@ -147,8 +147,8 @@ const AuthForm = ({
                                 placeholder="Enter your username"
                                 required
                             />
-                             {formData.username.trim() !== "" && (
-                                <div className={`auth-error ${usernameError ? '' : 'auth-valid'}`} style={{ 
+                            {formData.username.trim() !== "" && (
+                                <div className={`auth-error ${usernameError ? '' : 'auth-valid'}`} style={{
                                     textShadow: usernameError && isVibrating ? '0 0 10px red' : 'none',
                                     animation: usernameError && isVibrating ? 'shake 0.5s linear infinite' : 'none'
                                 }}>
@@ -170,7 +170,7 @@ const AuthForm = ({
                                 required
                             />
                             {formData.email.trim() !== "" && (
-                                <div className={`auth-error ${emailError ? '' : 'auth-valid'}`} style={{ 
+                                <div className={`auth-error ${emailError ? '' : 'auth-valid'}`} style={{
                                     textShadow: emailError && isVibrating ? '0 0 10px red' : 'none',
                                     animation: emailError && isVibrating ? 'shake 0.5s linear infinite' : 'none'
                                 }}>
@@ -191,7 +191,7 @@ const AuthForm = ({
                             />
                         </div>
                     )}
-                        {location.pathname === "/login" ? (
+                    {location.pathname === "/login" ? (
                         <div className="form-group">
                             <label htmlFor="password">Password</label>
                             <input
@@ -206,35 +206,35 @@ const AuthForm = ({
                                 required
                             />
                         </div>
-                        ) : (
-                            <div className="form-group">
-                                <label htmlFor="password">Password</label>
-                                <input
-                                    type="password"
-                                    id="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={(e) => {
-                                        handleChange(e);
-                                        checkPasswordStrength(e.target.value);
-                                    }}
-                                    placeholder="Enter your password"
-                                    required
-                                />
-                                <div className="password-strength-indicator">
-                                    {passwordStrength && (
-                                        <>
-                                            <div className={`password-strength ${passwordStrength.toLowerCase()}`}>
-                                                {passwordStrength}
-                                            </div>
-                                            <div className="password-strength-meter">
-                                                <div className={`strength-indicator ${passwordStrength.toLowerCase()}`} style={{ width: `${passwordStrength === "Weak" ? 20 : passwordStrength === "Medium" ? 50 : 100}%` }}></div>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
+                    ) : (
+                        <div className="form-group">
+                            <label htmlFor="password">Password</label>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={(e) => {
+                                    handleChange(e);
+                                    checkPasswordStrength(e.target.value);
+                                }}
+                                placeholder="Enter your password"
+                                required
+                            />
+                            <div className="password-strength-indicator">
+                                {passwordStrength && (
+                                    <>
+                                        <div className={`password-strength ${passwordStrength.toLowerCase()}`}>
+                                            {passwordStrength}
+                                        </div>
+                                        <div className="password-strength-meter">
+                                            <div className={`strength-indicator ${passwordStrength.toLowerCase()}`} style={{ width: `${passwordStrength === "Weak" ? 20 : passwordStrength === "Medium" ? 50 : 100}%` }}></div>
+                                        </div>
+                                    </>
+                                )}
                             </div>
-                        )}
+                        </div>
+                    )}
 
                     {keyState === "signup" ? (
                         <div className="form-group">
@@ -250,7 +250,7 @@ const AuthForm = ({
                                 onPaste={handlePaste}
                             />
                             {passwordMatchError && (
-                                <p className="password-match-error" style={{ 
+                                <p className="password-match-error" style={{
                                     textShadow: isVibrating ? '0 0 10px red' : 'none',
                                     animation: isVibrating ? 'shake 0.5s linear infinite' : 'none'
                                 }}>
@@ -272,7 +272,7 @@ const AuthForm = ({
                             {textToTermsAndConditions}
                         </div>
                     ) : null}
-                    {error && !passwordMatchError && !emailError && !usernameError &&(
+                    {error && !passwordMatchError && !emailError && !usernameError && (
                         <div className="errorBox" style={{ display }}>
                             <p>{error.error ? error.error : error.message}</p>
                         </div>

@@ -96,9 +96,9 @@ export default function Dashboard() {
     }, []);
 
     const handleWebSocket = async (websocket) => {
-        console.log("DATA");
-        console.log(websocket.data);
-        console.log(websocket.changeType);
+        window.log("DATA");
+        window.log(websocket.data);
+        window.log(websocket.changeType);
         switch (websocket.changeType) {
             case "CREATED_TEAM":
                 webSocketCreateTeam(websocket.data);
@@ -193,7 +193,7 @@ export default function Dashboard() {
 
     const webSocketUserDeletedToTeam = (data) => {
         let newTeamData = [...teamsRef.current];
-        console.log(newTeamData);
+        window.log(newTeamData);
         newTeamData = newTeamData.filter(
             (currentTeam) => currentTeam.team_id !== data.team.team_id
         );

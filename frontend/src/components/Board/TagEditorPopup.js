@@ -32,7 +32,7 @@ const TagEditorPopup = ({ onClose, onSave, tagToEdit }) => {
         }
 
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"))
+        window.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {

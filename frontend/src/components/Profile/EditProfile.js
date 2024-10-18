@@ -65,7 +65,7 @@ export default function EditProfile() {
                 oldPassword: "",
             });
         } catch (e) {
-            console.log(e);
+            window.log(e);
             if (e?.response?.status === 401 || e?.response?.status === 500) {
                 setError({
                     message: "You are not logged in! Redirecting to login page...",
@@ -97,7 +97,7 @@ export default function EditProfile() {
 
     async function handleSubmit(e) {
         e.preventDefault();
-        console.log(formData);
+        window.log(formData);
         if (formData.newPassword === "" && formData.confirmPassword === "")
             try {
                 const response = await axios.put(
@@ -116,7 +116,7 @@ export default function EditProfile() {
                     setSuccessfull(false);
                 }, 8000);
             } catch (e) {
-                console.log(e);
+                window.log(e);
                 if (e?.response?.status === 401 || e?.response?.status === 500) {
                     setError({
                         message: "You are not logged in! Redirecting to login page...",
@@ -186,18 +186,18 @@ export default function EditProfile() {
 
     function handleScrollNext() {
         const container = document.querySelector('.Button-scroller');
-        container.scrollLeft += 160; 
+        container.scrollLeft += 160;
     }
-    
+
     function handleScrollPrev() {
         const container = document.querySelector('.Button-scroller');
         container.scrollLeft -= 160;
     }
-    function handleBackgroundChangeClick(e){
-        console.log(e);
+    function handleBackgroundChangeClick(e) {
+        window.log(e);
         document.body.classList.remove(...document.body.classList)
         document.body.classList.add(e)
-        
+
     }
 
     return (
@@ -304,12 +304,12 @@ export default function EditProfile() {
                         <div class="ButtonContainer">
                             <button class="scroll-button prev-button" onClick={handleScrollPrev}>&lt;</button>
                             <div class="Button-scroller">
-                                <img id="bg-regular" src={bgRegular} height={120} width={160} onClick={(e)=>handleBackgroundChangeClick(e.target.id)}></img> 
-                                <img id="bg-blue" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgBlue} height={120} width={160}></img>
-                                <img id="bg-darkblue"onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgDarkBlue} height={120} width={160}></img>
-                                <img id="bg-gray" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgGray} height={120} width={160}></img>
-                                <img id="bg-green"onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgGreen} height={120} width={160}></img>
-                                <img id="bg-purple" onClick={(e)=>handleBackgroundChangeClick(e.target.id)} src={bgPurple} height={120} width={160}></img>
+                                <img id="bg-regular" src={bgRegular} height={120} width={160} onClick={(e) => handleBackgroundChangeClick(e.target.id)}></img>
+                                <img id="bg-blue" onClick={(e) => handleBackgroundChangeClick(e.target.id)} src={bgBlue} height={120} width={160}></img>
+                                <img id="bg-darkblue" onClick={(e) => handleBackgroundChangeClick(e.target.id)} src={bgDarkBlue} height={120} width={160}></img>
+                                <img id="bg-gray" onClick={(e) => handleBackgroundChangeClick(e.target.id)} src={bgGray} height={120} width={160}></img>
+                                <img id="bg-green" onClick={(e) => handleBackgroundChangeClick(e.target.id)} src={bgGreen} height={120} width={160}></img>
+                                <img id="bg-purple" onClick={(e) => handleBackgroundChangeClick(e.target.id)} src={bgPurple} height={120} width={160}></img>
                             </div>
                             <button class="scroll-button next-button" onClick={handleScrollNext}>&gt;</button>
                         </div>

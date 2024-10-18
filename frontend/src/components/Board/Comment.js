@@ -21,7 +21,7 @@ export default function Comment({ comments, handlePostComment, deleteComment }) 
         setAddComment('');
     };
 
-    
+
 
     const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
     useEffect(() => {
@@ -31,7 +31,7 @@ export default function Comment({ comments, handlePostComment, deleteComment }) 
         }
 
 
-        console.log("Darkmode: " + localStorage.getItem("darkMode"))
+        window.log("Darkmode: " + localStorage.getItem("darkMode"))
         window.addEventListener('ChangingTheme', ResetTheme)
 
         return () => {
@@ -60,7 +60,7 @@ export default function Comment({ comments, handlePostComment, deleteComment }) 
                                         <FontAwesomeIcon icon={faTrash} style={{ color: 'ivory' }} />
                                     </button>
                                 )}
-                            </div>      
+                            </div>
                             <div className='comment-text'>{comment.text}</div>
                         </div>
                     ))}
