@@ -321,9 +321,9 @@ const AssignedTasks = () => {
                 tempData[index] = task.task;
             });
 
+            console.log(tempData);
             tempData = tempData.filter((task) => task.completed === 0);
 
-            console.log(tempData);
             setTasks(tempData);
         } catch (e) {
             if (e?.response?.status === 401 || e?.response?.status === 500) {
