@@ -74,7 +74,7 @@ export default function Dashboard() {
             wsPort: REACT_APP_PUSHER_PORT,
             wssPort: REACT_APP_PUSHER_PORT,
             wsPath: REACT_APP_PUSHER_PATH || '',
-            disableStats: true,
+            enableStats: false,
             enabledTransports: ['ws', 'wss'],
         })
 
