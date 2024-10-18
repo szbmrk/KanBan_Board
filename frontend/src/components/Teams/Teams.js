@@ -23,7 +23,7 @@ const Teams = () => {
     const [redirect, setRedirect] = useState(false);
     const [error, setError] = useState(false);
 
-    const [teams, setTeams] = useState([]);
+    const [teams, setTeams] = useState(null);
     const teamsRef = useRef(teams);
     const [manageIsClicked, setManage] = useState(false);
     const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
