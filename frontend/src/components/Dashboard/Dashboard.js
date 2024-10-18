@@ -66,17 +66,17 @@ export default function Dashboard() {
         window.Pusher.logToConsole = true;
 
         const echo = new Echo({
-            broadcaster: 'pusher',
+            broadcaster: "pusher",
             key: REACT_APP_PUSHER_KEY,
             cluster: REACT_APP_PUSHER_CLUSTER,
-            forceTLS: false,
-            wsHost: REACT_APP_PUSHER_HOST || window.location.hostname,
-            wsPort: REACT_APP_PUSHER_PORT,
-            wssPort: REACT_APP_PUSHER_PORT,
-            wsPath: REACT_APP_PUSHER_PATH || '',
-            enableStats: false,
-            enabledTransports: ['ws', 'wss'],
-        })
+            wsHost: '142.93.207.109',  // Correct host
+            wsPort: 80,  // Port where WebSocket is proxied
+            wssPort: 443,  // If using HTTPS
+            wsPath: '/ws',  // Match your Apache WebSocket path
+            enableStats: false,  // Update from disableStats
+            forceTLS: false,  // Set to true if you're using HTTPS
+            enabledTransports: ["ws", "wss"],
+        });
 
         const channel = echo.channel(`DashboardChange`);
 
