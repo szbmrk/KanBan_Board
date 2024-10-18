@@ -58,14 +58,14 @@ const Teams = () => {
             broadcaster: "pusher",
             key: REACT_APP_PUSHER_KEY,
             cluster: REACT_APP_PUSHER_CLUSTER,
-            forceTLS: false,
             wsHost: REACT_APP_PUSHER_HOST || window.location.hostname,
-            wsPort: REACT_APP_PUSHER_PORT,
-            wssPort: REACT_APP_PUSHER_PORT,
+            wsPort: REACT_APP_PUSHER_PORT || 6001,
+            wssPort: 443,
             wsPath: REACT_APP_PUSHER_PATH || '',
             enableStats: false,
+            forceTLS: false,
             enabledTransports: ["ws", "wss"],
-        })
+        });
 
 
         const channel = echo.channel(`TeamChange`);
