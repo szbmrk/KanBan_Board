@@ -26,14 +26,11 @@ class UserTasksController extends Controller
     public function index($user_id)
     {
         $user = auth()->user();
-
         if ($user->user_id != $user_id) {
             return response()->json(['error' => 'You do not have permission to fetch this user\'s tasks'], 403);
         }
 
-        $assignedTasks = Task::whereHas('members', function ($query) use ($user_id) {
-            $query->where('user_id', $user_id);
-        })->get();
+        $assignedTasks = UserTask::where('user_id', $user_id)->with('task')->get();
 
         return response()->json(['assigned_tasks' => $assignedTasks]);
     }
