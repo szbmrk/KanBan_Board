@@ -69,12 +69,12 @@ export default function Dashboard() {
             broadcaster: "pusher",
             key: REACT_APP_PUSHER_KEY,
             cluster: REACT_APP_PUSHER_CLUSTER,
-            wsHost: '142.93.207.109',  // Correct host
-            wsPort: 80,  // Port where WebSocket is proxied
-            wssPort: 443,  // If using HTTPS
-            wsPath: '/ws',  // Match your Apache WebSocket path
-            enableStats: false,  // Update from disableStats
-            forceTLS: false,  // Set to true if you're using HTTPS
+            wsHost: REACT_APP_PUSHER_HOST || window.location.hostname,
+            wsPort: REACT_APP_PUSHER_PORT || 6001,
+            wssPort: 443,
+            wsPath: REACT_APP_PUSHER_PATH || '',
+            enableStats: false,
+            forceTLS: false,
             enabledTransports: ["ws", "wss"],
         });
 
