@@ -27,7 +27,9 @@ class ExecutePythonScript
             return ['error' => 'Prompt is empty'];
         }
 
-        $command = escapeshellcmd("python $path \"$prompt\"");
+        $api_key = config('agiconfig.OPENAI_API_KEY');
+
+        $command = escapeshellcmd("python $path \"$prompt\" \"$api_key\"");
         $output = [];
         $return_var = 0;
 

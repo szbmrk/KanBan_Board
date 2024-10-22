@@ -6,9 +6,8 @@ import sys
 import json
 
 def generate_documentation():
-    api_key = os.environ.get('OPENAI_API_KEY')
-
     prompt = sys.argv[1]
+    api_key = sys.argv[2]
 
     max_tokens = 3000 
 

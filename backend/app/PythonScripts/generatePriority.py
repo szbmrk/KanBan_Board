@@ -4,9 +4,8 @@ import sys
 import json
 
 def generate_priority():
-    api_key = os.environ.get('OPENAI_API_KEY')
-
     prompt = sys.argv[1]
+    api_key = sys.argv[2]
 
     max_tokens = 3000  # Adjust this value based on your requirement
 
