@@ -33,17 +33,14 @@ use Illuminate\Support\Facades\Event;
 
 class AGIController extends Controller
 {
-    public static function GenerateTask(Request $request)
+    public function GenerateTask(Request $request)
     {
         $user = auth()->user();
 
-        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
-        if ($userAgiUsage) {
-            if (!$userAgiUsage->canUse()) {
-                return response()->json([
-                    'error' => 'You have reached the maximum number of AGI requests',
-                ], 400);
-            }
+        if (self::checkIfCanUse()) {
+            return response()->json([
+                'error' => 'Reached maximum usage of llms',
+            ], 400);
         }
 
         $response = null;
@@ -66,21 +63,27 @@ class AGIController extends Controller
                     'error' => 'ChosenAI is not valid',
                 ], 400);
         }
+
+        try {
+            self::incrementAgiUsage();
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage(),
+            ], 500);
+        }
+
         return $response;
     }
 
 
-    public static function GenerateSubtask(Request $request)
+    public function GenerateSubtask(Request $request)
     {
         $user = auth()->user();
 
-        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
-        if ($userAgiUsage) {
-            if (!$userAgiUsage->canUse()) {
-                return response()->json([
-                    'error' => 'You have reached the maximum number of AGI requests',
-                ], 400);
-            }
+        if (self::checkIfCanUse()) {
+            return response()->json([
+                'error' => 'Reached maximum usage of llms',
+            ], 400);
         }
 
         $response = null;
@@ -99,6 +102,14 @@ class AGIController extends Controller
                 ], 400);
         }
 
+        try {
+            self::incrementAgiUsage();
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage(),
+            ], 500);
+        }
+
         return $response;
     }
 
@@ -106,13 +117,10 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
-        if ($userAgiUsage) {
-            if (!$userAgiUsage->canUse()) {
-                return response()->json([
-                    'error' => 'You have reached the maximum number of AGI requests',
-                ], 400);
-            }
+        if (self::checkIfCanUse()) {
+            return response()->json([
+                'error' => 'Reached maximum usage of llms',
+            ], 400);
         }
 
         $chosenAI = Str::lower($request->header('ChosenAI'));
@@ -150,13 +158,10 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
-        if ($userAgiUsage) {
-            if (!$userAgiUsage->canUse()) {
-                return response()->json([
-                    'error' => 'You have reached the maximum number of AGI requests',
-                ], 400);
-            }
+        if (self::checkIfCanUse()) {
+            return response()->json([
+                'error' => 'Reached maximum usage of llms',
+            ], 400);
         }
 
         $response = null;
@@ -190,13 +195,10 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
-        if ($userAgiUsage) {
-            if (!$userAgiUsage->canUse()) {
-                return response()->json([
-                    'error' => 'You have reached the maximum number of AGI requests',
-                ], 400);
-            }
+        if (self::checkIfCanUse()) {
+            return response()->json([
+                'error' => 'Reached maximum usage of llms',
+            ], 400);
         }
 
         $response = null;
@@ -230,13 +232,10 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
-        if ($userAgiUsage) {
-            if (!$userAgiUsage->canUse()) {
-                return response()->json([
-                    'error' => 'You have reached the maximum number of AGI requests',
-                ], 400);
-            }
+        if (self::checkIfCanUse()) {
+            return response()->json([
+                'error' => 'Reached maximum usage of llms',
+            ], 400);
         }
 
         $response = null;
@@ -270,13 +269,10 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
-        if ($userAgiUsage) {
-            if (!$userAgiUsage->canUse()) {
-                return response()->json([
-                    'error' => 'You have reached the maximum number of AGI requests',
-                ], 400);
-            }
+        if (self::checkIfCanUse()) {
+            return response()->json([
+                'error' => 'Reached maximum usage of llms',
+            ], 400);
         }
 
         $response = null;
