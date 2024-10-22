@@ -389,7 +389,7 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        if ($response->getStatusCode() != 200) {
+        if (!isset($response) || !$response instanceof \Psr\Http\Message\ResponseInterface || $response->getStatusCode() != 200) {
             return;
         }
 
