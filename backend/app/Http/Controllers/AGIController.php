@@ -37,6 +37,15 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
+        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
+        if ($userAgiUsage) {
+            if (!$userAgiUsage->canUse()) {
+                return response()->json([
+                    'error' => 'You have reached the maximum number of AGI requests',
+                ], 400);
+            }
+        }
+
         $response = null;
 
         switch ($request->header('ChosenAI')) {
@@ -65,6 +74,15 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
+        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
+        if ($userAgiUsage) {
+            if (!$userAgiUsage->canUse()) {
+                return response()->json([
+                    'error' => 'You have reached the maximum number of AGI requests',
+                ], 400);
+            }
+        }
+
         $response = null;
 
         switch ($request->header('ChosenAI')) {
@@ -87,6 +105,15 @@ class AGIController extends Controller
     public function GenerateTaskCraftedPrompt(Request $request)
     {
         $user = auth()->user();
+
+        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
+        if ($userAgiUsage) {
+            if (!$userAgiUsage->canUse()) {
+                return response()->json([
+                    'error' => 'You have reached the maximum number of AGI requests',
+                ], 400);
+            }
+        }
 
         $chosenAI = Str::lower($request->header('ChosenAI'));
         $response = null;
@@ -123,6 +150,15 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
+        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
+        if ($userAgiUsage) {
+            if (!$userAgiUsage->canUse()) {
+                return response()->json([
+                    'error' => 'You have reached the maximum number of AGI requests',
+                ], 400);
+            }
+        }
+
         $response = null;
 
         switch ($request->header('ChosenAI')) {
@@ -153,6 +189,15 @@ class AGIController extends Controller
     public function GenerateTaskDocumentationPerTask(Request $request, $boardId, $taskId)
     {
         $user = auth()->user();
+
+        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
+        if ($userAgiUsage) {
+            if (!$userAgiUsage->canUse()) {
+                return response()->json([
+                    'error' => 'You have reached the maximum number of AGI requests',
+                ], 400);
+            }
+        }
 
         $response = null;
 
@@ -185,6 +230,15 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
+        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
+        if ($userAgiUsage) {
+            if (!$userAgiUsage->canUse()) {
+                return response()->json([
+                    'error' => 'You have reached the maximum number of AGI requests',
+                ], 400);
+            }
+        }
+
         $response = null;
 
         switch ($request->header('ChosenAI')) {
@@ -216,6 +270,15 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
+        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
+        if ($userAgiUsage) {
+            if (!$userAgiUsage->canUse()) {
+                return response()->json([
+                    'error' => 'You have reached the maximum number of AGI requests',
+                ], 400);
+            }
+        }
+
         $response = null;
 
         switch ($request->header('ChosenAI')) {
@@ -246,6 +309,9 @@ class AGIController extends Controller
     public function GenerateCodeReviewOrDocumentation(Request $request, $boardId)
     {
         $user = auth()->user();
+
+        self::checkIfCanUse();
+
 
         $response = null;
         $chosenType = $request->header('ChosenType');
@@ -284,6 +350,8 @@ class AGIController extends Controller
     public function generatePerformanceSummary(Request $request)
     {
         $user = auth()->user();
+
+        self::checkIfCanUse();
 
         $response = null;
         $chosenType = $request->header('ChosenType');
@@ -326,6 +394,19 @@ class AGIController extends Controller
                 'agi_usage' => 1,
             ]);
             $userAgiUsage->save();
+        }
+    }
+
+    public function checkIfCanUse()
+    {
+        $user = auth()->user();
+        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
+        if ($userAgiUsage) {
+            if (!$userAgiUsage->canUse()) {
+                return response()->json([
+                    'error' => 'You have reached the maximum number of AGI requests',
+                ], 400);
+            }
         }
     }
 }

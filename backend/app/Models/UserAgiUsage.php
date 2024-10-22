@@ -30,4 +30,9 @@ class UserAgiUsage extends Model
         $this->counter++;
         $this->save();
     }
+
+    public function canUse()
+    {
+        return $this->counter <= 5;
+    }
 }
