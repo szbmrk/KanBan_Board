@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-import "../styles/popup.css";
-import "../styles/CraftedPromptList.css";
+import "../../styles/popup.css";
+import "../../styles/CraftedPromptList.css";
 import "react-dropdown/style.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import ConfirmationPopup from "./Board/ConfirmationPopup";
+import ConfirmationPopup from "../Board/ConfirmationPopup";
 import CraftPromptPopup from "./CraftPromptPopup";
-import ErrorWrapper from "../ErrorWrapper";
-import axios from "../api/axios";
+import ErrorWrapper from "../../ErrorWrapper";
+import axios from "../../api/axios";
 import { faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;

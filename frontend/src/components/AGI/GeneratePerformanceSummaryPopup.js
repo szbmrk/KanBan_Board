@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import Dropdown from "react-dropdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import axios from "../api/axios";
-import "../styles/popup.css";
-import "../styles/documentPopup.css";
+import axios from "../../api/axios";
+import "../../styles/popup.css";
+import "../../styles/documentPopup.css";
 import hljs from "highlight.js";
-import ErrorWrapper from "../ErrorWrapper";
+import ErrorWrapper from "../../ErrorWrapper";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import SimpleLoaderPopup from "./SimpleLoaderPopup";
+import SimpleLoaderPopup from "../SimpleLoaderPopup";
 
 const GeneratePerformanceSummaryPopup = ({ board_id, onCancel }) => {
     const currentDate = new Date();

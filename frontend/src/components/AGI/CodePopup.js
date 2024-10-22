@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import Dropdown from "react-dropdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import axios from "../api/axios";
-import "../styles/popup.css";
-import "../styles/CodePopup.css";
+import axios from "../../api/axios";
+import "../../styles/popup.css";
+import "../../styles/CodePopup.css";
 import hljs from "highlight.js";
-import ErrorWrapper from "../ErrorWrapper";
-import SimpleLoaderPopup from "./SimpleLoaderPopup";
+import ErrorWrapper from "../../ErrorWrapper";
+import SimpleLoaderPopup from "../SimpleLoaderPopup";
 
 const CodePopup = ({
     board_id,

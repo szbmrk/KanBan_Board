@@ -1,15 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from "../api/axios";
-import "../styles/popup.css";
-import "../styles/GenerateTaskWithAGIPopup.css";
+import axios from "../../api/axios";
+import "../../styles/popup.css";
+import "../../styles/GenerateTaskWithAGIPopup.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
-import ErrorWrapper from "../ErrorWrapper";
-import SimpleLabelPopup from "./SimpleLabelPopup";
-import SimpleLoaderPopup from "./SimpleLoaderPopup";
+import ErrorWrapper from "../../ErrorWrapper";
+import SimpleLabelPopup from "../SimpleLabelPopup";
+import SimpleLoaderPopup from "../SimpleLoaderPopup";
 
 const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
     let [editedTasks, setEditedTasks] = useState(tasks ? [...tasks] : []);

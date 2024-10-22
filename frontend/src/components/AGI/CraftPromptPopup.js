@@ -1,15 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from "../api/axios";
-import "../styles/popup.css";
-import "../styles/GenerateTaskWithAGIPopup.css";
+import axios from "../../api/axios";
+import "../../styles/popup.css";
+import "../../styles/GenerateTaskWithAGIPopup.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
-import BasicAutocomplete from "./BasicAutocomplete";
-import ErrorWrapper from "../ErrorWrapper";
-import SimpleLabelPopup from "./SimpleLabelPopup";
+import BasicAutocomplete from "../BasicAutocomplete";
+import ErrorWrapper from "../../ErrorWrapper";
+import SimpleLabelPopup from "../SimpleLabelPopup";
 
 const CraftPromptPopup = ({ craftedPrompt, board_id, onCancel }) => {
     const [error, setError] = useState(null);
