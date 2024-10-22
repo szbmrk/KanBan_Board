@@ -403,7 +403,7 @@ class AGIController extends Controller
 
     public function checkIfCanUse()
     {
-        return false;
+        return true;
 
         $user = auth()->user();
         $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
