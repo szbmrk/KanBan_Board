@@ -47,6 +47,10 @@ class AGIController extends Controller
                 $craftedPrompt = null;
                 $response = ChatGPTController::GenerateTaskChatGPT($request, $craftedPrompt);
                 break;
+            case Str::lower(value: "kanban-llm"):
+                return response()->json([
+                    'error' => 'This llm is still under development',
+                ], 404);
             default:
                 return response()->json([
                     'error' => 'ChosenAI is not valid',
@@ -66,6 +70,10 @@ class AGIController extends Controller
             case Str::lower("chatgpt"):
                 $response = ChatGPTController::GenerateSubtaskChatGPT($request);
                 break;
+            case Str::lower(value: "kanban-llm"):
+                return response()->json([
+                    'error' => 'This llm is still under development',
+                ], 404);
             default:
                 return response()->json([
                     'error' => 'ChosenAI is not valid',
@@ -89,6 +97,10 @@ class AGIController extends Controller
             case Str::lower("chatgpt"):
                 $response = ChatGPTController::GenerateTaskChatGPT($request);
                 break;
+            case Str::lower(value: "kanban-llm"):
+                return response()->json([
+                    'error' => 'This llm is still under development',
+                ], 404);
             default:
                 return response()->json([
                     'error' => 'ChosenAI is not valid',
@@ -108,6 +120,10 @@ class AGIController extends Controller
             case Str::lower("chatgpt"):
                 $response = ChatGPTController::GenerateAttachmentLinkNotCraftedChatGPT($request);
                 break;
+            case Str::lower(value: "kanban-llm"):
+                return response()->json([
+                    'error' => 'This llm is still under development',
+                ], 404);
             default:
                 return response()->json([
                     'error' => 'ChosenAI is not valid',
@@ -127,6 +143,10 @@ class AGIController extends Controller
             case Str::lower("chatgpt"):
                 $response = ChatGPTController::GenerateTaskDocumentationPerTask($boardId, $taskId);
                 break;
+            case Str::lower(value: "kanban-llm"):
+                return response()->json([
+                    'error' => 'This llm is still under development',
+                ], 404);
             default:
                 return response()->json([
                     'error' => 'ChosenAI is not valid',
@@ -146,6 +166,10 @@ class AGIController extends Controller
             case Str::lower("chatgpt"):
                 $response = ChatGPTController::GenerateTaskDocumentationPerBoard($boardId);
                 break;
+            case Str::lower(value: "kanban-llm"):
+                return response()->json([
+                    'error' => 'This llm is still under development',
+                ], 404);
             default:
                 return response()->json([
                     'error' => 'ChosenAI is not valid',
@@ -165,6 +189,10 @@ class AGIController extends Controller
             case Str::lower("chatgpt"):
                 $response = ChatGPTController::GenerateTaskDocumentationPerColumn($boardId, $taskId);
                 break;
+            case Str::lower(value: "kanban-llm"):
+                return response()->json([
+                    'error' => 'This llm is still under development',
+                ], 404);
             default:
                 return response()->json([
                     'error' => 'ChosenAI is not valid',
@@ -186,6 +214,10 @@ class AGIController extends Controller
             case Str::lower("chatgpt"):
                 $response = ChatGPTController::GenerateCodeReviewOrDocumentation($request, $boardId, $chosenType);
                 break;
+            case Str::lower(value: "kanban-llm"):
+                return response()->json([
+                    'error' => 'This llm is still under development',
+                ], 404);
             default:
                 return response()->json([
                     'error' => 'ChosenAI is not valid',
@@ -211,6 +243,10 @@ class AGIController extends Controller
             case Str::lower("chatgpt"):
                 $response = ChatGPTController::generatePerformanceSummary($request);
                 break;
+            case Str::lower(value: "kanban-llm"):
+                return response()->json([
+                    'error' => 'This llm is still under development',
+                ], 404);
             default:
                 return response()->json([
                     'error' => 'ChosenAI is not valid',
