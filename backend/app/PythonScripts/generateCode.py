@@ -21,7 +21,7 @@ def generate_code():
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": prompt}
         ],
-        'max_completion_tokens': max_tokens
+        'max_tokens': max_tokens
     }
 
     response = requests.post('https://api.openai.com/v1/completions', headers=headers, json=data)
