@@ -232,22 +232,21 @@ class AGIController extends Controller
 
         try {
             $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
-            if ($response && !$response->has('error')) {
-                if ($userAgiUsage) {
-                    $userAgiUsage->incrementCounter();
-                } else {
-                    UserAgiUsage::create([
-                        'user_id' => $user->user_id,
-                        'counter' => 1,
-                    ]);
-                }
+            if ($userAgiUsage) {
+                $userAgiUsage->incrementCounter();
+                $userAgiUsage->save();
+            } else {
+                $userAgiUsage = new UserAgiUsage([
+                    'user_id' => $user->user_id,
+                    'counter' => 1,
+                ]);
+                $userAgiUsage->save();
             }
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'An error occurred: ' . $e->getMessage(),
             ], 500);
         }
-
 
         return $response;
     }
