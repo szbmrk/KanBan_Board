@@ -244,6 +244,15 @@ class AGIController extends Controller
                         ]);
                     }
                 }
+            } else {
+                if ($userAgiUsage) {
+                    $userAgiUsage->incrementCounter();
+                } else {
+                    UserAgiUsage::create([
+                        'user_id' => $user->user_id,
+                        'counter' => 1,
+                    ]);
+                }
             }
         } catch (\Exception $e) {
             return response()->json([
