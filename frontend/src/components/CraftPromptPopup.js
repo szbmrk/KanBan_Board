@@ -83,7 +83,6 @@ const CraftPromptPopup = ({ craftedPrompt, board_id, onCancel }) => {
     const aiOptions = [
         { value: "CHATGPT", label: "ChatGPT" },
         { value: "LLAMA", label: "Llama" },
-        { value: "BARD", label: "Bard" },
     ];
     let [chosenAI, setChosenAI] = useState(
         craftedPrompt

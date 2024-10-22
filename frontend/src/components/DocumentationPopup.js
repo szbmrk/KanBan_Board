@@ -13,7 +13,6 @@ const DocumentationPopup = ({ board_id, task, column, onCancel }) => {
     const aiOptions = [
         { value: "chatgpt", label: "ChatGPT" },
         { value: "llama", label: "Llama" },
-        { value: "bard", label: "Bard" },
     ];
     let [chosenAI, setChosenAI] = useState(aiOptions[0].value);
 
