@@ -180,17 +180,6 @@ class AGIController extends Controller
                 ], 400);
         }
 
-        if ($response && !$response->has('error')) {
-            if ($userAgiUsage) {
-                $userAgiUsage->incrementCounter();
-            } else {
-                UserAgiUsage::create([
-                    'user_id' => $user->user_id,
-                    'counter' => 1,
-                ]);
-            }
-        }
-
         return $response;
     }
 
