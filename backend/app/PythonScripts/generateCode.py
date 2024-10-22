@@ -32,7 +32,7 @@ def generate_code():
     ##if response.status_code == 200:
         code_json = json.loads(response.text)
         generated_code = code_json['choices'][0]['text']  # Extract the generated code
-    except (json.JSONDecodeError, KeyError) as e:
+    except (Exception) as e:
         return f"Error: {e}"
     ##else:
         ##return f"Error: {response.text}"
