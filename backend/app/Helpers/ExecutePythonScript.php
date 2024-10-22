@@ -26,6 +26,8 @@ class ExecutePythonScript
 
 
             // Return the subtask as a simple array
+
+            return response()->json(['error' => 'asd'], 500);
             return $result;
         } catch (\Exception $e) {
             // Return the error message as a simple array
