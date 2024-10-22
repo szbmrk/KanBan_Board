@@ -33,6 +33,6 @@ class UserAgiUsage extends Model
 
     public function canUse()
     {
-        return $this->counter <= 5;
+        return $this->counter <= 20;
     }
 }
