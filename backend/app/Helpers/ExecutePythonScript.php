@@ -21,7 +21,7 @@ class ExecutePythonScript
         $command = "python $path \"$prompt\"";
 
         try {
-            $result = shell_exec("{$command} 2>&1");
+            $result = shell_exec("{$command}");
 
             if (!$result) {
                 return ['error' => 'No response from the AI'];
