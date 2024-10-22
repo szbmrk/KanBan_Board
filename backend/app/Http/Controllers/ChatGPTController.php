@@ -349,6 +349,14 @@ class ChatGPTController extends Controller
             $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
             $path = config('agiconfig.PYTHON_SCRIPT_PATH');
 
+
+            $pythonScriptPath = config('agiconfig.PYTHON_SCRIPT_PATH');
+            $apiKey = config('agiconfig.OPENAI_API_KEY');
+            $command = "python {$pythonScriptPath} " . escapeshellarg($prompt) . " " . escapeshellarg($apiKey);
+            $response = shell_exec($command);
+            return response()->json(['response' => $response]);
+            /*
+
             $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
             if (array_key_exists('error', $response)) {
                 return response()->json($response, 500);
@@ -358,7 +366,7 @@ class ChatGPTController extends Controller
 
             return [
                 'response' => $cleanData
-            ];
+            ];*/
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'An error occurred: ' . $e->getMessage(),
