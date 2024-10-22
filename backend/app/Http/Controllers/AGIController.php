@@ -161,6 +161,10 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
+        return response()->json([
+            'error' => $user->user_id,
+        ], 404);
+
         $response = null;
 
         switch ($request->header('ChosenAI')) {
