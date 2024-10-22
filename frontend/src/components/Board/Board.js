@@ -2002,8 +2002,8 @@ const Board = () => {
     };
 
     const openCodePopup = (codeReviewOrDocumentation) => {
-        setShowCodePopup(true);
         setInspectedCodeReviewOrDocumentation(codeReviewOrDocumentation);
+        setShowCodePopup(true);
         setIsAGIOpen(false);
         setIsHoveredCode(false);
     };
