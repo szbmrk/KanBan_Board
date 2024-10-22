@@ -40,6 +40,8 @@ class ExecutePythonScript
         if (strpos($output[0], 'Error:') !== false) {
             $output[0] = substr($output[0], 7);
 
+            $json = json_decode($output[0], true);
+
             return ['error' => $output[0]];
         }
 
