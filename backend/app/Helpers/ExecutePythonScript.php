@@ -23,6 +23,10 @@ class ExecutePythonScript
             return ['error' => $error];
         }
 
+        if (empty($prompt)) {
+            return ['error' => 'Prompt is empty'];
+        }
+
         $command = escapeshellcmd("python $path \"$prompt\"");
         $output = [];
         $return_var = 0;
