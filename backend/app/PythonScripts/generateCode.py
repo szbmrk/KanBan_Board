@@ -6,6 +6,9 @@ import sys
 import json
 
 def generate_code():
+
+    return "asdasdasdas"
+
     api_key = os.environ.get('OPENAI_API_KEY')
 
     prompt = sys.argv[1]
