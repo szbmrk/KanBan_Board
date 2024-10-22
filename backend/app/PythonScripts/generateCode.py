@@ -5,7 +5,6 @@ import sys
 import json
 from openai import OpenAI
 
-client = OpenAI()
 
 def generate_code():
     api_key = os.environ.get('OPENAI_API_KEY')
@@ -27,8 +26,9 @@ def generate_code():
 
 
     try:
+        client = OpenAI()
         response = client.chat.completion.create(
-            model="gpt-3.5-turbo-instruct",
+            model="gpt-3.5-turbo",
             messages=[
                 {
                     "role": "system",
