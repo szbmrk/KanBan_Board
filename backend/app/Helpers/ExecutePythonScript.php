@@ -38,12 +38,13 @@ class ExecutePythonScript
         }
 
         if (strpos($output[0], 'Error:') !== false) {
+            /*
             $output[0] = substr($output[0], 7);
 
             $json = json_decode($output[0], true);
             if (json_last_error() === JSON_ERROR_NONE && isset($json['error'])) {
                 return ['error' => $json['error']];
-            }
+            }*/
 
             return ['error' => $output[0]];
         }
