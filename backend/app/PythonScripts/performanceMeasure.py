@@ -5,7 +5,6 @@ import requests
 def generate_gpt_response(api_key, prompt):
     max_tokens = 3000
 
-    prompt = "hello world in python"
     headers = {
         'Authorization': f"Bearer {api_key}",
         'Content-Type': 'application/json',

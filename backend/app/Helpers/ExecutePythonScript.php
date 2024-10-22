@@ -27,26 +27,19 @@ class ExecutePythonScript
             return ['error' => 'Prompt is empty'];
         }
 
-        $api_key = config('agiconfig.OPENAI_API_KEY');
+        $apiKey = config('agiconfig.OPENAI_API_KEY');
 
-        $command = escapeshellcmd("python $path \"$prompt\" \"$api_key\"");
-        $output = [];
-        $return_var = 0;
+        $command = "python {$path} " . escapeshellarg($prompt) . " " . escapeshellarg($apiKey);
+        $response = shell_exec($command);
 
-        exec($command, $output, $return_var);
-
-        if ($return_var !== 0) {
-            return ['error' => 'Command failed with status ' . $return_var, 'output' => implode("\n", $output)];
-        }
-
-        if (empty($output)) {
+        if (empty($response)) {
             return ['error' => 'No response from the AI'];
         }
 
-        if (strpos($output[0], 'Error:') !== false) {
-            $output[0] = substr($output[0], 7);
+        if (strpos($response[0], 'Error:') !== false) {
+            $response[0] = substr($response[0], 7);
 
-            $json = json_decode($output[0], true);
+            $json = json_decode($response[0], true);
             if ($json) {
                 if (array_key_exists('error', $json)) {
                     if (array_key_exists('message', $json['error'])) {
@@ -55,11 +48,10 @@ class ExecutePythonScript
                 }
             }
 
-            return ['error' => $output[0]];
+            return ['error' => $response[0]];
         }
-        $response = implode("\n", $output);
 
-        return ['response' => $response];
+        return $response;
     }
 
 }
