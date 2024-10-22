@@ -1,9 +1,7 @@
-# generateCode.py
 import os
 import requests
 import sys
 import json
-import openai
 
 def generate_code():
     api_key = os.environ.get('OPENAI_API_KEY')
@@ -25,7 +23,6 @@ def generate_code():
         ],
         'max_completion_tokens': max_tokens
     }
-
 
     response = requests.post('https://api.openai.com/v1/chat/completions', headers=headers, json=data)
 
