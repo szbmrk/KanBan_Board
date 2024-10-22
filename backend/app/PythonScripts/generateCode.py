@@ -3,7 +3,9 @@ import os
 import requests
 import sys
 import json
-import openai
+from openai import OpenAI
+
+client = OpenAI()
 
 def generate_code():
     api_key = os.environ.get('OPENAI_API_KEY')
@@ -22,8 +24,10 @@ def generate_code():
         'max_tokens': max_tokens,
     }
 
+
+
     try:
-        response = openai.Completion.create(
+        response = client.chat.completion.create(
             model="gpt-3.5-turbo-instruct",
             messages=[
                 {
