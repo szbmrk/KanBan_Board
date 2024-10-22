@@ -177,18 +177,6 @@ class AGIController extends Controller
                 ], 400);
         }
 
-        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
-        if ($response && !$response->has('error')) {
-            if ($userAgiUsage) {
-                $userAgiUsage->incrementCounter();
-            } else {
-                UserAgiUsage::create([
-                    'user_id' => $user->user_id,
-                    'counter' => 1,
-                ]);
-            }
-        }
-
         return $response;
     }
 
@@ -241,6 +229,25 @@ class AGIController extends Controller
             'codeReviewOrDocumentation' => $response
         ];
         broadcast(new BoardChange($boardId, "GENERATED_CODE_REVIEW_OR_DOCUMENTATION", $data));
+
+        try {
+            $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
+            if ($response && !$response->has('error')) {
+                if ($userAgiUsage) {
+                    $userAgiUsage->incrementCounter();
+                } else {
+                    UserAgiUsage::create([
+                        'user_id' => $user->user_id,
+                        'counter' => 1,
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage(),
+            ], 500);
+        }
+
 
         return $response;
     }
