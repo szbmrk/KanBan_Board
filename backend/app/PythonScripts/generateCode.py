@@ -19,25 +19,37 @@ def generate_code():
 
     data = {
         'prompt': prompt,
-        'max_completion_tokens': max_tokens,
+        'max_tokens': max_tokens,
     }
 
-    #response = requests.post('https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct/completions', headers=headers, json=data)
     try:
         response = openai.Completion.create(
-            engine="gpt-3.5-turbo-instruct",
-            prompt=prompt,
+            model="gpt-3.5-turbo-instruct",
+            messages=[
+                {
+                    "role": "system",
+                    "content": prompt
+                }
+            ],
             max_completion_tokens=max_tokens
         )
-    ##if response.status_code == 200:
-        code_json = json.loads(response.text)
-        generated_code = code_json['choices'][0]['text']  # Extract the generated code
-    except (Exception) as e:
-        return f"Error: {e}"
-    ##else:
-        ##return f"Error: {response.text}"
 
-    return generated_code
+        generated_code = response['choices'][0]['message']['content']
+        return generated_code
+    except Exception as e:
+        return f"Error: {e}"
+    """""
+    response = requests.post('https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct/completions', headers=headers, json=data)
+
+    if response.status_code == 200:
+        try:
+            code_json = json.loads(response.text)
+            generated_code = code_json['choices'][0]['text']  # Extract the generated code
+        except (json.JSONDecodeError, KeyError) as e:
+            return f"Error: {e}"
+    else:
+        return f"Error: {response.text}"
+    """
 
 def clean_response(response):
     cleaned_response = response.replace('\n', ' ')
