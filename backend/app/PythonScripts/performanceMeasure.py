@@ -8,7 +8,7 @@ def generate_gpt_response(api_key, prompt):
     response = openai.Completion.create(
         engine="gpt-3.5-turbo-instruct",
         prompt=prompt,
-        max_tokens=1000
+        max_completion_tokens=5000
     )
 
     return response.choices[0].text.strip()

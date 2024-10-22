@@ -19,7 +19,7 @@ def generate_documentation():
 
     data = {
         'prompt': prompt,
-        'max_tokens': max_tokens,
+        'max_completion_tokens': max_tokens,
     }
 
     response = requests.post('https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct/completions', headers=headers, json=data)
