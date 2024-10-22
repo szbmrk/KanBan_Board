@@ -21,16 +21,10 @@ class ExecutePythonScript
         $command = "python $path \"$prompt\"";
 
         try {
+            $result = shell_exec("{$command}");
 
-            $result = shell_exec("{$command} 2>&1");
-
-
-            // Return the subtask as a simple array
-
-            return response()->json(['error' => 'asd'], 500);
             return $result;
         } catch (\Exception $e) {
-            // Return the error message as a simple array
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
