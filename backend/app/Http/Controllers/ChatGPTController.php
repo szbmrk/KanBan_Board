@@ -348,7 +348,6 @@ class ChatGPTController extends Controller
 
             $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
             $path = config('agiconfig.PYTHON_SCRIPT_PATH');
-            return response()->json(["error" => $path], 401);
 
             $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
             if (array_key_exists('error', $response)) {
