@@ -28,7 +28,6 @@ class ExecutePythonScript
         }
 
         $apiKey = config('agiconfig.OPENAI_API_KEY');
-        return ['error' => $apiKey];
         $command = "python {$path} " . escapeshellarg($prompt) . " " . escapeshellarg($apiKey);
         $response = shell_exec($command);
         return $response;
