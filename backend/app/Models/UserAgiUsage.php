@@ -11,6 +11,8 @@ class UserAgiUsage extends Model
     use HasFactory;
     use AdjustTimestampsForHungaryTrait;
 
+
+    protected $table = 'user_agi_usage';
     protected $primaryKey = 'user_agi_usage_id';
 
     protected $fillable = [
