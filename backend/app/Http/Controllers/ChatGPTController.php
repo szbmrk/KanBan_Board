@@ -447,7 +447,6 @@ class ChatGPTController extends Controller
     public static function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $boardId, $expectedType, $code)
     {
         try {
-            return response()->json(["error" => "asd"], 500);
             $path = config('agiconfig.PYTHON_SCRIPT_PATH');
             $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
             if (is_array($response) && array_key_exists('error', $response)) {
