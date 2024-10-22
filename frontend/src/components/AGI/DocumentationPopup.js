@@ -97,7 +97,6 @@ const DocumentationPopup = ({ board_id, task, column, onCancel }) => {
             window.log(res.data.response);
             setOutput(res.data.response);
         } catch (e) {
-            console.log(e?.response?.data);
             setShowAIGeneratingLoaderPopup(false);
             setError(e?.response?.data);
         }

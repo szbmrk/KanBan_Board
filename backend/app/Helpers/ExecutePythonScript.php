@@ -19,7 +19,8 @@ class ExecutePythonScript
     public static function GenerateApiResponse($prompt, $path)
     {
         if (!file_exists($path)) {
-            return ['error' => 'File does not exist: ' . $path];
+            $error = 'File does not exist: ' . $path;
+            return ['error' => $error];
         }
 
         $command = escapeshellcmd("python $path \"$prompt\"");
