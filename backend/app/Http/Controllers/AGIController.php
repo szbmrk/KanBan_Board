@@ -27,6 +27,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\BoardChange;
+use App\Models\UserAgiUsage;
 use Illuminate\Support\Facades\Event;
 
 
@@ -160,6 +161,9 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
+
+        $userAgiUsage = UserAgiUsage::where('user_id', $user->id)->first();
+
         $response = null;
 
         switch ($request->header('ChosenAI')) {
@@ -174,6 +178,17 @@ class AGIController extends Controller
                 return response()->json([
                     'error' => 'ChosenAI is not valid',
                 ], 400);
+        }
+
+        if ($response && !$response->has('error')) {
+            if ($userAgiUsage) {
+                $userAgiUsage->incrementCounter();
+            } else {
+                UserAgiUsage::create([
+                    'user_id' => $user->user_id,
+                    'counter' => 1,
+                ]);
+            }
         }
 
         return $response;
