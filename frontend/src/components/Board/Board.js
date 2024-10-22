@@ -2039,14 +2039,14 @@ const Board = () => {
     const handleDeleteCodeReviewOrDocumentationButtonClick = async (
         codeReviewOrDocumentation
     ) => {
-        setShowDeleteCodeReviewOrDocumentationConfirmation(true);
         setCodeReviewOrDocumentationToDelete(codeReviewOrDocumentation);
+        setShowDeleteCodeReviewOrDocumentationConfirmation(true);
         setShowIconContainer1(false);
         setIsAGIOpen(false);
     };
 
     const handleDeleteCodeReviewOrDocumentationConfirm = async () => {
-        const deleteCodeReviewOrDocumentation = await axios.delete(
+        await axios.delete(
             `/AGI/CodeReviewOrDocumentation/boards/${board_id}/agiAnswer/${codeReviewOrDocumentationToDelete.agi_answer_id}`,
             {
                 headers: {
