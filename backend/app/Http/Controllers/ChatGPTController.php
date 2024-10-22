@@ -352,7 +352,7 @@ class ChatGPTController extends Controller
             $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
 
             if (array_key_exists('error', $response)) {
-                return response()->json(['error' => 'asdasdas'], 500);
+                return response()->json($response, 501);
             }
 
             $cleanData = trim($response);
