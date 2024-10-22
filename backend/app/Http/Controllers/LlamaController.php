@@ -81,11 +81,11 @@ class LlamaController extends Controller
 
     public static function CallPythonAndFormatResponse($prompt)
     {
-        $pythonScriptPath = env('LLAMA_PYTHON_SCRIPT_PATH');
-        $apiToken = env('REPLICATE_API_TOKEN');
-        $command = "set REPLICATE_API_TOKEN={$apiToken} && python {$pythonScriptPath} \"{$prompt}\"";
-
         try {
+            $pythonScriptPath = env('LLAMA_PYTHON_SCRIPT_PATH');
+            $apiToken = env('REPLICATE_API_TOKEN');
+            $command = "set REPLICATE_API_TOKEN={$apiToken} && python {$pythonScriptPath} \"{$prompt}\"";
+
             $subtaskResponse = shell_exec("{$command} 2>&1");
 
             // Call the parseSubtaskResponse function
@@ -179,14 +179,14 @@ class LlamaController extends Controller
         if (!$user) {
             return response()->json([
                 'error' => 'Unauthorized!',
-            ]);
+            ], 403);
         }
 
         $task = Task::find($taskId);
         if (!$task) {
             return response()->json([
                 'error' => 'Task not found!',
-            ]);
+            ], 404);
         }
         $board = Board::where('board_id', $boardId)->first();
         if (!$user->isMemberOfBoard($board->board_id)) {
@@ -210,14 +210,14 @@ class LlamaController extends Controller
         if (!$user) {
             return response()->json([
                 'error' => 'Unauthorized!',
-            ]);
+            ], 403);
         }
 
         $tasks = Task::where('board_id', $boardId)->get();
         if ($tasks->isEmpty()) {
             return response()->json([
                 'error' => 'No tasks found for the given board!',
-            ]);
+            ], 404);
         }
 
         $allTaskDescriptions = '';
@@ -243,14 +243,14 @@ class LlamaController extends Controller
         if (!$user) {
             return response()->json([
                 'error' => 'Unauthorized!',
-            ]);
+            ], 403);
         }
 
         $tasks = Task::where('column_id', $columnId)->get();
         if ($tasks->isEmpty()) {
             return response()->json([
                 'error' => 'No tasks found for the given column!',
-            ]);
+            ], 404);
         }
 
         $board = Board::where('board_id', $boardId)->first();
@@ -281,7 +281,7 @@ class LlamaController extends Controller
         if (!$user) {
             return response()->json([
                 'error' => 'Unauthorized!',
-            ]);
+            ], 403);
         }
         $board = Board::where('board_id', $boardId)->first();
 

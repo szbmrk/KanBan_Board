@@ -129,15 +129,21 @@ class ChatGPTController extends Controller
 
     public static function CallPythonAndFormatResponse($prompt)
     {
-        $path = env('PYTHON_SCRIPT_PATH');
-        $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
+        try {
+            $path = env('PYTHON_SCRIPT_PATH');
+            $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
 
-        $cleanData = trim($response);
-        $cleanData = str_replace("'", "\"", $response);
+            $cleanData = trim($response);
+            $cleanData = str_replace("'", "\"", $response);
 
-        $formattedResponse = json_decode($cleanData, true);
+            $formattedResponse = json_decode($cleanData, true);
 
-        return $formattedResponse;
+            return $formattedResponse;
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     public static function generateCode(Request $request, $boardId, $taskId)
@@ -147,7 +153,7 @@ class ChatGPTController extends Controller
         if ($user == null || !$user->isMemberOfBoard($boardId)) {
             return response()->json([
                 'error' => 'Not authorized!',
-            ]);
+            ], 403);
         }
 
         //find the task for the task id
@@ -185,7 +191,7 @@ class ChatGPTController extends Controller
         if ($user == null || !$user->isMemberOfBoard($boardId)) {
             return response()->json([
                 'error' => 'Not authorized!',
-            ]);
+            ], 403);
         }
 
         $task = Task::find($taskId);
@@ -230,7 +236,7 @@ class ChatGPTController extends Controller
         if ($user == null || !$user->isMemberOfBoard($boardId)) {
             return response()->json([
                 'error' => 'Not authorized!',
-            ]);
+            ], 403);
         }
 
 
@@ -277,7 +283,7 @@ class ChatGPTController extends Controller
         if (!$user) {
             return response()->json([
                 'error' => 'Unauthorized!',
-            ]);
+            ], 403);
 
         }
 
@@ -285,7 +291,7 @@ class ChatGPTController extends Controller
         if (!$task) {
             return response()->json([
                 'error' => 'Task not found!',
-            ]);
+            ], 404);
         }
         $board = Board::where('board_id', $boardId)->first();
         if (!$user->isMemberOfBoard($board->board_id)) {
@@ -308,14 +314,14 @@ class ChatGPTController extends Controller
         if (!$user) {
             return response()->json([
                 'error' => 'Unauthorized!',
-            ]);
+            ], 403);
         }
 
         $tasks = Task::where('board_id', $boardId)->get();
         if ($tasks->isEmpty()) {
             return response()->json([
                 'error' => 'No tasks found for the given board!',
-            ]);
+            ], 404);
         }
 
         $allTaskDescriptions = '';
@@ -339,14 +345,14 @@ class ChatGPTController extends Controller
         if (!$user) {
             return response()->json([
                 'error' => 'Unauthorized!',
-            ]);
+            ], 403);
         }
 
         $tasks = Task::where('column_id', $columnId)->get();
         if ($tasks->isEmpty()) {
             return response()->json([
                 'error' => 'No tasks found for the given column!',
-            ]);
+            ], 404);
         }
 
         $board = Board::where('board_id', $boardId)->first();
@@ -375,7 +381,7 @@ class ChatGPTController extends Controller
         if (!$user) {
             return response()->json([
                 'error' => 'Unauthorized!',
-            ]);
+            ], 403);
         }
         $board = Board::where('board_id', $boardId)->first();
 
@@ -409,17 +415,17 @@ class ChatGPTController extends Controller
 
     public static function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $boardId, $expectedType, $code)
     {
-        $path = env('PYTHON_SCRIPT_PATH');
-        $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
-        $foundKeyPhrase = strtolower($expectedType) . ':';
-        $review = substr($response, stripos($response, $foundKeyPhrase) + strlen($foundKeyPhrase));
-        $review = trim($review);
-
-        $user = auth()->user();
-        $board = Board::where('board_id', $boardId)->first();
-        $chosenAI = request()->header('ChosenAI');
-        $agiAnswerId = request()->header('agi_answer_id');
         try {
+            $path = env('PYTHON_SCRIPT_PATH');
+            $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
+            $foundKeyPhrase = strtolower($expectedType) . ':';
+            $review = substr($response, stripos($response, $foundKeyPhrase) + strlen($foundKeyPhrase));
+            $review = trim($review);
+
+            $user = auth()->user();
+            $board = Board::where('board_id', $boardId)->first();
+            $chosenAI = request()->header('ChosenAI');
+            $agiAnswerId = request()->header('agi_answer_id');
             if (!empty($agiAnswerId)) {
                 $agiAnswer = AGIAnswers::where('board_id', $board->board_id)
                     ->where('user_id', $user->user_id)

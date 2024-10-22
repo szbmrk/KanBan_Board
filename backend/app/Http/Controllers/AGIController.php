@@ -202,9 +202,6 @@ class AGIController extends Controller
         $response = null;
         $chosenType = $request->header('ChosenType');
 
-        return response()->json([
-            'error' => 'Testing error',
-        ], 400);
 
         switch ($request->header('ChosenAI')) {
             case Str::lower("llama"):
