@@ -161,9 +161,6 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-
-        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
-
         $response = null;
 
         switch ($request->header('ChosenAI')) {
