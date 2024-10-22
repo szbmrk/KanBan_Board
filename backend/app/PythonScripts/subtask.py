@@ -11,7 +11,7 @@ def generate_subtasks():
 
     prompt = sys.argv[1]
 
-    max_tokens = 1000  # Adjust this value based on your requirement
+    max_tokens = 5000  # Adjust this value based on your requirement
 
     try:
         headers = {
