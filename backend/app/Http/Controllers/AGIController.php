@@ -409,6 +409,6 @@ class AGIController extends Controller
             return $userAgiUsage->canUse();
         }
 
-        return true;
+        return false;
     }
 }
