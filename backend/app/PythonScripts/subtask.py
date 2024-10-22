@@ -38,9 +38,9 @@ def generate_subtasks():
 
             return eval(subtask)
         else:
-            return 'Invalid response from OpenAI API'
+            return 'Error: Invalid response from OpenAI API'
     except Exception as e:
-        return str(e)
+        return f"Error: {e}"
 
 if __name__ == "__main__":
     subtask = generate_subtasks()

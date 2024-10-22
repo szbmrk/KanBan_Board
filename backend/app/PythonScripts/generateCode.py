@@ -6,8 +6,6 @@ import sys
 import json
 
 def generate_code():
-
-    return "Error: alvmlqwvqw"
     api_key = os.environ.get('OPENAI_API_KEY')
 
     prompt = sys.argv[1]
@@ -31,7 +29,7 @@ def generate_code():
             code_json = json.loads(response.text)
             generated_code = code_json['choices'][0]['text']  # Extract the generated code
         except (json.JSONDecodeError, KeyError) as e:
-            return f"Error parsing response: {e}"
+            return f"Error: parsing response: {e}"
     else:
         return f"Error: {response.status_code} - {response.text}"
 

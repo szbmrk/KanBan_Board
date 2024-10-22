@@ -28,7 +28,7 @@ def generate_priority():
             generated_code = code_json['choices'][0]['text']  # Extract the generated text
             #priority = generated_code.strip().split('\n')[-1]  # Extract the last line (priority)
         except (json.JSONDecodeError, KeyError, IndexError) as e:
-            print(f"Error parsing response: {e}")
+            print(f"Error: parsing response: {e}")
     else:
         print(f"Error: {response.status_code}, {response.text}")
 

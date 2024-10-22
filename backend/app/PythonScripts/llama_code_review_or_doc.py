@@ -15,7 +15,7 @@ def generate_agi_response(prompt):
 
         return "\n".join(responses)
     except Exception as e:
-        return str(e)
+        return "Error: " + str(e)
 
 if __name__ == "__main__":
     prompt = sys.argv[1]

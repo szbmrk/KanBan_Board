@@ -29,7 +29,7 @@ def generate_documentation():
             code_json = json.loads(response.text)
             generated_documentation = code_json['choices'][0]['text']
         except (json.JSONDecodeError, KeyError) as e:
-            return f"Error parsing response: {e}"
+            return f"Error: parsing response: {e}"
     else:
         return f"Error: {response.status_code} - {response.text}"
 

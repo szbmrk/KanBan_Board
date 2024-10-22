@@ -15,7 +15,7 @@ def generate_subtasks(prompt):
         subtasks = [item for item in output]
         return "\n".join(subtasks)
     except Exception as e:
-        return str(e)
+        return "Error: " + str(e)
 
 if __name__ == "__main__":
     prompt = sys.argv[1]
