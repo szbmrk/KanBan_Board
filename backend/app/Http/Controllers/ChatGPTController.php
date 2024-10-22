@@ -132,6 +132,9 @@ class ChatGPTController extends Controller
         try {
             $path = env('PYTHON_SCRIPT_PATH');
             $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
+            if (array_key_exists('error', $response)) {
+                return response()->json($response, 500);
+            }
 
             $cleanData = trim($response);
             $cleanData = str_replace("'", "\"", $response);
@@ -166,6 +169,9 @@ class ChatGPTController extends Controller
         $prompt = "Generate usable example code for the following kanban board ticket-> title: $task->title, description: $task->description, tags: $tagNames .In your response write only the code!";
         $path = env('PYTHON_SCRIPT_PATH2');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        if (array_key_exists('error', $response)) {
+            return response()->json($response, 500);
+        }
         //save the response to a txt file
         //Storage::put('code.txt', $response);
 
@@ -220,6 +226,9 @@ class ChatGPTController extends Controller
 
         $path = env('PYTHON_SCRIPT_PATH3');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        if (array_key_exists('error', $response)) {
+            return response()->json($response, 500);
+        }
 
 
         $cleanData = trim($response);
@@ -260,6 +269,9 @@ class ChatGPTController extends Controller
 
         $path = env('PYTHON_SCRIPT_PATH4');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        if (array_key_exists('error', $response)) {
+            return response()->json($response, 500);
+        }
 
         $cleanData = trim($response);
 
@@ -301,6 +313,9 @@ class ChatGPTController extends Controller
         $prompt = "Generate documentation or a longer description for the task with the following title: {$task->title}, description: {$task->description}.";
         $path = env('PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        if (array_key_exists('error', $response)) {
+            return response()->json($response, 500);
+        }
         $cleanData = trim($response);
 
         return [
@@ -334,6 +349,9 @@ class ChatGPTController extends Controller
             $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
             $path = env('PYTHON_SCRIPT_PATH');
             $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+            if (array_key_exists('error', $response)) {
+                return response()->json($response, 500);
+            }
 
             if (array_key_exists('error', $response)) {
                 return response()->json($response, 500);
@@ -380,6 +398,9 @@ class ChatGPTController extends Controller
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
         $path = env('PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        if (array_key_exists('error', $response)) {
+            return response()->json($response, 500);
+        }
         $cleanData = trim($response);
 
         return [
@@ -430,6 +451,9 @@ class ChatGPTController extends Controller
         try {
             $path = env('PYTHON_SCRIPT_PATH');
             $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
+            if (array_key_exists('error', $response)) {
+                return response()->json($response, 500);
+            }
             $foundKeyPhrase = strtolower($expectedType) . ':';
             $review = substr($response, stripos($response, $foundKeyPhrase) + strlen($foundKeyPhrase));
             $review = trim($review);

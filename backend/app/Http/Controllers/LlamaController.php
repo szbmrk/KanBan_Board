@@ -196,6 +196,9 @@ class LlamaController extends Controller
         $prompt = "Generate documentation or a longer description for the task with the following title: {$task->title}, description: {$task->description}.";
         $path = env('LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        if (array_key_exists('error', $response)) {
+            return response()->json($response, 500);
+        }
         $cleanData = trim($response);
         $cleanData = self::parseResponse($cleanData);
 
@@ -228,6 +231,9 @@ class LlamaController extends Controller
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
         $path = env('LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        if (array_key_exists('error', $response)) {
+            return response()->json($response, 500);
+        }
         $cleanData = trim($response);
         $cleanData = self::parseResponse($cleanData);
 
@@ -266,6 +272,9 @@ class LlamaController extends Controller
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
         $path = env('LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+        if (array_key_exists('error', $response)) {
+            return response()->json($response, 500);
+        }
         $cleanData = trim($response);
         $cleanData = self::parseResponse($cleanData);
 
