@@ -310,7 +310,11 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        self::checkIfCanUse();
+        if (self::checkIfCanUse()) {
+            return response()->json([
+                'error' => 'Reached maximum usage of llms',
+            ], 400);
+        }
 
 
         $response = null;
@@ -351,7 +355,11 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        self::checkIfCanUse();
+        if (self::checkIfCanUse()) {
+            return response()->json([
+                'error' => 'Reached maximum usage of llms',
+            ], 400);
+        }
 
         $response = null;
         $chosenType = $request->header('ChosenType');
@@ -402,11 +410,9 @@ class AGIController extends Controller
         $user = auth()->user();
         $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
         if ($userAgiUsage) {
-            if (!$userAgiUsage->canUse()) {
-                return response()->json([
-                    'error' => 'You have reached the maximum number of AGI requests',
-                ], 400);
-            }
+            return $userAgiUsage->canUse();
         }
+
+        return true;
     }
 }
