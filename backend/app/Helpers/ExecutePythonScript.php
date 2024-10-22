@@ -41,6 +41,9 @@ class ExecutePythonScript
             $output[0] = substr($output[0], 7);
 
             $json = json_decode($output[0], true);
+            if ($json) {
+                return $json;
+            }
 
             return ['error' => $output[0]];
         }
