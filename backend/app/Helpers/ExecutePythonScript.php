@@ -37,6 +37,10 @@ class ExecutePythonScript
             return ['error' => 'No response from the AI'];
         }
 
+        if (strpos($output[0], 'Error:') !== false) {
+            return ['error' => $output[0]];
+        }
+
         return implode("\n", $output);
     }
 
