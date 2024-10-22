@@ -130,7 +130,7 @@ class ChatGPTController extends Controller
     public static function CallPythonAndFormatResponse($prompt)
     {
         try {
-            $path = env('PYTHON_SCRIPT_PATH');
+            $path = config('agiconfig.PYTHON_SCRIPT_PATH');
             $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
             if (array_key_exists('error', $response)) {
                 return response()->json($response, 500);
@@ -167,7 +167,7 @@ class ChatGPTController extends Controller
         $tagNames = $tags->pluck('name');
 
         $prompt = "Generate usable example code for the following kanban board ticket-> title: $task->title, description: $task->description, tags: $tagNames .In your response write only the code!";
-        $path = env('PYTHON_SCRIPT_PATH2');
+        $path = config('agiconfig.PYTHON_SCRIPT_PATH2');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         if (array_key_exists('error', $response)) {
             return response()->json($response, 500);
@@ -224,7 +224,7 @@ class ChatGPTController extends Controller
         $youAre = "a priority manager state machine. You can only answer with only one priority suggestion! You can choose from the following enums: TOP PRIORITY, HIGH PRIORITY, MEDIUM PRIORITY, LOW PRIORITY.";
         $prompt = "You are $youAre . Estimate the priority of the following kanban board ticket-> title: $task->title, description: $task->description. These tasks are in the column-> $otherTasks. Answer with the priortiy enum only, nothing else!";
 
-        $path = env('PYTHON_SCRIPT_PATH3');
+        $path = config('agiconfig.PYTHON_SCRIPT_PATH3');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         if (array_key_exists('error', $response)) {
             return response()->json($response, 500);
@@ -267,7 +267,7 @@ class ChatGPTController extends Controller
         $prompt = "You are $youAre . Estimate the priority of the following kanban board tickets->  $tasks. Answer with their priortiy enum only, nothing else!";
         // Construct the Python command with the required arguments and path to the script
 
-        $path = env('PYTHON_SCRIPT_PATH4');
+        $path = config('agiconfig.PYTHON_SCRIPT_PATH4');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         if (array_key_exists('error', $response)) {
             return response()->json($response, 500);
@@ -311,7 +311,7 @@ class ChatGPTController extends Controller
         }
 
         $prompt = "Generate documentation or a longer description for the task with the following title: {$task->title}, description: {$task->description}.";
-        $path = env('PYTHON_SCRIPT_PATH');
+        $path = config('agiconfig.PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         if (array_key_exists('error', $response)) {
             return response()->json($response, 500);
@@ -347,7 +347,7 @@ class ChatGPTController extends Controller
             }
 
             $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
-            $path = env('PYTHON_SCRIPT_PATH');
+            $path = config('agiconfig.PYTHON_SCRIPT_PATH');
             return response()->json(["error" => $path], 401);
 
             $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
@@ -394,7 +394,7 @@ class ChatGPTController extends Controller
         }
 
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
-        $path = env('PYTHON_SCRIPT_PATH');
+        $path = config('agiconfig.PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         if (array_key_exists('error', $response)) {
             return response()->json($response, 500);
@@ -447,7 +447,7 @@ class ChatGPTController extends Controller
     public static function CallPythonAndFormatResponseCodeReviewOrDoc($prompt, $boardId, $expectedType, $code)
     {
         try {
-            $path = env('PYTHON_SCRIPT_PATH');
+            $path = config('agiconfig.PYTHON_SCRIPT_PATH');
             $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
             if (array_key_exists('error', $response)) {
                 return response()->json($response, 500);
@@ -553,9 +553,8 @@ class ChatGPTController extends Controller
 
         $formattedLogs = implode("; ", $logEntries);
         $prompt = "Based on the following log entries in a Kanban table: {$formattedLogs}, create a performance review by day and point out the most and least productive days.";
-
-        $pythonScriptPath = env('PERFORMANCE_PYTHON_SCRIPT_PATH');
-        $apiKey = env('OPENAI_API_KEY');
+        $pythonScriptPath = config('agiconfig.PERFORMANCE_PYTHON_SCRIPT_PATH');
+        $apiKey = config('agiconfig.OPENAI_API_KEY');
         $command = "python {$pythonScriptPath} " . escapeshellarg($prompt) . " " . escapeshellarg($apiKey);
         $response = shell_exec($command);
         $responseSummary = "\n\nSummary for the time between dates: Total tasks created: {$tasksCreatedCount}. Total tasks finished: {$tasksFinishedCount}.";
