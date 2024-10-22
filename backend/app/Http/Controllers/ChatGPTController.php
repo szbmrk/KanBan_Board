@@ -350,9 +350,10 @@ class ChatGPTController extends Controller
             $path = config('agiconfig.PYTHON_SCRIPT_PATH');
 
             $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+            /*
             if (array_key_exists('error', $response)) {
                 return response()->json($response, 500);
-            }
+            }*/
 
             $cleanData = trim($response);
 
