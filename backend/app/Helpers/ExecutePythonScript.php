@@ -24,12 +24,12 @@ class ExecutePythonScript
             $result = shell_exec("{$command}");
 
             if (!$result) {
-                return response()->json(['error' => 'No response from the AI'], 500);
+                return ['error' => 'No response from the AI'];
             }
 
             return $result;
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return ['error' => $e->getMessage()];
         }
     }
 
