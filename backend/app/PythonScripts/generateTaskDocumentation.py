@@ -10,7 +10,7 @@ def generate_documentation():
 
     prompt = sys.argv[1]
 
-    max_tokens = 5000 
+    max_tokens = 3000 
 
     headers = {
         'Authorization': f"Bearer {api_key}",
@@ -18,16 +18,20 @@ def generate_documentation():
     }
 
     data = {
-        'prompt': prompt,
-        'max_completion_tokens': max_tokens,
+        'model': 'gpt-3.5-turbo',
+        'messages': [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ],
+        'max_completion_tokens': max_tokens
     }
 
-    response = requests.post('https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct/completions', headers=headers, json=data)
+    response = requests.post('https://api.openai.com/v1/chat/completions', headers=headers, json=data)
 
     if response.status_code == 200:
         try:
             code_json = json.loads(response.text)
-            generated_documentation = code_json['choices'][0]['text']
+            generated_documentation = code_json['choices'][0]['message']['content']
         except (json.JSONDecodeError, KeyError) as e:
             return f"Error: {e}"
     else:

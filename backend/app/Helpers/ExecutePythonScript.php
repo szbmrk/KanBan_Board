@@ -55,8 +55,9 @@ class ExecutePythonScript
 
             return ['error' => $output[0]];
         }
+        $response = implode("\n", $output);
 
-        return implode("\n", $output);
+        return ['response' => $response];
     }
 
 }
