@@ -27,7 +27,7 @@ def generate_subtasks():
         response = requests.post('https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct/completions', headers=headers, json=data)
 
         if response.status_code != 200:
-            return f"Error: {response.status_code}, {response.text}"
+            return f"Error: {response.text}"
 
 
         responseData = response.json()
