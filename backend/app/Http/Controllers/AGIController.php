@@ -37,7 +37,7 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        if ($this->checkIfCanUse()) {
+        if (!$this->checkIfCanUse()) {
             return response()->json([
                 'error' => 'Reached maximum usage of llms',
             ], 400);
@@ -80,7 +80,7 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        if ($this->checkIfCanUse()) {
+        if (!$this->checkIfCanUse()) {
             return response()->json([
                 'error' => 'Reached maximum usage of llms',
             ], 400);
@@ -117,7 +117,7 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        if ($this->checkIfCanUse()) {
+        if (!$this->checkIfCanUse()) {
             return response()->json([
                 'error' => 'Reached maximum usage of llms',
             ], 400);
@@ -158,7 +158,7 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        if ($this->checkIfCanUse()) {
+        if (!$this->checkIfCanUse()) {
             return response()->json([
                 'error' => 'Reached maximum usage of llms',
             ], 400);
@@ -195,7 +195,7 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        if ($this->checkIfCanUse()) {
+        if (!$this->checkIfCanUse()) {
             return response()->json([
                 'error' => 'Reached maximum usage of llms',
             ], 400);
@@ -232,7 +232,7 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        if ($this->checkIfCanUse()) {
+        if (!$this->checkIfCanUse()) {
             return response()->json([
                 'error' => 'Reached maximum usage of llms',
             ], 400);
@@ -269,7 +269,7 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        if ($this->checkIfCanUse()) {
+        if (!$this->checkIfCanUse()) {
             return response()->json([
                 'error' => 'Reached maximum usage of llms',
             ], 400);
@@ -306,7 +306,7 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        if ($this->checkIfCanUse()) {
+        if (!$this->checkIfCanUse()) {
             return response()->json([
                 'error' => 'Reached maximum usage of llms',
             ], 400);
@@ -351,7 +351,7 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        if ($this->checkIfCanUse()) {
+        if (!$this->checkIfCanUse()) {
             return response()->json([
                 'error' => 'Reached maximum usage of llms',
             ], 400);
@@ -403,8 +403,6 @@ class AGIController extends Controller
 
     public function checkIfCanUse()
     {
-        return true;
-
         $user = auth()->user();
         $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
         if ($userAgiUsage) {
@@ -412,5 +410,6 @@ class AGIController extends Controller
         }
 
 
+        return true;
     }
 }
