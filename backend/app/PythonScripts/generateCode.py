@@ -1,9 +1,9 @@
 # generateCode.py
-
 import os
 import requests
 import sys
 import json
+import openai
 
 def generate_code():
     api_key = os.environ.get('OPENAI_API_KEY')
@@ -22,16 +22,20 @@ def generate_code():
         'max_completion_tokens': max_tokens,
     }
 
-    response = requests.post('https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct/completions', headers=headers, json=data)
-
-    if response.status_code == 200:
-        try:
-            code_json = json.loads(response.text)
-            generated_code = code_json['choices'][0]['text']  # Extract the generated code
-        except (json.JSONDecodeError, KeyError) as e:
-            return f"Error: {e}"
-    else:
-        return f"Error: {response.text}"
+    #response = requests.post('https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct/completions', headers=headers, json=data)
+    try:
+        response = openai.Completion.create(
+            engine="gpt-3.5-turbo-instruct",
+            prompt=prompt,
+            max_completion_tokens=5000
+        )
+    ##if response.status_code == 200:
+        code_json = json.loads(response.text)
+        generated_code = code_json['choices'][0]['text']  # Extract the generated code
+    except (json.JSONDecodeError, KeyError) as e:
+        return f"Error: {e}"
+    ##else:
+        ##return f"Error: {response.text}"
 
     return generated_code
 
