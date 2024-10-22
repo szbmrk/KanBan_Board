@@ -24,12 +24,12 @@ class ExecutePythonScript
 
             $result = shell_exec("{$command} 2>&1");
 
-       
+
             // Return the subtask as a simple array
             return $result;
         } catch (\Exception $e) {
             // Return the error message as a simple array
-            return ['error' => $e->getMessage()];
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
