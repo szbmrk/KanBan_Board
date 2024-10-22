@@ -132,7 +132,7 @@ class ChatGPTController extends Controller
         try {
             $path = config('agiconfig.PYTHON_SCRIPT_PATH');
             $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
-            if (array_key_exists('error', $response)) {
+            if (is_array($response) && array_key_exists('error', $response)) {
                 return response()->json($response, 500);
             }
 
@@ -169,7 +169,7 @@ class ChatGPTController extends Controller
         $prompt = "Generate usable example code for the following kanban board ticket-> title: $task->title, description: $task->description, tags: $tagNames .In your response write only the code!";
         $path = config('agiconfig.PYTHON_SCRIPT_PATH2');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
-        if (array_key_exists('error', $response)) {
+        if (is_array($response) && array_key_exists('error', $response)) {
             return response()->json($response, 500);
         }
         //save the response to a txt file
@@ -226,7 +226,7 @@ class ChatGPTController extends Controller
 
         $path = config('agiconfig.PYTHON_SCRIPT_PATH3');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
-        if (array_key_exists('error', $response)) {
+        if (is_array($response) && array_key_exists('error', $response)) {
             return response()->json($response, 500);
         }
 
@@ -269,7 +269,7 @@ class ChatGPTController extends Controller
 
         $path = config('agiconfig.PYTHON_SCRIPT_PATH4');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
-        if (array_key_exists('error', $response)) {
+        if (is_array($response) && array_key_exists('error', $response)) {
             return response()->json($response, 500);
         }
 
@@ -313,7 +313,7 @@ class ChatGPTController extends Controller
         $prompt = "Generate documentation or a longer description for the task with the following title: {$task->title}, description: {$task->description}.";
         $path = config('agiconfig.PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
-        if (array_key_exists('error', $response)) {
+        if (is_array($response) && array_key_exists('error', $response)) {
             return response()->json($response, 500);
         }
         $cleanData = trim($response);
@@ -396,7 +396,7 @@ class ChatGPTController extends Controller
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
         $path = config('agiconfig.PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
-        if (array_key_exists('error', $response)) {
+        if (is_array($response) && array_key_exists('error', $response)) {
             return response()->json($response, 500);
         }
         $cleanData = trim($response);
@@ -449,7 +449,7 @@ class ChatGPTController extends Controller
         try {
             $path = config('agiconfig.PYTHON_SCRIPT_PATH');
             $response = ExecutePythonScript::GenerateApiResponse($prompt, $path);
-            if (array_key_exists('error', $response)) {
+            if (is_array($response) && array_key_exists('error', $response)) {
                 return response()->json($response, 500);
             }
             $foundKeyPhrase = strtolower($expectedType) . ':';
@@ -554,9 +554,10 @@ class ChatGPTController extends Controller
         $formattedLogs = implode("; ", $logEntries);
         $prompt = "Based on the following log entries in a Kanban table: {$formattedLogs}, create a performance review by day and point out the most and least productive days.";
         $pythonScriptPath = config('agiconfig.PERFORMANCE_PYTHON_SCRIPT_PATH');
-        $apiKey = config('agiconfig.OPENAI_API_KEY');
-        $command = "python {$pythonScriptPath} " . escapeshellarg($prompt) . " " . escapeshellarg($apiKey);
-        $response = shell_exec($command);
+        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $pythonScriptPath);
+        if (is_array($response) && array_key_exists('error', $response)) {
+            return response()->json($response, 500);
+        }
         $responseSummary = "\n\nSummary for the time between dates: Total tasks created: {$tasksCreatedCount}. Total tasks finished: {$tasksFinishedCount}.";
         $response .= $responseSummary;
 
