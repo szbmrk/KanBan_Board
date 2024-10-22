@@ -408,6 +408,9 @@ class ChatGPTController extends Controller
 
     public static function GenerateCodeReviewOrDocumentation(Request $request, $boardId, $expectedType)
     {
+        return response()->json([
+            'error' => 'This function is not implemented yet.',
+        ], 404);
         $user = auth()->user();
         if (!$user) {
             return response()->json([

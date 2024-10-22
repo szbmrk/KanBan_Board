@@ -65,7 +65,7 @@ class AGIController extends Controller
         }
 
         try {
-            self::incrementAgiUsage();
+            self::incrementAgiUsage($response);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'An error occurred: ' . $e->getMessage(),
@@ -103,7 +103,7 @@ class AGIController extends Controller
         }
 
         try {
-            self::incrementAgiUsage();
+            self::incrementAgiUsage($response);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'An error occurred: ' . $e->getMessage(),
@@ -144,7 +144,7 @@ class AGIController extends Controller
         }
 
         try {
-            self::incrementAgiUsage();
+            self::incrementAgiUsage($response);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'An error occurred: ' . $e->getMessage(),
@@ -181,7 +181,7 @@ class AGIController extends Controller
         }
 
         try {
-            self::incrementAgiUsage();
+            self::incrementAgiUsage($response);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'An error occurred: ' . $e->getMessage(),
@@ -218,7 +218,7 @@ class AGIController extends Controller
         }
 
         try {
-            self::incrementAgiUsage();
+            self::incrementAgiUsage($response);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'An error occurred: ' . $e->getMessage(),
@@ -255,7 +255,7 @@ class AGIController extends Controller
         }
 
         try {
-            self::incrementAgiUsage();
+            self::incrementAgiUsage($response);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'An error occurred: ' . $e->getMessage(),
@@ -292,7 +292,7 @@ class AGIController extends Controller
         }
 
         try {
-            self::incrementAgiUsage();
+            self::incrementAgiUsage($response);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'An error occurred: ' . $e->getMessage(),
@@ -337,7 +337,7 @@ class AGIController extends Controller
         broadcast(new BoardChange($boardId, "GENERATED_CODE_REVIEW_OR_DOCUMENTATION", $data));
 
         try {
-            self::incrementAgiUsage();
+            self::incrementAgiUsage($response);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'An error occurred: ' . $e->getMessage(),
@@ -375,7 +375,7 @@ class AGIController extends Controller
         }
 
         try {
-            self::incrementAgiUsage();
+            self::incrementAgiUsage($response);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'An error occurred: ' . $e->getMessage(),
@@ -385,9 +385,14 @@ class AGIController extends Controller
         return $response;
     }
 
-    public function incrementAgiUsage()
+    public function incrementAgiUsage($response)
     {
         $user = auth()->user();
+
+        if ($response->getStatusCode() != 200) {
+            return;
+        }
+
         $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
         if ($userAgiUsage) {
             $userAgiUsage->incrementCounter();
