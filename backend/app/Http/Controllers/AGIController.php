@@ -232,15 +232,18 @@ class AGIController extends Controller
 
         try {
             $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
-            if ($userAgiUsage) {
-                $userAgiUsage->incrementCounter();
-                $userAgiUsage->save();
-            } else {
-                $userAgiUsage = new UserAgiUsage([
-                    'user_id' => $user->user_id,
-                    'counter' => 1,
-                ]);
-                $userAgiUsage->save();
+
+            if ($response && is_array($response)) {
+                if (!array_key_exists('error', $response)) {
+                    if ($userAgiUsage) {
+                        $userAgiUsage->incrementCounter();
+                    } else {
+                        UserAgiUsage::create([
+                            'user_id' => $user->user_id,
+                            'counter' => 1,
+                        ]);
+                    }
+                }
             }
         } catch (\Exception $e) {
             return response()->json([
