@@ -310,33 +310,40 @@ class ChatGPTController extends Controller
 
     public static function GenerateTaskDocumentationPerBoard($boardId)
     {
-        $user = auth()->user();
-        if (!$user) {
+        try {
+
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json([
+                    'error' => 'Unauthorized!',
+                ], 403);
+            }
+
+            $tasks = Task::where('board_id', $boardId)->get();
+            if ($tasks->isEmpty()) {
+                return response()->json([
+                    'error' => 'No tasks found for the given board!',
+                ], 404);
+            }
+
+            $allTaskDescriptions = '';
+            foreach ($tasks as $task) {
+                $allTaskDescriptions .= "Task title: {$task->title}, description: {$task->description}. ";
+            }
+
+            $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
+            $path = env('PYTHON_SCRIPT_PATH');
+            $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
+            $cleanData = trim($response);
+
+            return [
+                'response' => $cleanData
+            ];
+        } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Unauthorized!',
-            ], 403);
+                'error' => 'An error occurred: ' . $e->getMessage(),
+            ], 500);
         }
-
-        $tasks = Task::where('board_id', $boardId)->get();
-        if ($tasks->isEmpty()) {
-            return response()->json([
-                'error' => 'No tasks found for the given board!',
-            ], 404);
-        }
-
-        $allTaskDescriptions = '';
-        foreach ($tasks as $task) {
-            $allTaskDescriptions .= "Task title: {$task->title}, description: {$task->description}. ";
-        }
-
-        $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
-        $path = env('PYTHON_SCRIPT_PATH');
-        $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
-        $cleanData = trim($response);
-
-        return [
-            'response' => $cleanData
-        ];
     }
 
     public static function GenerateTaskDocumentationPerColumn($boardId, $columnId)
