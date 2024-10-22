@@ -8,7 +8,7 @@ def generate_priority():
 
     prompt = sys.argv[1]
 
-    max_tokens = 3000  # Adjust this value based on your requirement
+    max_tokens = 5000  # Adjust this value based on your requirement
 
     headers = {
         'Authorization': f"Bearer {api_key}",

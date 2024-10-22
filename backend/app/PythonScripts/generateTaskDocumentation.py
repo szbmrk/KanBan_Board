@@ -10,7 +10,7 @@ def generate_documentation():
 
     prompt = sys.argv[1]
 
-    max_tokens = 3000 
+    max_tokens = 5000 
 
     headers = {
         'Authorization': f"Bearer {api_key}",
