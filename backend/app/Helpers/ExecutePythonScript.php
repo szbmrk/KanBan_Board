@@ -18,19 +18,25 @@ class ExecutePythonScript
 
     public static function GenerateApiResponse($prompt, $path)
     {
-        $command = "python $path \"$prompt\"";
-
-        try {
-            $result = shell_exec("{$command} 2>&1");
-
-            if (!$result) {
-                return ['error' => 'No response from the AI'];
-            }
-
-            return $result;
-        } catch (\Exception $e) {
-            return ['error' => $e->getMessage()];
+        if (!file_exists($path)) {
+            return ['error' => 'File does not exist: ' . $path];
         }
+
+        $command = escapeshellcmd("python $path \"$prompt\"");
+        $output = [];
+        $return_var = 0;
+
+        exec($command, $output, $return_var);
+
+        if ($return_var !== 0) {
+            return ['error' => 'Command failed with status ' . $return_var, 'output' => implode("\n", $output)];
+        }
+
+        if (empty($output)) {
+            return ['error' => 'No response from the AI'];
+        }
+
+        return implode("\n", $output);
     }
 
 }
