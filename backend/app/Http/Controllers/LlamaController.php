@@ -82,8 +82,8 @@ class LlamaController extends Controller
     public static function CallPythonAndFormatResponse($prompt)
     {
         try {
-            $pythonScriptPath = env('LLAMA_PYTHON_SCRIPT_PATH');
-            $apiToken = env('REPLICATE_API_TOKEN');
+            $pythonScriptPath = config('agiconfig.LLAMA_PYTHON_SCRIPT_PATH');
+            $apiToken = config('agiconfig.REPLICATE_API_TOKEN');
             $command = "set REPLICATE_API_TOKEN={$apiToken} && python {$pythonScriptPath} \"{$prompt}\"";
 
             $subtaskResponse = shell_exec("{$command} 2>&1");
@@ -194,7 +194,7 @@ class LlamaController extends Controller
         }
 
         $prompt = "Generate documentation or a longer description for the task with the following title: {$task->title}, description: {$task->description}.";
-        $path = env('LLAMA_PYTHON_SCRIPT_PATH');
+        $path = config('agiconfig.LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         if (array_key_exists('error', $response)) {
             return response()->json($response, 500);
@@ -229,7 +229,7 @@ class LlamaController extends Controller
         }
 
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
-        $path = env('LLAMA_PYTHON_SCRIPT_PATH');
+        $path = config('agiconfig.LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         if (array_key_exists('error', $response)) {
             return response()->json($response, 500);
@@ -270,7 +270,7 @@ class LlamaController extends Controller
         }
 
         $prompt = "Generate documentation or a longer description based on the following task titles and descriptions: $allTaskDescriptions";
-        $path = env('LLAMA_PYTHON_SCRIPT_PATH');
+        $path = config('agiconfig.LLAMA_PYTHON_SCRIPT_PATH');
         $response = ExecutePythonScript::instance()->GenerateApiResponse($prompt, $path);
         if (array_key_exists('error', $response)) {
             return response()->json($response, 500);
