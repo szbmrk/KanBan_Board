@@ -42,7 +42,11 @@ class ExecutePythonScript
 
             $json = json_decode($output[0], true);
             if ($json) {
-                return $json;
+                if (array_key_exists('error', $json)) {
+                    if (array_key_exists('message', $json['error'])) {
+                        return ['error' => $json['error']['message']];
+                    }
+                }
             }
 
             return ['error' => $output[0]];
