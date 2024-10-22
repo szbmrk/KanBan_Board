@@ -3,8 +3,7 @@ import os
 import requests
 import sys
 import json
-from openai import OpenAI
-
+import openai
 
 def generate_code():
     api_key = os.environ.get('OPENAI_API_KEY')
@@ -19,31 +18,16 @@ def generate_code():
     }
 
     data = {
-        'prompt': prompt,
-        'max_tokens': max_tokens,
+        'model': 'gpt-3.5-turbo-instruct',
+        'messages': [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ],
+        'max_completion_tokens': max_tokens
     }
 
 
-
-    try:
-        client = OpenAI()
-        response = client.chat.completion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {
-                    "role": "system",
-                    "content": prompt
-                }
-            ],
-            max_completion_tokens=max_tokens
-        )
-
-        generated_code = response['choices'][0]['message']['content']
-        return generated_code
-    except Exception as e:
-        return f"Error: {e}"
-    """""
-    response = requests.post('https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct/completions', headers=headers, json=data)
+    response = requests.post('https://api.openai.com/v1/chat/completions', headers=headers, json=data)
 
     if response.status_code == 200:
         try:
@@ -53,7 +37,8 @@ def generate_code():
             return f"Error: {e}"
     else:
         return f"Error: {response.text}"
-    """
+    
+    return generated_code
 
 def clean_response(response):
     cleaned_response = response.replace('\n', ' ')
