@@ -161,10 +161,6 @@ class AGIController extends Controller
     {
         $user = auth()->user();
 
-        return response()->json([
-            'error' => $user->user_id,
-        ], 404);
-
         $response = null;
 
         switch ($request->header('ChosenAI')) {
@@ -179,6 +175,18 @@ class AGIController extends Controller
                 return response()->json([
                     'error' => 'ChosenAI is not valid',
                 ], 400);
+        }
+
+        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
+        if ($response && !$response->has('error')) {
+            if ($userAgiUsage) {
+                $userAgiUsage->incrementCounter();
+            } else {
+                UserAgiUsage::create([
+                    'user_id' => $user->user_id,
+                    'counter' => 1,
+                ]);
+            }
         }
 
         return $response;
