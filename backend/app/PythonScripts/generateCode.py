@@ -27,7 +27,7 @@ def generate_code():
         response = openai.Completion.create(
             engine="gpt-3.5-turbo-instruct",
             prompt=prompt,
-            max_completion_tokens=5000
+            max_completion_tokens=max_tokens
         )
     ##if response.status_code == 200:
         code_json = json.loads(response.text)
