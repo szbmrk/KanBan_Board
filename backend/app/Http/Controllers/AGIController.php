@@ -39,9 +39,6 @@ class AGIController extends Controller
         $response = null;
 
         switch ($request->header('ChosenAI')) {
-            case Str::lower("llama"):
-                $response = LlamaController::generateTaskLlama($request);
-                break;
             case Str::lower("chatgpt"):
                 if ($request->header('Draft') == true) {
                     $response = ChatGPTController::GenerateTaskDraftChatGPT($request);
@@ -66,9 +63,6 @@ class AGIController extends Controller
         $response = null;
 
         switch ($request->header('ChosenAI')) {
-            case Str::lower("llama"):
-                $response = LlamaController::generateSubtaskLlama($request);
-                break;
             case Str::lower("chatgpt"):
                 $response = ChatGPTController::GenerateSubtaskChatGPT($request);
                 break;
@@ -89,9 +83,6 @@ class AGIController extends Controller
         $response = null;
 
         switch ($chosenAI) {
-            case "llama":
-                $response = LlamaController::generateTaskLlama($request);
-                break;
             case "chatgpt draft":
                 $response = ChatGPTController::GenerateTaskDraftChatGPT($request);
                 break;
@@ -114,9 +105,6 @@ class AGIController extends Controller
         $response = null;
 
         switch ($request->header('ChosenAI')) {
-            case Str::lower("llama"):
-                $response = LlamaController::GenerateAttachmentLinkLlama($request);
-                break;
             case Str::lower("chatgpt"):
                 $response = ChatGPTController::GenerateAttachmentLinkNotCraftedChatGPT($request);
                 break;
@@ -136,9 +124,6 @@ class AGIController extends Controller
         $response = null;
 
         switch ($request->header('ChosenAI')) {
-            case Str::lower("llama"):
-                $response = LlamaController::GenerateTaskDocumentationPerTask($boardId, $taskId);
-                break;
             case Str::lower("chatgpt"):
                 $response = ChatGPTController::GenerateTaskDocumentationPerTask($boardId, $taskId);
                 break;
@@ -158,9 +143,6 @@ class AGIController extends Controller
         $response = null;
 
         switch ($request->header('ChosenAI')) {
-            case Str::lower("llama"):
-                $response = LlamaController::GenerateTaskDocumentationPerBoard($boardId);
-                break;
             case Str::lower("chatgpt"):
                 $response = ChatGPTController::GenerateTaskDocumentationPerBoard($boardId);
                 break;
@@ -180,9 +162,6 @@ class AGIController extends Controller
         $response = null;
 
         switch ($request->header('ChosenAI')) {
-            case Str::lower("llama"):
-                $response = LlamaController::GenerateTaskDocumentationPerColumn($boardId, $taskId);
-                break;
             case Str::lower("chatgpt"):
                 $response = ChatGPTController::GenerateTaskDocumentationPerColumn($boardId, $taskId);
                 break;
@@ -204,9 +183,6 @@ class AGIController extends Controller
 
 
         switch ($request->header('ChosenAI')) {
-            case Str::lower("llama"):
-                $response = LlamaController::GenerateCodeReviewOrDocumentation($request, $boardId, $chosenType);
-                break;
             case Str::lower("chatgpt"):
                 $response = ChatGPTController::GenerateCodeReviewOrDocumentation($request, $boardId, $chosenType);
                 break;
@@ -232,9 +208,6 @@ class AGIController extends Controller
         $chosenType = $request->header('ChosenType');
 
         switch ($request->header('ChosenAI')) {
-            case Str::lower("llama"):
-                $response = LlamaController::generatePerformanceSummary($request);
-                break;
             case Str::lower("chatgpt"):
                 $response = ChatGPTController::generatePerformanceSummary($request);
                 break;

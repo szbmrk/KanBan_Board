@@ -37,7 +37,6 @@ const GeneratePerformanceSummaryPopup = ({ board_id, onCancel }) => {
 
     const aiOptions = [
         { value: "chatgpt", label: "ChatGPT" },
-        { value: "llama", label: "Llama" },
     ];
     let [chosenAI, setChosenAI] = useState(aiOptions[0].value);
 

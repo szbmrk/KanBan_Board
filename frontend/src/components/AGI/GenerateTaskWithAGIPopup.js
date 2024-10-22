@@ -17,7 +17,6 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
     const popupRef = useRef(null);
     const aiOptions = [
         { value: "chatgpt", label: "ChatGPT" },
-        { value: "llama", label: "Llama" },
     ];
     let [chosenAI, setChosenAI] = useState(aiOptions[0]);
     //const [needLoader, setNeedLoader] = useState(false);

@@ -9,7 +9,6 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BoardController;
-use App\Http\Controllers\LlamaController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\MentionController;
@@ -176,12 +175,6 @@ Route::get('/boards/{boardId}/generate_priority/{columnId}', [AGIController::cla
 Route::get('/AGI/generate-documentation-task/board/{boardId}/task/{taskId}', [AGIController::class, 'GenerateTaskDocumentationPerTask'])->middleware('api');
 Route::get('/AGI/generate-documentation-board/{boardId}', [AGIController::class, 'GenerateTaskDocumentationPerBoard'])->middleware('api');
 Route::get('/AGI/generate-documentation-column/board/{boardId}/column/{columnId}', [AGIController::class, 'GenerateTaskDocumentationPerColumn'])->middleware('api');
-
-Route::post('/generate-llama-subtasks', [LlamaController::class, 'generateTaskLlama']);
-
-// API kulcs nélküli hívásra, beégetett válasszal
-Route::get('/generate-llama-subtasks2', [LlamaController::class, 'testSubtaskParsing']);
-
 
 
 Route::get('/boards/{boardId}/AGI/crafted-prompts', [PromptCraftController::class, 'getPrompts'])->middleware('api');

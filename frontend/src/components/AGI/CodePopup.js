@@ -51,7 +51,6 @@ const CodePopup = ({
 
     const aiOptions = [
         { value: "chatgpt", label: "ChatGPT" },
-        { value: "llama", label: "Llama" },
     ];
     let [chosenAI, setChosenAI] = useState(
         codeReviewOrDocumentation
