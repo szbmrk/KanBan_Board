@@ -28,29 +28,8 @@ class ExecutePythonScript
         }
 
         $apiKey = config('agiconfig.OPENAI_API_KEY');
-
         $command = "python {$path} " . escapeshellarg($prompt) . " " . escapeshellarg($apiKey);
         $response = shell_exec($command);
-
-        if (empty($response)) {
-            return ['error' => 'No response from the AI'];
-        }
-
-        if (strpos($response[0], 'Error:') !== false) {
-            $response[0] = substr($response[0], 7);
-
-            $json = json_decode($response[0], true);
-            if ($json) {
-                if (array_key_exists('error', $json)) {
-                    if (array_key_exists('message', $json['error'])) {
-                        return ['error' => $json['error']['message']];
-                    }
-                }
-            }
-
-            return ['error' => $response[0]];
-        }
-
         return $response;
     }
 
