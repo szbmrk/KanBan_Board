@@ -17,10 +17,7 @@ def generate_code():
 
     data = {
         'model': 'gpt-3.5-turbo-instruct',
-        'messages': [
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": prompt}
-        ],
+        'prompt': prompt,
         'max_tokens': max_tokens
     }
 
