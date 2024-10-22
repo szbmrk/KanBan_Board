@@ -84,7 +84,7 @@ class AGIController extends Controller
         return $response;
     }
 
-    public static function GenerateTaskCraftedPrompt(Request $request)
+    public function GenerateTaskCraftedPrompt(Request $request)
     {
         $user = auth()->user();
 
@@ -108,10 +108,18 @@ class AGIController extends Controller
                 ], 400);
         }
 
+        try {
+            self::incrementAgiUsage();
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage(),
+            ], 500);
+        }
+
         return $response;
     }
 
-    public static function GenerateAttachmentLink(Request $request)
+    public function GenerateAttachmentLink(Request $request)
     {
         $user = auth()->user();
 
@@ -129,6 +137,14 @@ class AGIController extends Controller
                 return response()->json([
                     'error' => 'ChosenAI is not valid',
                 ], 400);
+        }
+
+        try {
+            self::incrementAgiUsage();
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage(),
+            ], 500);
         }
 
         return $response;
@@ -154,6 +170,14 @@ class AGIController extends Controller
                 ], 400);
         }
 
+        try {
+            self::incrementAgiUsage();
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage(),
+            ], 500);
+        }
+
         return $response;
     }
 
@@ -177,6 +201,14 @@ class AGIController extends Controller
                 ], 400);
         }
 
+        try {
+            self::incrementAgiUsage();
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage(),
+            ], 500);
+        }
+
         return $response;
     }
 
@@ -198,6 +230,14 @@ class AGIController extends Controller
                 return response()->json([
                     'error' => 'ChosenAI is not valid',
                 ], 400);
+        }
+
+        try {
+            self::incrementAgiUsage();
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage(),
+            ], 500);
         }
 
         return $response;
@@ -231,29 +271,7 @@ class AGIController extends Controller
         broadcast(new BoardChange($boardId, "GENERATED_CODE_REVIEW_OR_DOCUMENTATION", $data));
 
         try {
-            $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
-
-            if ($response && is_array($response)) {
-                if (!array_key_exists('error', $response)) {
-                    if ($userAgiUsage) {
-                        $userAgiUsage->incrementCounter();
-                    } else {
-                        UserAgiUsage::create([
-                            'user_id' => $user->user_id,
-                            'counter' => 1,
-                        ]);
-                    }
-                }
-            } else {
-                if ($userAgiUsage) {
-                    $userAgiUsage->incrementCounter();
-                } else {
-                    UserAgiUsage::create([
-                        'user_id' => $user->user_id,
-                        'counter' => 1,
-                    ]);
-                }
-            }
+            self::incrementAgiUsage();
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'An error occurred: ' . $e->getMessage(),
@@ -283,6 +301,31 @@ class AGIController extends Controller
                     'error' => 'ChosenAI is not valid',
                 ], 400);
         }
+
+        try {
+            self::incrementAgiUsage();
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred: ' . $e->getMessage(),
+            ], 500);
+        }
+
         return $response;
+    }
+
+    public function incrementAgiUsage()
+    {
+        $user = auth()->user();
+        $userAgiUsage = UserAgiUsage::where('user_id', $user->user_id)->first();
+        if ($userAgiUsage) {
+            $userAgiUsage->incrementCounter();
+            $userAgiUsage->save();
+        } else {
+            $userAgiUsage = new UserAgiUsage([
+                'user_id' => $user->user_id,
+                'agi_usage' => 1,
+            ]);
+            $userAgiUsage->save();
+        }
     }
 }
