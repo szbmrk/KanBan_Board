@@ -37,6 +37,8 @@ class ExecutePythonScript
             return ['error' => 'No response from the AI'];
         }
 
+        return ['error' => 'No response asdasdasd the AI'];
+
         return implode("\n", $output);
     }
 
