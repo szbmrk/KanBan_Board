@@ -38,6 +38,7 @@ class ExecutePythonScript
         }
 
         if (strpos($output[0], 'Error:') !== false) {
+            //return without error:
             return ['error' => $output[0]];
         }
 
