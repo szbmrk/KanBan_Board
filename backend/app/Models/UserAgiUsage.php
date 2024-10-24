@@ -5,19 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\AdjustTimestampsForHungaryTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
 
 class UserAgiUsage extends Model
 {
     use HasFactory;
     use AdjustTimestampsForHungaryTrait;
 
-
     protected $table = 'user_agi_usage';
-    protected $primaryKey = 'user_agi_usage_id';
+    protected $primaryKey = 'user_id';
+    public $incrementing = false;
 
     protected $fillable = [
-        'user_id',
         'counter',
+        'counter_reset_at',
     ];
 
     public function user()
@@ -28,11 +29,28 @@ class UserAgiUsage extends Model
     public function incrementCounter()
     {
         $this->counter++;
+
+        if ($this->counter >= 20) {
+            $this->counter_reset_at = Carbon::now();
+        }
+
         $this->save();
     }
 
     public function canUse()
     {
-        return $this->counter <= 20;
+        if ($this->counter <= 20) {
+            return true;
+        }
+
+        if ($this->counter_reset_at && Carbon::parse($this->counter_reset_at)->addHours(24)->isPast()) {
+            $this->counter = 0;
+            $this->counter_reset_at = null;
+            $this->save();
+
+            return true;
+        }
+
+        return false;
     }
 }
