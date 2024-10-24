@@ -40,7 +40,7 @@ class UserAgiUsage extends Model
 
     public function canUse()
     {
-        if ($this->counter <= 20) {
+        if ($this->counter < 20) {
             return true;
         }
 
