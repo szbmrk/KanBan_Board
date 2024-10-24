@@ -17,6 +17,7 @@ class UserAgiUsage extends Model
     public $incrementing = false;
 
     protected $fillable = [
+        'user_id',
         'counter',
         'counter_reset_at',
     ];
