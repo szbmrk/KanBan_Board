@@ -402,9 +402,10 @@ class AGIController extends Controller
             $userAgiUsage->incrementCounter();
             $userAgiUsage->save();
         } else {
-            $userAgiUsage = new UserAgiUsage([
+            $userAgiUsage = UserAgiUsage::create([
                 'user_id' => $user->user_id,
-                'agi_usage' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
             ]);
             $userAgiUsage->save();
         }
