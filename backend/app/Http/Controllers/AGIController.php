@@ -404,6 +404,7 @@ class AGIController extends Controller
         } else {
             $userAgiUsage = UserAgiUsage::create([
                 'user_id' => $user->user_id,
+                'counter' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
