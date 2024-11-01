@@ -44,6 +44,13 @@ const Sidebar = () => {
                         </Link>
                     </li>
 
+                    <li className={location.pathname === '#' ? 'active' : ''}>
+                        <Link to='#'>
+                            {homeIcon}
+                            <span>Dashboard</span>
+                        </Link>
+                    </li>
+
                     <li className={location.pathname === '/assigned_tasks' ? 'active' : ''}>
                         <Link to='/assigned_tasks'>
                             {AssignedTasksIcon}
