@@ -39,7 +39,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: auto;
+  overflow: visible;
   position: relative;
   margin: auto;
   background-color: var(--dark-gray);
@@ -54,7 +54,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: auto;
 }
 
 .close-btn {
@@ -765,4 +764,9 @@
 /* Hover effect */
 .isDone-checkbox:hover {
   border-color: var(--light-gray);
+}
+
+.description-edit-action-button {
+  margin-inline: 20px;
+  font-size: 24px;
 }
