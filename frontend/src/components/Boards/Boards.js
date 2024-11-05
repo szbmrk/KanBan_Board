@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import "../../styles/dashboard.css";
+import "../../styles/boards.css";
 import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 import Loader from "../Loader";
@@ -22,7 +22,7 @@ const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
-export default function Dashboard() {
+export default function Boards() {
     const [userID, setUserID] = useState(null);
     const [teams, setTeams] = useState(null);
     const teamsRef = useRef(teams);
@@ -48,12 +48,12 @@ export default function Dashboard() {
     }, [teams]);
 
     useEffect(() => {
-        document.title = "KanBan | Dashboard";
+        document.title = "KanBan | Boards";
         if (user_id) {
             setUserID(user_id);
         }
         //backendről fetchelés
-        fetchDashboardData();
+        fetchBoardsData();
 
         //ez
         const ResetTheme = () => {
@@ -204,7 +204,7 @@ export default function Dashboard() {
         await SetRoles(token);
     }
 
-    const fetchDashboardData = async () => {
+    const fetchBoardsData = async () => {
         try {
             await SetRoles(token);
 
@@ -381,7 +381,7 @@ export default function Dashboard() {
                 )
             ) : (
                 <>
-                    <h1 className="header">Dashboard</h1>
+                    <h1 className="header">Boards</h1>
                     {teams.length === 0 ? (
                         <div>
                             <p>You don't have any teams yet!</p>
@@ -510,7 +510,7 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
 
     useEffect(() => {
         if (boardId) {
-            fetchDashboardData();
+            fetchBoardsData();
         } else {
             setIsLoading(false);
         }
@@ -528,7 +528,7 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
         //eddig
     }, [boardId]);
 
-    const fetchDashboardData = async () => {
+    const fetchBoardsData = async () => {
         try {
             const token = sessionStorage.getItem("token");
             const response = await axios.get(`/boards/${boardId}`, {
