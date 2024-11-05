@@ -15,6 +15,7 @@ import {
     faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { checkPermisson } from "../../roles/Roles";
+import { Link } from "react-router-dom";
 
 const TeamCard = ({
     data,
@@ -142,6 +143,7 @@ const TeamCard = ({
                 className="teamcard-header"
                 onMouseEnter={() => handleMouseEnterOnTeam(data.team_id)}
                 onMouseLeave={handleMouseLeaveOnTeam}
+                
             >
                 <div
                     className="team-name-container"
@@ -149,7 +151,10 @@ const TeamCard = ({
                         zIndex: teamZIndex,
                     }}
                 >
-                    <h2>{data.name}</h2>
+                    <Link to='/dashboard'>
+                        <h2>{data.name}</h2>
+                    </Link>
+                    
                 </div>
                 {(checkPermisson(data.team_id, "team_management") ||
                     checkPermisson(data.team_id, "team_member_management")) && (
