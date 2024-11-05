@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Loader from "../Loader";
 import Error from "../Error";
 import { SetRoles, checkIfAdmin, checkPermissionForBoard, checkPermisson } from "../../roles/Roles";
-import "../../styles/dashboard.css";
+import "../../styles/boards.css";
 
 export default function ManageBoardPermissions() {
     const [userID, setUserID] = useState(null);
@@ -20,7 +20,7 @@ export default function ManageBoardPermissions() {
             setUserID(user_id);
         }
 
-        const fetchDashboardData = async () => {
+        const fetchBoardsData = async () => {
             try {
                 await SetRoles(token);
 
@@ -62,7 +62,7 @@ export default function ManageBoardPermissions() {
         };
 
         window.addEventListener("ChangingTheme", resetTheme);
-        fetchDashboardData();
+        fetchBoardsData();
 
         return () => {
             window.removeEventListener("ChangingTheme", resetTheme);

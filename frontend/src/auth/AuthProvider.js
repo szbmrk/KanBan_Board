@@ -15,7 +15,7 @@ const AuthProvider = (props) => {
         sessionStorage.setItem('email', data.user.email);
         SetRoles(data.token);
         setIsLoggedIn(true);
-        navigate('/dashboard');
+        navigate('/boards');
     };
 
     // Function to call when the user logs out
