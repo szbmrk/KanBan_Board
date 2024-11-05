@@ -40,7 +40,7 @@ const Sidebar = () => {
                     <li className={location.pathname === '/dashboard' || isBoardActive ? 'active' : ''}>
                         <Link to='/dashboard'>
                             {homeIcon}
-                            <span>Dashboard</span>
+                            <span>Board</span>
                         </Link>
                     </li>
 

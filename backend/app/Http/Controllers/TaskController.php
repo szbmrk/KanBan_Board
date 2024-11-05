@@ -90,7 +90,7 @@ class TaskController extends Controller
         }
 
         $this->validate($request, [
-            'title' => 'required|string|max:100',
+            'title' => 'required|string|max:100|regex:/^[0-9a-zA-Z]/',
             'description' => 'nullable|string',
             'due_date' => 'nullable|date',
             'column_id' => [
