@@ -1263,6 +1263,12 @@ const Board = () => {
     const handleTaskNameConfirm = async (name) => {
         handleTaskNameCancel();
         try {
+            if (!/^[0-9a-zA-Z]/.test(name)) {
+                setError({
+                    message: "The task can only start with a number, or a letter!"
+                });
+                return;
+            }
             const newTask = {
                 column_id: board.columns[currentDivIndex].column_id,
                 title: name,
