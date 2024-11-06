@@ -78,7 +78,7 @@ export default function Boards() {
             enabledTransports: ["ws", "wss"],
         });
 
-        const channel = echo.channel(`DashboardChange`);
+        const channel = echo.channel(`BoardsChange`);
 
         channel.listen(
             `.user.${user_id}`,
@@ -209,7 +209,7 @@ export default function Boards() {
             await SetRoles(token);
 
             if (checkIfAdmin()) {
-                const response = await axios.get("/dashboard/boards", {
+                const response = await axios.get("/boards/boards", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -218,7 +218,7 @@ export default function Boards() {
                 setTeams(teamData);
             }
             else {
-                const response = await axios.get("/dashboard", {
+                const response = await axios.get("/boards", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -243,7 +243,7 @@ export default function Boards() {
     const addBoardToTeam = async (teamId, newBoardName) => {
         try {
             const response = await axios.post(
-                "/dashboard/board",
+                "/boards/board",
                 {
                     team_id: teamId,
                     name: newBoardName,
@@ -279,7 +279,7 @@ export default function Boards() {
     const deleteBoardFromTeam = async () => {
         handleBoardDeleteCancel();
         try {
-            await axios.delete(`/dashboard/board/${selectedBoardId}`, {
+            await axios.delete(`/boards/board/${selectedBoardId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -306,7 +306,7 @@ export default function Boards() {
     const editBoardName = async (teamId, boardId, updatedBoardName) => {
         try {
             await axios.put(
-                `/dashboard/board/${boardId}`,
+                `/boards/board/${boardId}`,
                 {
                     name: updatedBoardName,
                 },

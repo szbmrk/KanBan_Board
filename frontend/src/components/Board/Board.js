@@ -2723,7 +2723,7 @@ const Board = () => {
 
         try {
             await axios.put(
-                `/dashboard/board/${board_id}`,
+                `/boards/board/${board_id}`,
                 {
                     name: boardTitle,
                 },
