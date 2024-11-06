@@ -145,17 +145,20 @@ const TeamCard = ({
                 onMouseLeave={handleMouseLeaveOnTeam}
                 
             >
+                
                 <div
                     className="team-name-container"
                     style={{
                         zIndex: teamZIndex,
                     }}
                 >
-                    <Link to='/dashboard'>
-                        <h2>{data.name}</h2>
-                    </Link>
+                    <h2>{data.name}</h2>
+                    
                     
                 </div>
+                <Link to={`/boards/${data.name}`}>
+                        <p className="team-card-go-to">Go to Board</p>
+                </Link>
                 {(checkPermisson(data.team_id, "team_management") ||
                     checkPermisson(data.team_id, "team_member_management")) && (
                         <span
