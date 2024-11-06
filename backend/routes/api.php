@@ -16,7 +16,7 @@ use App\Http\Controllers\TaskTagController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\PriorityController;
 
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\BoardsController;
 
 use App\Http\Controllers\UserTasksController;
 use App\Http\Controllers\AttachmentController;
@@ -59,16 +59,16 @@ Route::delete('/profile', [UserController::class, 'destroy'])->middleware('api')
 Route::post('/user/check-email', [UserController::class, 'checkEmail']);
 Route::post('/user/check-username', [UserController::class, 'checkUsername']);
 
-Route::get('/dashboard/boards', [DashboardController::class, 'getAllBoards'])->middleware('api');
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('api');
-Route::post('/dashboard/board', [DashboardController::class, 'store'])->middleware('api');
-Route::put('/dashboard/board/{board}', [DashboardController::class, 'update'])->middleware('api');
-Route::delete('/dashboard/board/{board}', [DashboardController::class, 'destroy'])->middleware('api');
+Route::get('/boards', [BoardsController::class, 'index'])->middleware('api');
+Route::get('/boards/boards', [BoardsController::class, 'getAllBoards'])->middleware('api');
+Route::post('/boards/board', [BoardsController::class, 'store'])->middleware('api');
+Route::put('/boards/board/{board}', [BoardsController::class, 'update'])->middleware('api');
+Route::delete('/boards/board/{board}', [BoardsController::class, 'destroy'])->middleware('api');
 
-Route::get('/dashboard/teams', [TeamController::class, 'index'])->middleware('api');
-Route::post('/dashboard/teams', [TeamController::class, 'store'])->middleware('api');
-Route::put('/dashboard/teams/{id}', [TeamController::class, 'update'])->middleware('api');
-Route::delete('/dashboard/teams/{id}', [TeamController::class, 'destroy'])->middleware('api');
+Route::get('/boards/teams', [TeamController::class, 'index'])->middleware('api');
+Route::post('/boards/teams', [TeamController::class, 'store'])->middleware('api');
+Route::put('/boards/teams/{id}', [TeamController::class, 'update'])->middleware('api');
+Route::delete('/boards/teams/{id}', [TeamController::class, 'destroy'])->middleware('api');
 
 Route::get('/team/{team_id}/management', [TeamManagementController::class, 'show'])->middleware('api');
 Route::post('/team/{team_id}/management', [TeamManagementController::class, 'storeTeamMember'])->middleware('api');

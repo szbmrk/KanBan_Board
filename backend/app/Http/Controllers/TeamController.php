@@ -21,7 +21,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\TeamChange;
-use App\Events\DashboardChange;
+use App\Events\BoardsChange;
 use Illuminate\Support\Facades\Event;
 
 class TeamController extends Controller
@@ -96,7 +96,7 @@ class TeamController extends Controller
             'team' => $team
         ];
         broadcast(new TeamChange($user->user_id, "CREATED_TEAM", $data));
-        broadcast(new DashboardChange($user->user_id, "CREATED_TEAM", $data));
+        broadcast(new BoardsChange($user->user_id, "CREATED_TEAM", $data));
 
         return response()->json(['message' => 'Team Created successfully!', 'team' => $team]);
     }
@@ -143,7 +143,7 @@ class TeamController extends Controller
 
         foreach ($user_ids as $user_id) {
             broadcast(new TeamChange($user_id, "UPDATED_TEAM", $data));
-            broadcast(new DashboardChange($user_id, "UPDATED_TEAM", $data));
+            broadcast(new BoardsChange($user_id, "UPDATED_TEAM", $data));
             if ($team->name !== $old_team_name) {
                 NotificationController::createNotification(NotificationType::TEAM, "A team you are member of got renamed from " . $old_team_name . " to " . $team->name, $user_id);
             }
@@ -187,7 +187,7 @@ class TeamController extends Controller
 
         foreach ($user_ids as $user_id) {
             broadcast(new TeamChange($user_id, "DELETED_TEAM", $data));
-            broadcast(new DashboardChange($user_id, "DELETED_TEAM", $data));
+            broadcast(new BoardsChange($user_id, "DELETED_TEAM", $data));
             NotificationController::createNotification(NotificationType::TEAM, "A team you are member of got deleted: " . $team->name, $user_id);
         }
 

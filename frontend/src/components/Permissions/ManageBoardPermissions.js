@@ -25,7 +25,7 @@ export default function ManageBoardPermissions() {
                 await SetRoles(token);
 
                 if (checkIfAdmin()) {
-                    const response = await axios.get("/dashboard/boards", {
+                    const response = await axios.get("/boards/boards", {
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
@@ -35,7 +35,7 @@ export default function ManageBoardPermissions() {
                 }
 
                 else {
-                    const response = await axios.get("/dashboard", {
+                    const response = await axios.get("/boards", {
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },

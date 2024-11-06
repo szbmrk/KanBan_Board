@@ -40,7 +40,7 @@ export default function RolesManager({
 
     async function getBoards() {
         try {
-            const response = await axios.get("/dashboard", {
+            const response = await axios.get("/boards", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
