@@ -243,3 +243,7 @@
     border-radius: 50%;
     border: 1px solid var(--dark-gray);
 }
+
+.stopwatch-margin {
+    margin-right: 3px;
+}
