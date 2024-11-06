@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../../styles/boards.css";
 import axios from "../../api/axios";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Loader from "../Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -23,6 +23,7 @@ const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
 export default function Boards() {
+    const {team_name} = useParams();
     const [userID, setUserID] = useState(null);
     const [teams, setTeams] = useState(null);
     const teamsRef = useRef(teams);
@@ -214,8 +215,12 @@ export default function Boards() {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                const teamData = response.data.teams;
-                setTeams(teamData);
+                let teamData = response.data.teams;
+                console.error("TEAM NAME:" + team_name);
+                if(team_name){
+                    teamData = teamData.filter((T) => T.name == team_name);
+                }
+                setTeams(teamData);                
             }
             else {
                 const response = await axios.get("/boards", {
@@ -223,7 +228,11 @@ export default function Boards() {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                const teamData = response.data.teams;
+                let teamData = response.data.teams;
+                console.error("TEAM NAME:" + team_name);
+                if(team_name){
+                    teamData = teamData.filter((T) => T.name == team_name);
+                }
                 setTeams(teamData);
             }
         } catch (e) {
