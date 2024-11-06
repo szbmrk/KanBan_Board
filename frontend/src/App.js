@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/Navigation/SideBar';
 import Login from './components/user/Login';
 import Signup from './components/user/Signup';
-import Dashboard from './components/Dashboard/Dashboard';
+import Boards from './components/Boards/Boards';
 import AuthProvider from "./auth/AuthProvider";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import "./styles/general.css";
@@ -21,7 +21,7 @@ const App = () => {
             <BrowserRouter basename="/agi-kanban">
                 <AuthProvider>
                     <Routes>
-                        <Route path="/" element={<ProtectedRoute> <Navigate to="/dashboard" /> </ProtectedRoute>} />
+                        <Route path="/" element={<ProtectedRoute> <Navigate to="/boards" /> </ProtectedRoute>} />
                         <Route exact path="/login" element={<Login />} />
                         <Route exact path="/signup" element={<Signup />} />
                         <Route exact path="/board/:board_id" element={
@@ -36,11 +36,11 @@ const App = () => {
                                 <Sidebar />
                                 <Board />
                             </ProtectedRoute>} />
-                        <Route exact path="/dashboard" element={
+                        <Route exact path="/boards" element={
                             <ProtectedRoute>
                                 <Navbar />
                                 <Sidebar />
-                                <Dashboard />
+                                <Boards />
                             </ProtectedRoute>} />
                         <Route exact path="/assigned_tasks" element={
                             <ProtectedRoute>

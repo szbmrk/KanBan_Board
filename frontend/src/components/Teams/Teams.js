@@ -245,7 +245,7 @@ const Teams = () => {
 
     async function DeleteTeam(teamId) {
         try {
-            await axios.delete(`/dashboard/teams/${teamId}`, {
+            await axios.delete(`/boards/teams/${teamId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -293,7 +293,7 @@ const Teams = () => {
     async function AddTeam(teamName) {
         try {
             const response = await axios.post(
-                `/dashboard/teams/`,
+                `/boards/teams/`,
                 { name: teamName },
                 {
                     headers: {
@@ -317,7 +317,7 @@ const Teams = () => {
     async function ChangeTeamName(team_id, name) {
         try {
             const response = await axios.put(
-                `/dashboard/teams/${team_id}`,
+                `/boards/teams/${team_id}`,
                 { name: name },
                 {
                     headers: {

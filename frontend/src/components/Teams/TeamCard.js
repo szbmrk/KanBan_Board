@@ -15,7 +15,6 @@ import {
     faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { checkPermisson } from "../../roles/Roles";
-import { Link } from "react-router-dom";
 
 const TeamCard = ({
     data,
@@ -143,7 +142,6 @@ const TeamCard = ({
                 className="teamcard-header"
                 onMouseEnter={() => handleMouseEnterOnTeam(data.team_id)}
                 onMouseLeave={handleMouseLeaveOnTeam}
-                
             >
                 
                 <div
@@ -153,8 +151,6 @@ const TeamCard = ({
                     }}
                 >
                     <h2>{data.name}</h2>
-                    
-                    
                 </div>
                 <Link to={`/boards/${data.name}`}>
                         <p className="team-card-go-to">Go to Board</p>
