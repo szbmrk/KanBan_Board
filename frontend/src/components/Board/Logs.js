@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatDate } from '../../utils/DateFormat';
 
 const LogComponent = ({ logs, theme }) => {
@@ -22,13 +22,55 @@ const LogComponent = ({ logs, theme }) => {
         : logs.filter((log) => log.user.username === selectedUser);
 
     // Count the types of actions
-    const createdTaskCount = filteredLogs.filter(log => getActionFromDetails(log.details) === 'CreatedTask').length;
-    const movedTaskCount = filteredLogs.filter(log => getActionFromDetails(log.details) === 'MovedTask').length;
-    const finishedTaskCount = filteredLogs.filter(log => getActionFromDetails(log.details) === 'FinishedTask').length;
-    const deletedTaskCount = filteredLogs.filter(log => getActionFromDetails(log.details) === 'DeletedTask').length;
-    const createdColumnCount = filteredLogs.filter(log => getActionFromDetails(log.details) === 'CreatedColumn').length;
-    const movedColumnCount = filteredLogs.filter(log => getActionFromDetails(log.details) === 'MovedColumn').length;
-    const deletedColumnCount = filteredLogs.filter(log => getActionFromDetails(log.details) === 'DeletedColumn').length;
+    const [createdTaskCount, setCreatedTaskCount] = useState(0);
+    const [movedTaskCount, setMovedTaskCount] = useState(0);
+    const [finishedTaskCount, setFinishedTaskCount] = useState(0);
+    const [deletedTaskCount, setDeletedTaskCount] = useState(0);
+    const [createdColumnCount, setCreatedColumnCount] = useState(0);
+    const [movedColumnCount, setMovedColumnCount] = useState(0);
+    const [deletedColumnCount, setDeletedColumnCount] = useState(0);
+    const [users, setUsers] = useState([])
+
+    useEffect(() => {
+        setUsers([...new Set(logs.map((log) => log.user.username))])
+    }, [logs])
+
+    useEffect(() =>{
+        setCreatedTaskCount(filteredLogs.filter(log => getActionFromDetails(log.details) === 'CreatedTask').length);
+        setMovedTaskCount(filteredLogs.filter(log => getActionFromDetails(log.details) === 'MovedTask').length);
+        setFinishedTaskCount(filteredLogs.filter(log => getActionFromDetails(log.details) === 'FinishedTask').length);
+        setDeletedTaskCount(filteredLogs.filter(log => getActionFromDetails(log.details) === 'DeletedTask').length);
+        setCreatedColumnCount(filteredLogs.filter(log => getActionFromDetails(log.details) === 'CreatedColumn').length);
+        setMovedColumnCount(filteredLogs.filter(log => getActionFromDetails(log.details) === 'MovedColumn').length);
+        setDeletedColumnCount(filteredLogs.filter(log => getActionFromDetails(log.details) === 'DeletedColumn').length);
+    },[filteredLogs,getActionFromDetails]);
+        
+    const getLogCountsForUser = (username) => {
+        if (!username)
+        {
+            return {
+                CreatedTask: "",
+                 MovedTask: "",
+            FinishedTask: "",
+            DeletedTask: "",
+            CreatedColumn: "",
+            MovedColumn: "",
+            DeletedColumn: "",
+
+            }
+        }
+        let logsForUser = logs.filter((log) => log.user.username === username)
+        console.error(logsForUser)
+        return {
+            CreatedTask: logsForUser.filter(log => getActionFromDetails(log.details) === 'CreatedTask').length,
+            MovedTask: logsForUser.filter(log => getActionFromDetails(log.details) === 'MovedTask').length,
+            FinishedTask: logsForUser.filter(log => getActionFromDetails(log.details) === 'FinishedTask').length,
+            DeletedTask: logsForUser.filter(log => getActionFromDetails(log.details) === 'DeletedTask').length,
+            CreatedColumn: logsForUser.filter(log => getActionFromDetails(log.details) === 'CreatedColumn').length,
+            MovedColumn: logsForUser.filter(log => getActionFromDetails(log.details) === 'MovedColumn').length,
+            DeletedColumn: logsForUser.filter(log => getActionFromDetails(log.details) === 'DeletedColumn').length
+        }
+    }
 
     return (
         <div className="log-submenu" data-theme={theme}>
@@ -52,11 +94,40 @@ const LogComponent = ({ logs, theme }) => {
                     </select>
                 </div>
 
-                {/* Activity count */}
+                {/* Activity count */}{selectedUser === 'All' ? 
+          <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid black" }}>
+    <thead>
+        <tr>
+            <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#f2f2f2" }}>username</th>
+            <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#f2f2f2" }}>Created-Task</th>
+            <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#f2f2f2" }}>Moved-Task</th>
+            <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#f2f2f2" }}>Finished-Task</th>
+            <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#f2f2f2" }}>Deleted-Task</th>
+            <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#f2f2f2" }}>Created-Column</th>
+            <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#f2f2f2" }}>Moved-Column</th>
+            <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#f2f2f2" }}>Deleted-Column</th>
+        </tr>
+    </thead>
+    <tbody>
+        {users.map((user, index) => (
+            <tr key={index}>
+                <td style={{ border: "1px solid black", padding: "8px", color:"blue"}}>{user}</td>
+                <td style={{ border: "1px solid black", padding: "8px", color:"blue" }}>{getLogCountsForUser(user).CreatedTask}</td>
+                <td style={{ border: "1px solid black", padding: "8px" , color:"blue"}}>{getLogCountsForUser(user).MovedTask}</td>
+                <td style={{ border: "1px solid black", padding: "8px", color:"blue" }}>{getLogCountsForUser(user).FinishedTask}</td>
+                <td style={{ border: "1px solid black", padding: "8px", color:"blue" }}>{getLogCountsForUser(user).DeletedTask}</td>
+                <td style={{ border: "1px solid black", padding: "8px", color:"blue" }}>{getLogCountsForUser(user).CreatedColumn}</td>
+                <td style={{ border: "1px solid black", padding: "8px", color:"blue" }}>{getLogCountsForUser(user).MovedColumn}</td>
+                <td style={{ border: "1px solid black", padding: "8px", color:"blue" }}>{getLogCountsForUser(user).DeletedColumn}</td>
+            </tr>
+        ))}
+    </tbody>
+</table>
+:
+            <div>
                 <p className="log-activity-count">
-                    {selectedUser === 'All'
-                        ? `Total logs: ${logs.length}`
-                        : `Logs by ${selectedUser}: ${filteredLogs.length}`}
+                    
+                    {`Logs by ${selectedUser}: ${filteredLogs.length}`}
                 </p>
                 <p className="log-activity-count">
                     Tasks - Created: {createdTaskCount} | Moved: {movedTaskCount} | Finished: {finishedTaskCount} | Deleted: {deletedTaskCount}
@@ -64,11 +135,13 @@ const LogComponent = ({ logs, theme }) => {
                 <p className="log-activity-count">
                     Columns - Created: {createdColumnCount} | Moved: {movedColumnCount} | Deleted: {deletedColumnCount}
                 </p>
+           </div>}
+                
 
                 <div className="log-info">
-                    <p>Username</p>
-                    <p>Details</p>
-                    <p>Created at</p>
+                        <p>Username</p>
+                        <p>Details</p>
+                        <p>Created at</p>                   
                 </div>
             </div>
 
