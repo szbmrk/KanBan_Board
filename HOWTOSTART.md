@@ -11,7 +11,6 @@ php artisan serve
 ## Websocket (root dirből)
 soketi start --config="./soketi-config.json"
 
-
 ## Websocket (docker)
 docker run -p 6001:6001 quay.io/soketi/soketi:1.0-16-distroless
 
