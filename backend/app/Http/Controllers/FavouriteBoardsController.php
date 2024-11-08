@@ -49,7 +49,7 @@ class FavouriteBoardsController extends Controller
         $board = Board::find($board_id);
         if (!$board)
         {
-            return response()->json(['error' => 'Board not found...'], 404);
+            return response()->json(['error' => 'Board not found'], 404);
         }
 
         $team = $board->team;
@@ -62,13 +62,14 @@ class FavouriteBoardsController extends Controller
             );
         }
 
-        $existingFavouriteBoard = FavouriteBoard::where('user_id', $user->user_id)
-            ->where('board_id', $board_id)
-            ->first();
+        $existingFavouriteBoard =
+            FavouriteBoard::where('user_id', $user->user_id)
+                ->where('board_id', $board_id)
+                ->first();
         if ($existingFavouriteBoard)
         {
             return response()->json(
-                ['error' => 'Task is already in your favorite tasks'],
+                ['error' => 'Board is already in your favorite boards'],
                 409
             );
         }
@@ -79,8 +80,55 @@ class FavouriteBoardsController extends Controller
         $favouriteBoard->save();
 
         return response()->json(
-            ['message' => 'Board added to favorite boards successfully.'],
+            ['message' => 'Board added to favorite boards successfully'],
             201
         );
+    }
+
+    public function destroy(Request $req)
+    {
+        $user = auth()->user();
+
+        if (!$user)
+        {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $board_id = $req->input('board_id');
+        if (!$board_id)
+        {
+            return response()->json(['error' => 'Missing board_id field'], 422);
+        }
+
+        $board = Board::find($board_id);
+        if (!$board)
+        {
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+
+        $team = $board->team;
+        if (!$team->teamMembers->contains('user_id', $user->user_id)) {
+            return response()->json(
+                [
+                    'error' => 'You are not a member of the team that owns this board'
+                ],
+                403
+            );
+        }
+
+        $favouriteBoard =
+            FavouriteBoard::where('user_id', $user->user_id)
+                ->where('board_id', $board_id)
+                ->first();
+        if (!$favouriteBoard)
+        {
+            return response()->json(
+                ['error' => 'Board is not in your favourite boards'],
+                404
+            );
+        }
+        $favouriteBoard->delete();
+
+        return response()->status(204);
     }
 }

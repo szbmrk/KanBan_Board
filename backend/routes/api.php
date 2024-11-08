@@ -125,6 +125,7 @@ Route::delete('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskCont
 
 Route::get('/favourite/boards/{user_id}', [FavouriteBoardsController::class, 'index'])->middleware('api');
 Route::post('/favourite/boards/', [FavouriteBoardsController::class, 'store'])->middleware('api');
+Route::delete('/favourite/boards/', [FavouriteBoardsController::class, 'destroy'])->middleware('api');
 
 Route::post('/boards/{board_id}/tasks/{subtask_id}/isDone', [ChangeIsDoneTaskController::class, 'store'])->middleware('api');
 Route::delete('/boards/{board_id}/tasks/{subtask_id}/isDone', [ChangeIsDoneTaskController::class, 'destroy'])->middleware('api');
