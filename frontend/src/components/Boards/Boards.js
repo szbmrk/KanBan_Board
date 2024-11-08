@@ -578,6 +578,7 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
                     {boardId ? <h4>Edit board name:</h4> : <h4>New board name:</h4>}
                     <input
                         type="text"
+                        maxLength={100}
                         value={boardName}
                         onChange={(e) => setBoardName(e.target.value)}
                         placeholder="Board name"

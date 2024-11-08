@@ -1,223 +1,224 @@
 .permission-table {
-    width: 95%;
-    display: table;
-    margin: 50px auto;
-    border-radius: 8px;
+  width: 95%;
+  display: table;
+  margin: 50px auto;
+  border-radius: 8px;
 }
 
 .permission-table-header {
-    display: table-header-group;
+  display: table-header-group;
 }
 
 .permission-table-header div:first-child {
-    border-radius: 8px 0 0 0;
+  border-radius: 8px 0 0 0;
 }
 
 .permission-table-header div:last-child {
-    border-radius: 0 8px 0 0;
+  border-radius: 0 8px 0 0;
 }
 
 .permission-table-header-cell {
-    display: table-cell;
-    padding: 10px;
-    border: 1px solid var(--dark-gray);
-    color: var(--light-gray);
-    background-color: var(--bg-dark);
-    font-size: 1.3em;
+  display: table-cell;
+  padding: 10px;
+  border: 1px solid var(--dark-gray);
+  color: var(--light-gray);
+  background-color: var(--bg-dark);
+  font-size: 1.3em;
 }
 
 .permission-table-body {
-    display: table-row-group;
+  display: table-row-group;
 }
 
 .permission-table-row {
-    display: table-row;
+  display: table-row;
 }
 
 .permission-table-body-cell {
-    display: table-cell;
-    padding: 20px;
-    border: 1px solid var(--dark-gray);
-    color: var(--light-gray);
-    background-color: var(--bg-mostly-black);
-    text-align: center;
+  display: table-cell;
+  padding: 20px;
+  border: 1px solid var(--dark-gray);
+  color: var(--light-gray);
+  background-color: var(--bg-mostly-black);
+  text-align: center;
 }
 
 .permission-table-body div:last-child div:first-child {
-    border-radius: 0 0 0 8px;
+  border-radius: 0 0 0 8px;
 }
 
 .permission-table-body div:last-child div:last-child {
-    border-radius: 0 0 8px 0;
+  border-radius: 0 0 8px 0;
 }
 
 .delete-role {
-    background-color: var(--important);
-    border: none;
-    color: var(--off-white);
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 0.8em;
-    cursor: pointer;
+  background-color: var(--important);
+  border: none;
+  color: var(--off-white);
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  cursor: pointer;
 }
 
 /* Role input and button */
 .add-role {
-    margin-top: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .role-input {
-    padding: 8px;
-    border: 1px solid var(--dark-gray);
-    border-radius: 4px;
-    width: 300px;
-    text-align: center;
+  padding: 8px;
+  border: 1px solid var(--dark-gray);
+  border-radius: 4px;
+  width: 300px;
+  text-align: center;
 }
 
 .add-role-button {
-    background-color: var(--button);
-    border: none;
-    color: var(--off-white);
-    padding: 8px 15px;
-    border-radius: 5px;
-    margin-left: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  background-color: var(--button);
+  border: none;
+  color: var(--off-white);
+  padding: 8px 15px;
+  border-radius: 5px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .add-role-button:hover {
-    background-color: var(--important-light);
+  background-color: var(--important-light);
+}
+
+.add-role-button:disabled {
+  background-color: var(--off-white);
+  color: var(--bg-dark);
+  cursor: default;
 }
 
 .permission-checkbox {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--dark-gray);
-    border-radius: 5px;
-    background-color: var(--light-gray);
-    position: relative;
-    transition: background-color 0.3s, border-color 0.3s;
-    cursor: pointer;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--dark-gray);
+  border-radius: 5px;
+  background-color: var(--light-gray);
+  position: relative;
+  transition: background-color 0.3s, border-color 0.3s;
+  cursor: pointer;
 }
 
 .permission-checkbox {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--dark-gray);
-    border-radius: 5px;
-    background-color: var(--light-gray);
-    position: relative;
-    transition: background-color 0.3s, border-color 0.3s;
-    cursor: pointer;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--dark-gray);
+  border-radius: 5px;
+  background-color: var(--light-gray);
+  position: relative;
+  transition: background-color 0.3s, border-color 0.3s;
+  cursor: pointer;
 }
 
 .permission-checkbox:checked {
-    background-color: var(--button);
-    /* Change to the --starred color */
-    border-color: var(--button);
-    /* Change to the --starred color */
+  background-color: var(--button);
+  /* Change to the --starred color */
+  border-color: var(--button);
+  /* Change to the --starred color */
 }
 
 .permission-checkbox:disabled {
-    background-color: var(--bg-mostly-black);
-    cursor: not-allowed;
-    border-color: var(--dark-gray);
+  background-color: var(--bg-mostly-black);
+  cursor: not-allowed;
+  border-color: var(--dark-gray);
 }
 
 .permission-checkbox:disabled:checked {
-    opacity: 0.5;
+  opacity: 0.5;
 }
 
 /* Custom checkmark design */
 .permission-checkbox::after {
-    content: "";
-    position: absolute;
-    display: none;
-    left: 5px;
-    top: 2px;
-    width: 5px;
-    height: 10px;
-    border: solid var(--off-white);
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
+  content: "";
+  position: absolute;
+  display: none;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--off-white);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
 .permission-checkbox:checked::after {
-    display: block;
+  display: block;
 }
 
 /* Hover effect */
 .permission-checkbox:hover {
-    border-color: var(--light-gray);
+  border-color: var(--light-gray);
 }
-
-
-
 
 /* Styling for permission names */
 .permission-name {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 /* Styling for role names */
 .role-permission {
-    text-align: center;
+  text-align: center;
 }
 
 .role-permission input[type="checkbox"] {
-    margin: 0 auto;
-    display: block;
+  margin: 0 auto;
+  display: block;
 }
 
-
 .role-header-div {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }
 
 .role-rename-input-field {
-    padding: 5px;
-    border: 1px solid var(--gray);
-    border-color: var(--gray);
-    border-radius: 4px;
-    width: 300px;
-    color: azure;
-    background-color: var(--dark-gray);
-    margin-right: 10px;
+  padding: 5px;
+  border: 1px solid var(--gray);
+  border-color: var(--gray);
+  border-radius: 4px;
+  width: 300px;
+  color: azure;
+  background-color: var(--dark-gray);
+  margin-right: 10px;
 }
 
 .role-rename-button {
-    background-color: var(--button);
-    border: none;
-    color: var(--off-white);
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 0.8em;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  background-color: var(--button);
+  border: none;
+  color: var(--off-white);
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .cancel-role-button {
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: 400;
-    background-color: var(--cancel);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 400;
+  background-color: var(--cancel);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .cancel-role-button:hover {
-    background-color: var(--cancel-hover);
+  background-color: var(--cancel-hover);
 }
 
 /* Add your additional styles here */
