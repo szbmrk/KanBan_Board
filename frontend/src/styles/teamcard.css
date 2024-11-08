@@ -359,3 +359,11 @@
     flex: 1;
 
 }
+
+.team-card-go-to{
+    color: white;
+    font-weight: 600;
+    background-color: grey;
+    padding: 5px;
+    border-radius: 15px;
+}

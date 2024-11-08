@@ -42,6 +42,12 @@ const App = () => {
                                 <Sidebar />
                                 <Boards />
                             </ProtectedRoute>} />
+                        <Route exact path="/boards/:team_name" element={
+                            <ProtectedRoute>
+                                <Navbar />
+                                <Sidebar />
+                                <Boards />
+                            </ProtectedRoute>} />
                         <Route exact path="/assigned_tasks" element={
                             <ProtectedRoute>
                                 <Navbar />

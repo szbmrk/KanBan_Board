@@ -182,14 +182,14 @@ class UserController extends Controller
         }
 
         $user_ids = TeamMember::whereIn('team_id', function ($query) use ($userId) {
-        $query->select('team_id')
-            ->from('team_members')
-            ->where('user_id', $userId);
+            $query->select('team_id')
+                ->from('team_members')
+                ->where('user_id', $userId);
         })
-        ->where('user_id', '<>', $userId)
-        ->distinct()
-        ->pluck('user_id')
-        ->toArray();
+            ->where('user_id', '<>', $userId)
+            ->distinct()
+            ->pluck('user_id')
+            ->toArray();
 
         $user->teamMembers()->delete();
         $user->userTasks()->delete();
@@ -199,9 +199,9 @@ class UserController extends Controller
         $data = [
             'user' => $user
         ];
-        foreach ($user_ids as $user_id) { 
+        foreach ($user_ids as $user_id) {
             broadcast(new TeamChange($user_id, "DELETED_USER", $data));
-        }  
+        }
 
         return response()->json(['message' => 'User deleted successfully'], 200);
     }
@@ -223,6 +223,7 @@ class UserController extends Controller
                         'permission' => $permission->name,
                         'team_id' => $teamMember->team_id,
                         'board_id' => $role->board_id,
+                        'team_members_id' => $teamMember->team_members_id
                     ];
 
                     $userPermissions[] = $permissionData;
