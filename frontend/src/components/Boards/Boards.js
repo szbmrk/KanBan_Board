@@ -396,7 +396,7 @@ export default function Boards() {
                     "Content-Type": "application/json"
                 },
             });
-            let newFavourites = favouriteBoards.splice();
+            let newFavourites = favouriteBoards.slice();
             newFavourites.push(boardId);
             setFavouriteBoards(newFavourites);
         } catch (err) {
