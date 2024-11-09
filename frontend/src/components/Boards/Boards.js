@@ -4,7 +4,7 @@ import axios from "../../api/axios";
 import { Link, useParams } from "react-router-dom";
 import Loader from "../Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faPencil, faXmark, faStar } from "@fortawesome/free-solid-svg-icons";
 import { SetRoles, checkIfAdmin, checkPermissionForBoard } from "../../roles/Roles";
 import Error from "../Error";
 import ErrorWrapper from "../../ErrorWrapper";
@@ -21,6 +21,7 @@ import {
 const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
+const starIcon = <FontAwesomeIcon icon={faStar} />;
 
 export default function Boards() {
     const {team_name} = useParams();
@@ -35,6 +36,7 @@ export default function Boards() {
     const [redirect, setRedirect] = useState(false);
     const [showDeleteBoardConfirmation, setShowDeleteBoardConfirmation] =
         useState(false);
+    const [favouriteBoards, setFavouriteBoards] = useState([]);
 
     const token = sessionStorage.getItem("token");
     const user_id = sessionStorage.getItem("user_id");
@@ -221,6 +223,13 @@ export default function Boards() {
                     teamData = teamData.filter((T) => T.name == team_name);
                 }
                 setTeams(teamData);                
+                let newFavourites = favouriteBoards.splice();
+                for (const board in teamData.boards) {
+                    if (board.favourite) {
+                        newFavourites.push(board.board_id);
+                    }
+                }
+                setFavouriteBoards(newFavourites);
             }
             else {
                 const response = await axios.get("/boards", {
@@ -234,6 +243,18 @@ export default function Boards() {
                     teamData = teamData.filter((T) => T.name == team_name);
                 }
                 setTeams(teamData);
+                let newFavourites = favouriteBoards.splice();
+                console.error(teamData);
+                for (const team of teamData) {
+                    console.error(team.boards);
+                    for (const board of team.boards) {
+                        console.error("board: " + board);
+                        if (board.favourite) {
+                            newFavourites.push(board.board_id);
+                        }
+                    }
+                }
+                setFavouriteBoards(newFavourites);
             }
         } catch (e) {
             console.error(e);
@@ -365,6 +386,56 @@ export default function Boards() {
         setHoveredBoardId(null);
     };
 
+    const favouriteBoard = async (boardId) => {
+        try {
+            await axios.post("/favourite/boards", {
+                    board_id: boardId
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+            });
+            let newFavourites = favouriteBoards.splice();
+            newFavourites.push(boardId);
+            setFavouriteBoards(newFavourites);
+        } catch (err) {
+            if (err?.response?.status === 401 || err?.response?.status === 500) {
+                setError({
+                    message: "You are not logged in! Redirecting to login page...",
+                });
+                setRedirect(true);
+            } else {
+                setError(err);
+            }
+        }
+    };
+
+    const unfavouriteBoard = async (boardId) => {
+        try {
+            await axios.delete("/favourite/boards", {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                data: {
+                    board_id: boardId
+                }
+            });
+            let newFavourites = favouriteBoards.filter((faveBoardId) => faveBoardId != boardId);
+            setFavouriteBoards(newFavourites);
+        } catch (err) {
+            if (err?.response?.status === 401 || err?.response?.status === 500) {
+                setError({
+                    message: "You are not logged in! Redirecting to login page...",
+                });
+                setRedirect(true);
+            } else {
+                setError(err);
+            }
+        }
+    }
+
     const getBoardNameBySelectedTeamIdAndSelectedBoardId = () => {
         if (selectedBoardId < 0 || selectedTeamId < 0) return "";
 
@@ -468,6 +539,28 @@ export default function Boards() {
                                                                     {pencilIcon}
                                                                 </span>
                                                             )}
+                                                            <span
+                                                                className="favourite-board-button"
+                                                                style={{
+                                                                    display:
+                                                                        hoveredBoardId === board.board_id
+                                                                            ? "block"
+                                                                            : "none",
+                                                                    color:
+                                                                        favouriteBoards.includes(board.board_id)
+                                                                            ? "yellow"
+                                                                            : "black",
+                                                                }}
+                                                                onClick={() => {
+                                                                    if (!favouriteBoards.includes(board.board_id)) {
+                                                                        favouriteBoard(board.board_id);
+                                                                    } else {
+                                                                        unfavouriteBoard(board.board_id);
+                                                                    }
+                                                                }}
+                                                            >
+                                                                {starIcon}
+                                                            </span>
                                                     </div>
                                                 ))}
                                                 <div
@@ -496,6 +589,7 @@ export default function Boards() {
                                 )}
                                 {showDeleteBoardConfirmation && (
                                     <ConfirmationPopup
+                                        action="Delete"
                                         text={getBoardNameBySelectedTeamIdAndSelectedBoardId()}
                                         onConfirm={deleteBoardFromTeam}
                                         onCancel={handleBoardDeleteCancel}
