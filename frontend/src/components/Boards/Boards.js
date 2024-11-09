@@ -549,7 +549,7 @@ export default function Boards() {
                                                                     color:
                                                                         favouriteBoards.includes(board.board_id)
                                                                             ? "yellow"
-                                                                            : "black",
+                                                                            : "",
                                                                 }}
                                                                 onClick={() => {
                                                                     if (!favouriteBoards.includes(board.board_id)) {
