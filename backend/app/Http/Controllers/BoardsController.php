@@ -34,7 +34,19 @@ class BoardsController extends Controller
     public function index()
     {
         $user = auth()->user();
+
         $teams = $user->teams()->with('boards')->get();
+
+        $favouriteBoards = $user
+            ->favouriteBoards()
+            ->pluck('board_id')
+            ->toArray();
+
+        $teams->map(function ($team) use ($favouriteBoards) {
+            $team->boards->map(function ($board) use ($favouriteBoards) {
+                $board->favourite = in_array($board->board_id, $favouriteBoards);
+            });
+        });
         //$response = ExecutePythonScript::instance()->Run();
 
         return response()->json([
