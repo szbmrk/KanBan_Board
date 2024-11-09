@@ -14,6 +14,11 @@ class BoardController extends Controller
     {
         $user = auth()->user();
 
+        $isFavourite = $user
+            ->favouriteBoards()
+            ->where('board_id', $board_id)
+            ->exists();
+
         $board = Board::with([
             'columns.tasks.tags' => function ($query) {
                 // Add an orderBy clause to sort tags by tag_id
@@ -32,6 +37,7 @@ class BoardController extends Controller
         }
 
         if ($user->hasPermission('system_admin')) {
+            $board->favourite = $isFavourite;
             return response()->json(['board' => $board]);
         }
 
@@ -39,6 +45,7 @@ class BoardController extends Controller
             LogRequest::instance()->logAction('NO PERMISSION', $user->user_id, "User does not have permission. -> Get Board", null, null, null);
             return response()->json(['error' => 'You are not a member of this board'], 403);
         } else {
+            $board->favourite = $isFavourite;
             return response()->json(['board' => $board]);
         }
 
