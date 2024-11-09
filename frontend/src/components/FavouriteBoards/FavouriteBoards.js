@@ -141,8 +141,8 @@ export default function FavouriteBoards() {
     function webSocketUpdateBoard(data) {
         let newBoards = boards.slice();
         newBoards.forEach((board, index) => {
-            if (board.board_id == data.board.board_id
-                && board.board_name != data.board.name) {
+            if (board.board_id === data.board.board_id
+                && board.board_name !== data.board.name) {
                 newBoards[index].board_name = data.board.name;
             }
         });
@@ -151,14 +151,14 @@ export default function FavouriteBoards() {
 
     function webSocketDeleteBoard(data) {
         let newBoards = boards.filter(
-            (board) => board.board_id != data.board.board_id
+            (board) => board.board_id !== data.board.board_id
         );
         setBoards(newBoards);
     }
 
     function webSocketUserDeletedFromTeam(data) {
         let newBoards = boards.filter(
-            (board) => board.team_id != data.team.team_id
+            (board) => board.team_id !== data.team.team_id
         );
         setBoards(newBoards);
     }
