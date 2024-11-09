@@ -1,7 +1,7 @@
 import { React, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStarHalfStroke } from "@fortawesome/free-solid-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 import axios from "../../api/axios";
 import Error from "../Error";
@@ -21,7 +21,7 @@ export default function FavouriteBoards() {
     const token = sessionStorage.getItem("token");
     const userId = sessionStorage.getItem("user_id");
 
-    const UnfavouriteIcon = <FontAwesomeIcon icon={faStarHalfStroke} />
+    const UnfavouriteIcon = <FontAwesomeIcon icon={faTrash} />
 
     async function fetchFavouriteBoards() {
         try {
