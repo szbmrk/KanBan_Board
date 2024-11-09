@@ -2,11 +2,19 @@ import { React, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import Echo from "laravel-echo";
 
 import axios from "../../api/axios";
 import Error from "../Error";
 import Loader from "../Loader";
 import ConfirmationPopup from "../Board/ConfirmationPopup";
+import {
+    REACT_APP_PUSHER_KEY,
+    REACT_APP_PUSHER_CLUSTER,
+    REACT_APP_PUSHER_PORT,
+    REACT_APP_PUSHER_HOST,
+    REACT_APP_PUSHER_PATH
+} from "../../api/config.js";
 
 export default function FavouriteBoards() {
     const [ boards, setBoards ] = useState(null);
@@ -104,6 +112,57 @@ export default function FavouriteBoards() {
         }
     };
 
+    async function handleWebSocket(websocket) {
+        switch (websocket.changeType) {
+            case "DELETED_TEAM":
+                webSocketDeleteTeam(websocket.data);
+                break;
+            case "UPDATED_BOARD":
+                webSocketUpdateBoard(websocket.data);
+                break;
+            case "DELETED_BOARD":
+                webSocketDeleteBoard(websocket.data);
+                break;
+            case "THIS_USER_DELETED_FROM_TEAM":
+                webSocketUserDeletedFromTeam(websocket.data);
+                break;
+            default:
+                break;
+        }
+    };
+
+    function webSocketDeleteTeam(data) {
+        let newBoards = boards.filter(
+            (board) => board.team_id !== data.team.team_id
+        );
+        setBoards(newBoards)
+    };
+
+    function webSocketUpdateBoard(data) {
+        let newBoards = boards.slice();
+        newBoards.forEach((board, index) => {
+            if (board.board_id == data.board.board_id
+                && board.board_name != data.board.name) {
+                newBoards[index].board_name = data.board.name;
+            }
+        });
+        setBoards(newBoards);
+    }
+
+    function webSocketDeleteBoard(data) {
+        let newBoards = boards.filter(
+            (board) => board.board_id != data.board.board_id
+        );
+        setBoards(newBoards);
+    }
+
+    function webSocketUserDeletedFromTeam(data) {
+        let newBoards = boards.filter(
+            (board) => board.team_id != data.team.team_id
+        );
+        setBoards(newBoards);
+    }
+
     useEffect(() => {
         document.title = "KanBan | Favourite Boards";
         fetchFavouriteBoards();
@@ -113,6 +172,37 @@ export default function FavouriteBoards() {
         };
 
         window.addEventListener("ChangingTheme", ResetTheme);
+
+        window.Pusher = require("pusher-js");
+        window.Pusher.logToConsole = true;
+
+        const echo = new Echo({
+            broadcaster: "pusher",
+            key: REACT_APP_PUSHER_KEY,
+            cluster: REACT_APP_PUSHER_CLUSTER,
+            wsHost: REACT_APP_PUSHER_HOST || window.location.hostname,
+            wsPort: REACT_APP_PUSHER_PORT || 6001,
+            wssPort: 443,
+            wsPath: REACT_APP_PUSHER_PATH || '',
+            enableStats: false,
+            forceTLS: false,
+            enabledTransports: ["ws", "wss"],
+        });
+
+        const channel = echo.channel(`BoardsChange`);
+
+        channel.listen(
+            `.user.${userId}`,
+            (e) => {
+                handleWebSocket(e);
+            },
+            []
+        );
+
+        return () => {
+            channel.unsubscribe();
+            window.removeEventListener("ChangingTheme", ResetTheme);
+        };
     });
 
     return (
