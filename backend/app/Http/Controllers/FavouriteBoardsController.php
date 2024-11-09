@@ -26,6 +26,7 @@ class FavouriteBoardsController extends Controller
                     'id' => $favourite->id,
                     'user_id' => $favourite->user_id,
                     'board_id' => $favourite->board->board_id,
+                    'team_id' => $favourite->board->team_id,
                     'board_name' => $favourite->board->name,
                   ];
             });
