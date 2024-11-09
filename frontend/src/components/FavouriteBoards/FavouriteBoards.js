@@ -80,7 +80,7 @@ export default function FavouriteBoards() {
         setSelectedBoardId(-1);
     };
 
-    async function deleteBoardFromTeam() {
+    async function unfavouriteBoard() {
         handleBoardDeleteCancel();
         try {
             await axios.delete("/favourite/boards", {
@@ -137,47 +137,49 @@ export default function FavouriteBoards() {
                     ) : (
                         userId && (
                             <>
-                                {boards.map((board) => (
-                                    <div
-                                        className="board"
-                                        key={board.board_id}
-                                        onMouseEnter={() =>
-                                            handleMouseEnterOnBoard(board.board_id)
-                                        }
-                                        onMouseLeave={() => handleMouseLeaveOnBoard()}
-                                    >
-                                        <Link
-                                            to={`/board/${board.board_id}`}
-                                            className="board-title"
-                                        >
-                                            <p>{board.board_name}</p>
-                                        </Link>
-                                        <span
-                                            className="favourite-board-button"
-                                            style={{
-                                                visibility:
-                                                hoveredBoardId === board.board_id
-                                                    ? "visible"
-                                                    : "hidden",
-                                                transition: "visibility 0.1s ease",
-                                                zIndex: "99",
-                                            }}
-                                            onClick={() =>
-                                                handleUnfavouriteButtonClick(
-                                                    board.board_id
-                                                )
+                                <div className="boards">
+                                    {boards.map((board) => (
+                                        <div
+                                            className="board"
+                                            key={board.board_id}
+                                            onMouseEnter={() =>
+                                                handleMouseEnterOnBoard(board.board_id)
                                             }
-                                            data-hover="Unfavourite Board"
+                                            onMouseLeave={() => handleMouseLeaveOnBoard()}
                                         >
-                                            {UnfavouriteIcon}
-                                        </span>
-                                    </div>
-                                ))}
+                                            <Link
+                                                to={`/board/${board.board_id}`}
+                                                className="board-title"
+                                            >
+                                                <p>{board.board_name}</p>
+                                            </Link>
+                                            <span
+                                                className="favourite-board-button"
+                                                style={{
+                                                    visibility:
+                                                    hoveredBoardId === board.board_id
+                                                        ? "visible"
+                                                        : "hidden",
+                                                    transition: "visibility 0.1s ease",
+                                                    zIndex: "99",
+                                                }}
+                                                onClick={() =>
+                                                    handleUnfavouriteButtonClick(
+                                                        board.board_id
+                                                    )
+                                                }
+                                                data-hover="Unfavourite Board"
+                                            >
+                                                {UnfavouriteIcon}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
                                 {showUnfavouriteBoardConfirmation && (
                                     <ConfirmationPopup
                                         action="Unfavourite"
                                         text={getBoardNameBySelectedTeamIdAndSelectedBoardId()}
-                                        onConfirm={deleteBoardFromTeam}
+                                        onConfirm={unfavouriteBoard}
                                         onCancel={handleBoardDeleteCancel}
                                     />
                                 )}
