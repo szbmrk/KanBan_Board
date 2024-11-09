@@ -139,6 +139,9 @@ class FavouriteBoardsController extends Controller
         }
         $favouriteBoard->delete();
 
-        return response()->status(204);
+        return response()->json(
+            ['message' => 'Board removed from favorite boards successfully'],
+            200
+        );
     }
 }
