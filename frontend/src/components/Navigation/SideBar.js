@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../../styles/sidebar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClapperboard, faTable, faSignOutAlt, faListCheck, faPeopleGroup, faHome } from '@fortawesome/free-solid-svg-icons';
+import { faClapperboard, faStar, faTable, faSignOutAlt, faListCheck, faPeopleGroup, faHome } from '@fortawesome/free-solid-svg-icons';
 import { AuthContext } from '../../auth/AuthContext';
 
 const BoardsIcon = <FontAwesomeIcon icon={faClapperboard} />
+const FavouriteIcon = <FontAwesomeIcon icon={faStar} />
 const tableIcon = <FontAwesomeIcon icon={faTable} />;
 const AssignedTasksIcon = <FontAwesomeIcon icon={faListCheck} />;
 const PeopleGroup = <FontAwesomeIcon icon={faPeopleGroup} />;
@@ -49,6 +50,13 @@ const Sidebar = () => {
                         <Link to='/boards'>
                             {BoardsIcon}
                             <span>Boards</span>
+                        </Link>
+                    </li>
+
+                    <li className={location.pathname === '/favourite_boards' ? 'active' : ''}>
+                        <Link to='/favourite_boards'>
+                            {FavouriteIcon}
+                            <span>Favourite Boards</span>
                         </Link>
                     </li>
 

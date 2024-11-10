@@ -77,6 +77,15 @@
     cursor: pointer;
 }
 
+.favourite-board-button {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    color: var(--light-gray);
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
 @keyframes rotate {
     0% {
         transform: rotate(10deg);

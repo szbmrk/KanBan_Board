@@ -29,6 +29,7 @@ use App\Http\Controllers\TeamManagementController;
 use App\Http\Controllers\ChatGPTController;
 use App\Http\Controllers\AGIAnswersController;
 use App\Http\Controllers\FavouriteTaskController;
+use App\Http\Controllers\FavouriteBoardsController;
 use App\Http\Controllers\ChangeIsDoneTaskController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\LogController;
@@ -121,6 +122,10 @@ Route::delete('/attachments/{attachment_id}', [AttachmentController::class, 'des
 Route::get('/favourite/{user_id}', [FavouriteTaskController::class, 'index'])->middleware('api');
 Route::post('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'store'])->middleware('api');
 Route::delete('/boards/{board_id}/tasks/{task_id}/favourite', [FavouriteTaskController::class, 'destroy'])->middleware('api');
+
+Route::get('/favourite/boards/{user_id}', [FavouriteBoardsController::class, 'index'])->middleware('api');
+Route::post('/favourite/boards/', [FavouriteBoardsController::class, 'store'])->middleware('api');
+Route::delete('/favourite/boards/', [FavouriteBoardsController::class, 'destroy'])->middleware('api');
 
 Route::post('/boards/{board_id}/tasks/{subtask_id}/isDone', [ChangeIsDoneTaskController::class, 'store'])->middleware('api');
 Route::delete('/boards/{board_id}/tasks/{subtask_id}/isDone', [ChangeIsDoneTaskController::class, 'destroy'])->middleware('api');
