@@ -94,8 +94,9 @@
     border: 1px solid var(--important);
     border-radius: 5px;
     background: transparent;
-    color: var(--important);
+    color: var(--light-gray);
     transition: all 0.3s ease;
+    
 }
 
 .delete-button:hover {
