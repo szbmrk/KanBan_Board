@@ -83,6 +83,7 @@
 
 .profile-menu {
   list-style-type: none;
+  width: 100%;
   padding: 5px;
   display: flex;
   flex-direction: column;
@@ -97,8 +98,9 @@
   cursor: pointer;
 }
 
-.profile-menu li a:hover {
-  color: var(--off-white);
+.profile-menu li:hover {
+  background-color: #8a8a8a;
+  border-radius: 8px;
 }
 
 .profile-menu li a {
