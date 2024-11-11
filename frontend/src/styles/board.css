@@ -100,7 +100,7 @@
 }
 
 .delete-column-button:hover {
-  color: var(--important);
+  color: var(--important-light);
 }
 
 .edit-action-button {
@@ -217,7 +217,9 @@
 }
 
 .agi-menu li:hover {
-  color: var(--off-white);
+  color: var(--button-hover);
+  background-color: #afacac;
+  border-radius: 8px;
 }
 
 .agi-menu li span {
@@ -234,16 +236,9 @@
   width: 20%;
 }
 
-.agi-menu > li span:first-child:hover {
-  color: var(--off-white);
-}
 
 .agi-menu > li span:nth-child(2) {
   width: 70%;
-}
-
-.agi-menu > li span:nth-child(2):hover {
-  color: var(--off-white);
 }
 
 .agi-submenu {
@@ -287,9 +282,6 @@
   gap: 10px;
 }
 
-.agi-menu li:hover {
-  color: var(--off-white);
-}
 
 .agi-menu li span {
   color: var(--light-gray);
@@ -305,17 +297,10 @@
   width: 20%;
 }
 
-.agi-menu > li span:first-child:hover {
-  color: var(--off-white);
-}
-
 .agi-menu > li span:nth-child(2) {
   width: 70%;
 }
 
-.agi-menu > li span:nth-child(2):hover {
-  color: var(--off-white);
-}
 
 .sort-submenu {
   width: max-content;
@@ -360,7 +345,8 @@
 }
 
 .sort-menu li:hover {
-  color: var(--off-white);
+  background-color: #afacac;
+  border-radius:  8px;
 }
 
 .sort-menu li span {
@@ -377,16 +363,8 @@
   width: 20%;
 }
 
-.sort-menu > li span:first-child:hover {
-  color: var(--off-white);
-}
-
 .sort-menu > li span:nth-child(2) {
   width: 70%;
-}
-
-.sort-menu > li span:nth-child(2):hover {
-  color: var(--off-white);
 }
 
 .filter-menu-title {
@@ -463,9 +441,11 @@
 }
 
 .select-all-button {
-  background-color: var(--light-gray);
-  color: var(--dark-gray);
-  border: none;
+  background-color: rgba(0, 0, 0, 0);
+  color: var(--light-gray);
+  border: dotted;
+  border-width: 1px;
+  border-color: var(--light-gray);
   border-radius: 5px;
   padding: 8px;
   cursor: pointer;
