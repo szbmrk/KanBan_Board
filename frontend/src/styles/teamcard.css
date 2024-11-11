@@ -238,10 +238,12 @@
     order: 2;
     flex: 1;
 }
+
 [data-theme="light"] .delete-button {
     color: red;
     border: 1px solid red;
 }
+
 [data-theme="light"] .delete-button:hover {
     color: var(--light-gray);
     background-color: rgb(255, 37, 37);
@@ -266,7 +268,7 @@
 
 .add-button:hover {
     background-color: var(--confirm);
-   
+
 }
 
 [data-theme="light"] .add-button:hover {
@@ -360,14 +362,14 @@
 
 }
 
-.team-card-go-to{
+.team-card-go-to {
     color: var(--light-gray);
     font-weight: 600;
     padding: 10px;
     border-radius: 8px;
 }
 
-.team-card-go-to:hover{
+.team-card-go-to:hover {
     background-color: var(--button-hover);
     opacity: 0.8;
 }

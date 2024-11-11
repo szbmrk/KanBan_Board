@@ -151,7 +151,7 @@
 .option:hover {
     background-color: #afacac;
     transform: translateX(10px);
-    border : none;
+    border: none;
     cursor: pointer;
 }
 

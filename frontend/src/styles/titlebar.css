@@ -66,6 +66,6 @@
     border-radius: 8px;
 }
 
-.title-bar-buttons li svg{
+.title-bar-buttons li svg {
     color: var(--button-hover) !important;
 }

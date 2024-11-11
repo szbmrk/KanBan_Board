@@ -34,7 +34,7 @@
     --dark-gray: rgba(255, 255, 255, 0.767);
     --dark-Navbar: rgba(255, 255, 255, 0.793);
     --dark-Sidebar: rgba(255, 255, 255, 0.695);
-    --button-hover: rgba(64,64,64);
+    --button-hover: rgba(64, 64, 64);
     --light-gray: rgb(20, 20, 20);
     --light-grayRGB: 203, 203, 203;
     --off-white: #f0f0f0;
@@ -108,18 +108,23 @@ body {
 .bg-regular {
     background-image: url("./imgs/background-regular.jpg");
 }
+
 .bg-blue {
     background-image: url("./imgs/background-blue.jpg");
 }
+
 .bg-darkblue {
     background-image: url("./imgs/background-darkblue.jpg");
 }
+
 .bg-gray {
     background-image: url("./imgs/background-gray.jpg");
 }
+
 .bg-green {
     background-image: url("./imgs/background-green.jpg");
 }
+
 .bg-purple {
     background-image: url("./imgs/background-purple.jpg");
 }

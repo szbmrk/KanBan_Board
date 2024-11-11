@@ -54,6 +54,8 @@
 }
 
 .sidebar ul li.active {
-    background-color: #8a8a8a; /* Kiemeléshez használt háttérszín */
-    color: #333; /* Szövegszín */
-  }
+    background-color: #8a8a8a;
+    /* Kiemeléshez használt háttérszín */
+    color: #333;
+    /* Szövegszín */
+}

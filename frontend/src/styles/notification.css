@@ -42,8 +42,10 @@
   justify-content: center;
   transition: all 0.3s ease;
 }
+
 [data-theme="light"] .notification {
-  background-color: #f0f0f0cc; /* Világos módhoz tartozó háttérszín */
+  background-color: #f0f0f0cc;
+  /* Világos módhoz tartozó háttérszín */
 }
 
 .notification-header {
@@ -55,16 +57,19 @@
 }
 
 .notification:hover {
-  transform: translateY(-3px); /* Enyhe emelkedés hover esetén */
+  transform: translateY(-3px);
+  /* Enyhe emelkedés hover esetén */
   background-color: #4e4e4eea;
 }
 
 .notification:not(:last-child) {
-  margin-bottom: 5px; /* Kisebb térköz az értesítések között */
+  margin-bottom: 5px;
+  /* Kisebb térköz az értesítések között */
 }
 
 [data-theme="light"] .notification:hover {
-  background-color: #b3b3b3cc; /* Világos módhoz tartozó háttérszín */
+  background-color: #b3b3b3cc;
+  /* Világos módhoz tartozó háttérszín */
 }
 
 .notification {
@@ -80,8 +85,10 @@
   font-size: 1em;
   color: rgb(195, 205, 241);
 }
+
 [data-theme="light"] .notification-type {
-  color: #383838; /* Világos módhoz tartozó háttérszín */
+  color: #383838;
+  /* Világos módhoz tartozó háttérszín */
 }
 
 .notification-content {
@@ -104,9 +111,8 @@
 
 .mark-all-button:active,
 .mark-seen-button:active {
-  transform: scale(
-    0.95
-  ); /* Az aktív állapotban a gomb mérete kicsit összenyomódik */
+  transform: scale(0.95);
+  /* Az aktív állapotban a gomb mérete kicsit összenyomódik */
 }
 
 .mark-all-button:hover,
