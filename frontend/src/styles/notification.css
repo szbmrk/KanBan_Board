@@ -8,7 +8,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background-color: var(--bg-dark);
+  background-color: var(--dark-gray);
   border-radius: 8px;
   border-top-right-radius: 0;
   border: 1px solid var(--bg-dark);
@@ -142,7 +142,7 @@
   padding: 10px;
   border: 1px solid var(--bg-dark);
   border-bottom: none;
-  background-color: var(--bg-dark);
+  background-color: var(--dark-gray);
   color: var(--light-gray);
   cursor: pointer;
   font-family: var(--basic-font);
