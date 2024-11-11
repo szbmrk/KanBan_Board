@@ -361,9 +361,13 @@
 }
 
 .team-card-go-to{
-    color: white;
+    color: var(--light-gray);
     font-weight: 600;
-    background-color: grey;
-    padding: 5px;
-    border-radius: 15px;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.team-card-go-to:hover{
+    background-color: var(--button-hover);
+    opacity: 0.8;
 }
