@@ -119,12 +119,12 @@
 }
 
 .button-container button:nth-child(2) {
-  background-color: var(--important);
-  color: var(--light-gray);
+  background-color: var(--light-gray);
+  color: var(--dark-gray);
 }
 
 .button-container button:nth-child(2):hover {
-  background-color: var(--important-light);
+  background-color: var(--button);
   color: var(--light-gray);
 }
 
@@ -356,7 +356,7 @@
 
 .add-to-card-item:hover,
 .priority-picker-item:hover {
-  background-color: var(--scrollbar-hover);
+  background-color: #afacac;
 }
 
 .comments {
@@ -391,8 +391,8 @@
 }
 
 .comment.own-comment {
-  background-color: #7289da;
-  color: white;
+  background-color: var(--dark-Navbar);
+  color: var(--light-gray);
   align-self: flex-end;
 }
 
