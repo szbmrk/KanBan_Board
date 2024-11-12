@@ -82,6 +82,7 @@ const LogComponent = ({ logs, theme }) => {
                     <label htmlFor="userFilter">Filter by user: </label>
                     <select
                         id="userFilter"
+                        className='user-filter-select'
                         value={selectedUser}
                         onChange={(e) => setSelectedUser(e.target.value)}
                     >
@@ -95,30 +96,30 @@ const LogComponent = ({ logs, theme }) => {
                 </div>
 
                 {/* Activity count */}{selectedUser === 'All' ? 
-          <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid black" }}>
+          <table className='log-table'>
     <thead>
         <tr>
-            <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#f2f2f2" }}>username</th>
-            <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#f2f2f2" }}>Created-Task</th>
-            <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#f2f2f2" }}>Moved-Task</th>
-            <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#f2f2f2" }}>Finished-Task</th>
-            <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#f2f2f2" }}>Deleted-Task</th>
-            <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#f2f2f2" }}>Created-Column</th>
-            <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#f2f2f2" }}>Moved-Column</th>
-            <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#f2f2f2" }}>Deleted-Column</th>
+            <th className='log-th'>Username</th>
+            <th className='log-th'>Created-Task</th>
+            <th className='log-th'>Moved-Task</th>
+            <th className='log-th'>Finished-Task</th>
+            <th className='log-th'>Deleted-Task</th>
+            <th className='log-th'>Created-Column</th>
+            <th className='log-th'>Moved-Column</th>
+            <th className='log-th'>Deleted-Column</th>
         </tr>
     </thead>
     <tbody>
         {users.map((user, index) => (
             <tr key={index}>
-                <td style={{ border: "1px solid black", padding: "8px", color:"blue"}}>{user}</td>
-                <td style={{ border: "1px solid black", padding: "8px", color:"blue" }}>{getLogCountsForUser(user).CreatedTask}</td>
-                <td style={{ border: "1px solid black", padding: "8px" , color:"blue"}}>{getLogCountsForUser(user).MovedTask}</td>
-                <td style={{ border: "1px solid black", padding: "8px", color:"blue" }}>{getLogCountsForUser(user).FinishedTask}</td>
-                <td style={{ border: "1px solid black", padding: "8px", color:"blue" }}>{getLogCountsForUser(user).DeletedTask}</td>
-                <td style={{ border: "1px solid black", padding: "8px", color:"blue" }}>{getLogCountsForUser(user).CreatedColumn}</td>
-                <td style={{ border: "1px solid black", padding: "8px", color:"blue" }}>{getLogCountsForUser(user).MovedColumn}</td>
-                <td style={{ border: "1px solid black", padding: "8px", color:"blue" }}>{getLogCountsForUser(user).DeletedColumn}</td>
+                <td className="log-td">{user}</td>
+                <td className="log-td">{getLogCountsForUser(user).CreatedTask}</td>
+                <td className="log-td">{getLogCountsForUser(user).MovedTask}</td>
+                <td className="log-td">{getLogCountsForUser(user).FinishedTask}</td>
+                <td className="log-td">{getLogCountsForUser(user).DeletedTask}</td>
+                <td className="log-td">{getLogCountsForUser(user).CreatedColumn}</td>
+                <td className="log-td">{getLogCountsForUser(user).MovedColumn}</td>
+                <td className="log-td">{getLogCountsForUser(user).DeletedColumn}</td>
             </tr>
         ))}
     </tbody>
