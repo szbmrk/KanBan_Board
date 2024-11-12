@@ -62,7 +62,7 @@
 
 .title-bar-buttons li:hover {
     color: var(--off-white);
-    background-color: #afacac;
+    background-color: var(--title-bar-hover);
     border-radius: 8px;
 }
 

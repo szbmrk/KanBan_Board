@@ -99,7 +99,7 @@
 }
 
 .profile-menu li:hover {
-  background-color: #8a8a8a;
+  background-color: var(--title-bar-hover);
   border-radius: 8px;
 }
 
@@ -110,6 +110,10 @@
   justify-content: flex-start;
   align-items: center;
   gap: 10px;
+}
+
+.profile-menu li a:hover{
+  color: var(--dark-gray);
 }
 
 .profile-menu li a span:first-child {
