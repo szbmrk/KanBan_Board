@@ -549,7 +549,8 @@
 .log-submenu {
     width: max-content;
     min-width: 500px;
-    max-height: 80%;
+    max-height: 80vh;
+    /* Limit height to viewport for scrolling */
     position: absolute;
     top: 100px;
     right: 0;
@@ -559,7 +560,8 @@
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
     margin: 10px;
     z-index: 100;
-    overflow-y: scroll;
+    overflow-y: auto;
+    /* Allows scrolling within the panel */
 }
 
 .log-header {
@@ -574,8 +576,6 @@
     color: var(--light-gray);
     margin: 0 20px 20px;
     border-bottom: 1px solid var(--light-gray);
-    position: sticky;
-    top: 0;
     background-color: var(--dark-gray);
     z-index: 102;
 }
@@ -584,18 +584,14 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
-}
-
-.log-container p {
-    color: var(--light-gray);
-    margin: 0 0 8px;
+    padding-bottom: 20px;
+    /* Adds padding at bottom for better scroll visibility */
 }
 
 .log-item {
     background-color: var(--bg-mostly-black);
     padding: 10px;
-    margin-left: 10px;
-    margin-right: 10px;
+    margin: 0 10px;
     border-radius: 5px;
 }
 
@@ -611,10 +607,12 @@
     font-weight: bold;
     min-width: 100px;
     max-width: 100px;
+    color: var(--light-gray);
 }
 
 .log-date {
     font-style: italic;
+    color: var(--light-gray);
 }
 
 .log-info {
@@ -634,6 +632,36 @@
     margin: 5px;
 }
 
+/* Styling for table inside log panel */
+.log-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 5px 5px 20px;
+}
+
+.log-th,
+.log-td {
+    border: 1px solid var(--light-gray);
+    padding: 8px;
+    text-align: center;
+    color: var(--light-gray);
+}
+
+.log-th {
+    background-color: #333;
+    font-weight: bold;
+}
+
+.log-td {
+    background-color: var(--bg-mostly-black);
+}
+
+.log-td:first-child {
+    font-weight: bold;
+    color: var(--highlight-color);
+    color: var(--light-gray);
+}
+
 /* Dropdown filter styling */
 .log-filter {
     display: flex;
@@ -641,10 +669,6 @@
     gap: 10px;
     margin: 10px 20px;
     color: var(--light-gray);
-}
-
-.log-filter label {
-    font-weight: bold;
 }
 
 .log-filter select {
@@ -655,6 +679,10 @@
     color: var(--light-gray);
     outline: none;
     transition: background-color 0.3s, color 0.3s;
+}
+
+.log-details{
+    color: var(--light-gray);
 }
 
 .log-filter select:hover {
@@ -673,23 +701,15 @@
     font-style: italic;
 }
 
-/* Keep the same styles for the rest of the log UI */
-.log-submenu {
-    width: max-content;
-    min-width: 500px;
-    max-height: 80%;
-    position: absolute;
-    top: 100px;
-    right: 0;
-    background-color: var(--dark-gray);
-    border: 1px solid var(--dark-gray);
+.user-filter-select {
+    padding: 7px 12px;
     border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
-    margin: 10px;
-    z-index: 100;
-    overflow-y: scroll;
+    border: 1px solid var(--light-gray);
+    background-color: var(--bg-mostly-black);
+    color: var(--light-gray);
+    outline: none;
+    transition: background-color 0.3s, color 0.3s;
 }
-
 
 body,
 html,
