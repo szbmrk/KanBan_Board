@@ -112,7 +112,7 @@
   gap: 10px;
 }
 
-.profile-menu li a:hover{
+.profile-menu li a:hover {
   color: var(--dark-gray);
 }
 
