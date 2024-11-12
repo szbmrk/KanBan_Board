@@ -364,6 +364,9 @@
 
 .team-card-go-to {
     color: var(--light-gray);
+    border: solid;
+    border-width: 1.5px;
+    border-color: var(--button-hover);
     font-weight: 600;
     padding: 10px;
     border-radius: 8px;
