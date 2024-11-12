@@ -94,8 +94,9 @@
     border: 1px solid var(--important);
     border-radius: 5px;
     background: transparent;
-    color: var(--important);
+    color: var(--light-gray);
     transition: all 0.3s ease;
+
 }
 
 .delete-button:hover {
@@ -137,14 +138,14 @@
 
 .ChangeBG {
     width: 100%;
-    max-width: 600px; 
+    max-width: 600px;
     margin: 0 auto;
     text-align: center;
     padding: 20px;
-    background-color: var(--dark-gray); 
+    background-color: var(--dark-gray);
     border-radius: 8px;
     box-shadow: 0 0 10px var(--mostly-black);
-    color: var(--light-gray); 
+    color: var(--light-gray);
 }
 
 .ChangeBG h2 {
@@ -157,7 +158,8 @@
     align-items: center;
 }
 
-.prev-button, .next-button {
+.prev-button,
+.next-button {
     background-color: transparent;
     border: none;
     color: var(--light-gray);
@@ -166,7 +168,8 @@
     transition: color 0.3s ease;
 }
 
-.prev-button:hover, .next-button:hover {
+.prev-button:hover,
+.next-button:hover {
     color: var(--light-blue);
 }
 
@@ -176,7 +179,7 @@
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    margin: 0 10px; 
+    margin: 0 10px;
 }
 
 .Button-scroller::-webkit-scrollbar {
@@ -189,9 +192,9 @@
     background-color: transparent;
     cursor: pointer;
     padding: 0;
-    margin: 0 5px; 
+    margin: 0 5px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
     transition: transform 0.3s ease;
     display: block inline;
-    flex-shrink: 0; 
+    flex-shrink: 0;
 }
