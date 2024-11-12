@@ -14,7 +14,7 @@
     width: 100%;
     height: 100vh;
     max-width: 220px;
-    background-color: var(--dark-Navbar);
+    background-color: var(--dark-Sidebar);
     overflow-y: auto;
 }
 
@@ -54,6 +54,8 @@
 }
 
 .sidebar ul li.active {
-    background-color: #706c6c; /* Kiemeléshez használt háttérszín */
-    color: #333; /* Szövegszín */
-  }
+    background-color: #8a8a8a;
+    /* Kiemeléshez használt háttérszín */
+    color: #333;
+    /* Szövegszín */
+}

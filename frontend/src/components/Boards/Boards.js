@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
-import "../../styles/dashboard.css";
+import "../../styles/boards.css";
 import axios from "../../api/axios";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Loader from "../Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faPencil, faXmark, faStar } from "@fortawesome/free-solid-svg-icons";
 import { SetRoles, checkIfAdmin, checkPermissionForBoard } from "../../roles/Roles";
 import Error from "../Error";
 import ErrorWrapper from "../../ErrorWrapper";
@@ -21,8 +21,10 @@ import {
 const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
+const starIcon = <FontAwesomeIcon icon={faStar} />;
 
-export default function Dashboard() {
+export default function Boards() {
+    const {team_name} = useParams();
     const [userID, setUserID] = useState(null);
     const [teams, setTeams] = useState(null);
     const teamsRef = useRef(teams);
@@ -34,6 +36,7 @@ export default function Dashboard() {
     const [redirect, setRedirect] = useState(false);
     const [showDeleteBoardConfirmation, setShowDeleteBoardConfirmation] =
         useState(false);
+    const [favouriteBoards, setFavouriteBoards] = useState([]);
 
     const token = sessionStorage.getItem("token");
     const user_id = sessionStorage.getItem("user_id");
@@ -48,12 +51,12 @@ export default function Dashboard() {
     }, [teams]);
 
     useEffect(() => {
-        document.title = "KanBan | Dashboard";
+        document.title = "KanBan | Boards";
         if (user_id) {
             setUserID(user_id);
         }
         //backendről fetchelés
-        fetchDashboardData();
+        fetchBoardsData();
 
         //ez
         const ResetTheme = () => {
@@ -78,7 +81,7 @@ export default function Dashboard() {
             enabledTransports: ["ws", "wss"],
         });
 
-        const channel = echo.channel(`DashboardChange`);
+        const channel = echo.channel(`BoardsChange`);
 
         channel.listen(
             `.user.${user_id}`,
@@ -204,27 +207,54 @@ export default function Dashboard() {
         await SetRoles(token);
     }
 
-    const fetchDashboardData = async () => {
+    const fetchBoardsData = async () => {
         try {
             await SetRoles(token);
 
             if (checkIfAdmin()) {
-                const response = await axios.get("/dashboard/boards", {
+                const response = await axios.get("/boards/boards", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                const teamData = response.data.teams;
-                setTeams(teamData);
+                let teamData = response.data.teams;
+                console.error("TEAM NAME:" + team_name);
+                if(team_name){
+                    teamData = teamData.filter((T) => T.name == team_name);
+                }
+                setTeams(teamData);                
+                let newFavourites = favouriteBoards.splice();
+                for (const board in teamData.boards) {
+                    if (board.favourite) {
+                        newFavourites.push(board.board_id);
+                    }
+                }
+                setFavouriteBoards(newFavourites);
             }
             else {
-                const response = await axios.get("/dashboard", {
+                const response = await axios.get("/boards", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                const teamData = response.data.teams;
+                let teamData = response.data.teams;
+                console.error("TEAM NAME:" + team_name);
+                if(team_name){
+                    teamData = teamData.filter((T) => T.name == team_name);
+                }
                 setTeams(teamData);
+                let newFavourites = favouriteBoards.splice();
+                console.error(teamData);
+                for (const team of teamData) {
+                    console.error(team.boards);
+                    for (const board of team.boards) {
+                        console.error("board: " + board);
+                        if (board.favourite) {
+                            newFavourites.push(board.board_id);
+                        }
+                    }
+                }
+                setFavouriteBoards(newFavourites);
             }
         } catch (e) {
             console.error(e);
@@ -243,7 +273,7 @@ export default function Dashboard() {
     const addBoardToTeam = async (teamId, newBoardName) => {
         try {
             const response = await axios.post(
-                "/dashboard/board",
+                "/boards/board",
                 {
                     team_id: teamId,
                     name: newBoardName,
@@ -279,7 +309,7 @@ export default function Dashboard() {
     const deleteBoardFromTeam = async () => {
         handleBoardDeleteCancel();
         try {
-            await axios.delete(`/dashboard/board/${selectedBoardId}`, {
+            await axios.delete(`/boards/board/${selectedBoardId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -306,7 +336,7 @@ export default function Dashboard() {
     const editBoardName = async (teamId, boardId, updatedBoardName) => {
         try {
             await axios.put(
-                `/dashboard/board/${boardId}`,
+                `/boards/board/${boardId}`,
                 {
                     name: updatedBoardName,
                 },
@@ -356,6 +386,56 @@ export default function Dashboard() {
         setHoveredBoardId(null);
     };
 
+    const favouriteBoard = async (boardId) => {
+        try {
+            await axios.post("/favourite/boards", {
+                    board_id: boardId
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+            });
+            let newFavourites = favouriteBoards.slice();
+            newFavourites.push(boardId);
+            setFavouriteBoards(newFavourites);
+        } catch (err) {
+            if (err?.response?.status === 401 || err?.response?.status === 500) {
+                setError({
+                    message: "You are not logged in! Redirecting to login page...",
+                });
+                setRedirect(true);
+            } else {
+                setError(err);
+            }
+        }
+    };
+
+    const unfavouriteBoard = async (boardId) => {
+        try {
+            await axios.delete("/favourite/boards", {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                data: {
+                    board_id: boardId
+                }
+            });
+            let newFavourites = favouriteBoards.filter((faveBoardId) => faveBoardId != boardId);
+            setFavouriteBoards(newFavourites);
+        } catch (err) {
+            if (err?.response?.status === 401 || err?.response?.status === 500) {
+                setError({
+                    message: "You are not logged in! Redirecting to login page...",
+                });
+                setRedirect(true);
+            } else {
+                setError(err);
+            }
+        }
+    }
+
     const getBoardNameBySelectedTeamIdAndSelectedBoardId = () => {
         if (selectedBoardId < 0 || selectedTeamId < 0) return "";
 
@@ -381,7 +461,7 @@ export default function Dashboard() {
                 )
             ) : (
                 <>
-                    <h1 className="header">Dashboard</h1>
+                    <h1 className="header">Boards</h1>
                     {teams.length === 0 ? (
                         <div>
                             <p>You don't have any teams yet!</p>
@@ -459,6 +539,28 @@ export default function Dashboard() {
                                                                     {pencilIcon}
                                                                 </span>
                                                             )}
+                                                            <span
+                                                                className="favourite-board-button"
+                                                                style={{
+                                                                    display:
+                                                                        hoveredBoardId === board.board_id
+                                                                            ? "block"
+                                                                            : "none",
+                                                                    color:
+                                                                        favouriteBoards.includes(board.board_id)
+                                                                            ? "yellow"
+                                                                            : "",
+                                                                }}
+                                                                onClick={() => {
+                                                                    if (!favouriteBoards.includes(board.board_id)) {
+                                                                        favouriteBoard(board.board_id);
+                                                                    } else {
+                                                                        unfavouriteBoard(board.board_id);
+                                                                    }
+                                                                }}
+                                                            >
+                                                                {starIcon}
+                                                            </span>
                                                     </div>
                                                 ))}
                                                 <div
@@ -487,6 +589,7 @@ export default function Dashboard() {
                                 )}
                                 {showDeleteBoardConfirmation && (
                                     <ConfirmationPopup
+                                        action="Delete"
                                         text={getBoardNameBySelectedTeamIdAndSelectedBoardId()}
                                         onConfirm={deleteBoardFromTeam}
                                         onCancel={handleBoardDeleteCancel}
@@ -510,7 +613,7 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
 
     useEffect(() => {
         if (boardId) {
-            fetchDashboardData();
+            fetchBoardsData();
         } else {
             setIsLoading(false);
         }
@@ -528,7 +631,7 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
         //eddig
     }, [boardId]);
 
-    const fetchDashboardData = async () => {
+    const fetchBoardsData = async () => {
         try {
             const token = sessionStorage.getItem("token");
             const response = await axios.get(`/boards/${boardId}`, {
@@ -569,6 +672,7 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
                     {boardId ? <h4>Edit board name:</h4> : <h4>New board name:</h4>}
                     <input
                         type="text"
+                        maxLength={100}
                         value={boardName}
                         onChange={(e) => setBoardName(e.target.value)}
                         placeholder="Board name"
