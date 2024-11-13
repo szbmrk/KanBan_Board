@@ -103,6 +103,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(FavouriteTask::class, 'user_id');
     }
 
+    public function favouriteBoards()
+    {
+        return $this->hasMany(FavouriteBoard::class, 'user_id');
+    }
+
     public function teamMembers()
     {
         return $this->hasMany(TeamMember::class, 'user_id', 'user_id');

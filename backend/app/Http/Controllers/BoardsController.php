@@ -23,18 +23,30 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\BoardChange;
-use App\Events\DashboardChange;
+use App\Events\BoardsChange;
 use Illuminate\Support\Facades\Event;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationType;
 
 
-class DashboardController extends Controller
+class BoardsController extends Controller
 {
     public function index()
     {
         $user = auth()->user();
+
         $teams = $user->teams()->with('boards')->get();
+
+        $favouriteBoards = $user
+            ->favouriteBoards()
+            ->pluck('board_id')
+            ->toArray();
+
+        $teams->map(function ($team) use ($favouriteBoards) {
+            $team->boards->map(function ($board) use ($favouriteBoards) {
+                $board->favourite = in_array($board->board_id, $favouriteBoards);
+            });
+        });
         //$response = ExecutePythonScript::instance()->Run();
 
         return response()->json([
@@ -112,7 +124,7 @@ class DashboardController extends Controller
             ];
 
             foreach ($user_ids as $user_id) {
-                broadcast(new DashboardChange($user_id, "CREATED_BOARD", $data));
+                broadcast(new BoardsChange($user_id, "CREATED_BOARD", $data));
             }
 
             LogRequest::instance()->logAction('CREATED BOARD', $user->user_id, "Created a BOARD named: '$board->name'", $team_id, $board->board_id, null);
@@ -166,7 +178,7 @@ class DashboardController extends Controller
                 ];
 
                 foreach ($user_ids as $user_id) {
-                    broadcast(new DashboardChange($user_id, "UPDATED_BOARD", $data));
+                    broadcast(new BoardsChange($user_id, "UPDATED_BOARD", $data));
                     NotificationController::createNotification(NotificationType::BOARD, "A board you are member of got renamed from " . $old_board_name . " to " . $request->name, $user_id);
                 }
 
@@ -219,7 +231,7 @@ class DashboardController extends Controller
                 ];
 
                 foreach ($user_ids as $user_id) {
-                    broadcast(new DashboardChange($user_id, "DELETED_BOARD", $data));
+                    broadcast(new BoardsChange($user_id, "DELETED_BOARD", $data));
                 }
 
                 LogRequest::instance()->logAction('DELETED BOARD', $user->user_id, "Deleted a BOARD named: '$board->name'", $board->team_id, $board_id, null);

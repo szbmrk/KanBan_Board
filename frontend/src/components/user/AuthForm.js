@@ -145,6 +145,7 @@ const AuthForm = ({
                                 value={formData.username}
                                 onChange={handleChange}
                                 placeholder="Enter your username"
+                                autocomplete="username"
                                 required
                             />
                             {formData.username.trim() !== "" && (
@@ -167,6 +168,7 @@ const AuthForm = ({
                                 value={formData.email}
                                 onChange={handleChange}
                                 placeholder="Enter your email"
+                                autocomplete="email"
                                 required
                             />
                             {formData.email.trim() !== "" && (
@@ -187,6 +189,7 @@ const AuthForm = ({
                                 value={formData.email}
                                 onChange={handleChange}
                                 placeholder="Enter your email or username"
+                                autocomplete="email username"
                                 required
                             />
                         </div>

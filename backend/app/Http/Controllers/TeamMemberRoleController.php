@@ -73,8 +73,10 @@ class TeamMemberRoleController extends Controller
 
         $rolesOnBoard = $user->getRoles($boardId);
         $hasRoleManagementPermission = collect($rolesOnBoard)->contains(function ($role) {
-            return in_array('team_member_role_management', $role->permissions->pluck('name')->toArray());
+            $permissions = $role->permissions->pluck('name')->toArray();
+            return in_array('board_management', $permissions) || in_array('team_member_role_management', $permissions);
         });
+
 
         if (!$hasRoleManagementPermission) {
             return response()->json(['error' => 'You don\'t have permission to manage team member roles on this board.'], 403);

@@ -6,10 +6,10 @@ const LogComponent = ({ logs, theme }) => {
 
     // Extract the action from log details
     const getActionFromDetails = (details) => {
-        if (details.includes('Created a TASK')) return 'CreatedTask';
-        if (details.includes('Moved a TASK')) return 'MovedTask';
-        if (details.includes('Finished a TASK')) return 'FinishedTask';
-        if (details.includes('Deleted a TASK')) return 'DeletedTask';
+        if (details.includes('Created a TASK') || details.includes('Created a SUBTASK')) return 'CreatedTask';
+        if (details.includes('Moved a TASK') || details.includes('Moved a SUBTASK')) return 'MovedTask';
+        if (details.includes('Finished a TASK') || details.includes('Finished a SUBTASK')) return 'FinishedTask';
+        if (details.includes('Deleted a TASK') || details.includes('Deleted a SUBTASK')) return 'DeletedTask';
         if (details.includes('Created a COLUMN')) return 'CreatedColumn';
         if (details.includes('Moved a COLUMN')) return 'MovedColumn';
         if (details.includes('Deleted a COLUMN')) return 'DeletedColumn';

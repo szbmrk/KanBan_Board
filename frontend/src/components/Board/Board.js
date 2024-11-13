@@ -15,6 +15,7 @@ import {
     faCode,
     faFileLines,
     faClipboard,
+    faStar,
     faFilter,
     faFilterCircleXmark,
     faSort,
@@ -164,6 +165,7 @@ const Board = () => {
     const codeIcon = <FontAwesomeIcon icon={faCode} />;
     const craftIcon = <FontAwesomeIcon icon={faPenRuler} />;
     const clipboardIcon = <FontAwesomeIcon icon={faClipboard} />;
+    const starIcon = <FontAwesomeIcon icon={faStar} />
     const filterIcon = <FontAwesomeIcon icon={faFilter} />;
     const filterDeleteIcon = <FontAwesomeIcon icon={faFilterCircleXmark} />;
     const sortIcon = <FontAwesomeIcon icon={faSort} />;
@@ -172,6 +174,7 @@ const Board = () => {
     const [isHoveredName, setIsHoveredName] = useState(false);
     const [isHoveredDeadline, setIsHoveredDeadline] = useState(false);
     const [isHoveredPriority, setIsHoveredPriority] = useState(false);
+    const [isHoveredFavouriteTitleBar, setIsHoveredFavouriteTitleBar] = useState(false);
     const [isHoveredSortByTitleBar, setIsHoveredSortByTitleBar] = useState(false);
     const [isHoveredFilterByTitleBar, setIsHoveredFilterByTitleBar] =
         useState(false);
@@ -1263,6 +1266,12 @@ const Board = () => {
     const handleTaskNameConfirm = async (name) => {
         handleTaskNameCancel();
         try {
+            if (!/^[0-9a-zA-Z]/.test(name)) {
+                setError({
+                    message: "The task can only start with a number, or a letter!"
+                });
+                return;
+            }
             const newTask = {
                 column_id: board.columns[currentDivIndex].column_id,
                 title: name,
@@ -2402,6 +2411,45 @@ const Board = () => {
         setIsFilterOpen(!isFilterOpen);
     };
 
+    const toggleFavourite = async () => {
+        try {
+            if (!board.favourite) {
+                await axios.post("/favourite/boards", {
+                    board_id: board_id
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                });
+            } else {
+                await axios.delete("/favourite/boards", {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+                    data: {
+                        board_id: board_id
+                    }
+                });
+            }
+            let newBoard = { ...board };
+            newBoard.favourite = !newBoard.favourite;
+            setBoard(newBoard);
+        } catch (err) {
+            if (err?.response?.status === 401 || err?.response?.status === 500) {
+                setError({
+                    message: "You are not logged in! Redirecting to login page...",
+                });
+                setRedirect(true);
+            } else {
+                setError(err);
+            }
+        }
+
+
+    }
+
     const handleTransformMouseEnter = () => {
         const options = document.getElementsByClassName("option");
         for (const option of options) {
@@ -2717,7 +2765,7 @@ const Board = () => {
 
         try {
             await axios.put(
-                `/dashboard/board/${board_id}`,
+                `/boards/board/${board_id}`,
                 {
                     name: boardTitle,
                 },
@@ -2825,6 +2873,32 @@ const Board = () => {
                                 </div>
                                 <div className="title-bar-buttons">
                                     <ul>
+                                        <li
+                                            onMouseEnter={() => setIsHoveredFavouriteTitleBar(true)}
+                                            onMouseLeave={() => setIsHoveredFavouriteTitleBar(false)}
+                                            onClick={toggleFavourite}
+                                            style={{
+                                                color:
+                                                    isHoveredFavouriteTitleBar
+                                                        ? "var(--off-white)"
+                                                        : "var(--dark-gray)",
+                                            }}
+                                        >
+                                            <span
+                                                className="log-button-on-title-bar"
+                                                style={{
+                                                    color:
+                                                        isHoveredFavouriteTitleBar && board.favourite
+                                                            ? "yellow"
+                                                            : isHoveredFavouriteTitleBar
+                                                                ? "var(--off-white)"
+                                                                : "var(--dark-gray)",
+                                                }}
+                                            >
+                                                {starIcon}
+                                            </span>
+                                            <p>{board.favourite ? "Unfavourite" : "Favourite"}</p>
+                                        </li>
                                         {isFilterActive && (
                                             <li
                                                 onMouseEnter={() =>
@@ -3700,6 +3774,7 @@ const Board = () => {
                     )}
                     {showDeleteTaskConfirmation && (
                         <ConfirmationPopup
+                            action="Delete"
                             text={taskToDelete.title}
                             onCancel={handleDeleteTaskCancel}
                             onConfirm={handleDeleteTaskConfirm}
@@ -3707,6 +3782,7 @@ const Board = () => {
                     )}
                     {showDeleteColumnConfirmation && (
                         <ConfirmationPopup
+                            action="Delete"
                             text={board.columns[columnToDeleteIndex]?.name}
                             onCancel={handleDeleteColumnCancel}
                             onConfirm={handleDeleteColumnConfirm}
@@ -3714,6 +3790,7 @@ const Board = () => {
                     )}
                     {showDeleteCodeReviewOrDocumentationConfirmation && (
                         <ConfirmationPopup
+                            action="Delete"
                             text={getCodeReviewOrDocumentationTypeLabel(
                                 codeReviewOrDocumentationToDelete
                             )}
