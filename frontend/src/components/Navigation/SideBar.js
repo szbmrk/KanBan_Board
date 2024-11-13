@@ -39,8 +39,8 @@ const Sidebar = () => {
         <div className='sidebar col-2 sidebar-visible' data-theme={theme}>
             <div className='sidebar-menu'>
                 <ul>
-                    <li className={location.pathname === '#' ? 'active' : ''}>
-                        <Link to='#'>
+                    <li className={location.pathname === '/dashboard' ? 'active' : ''}>
+                        <Link to='/dashboard'>
                             {HomeIcon}
                             <span>Dashboard</span>
                         </Link>
