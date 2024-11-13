@@ -496,7 +496,7 @@
     }
 }
 
-/* Style for the filter dropdown */
+
 .log-filter {
     display: flex;
     align-items: center;
@@ -518,7 +518,7 @@
     outline: none;
 }
 
-/* Activity count display */
+
 .log-activity-count {
     color: var(--light-gray);
     font-size: 14px;
@@ -526,12 +526,12 @@
     font-style: italic;
 }
 
-/* Keep the same styles for the rest of the log UI */
+
 .log-submenu {
     width: max-content;
     min-width: 500px;
     max-height: 80vh;
-    /* Limit height to viewport for scrolling */
+    
     position: absolute;
     top: 100px;
     right: 0;
@@ -542,6 +542,11 @@
     margin: 10px;
     z-index: 100;
     overflow-y: auto;
+<<<<<<< HEAD
+    overflow-x: hidden;
+    
+=======
+>>>>>>> origin
 }
 
 .log-header {
@@ -565,7 +570,10 @@
     flex-direction: column;
     gap: 15px;
     padding-bottom: 20px;
-    /* Adds padding at bottom for better scroll visibility */
+    word-wrap: break-word;
+    overflow-x: hidden;
+    max-width: 100%;
+    
 }
 
 .log-item {

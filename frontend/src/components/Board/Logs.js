@@ -50,12 +50,12 @@ const LogComponent = ({ logs, theme }) => {
         {
             return {
                 CreatedTask: "",
-                 MovedTask: "",
-            FinishedTask: "",
-            DeletedTask: "",
-            CreatedColumn: "",
-            MovedColumn: "",
-            DeletedColumn: "",
+                MovedTask: "",
+                FinishedTask: "",
+                DeletedTask: "",
+                CreatedColumn: "",
+                MovedColumn: "",
+                DeletedColumn: "",
 
             }
         }
