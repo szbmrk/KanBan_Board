@@ -531,7 +531,8 @@
     width: max-content;
     min-width: 500px;
     max-height: 80vh;
-    
+    max-width: 80%;
+
     position: absolute;
     top: 100px;
     right: 0;
@@ -542,11 +543,7 @@
     margin: 10px;
     z-index: 100;
     overflow-y: auto;
-<<<<<<< HEAD
     overflow-x: hidden;
-    
-=======
->>>>>>> origin
 }
 
 .log-header {
@@ -573,7 +570,7 @@
     word-wrap: break-word;
     overflow-x: hidden;
     max-width: 100%;
-    
+
 }
 
 .log-item {
