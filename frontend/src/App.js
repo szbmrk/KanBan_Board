@@ -14,6 +14,7 @@ import ManageBoardPermissions from './components/Permissions/ManageBoardPermissi
 import EditProfile from './components/Profile/EditProfile';
 import Notification from './components/Notification';
 import Permissiontable from './components/Permissions/Permissiontable';
+import Dashboard from './components/Dashboard/Dashboard';
 
 const App = () => {
     return (
@@ -41,6 +42,12 @@ const App = () => {
                                 <Navbar />
                                 <Sidebar />
                                 <Boards />
+                            </ProtectedRoute>} />
+                        <Route exact path="/dashboard" element={
+                            <ProtectedRoute>
+                                <Navbar />
+                                <Sidebar />
+                                <Dashboard />
                             </ProtectedRoute>} />
                         <Route exact path="/boards/:team_name" element={
                             <ProtectedRoute>
