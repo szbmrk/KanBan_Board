@@ -24,7 +24,7 @@ const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const starIcon = <FontAwesomeIcon icon={faStar} />;
 
 export default function Boards() {
-    const {team_name} = useParams();
+    const { team_name } = useParams();
     const [userID, setUserID] = useState(null);
     const [teams, setTeams] = useState(null);
     const teamsRef = useRef(teams);
@@ -42,9 +42,6 @@ export default function Boards() {
     const user_id = sessionStorage.getItem("user_id");
     const permissions = JSON.parse(sessionStorage.getItem("permissions"));
 
-    //ez kell még
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
-
     useEffect(() => {
         teamsRef.current = teams;
         ResetRoles();
@@ -57,13 +54,6 @@ export default function Boards() {
         }
         //backendről fetchelés
         fetchBoardsData();
-
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
-
-        window.addEventListener("ChangingTheme", ResetTheme);
 
         window.Pusher = require("pusher-js");
         window.Pusher.logToConsole = true;
@@ -91,11 +81,6 @@ export default function Boards() {
             []
         );
 
-        return () => {
-            channel.unsubscribe();
-            window.removeEventListener("ChangingTheme", ResetTheme);
-        };
-        //eddig
     }, []);
 
     const handleWebSocket = async (websocket) => {
@@ -219,10 +204,10 @@ export default function Boards() {
                 });
                 let teamData = response.data.teams;
                 console.error("TEAM NAME:" + team_name);
-                if(team_name){
+                if (team_name) {
                     teamData = teamData.filter((T) => T.name == team_name);
                 }
-                setTeams(teamData);                
+                setTeams(teamData);
                 let newFavourites = favouriteBoards.splice();
                 for (const board in teamData.boards) {
                     if (board.favourite) {
@@ -239,7 +224,7 @@ export default function Boards() {
                 });
                 let teamData = response.data.teams;
                 console.error("TEAM NAME:" + team_name);
-                if(team_name){
+                if (team_name) {
                     teamData = teamData.filter((T) => T.name == team_name);
                 }
                 setTeams(teamData);
@@ -389,7 +374,7 @@ export default function Boards() {
     const favouriteBoard = async (boardId) => {
         try {
             await axios.post("/favourite/boards", {
-                    board_id: boardId
+                board_id: boardId
             }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -449,7 +434,7 @@ export default function Boards() {
     };
 
     return (
-        <div className="content col-10" data-theme={theme}>
+        <div className="content col-10">
             {teams === null ? (
                 error ? (
                     <Error error={error} redirect={redirect}></Error>
@@ -539,28 +524,28 @@ export default function Boards() {
                                                                     {pencilIcon}
                                                                 </span>
                                                             )}
-                                                            <span
-                                                                className="favourite-board-button"
-                                                                style={{
-                                                                    display:
-                                                                        hoveredBoardId === board.board_id
-                                                                            ? "block"
-                                                                            : "none",
-                                                                    color:
-                                                                        favouriteBoards.includes(board.board_id)
-                                                                            ? "yellow"
-                                                                            : "",
-                                                                }}
-                                                                onClick={() => {
-                                                                    if (!favouriteBoards.includes(board.board_id)) {
-                                                                        favouriteBoard(board.board_id);
-                                                                    } else {
-                                                                        unfavouriteBoard(board.board_id);
-                                                                    }
-                                                                }}
-                                                            >
-                                                                {starIcon}
-                                                            </span>
+                                                        <span
+                                                            className="favourite-board-button"
+                                                            style={{
+                                                                display:
+                                                                    hoveredBoardId === board.board_id
+                                                                        ? "block"
+                                                                        : "none",
+                                                                color:
+                                                                    favouriteBoards.includes(board.board_id)
+                                                                        ? "yellow"
+                                                                        : "",
+                                                            }}
+                                                            onClick={() => {
+                                                                if (!favouriteBoards.includes(board.board_id)) {
+                                                                    favouriteBoard(board.board_id);
+                                                                } else {
+                                                                    unfavouriteBoard(board.board_id);
+                                                                }
+                                                            }}
+                                                        >
+                                                            {starIcon}
+                                                        </span>
                                                     </div>
                                                 ))}
                                                 <div
@@ -608,7 +593,7 @@ export default function Boards() {
 const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
     const [boardName, setBoardName] = useState("");
     const [isLoading, setIsLoading] = useState(true);
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -617,18 +602,6 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
         } else {
             setIsLoading(false);
         }
-
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
-
-        window.addEventListener("ChangingTheme", ResetTheme);
-
-        return () => {
-            window.removeEventListener("ChangingTheme", ResetTheme);
-        };
-        //eddig
     }, [boardId]);
 
     const fetchBoardsData = async () => {
@@ -664,7 +637,7 @@ const AddBoardPopup = ({ teamId, boardId, onClose, onSave }) => {
                 <form
                     className="popup-content-form-mini"
                     onSubmit={handleSave}
-                    data-theme={theme}
+
                 >
                     <span className="close-btn" onClick={onClose}>
                         {closeIcon}

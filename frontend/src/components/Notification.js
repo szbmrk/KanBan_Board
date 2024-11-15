@@ -27,7 +27,7 @@ export default function Notification() {
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
 
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+
 
     useEffect(() => {
         notificationsRef.current = notifications;
@@ -92,13 +92,6 @@ export default function Notification() {
     useEffect(() => {
         document.title = "KanBan | Notification";
         getNotifications();
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"));
-        window.addEventListener("ChangingTheme", ResetTheme);
 
         window.Pusher = require("pusher-js");
         window.Pusher.logToConsole = true;
@@ -126,12 +119,6 @@ export default function Notification() {
             []
         );
 
-        return () => {
-            window.removeEventListener("ChangingTheme", ResetTheme);
-            window.log("Cleanup");
-            channel.unsubscribe();
-        };
-        //eddig
     }, []);
 
     const getNotifications = async () => {
@@ -255,7 +242,7 @@ export default function Notification() {
     };
 
     return (
-        <div className="content col-10" data-theme={theme}>
+        <div className="content col-10" >
             {notifications === null ? (
                 error ? (
                     <Error error={error} redirect={redirect} />

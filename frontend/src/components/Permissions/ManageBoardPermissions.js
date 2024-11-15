@@ -10,7 +10,7 @@ export default function ManageBoardPermissions() {
     const [userID, setUserID] = useState(null);
     const [teams, setTeams] = useState(null);
     const [error, setError] = useState(false);
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+
 
     useEffect(() => {
         document.title = "KanBan | Permissions";
@@ -55,17 +55,6 @@ export default function ManageBoardPermissions() {
                     ? "You are not logged in! Redirecting to login page..."
                     : e;
             setError(errorMessage);
-        };
-
-        const resetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
-
-        window.addEventListener("ChangingTheme", resetTheme);
-        fetchBoardsData();
-
-        return () => {
-            window.removeEventListener("ChangingTheme", resetTheme);
         };
     }, []);
 
@@ -122,7 +111,7 @@ export default function ManageBoardPermissions() {
     };
 
     return (
-        <div className="content col-10" data-theme={theme}>
+        <div className="content col-10" >
             {renderBoards()}
         </div>
     );

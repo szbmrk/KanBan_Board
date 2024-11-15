@@ -24,7 +24,7 @@ const ProtectedRoute = ({ children }) => {
             setTimeout(() => {
                 authCtx.onLogout();
                 navigate('/login');
-            }, 2000);
+            }, 100);
         }
     }, [sessionStorage.getItem('token')]);
 
