@@ -52,39 +52,31 @@ export default function Notification() {
     };
 
     const webSocketCreateNotification = (data) => {
-        const newNotificationData = [...notificationsRef.current];
-        newNotificationData.push(data.notification);
+        const newNotificationData = [...notificationsRef.current, data.notification];
+        newNotificationData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         setNotifications(newNotificationData);
         countUnseenAndSeenNotifications();
     };
 
     const webSocketUpdateNotification = (data) => {
-        const newNotificationData = [...notificationsRef.current];
-        newNotificationData.forEach((currentNotification, index) => {
-            if (
-                currentNotification.notification_id ===
-                data.notification.notification_id
-            ) {
-                newNotificationData[index] = data.notification;
-            }
-        });
+        const newNotificationData = notificationsRef.current.map((currentNotification) =>
+            currentNotification.notification_id === data.notification.notification_id
+                ? data.notification
+                : currentNotification
+        );
+        newNotificationData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         setNotifications(newNotificationData);
         countUnseenAndSeenNotifications();
     };
 
     const webSocketUpdateMultipleNotification = (data) => {
-        const newNotificationData = [...notificationsRef.current];
-        data.notifications.forEach((currentUpdatedNotification) => {
-            newNotificationData.forEach((currentNotification, index) => {
-                if (
-                    currentNotification.notification_id ===
-                    currentUpdatedNotification.notification_id
-                ) {
-                    newNotificationData[index] = currentUpdatedNotification;
-                }
-            });
+        const newNotificationData = notificationsRef.current.map((currentNotification) => {
+            const updatedNotification = data.notifications.find(
+                (notif) => notif.notification_id === currentNotification.notification_id
+            );
+            return updatedNotification || currentNotification;
         });
-
+        newNotificationData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         setNotifications(newNotificationData);
         countUnseenAndSeenNotifications();
     };
@@ -128,9 +120,11 @@ export default function Notification() {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            window.log("notifications");
-            window.log(res.data);
-            setNotifications(res.data);
+            // Sort notifications by created_at in descending order
+            const sortedNotifications = res.data.sort((a, b) =>
+                new Date(b.created_at) - new Date(a.created_at)
+            );
+            setNotifications(sortedNotifications);
             countUnseenAndSeenNotifications();
         } catch (e) {
             window.log(e);
@@ -331,7 +325,7 @@ export default function Notification() {
                                             <>
                                                 {notifications.map(
                                                     (notification) =>
-                                                        notification.is_read === 1 && (
+                                                        (notification.is_read === 1 || notification.is_read === true) && (
                                                             <div
                                                                 key={notification.notification_id}
                                                                 className={`notification`}
