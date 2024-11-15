@@ -23,61 +23,8 @@ export default function Notification() {
     const userId = sessionStorage.getItem("user_id");
     const [countOfUnseen, setCountOfUnseen] = useState(0);
     const [countOfseen, setCountOfseen] = useState(0);
-    const notificationsRef = useRef(notifications);
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
-
-    useEffect(() => {
-        notificationsRef.current = notifications;
-    }, [notifications]);
-
-    const handleWebSocket = async (websocket) => {
-        window.log("DATA");
-        window.log(websocket.data);
-        switch (websocket.changeType) {
-            case "CREATED_NOTIFICATION":
-                webSocketCreateNotification(websocket.data);
-                break;
-            case "UPDATED_NOTIFICATION":
-                webSocketUpdateNotification(websocket.data);
-                break;
-            case "UPDATED_MULTIPLE_NOTIFICATION":
-                webSocketUpdateMultipleNotification(websocket.data);
-                break;
-            default:
-                break;
-        }
-    };
-
-    const webSocketCreateNotification = (data) => {
-        const newNotificationData = [...notificationsRef.current, data.notification];
-        newNotificationData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        setNotifications(newNotificationData);
-        countUnseenAndSeenNotifications();
-    };
-
-    const webSocketUpdateNotification = (data) => {
-        const newNotificationData = notificationsRef.current.map((currentNotification) =>
-            currentNotification.notification_id === data.notification.notification_id
-                ? data.notification
-                : currentNotification
-        );
-        newNotificationData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        setNotifications(newNotificationData);
-        countUnseenAndSeenNotifications();
-    };
-
-    const webSocketUpdateMultipleNotification = (data) => {
-        const newNotificationData = notificationsRef.current.map((currentNotification) => {
-            const updatedNotification = data.notifications.find(
-                (notif) => notif.notification_id === currentNotification.notification_id
-            );
-            return updatedNotification || currentNotification;
-        });
-        newNotificationData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        setNotifications(newNotificationData);
-        countUnseenAndSeenNotifications();
-    };
 
     useEffect(() => {
         document.title = "KanBan | Notification";
@@ -111,6 +58,61 @@ export default function Notification() {
 
     }, []);
 
+    const handleWebSocket = async (websocket) => {
+        window.log("DATA");
+        window.log(websocket.data);
+        switch (websocket.changeType) {
+            case "CREATED_NOTIFICATION":
+                webSocketCreateNotification(websocket.data);
+                break;
+            case "UPDATED_NOTIFICATION":
+                webSocketUpdateNotification(websocket.data);
+                break;
+            case "UPDATED_MULTIPLE_NOTIFICATION":
+                webSocketUpdateMultipleNotification(websocket.data);
+                break;
+            default:
+                break;
+        }
+    };
+
+    const notificationsRef = useRef([]);
+
+    const webSocketCreateNotification = (data) => {
+        const newNotificationData = notificationsRef.current;
+        newNotificationData.push(data.notification);
+        newNotificationData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setNotifications(newNotificationData);
+        notificationsRef.current = newNotificationData;
+        countUnseenAndSeenNotifications(newNotificationData);
+    };
+
+    const webSocketUpdateNotification = (data) => {
+        const cloneOfNotifications = notificationsRef.current;
+        const newNotificationData = cloneOfNotifications.map((currentNotification) =>
+            currentNotification.notification_id === data.notification.notification_id
+                ? data.notification
+                : currentNotification
+        );
+        newNotificationData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setNotifications(newNotificationData);
+        notificationsRef.current = newNotificationData;
+        countUnseenAndSeenNotifications(newNotificationData);
+    };
+
+    const webSocketUpdateMultipleNotification = (data) => {
+        const cloneOfNotifications = notificationsRef.current;
+        const newNotificationData = cloneOfNotifications.map((currentNotification) => {
+            const updatedNotification = data.notifications.find(
+                (notif) => notif.notification_id === currentNotification.notification_id
+            );
+            return updatedNotification || currentNotification;
+        });
+        newNotificationData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setNotifications(newNotificationData);
+        countUnseenAndSeenNotifications(newNotificationData);
+    };
+
     const getNotifications = async () => {
         try {
             const res = await axios.get(`/users/${userId}/notifications`, {
@@ -123,7 +125,8 @@ export default function Notification() {
                 new Date(b.created_at) - new Date(a.created_at)
             );
             setNotifications(sortedNotifications);
-            countUnseenAndSeenNotifications();
+            notificationsRef.current = sortedNotifications;
+            countUnseenAndSeenNotifications(sortedNotifications);
         } catch (e) {
             window.log(e);
             if (e?.response?.status === 401 || e?.response?.status === 500) {
@@ -141,15 +144,14 @@ export default function Notification() {
 
     const markAllAsSeen = async () => {
         try {
-            // Update notifications in the current state immediately
-            const updatedNotifications = notificationsRef.current.map((notification) => ({
-                ...notification,
+            const updatedNotifications = notifications.map((currentNotification) => ({
+                ...currentNotification,
                 is_read: 1,
             }));
 
-            // Update the state immediately with modified notifications
             setNotifications(updatedNotifications);
-            countUnseenAndSeenNotifications(); // Recount immediately
+            notificationsRef.current = updatedNotifications;
+            countUnseenAndSeenNotifications(updatedNotifications);
 
             await axios.put(
                 `/notifications/multiple`,
@@ -167,14 +169,15 @@ export default function Notification() {
 
     const markAsSeen = async (notification) => {
         try {
-            const updatedNotifications = notificationsRef.current.map((n) =>
-                n.notification_id === notification.notification_id
-                    ? { ...n, is_read: 1 }
-                    : n
+            const updatedNotifications = notifications.map((currentNotification) =>
+                currentNotification.notification_id === notification.notification_id
+                    ? { ...currentNotification, is_read: 1 }
+                    : currentNotification
             );
 
             setNotifications(updatedNotifications);
-            countUnseenAndSeenNotifications();
+            notificationsRef.current = updatedNotifications;
+            countUnseenAndSeenNotifications(updatedNotifications);
 
             await axios.put(
                 `/notifications/${notification.notification_id}`,
@@ -190,25 +193,21 @@ export default function Notification() {
         }
     };
 
-
     const toggleSwitch = () => {
         setIsRead(!isRead);
     };
 
-    const countUnseenAndSeenNotifications = async () => {
+    const countUnseenAndSeenNotifications = (notificationData) => {
+        const data = notificationData || notificationsRef.current;
         setCountOfUnseen(
-            notificationsRef.current === null
+            data === null
                 ? 0
-                : notificationsRef.current.filter(
-                    (currentNotification) => currentNotification.is_read == 0
-                ).length
+                : data.filter((currentNotification) => currentNotification.is_read == 0).length
         );
         setCountOfseen(
-            notificationsRef.current === null
+            data === null
                 ? 0
-                : notificationsRef.current.filter(
-                    (currentNotification) => currentNotification.is_read == 1
-                ).length
+                : data.filter((currentNotification) => currentNotification.is_read == 1).length
         );
     };
 
