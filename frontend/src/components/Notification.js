@@ -27,8 +27,6 @@ export default function Notification() {
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
 
-
-
     useEffect(() => {
         notificationsRef.current = notifications;
     }, [notifications]);
@@ -214,14 +212,14 @@ export default function Notification() {
             notificationsRef.current === null
                 ? 0
                 : notificationsRef.current.filter(
-                    (currentNotification) => currentNotification.is_read === 0
+                    (currentNotification) => currentNotification.is_read == 0
                 ).length
         );
         setCountOfseen(
             notificationsRef.current === null
                 ? 0
                 : notificationsRef.current.filter(
-                    (currentNotification) => currentNotification.is_read === 1
+                    (currentNotification) => currentNotification.is_read == 1
                 ).length
         );
     };
@@ -258,7 +256,7 @@ export default function Notification() {
                                     {isRead ? "Switch to unseen" : "Switch to seen"}
                                 </button>
                             </div>
-                            {isRead === false ? (
+                            {isRead == 0 ? (
                                 <>
                                     <div className="notification-container">
                                         <div className="container-header">
@@ -277,7 +275,7 @@ export default function Notification() {
                                             <>
                                                 {notifications.map(
                                                     (notification) =>
-                                                        notification.is_read === 0 && (
+                                                        notification.is_read == false && (
                                                             <div
                                                                 key={notification.notification_id}
                                                                 className={`notification`}
@@ -325,7 +323,7 @@ export default function Notification() {
                                             <>
                                                 {notifications.map(
                                                     (notification) =>
-                                                        (notification.is_read === 1 || notification.is_read === true) && (
+                                                        notification.is_read == true && (
                                                             <div
                                                                 key={notification.notification_id}
                                                                 className={`notification`}
