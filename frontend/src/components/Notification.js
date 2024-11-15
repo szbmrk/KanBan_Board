@@ -52,7 +52,6 @@ export default function Notification() {
     const webSocketCreateNotification = (data) => {
         const newNotificationData = [...notificationsRef.current, data.notification];
         newNotificationData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        console.log("CREATED NOTIFICATION", newNotificationData);
         setNotifications(newNotificationData);
         countUnseenAndSeenNotifications();
     };
@@ -64,7 +63,6 @@ export default function Notification() {
                 : currentNotification
         );
         newNotificationData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        console.log("UPDATED NOTIFICATION", newNotificationData);
         setNotifications(newNotificationData);
         countUnseenAndSeenNotifications();
     };
@@ -124,7 +122,6 @@ export default function Notification() {
             const sortedNotifications = res.data.sort((a, b) =>
                 new Date(b.created_at) - new Date(a.created_at)
             );
-            console.log("GOT NOTIFICATIONS", sortedNotifications);
             setNotifications(sortedNotifications);
             countUnseenAndSeenNotifications();
         } catch (e) {
@@ -238,6 +235,19 @@ export default function Notification() {
             ) : (
                 <>
                     <h1>Notifications</h1>
+                    <div>
+                        {
+                            notifications.length > 0 && (
+                                <div className="notification-count">
+                                    <p>
+                                        {isRead
+                                            ? `You have ${countOfseen} seen notifications`
+                                            : `You have ${countOfUnseen} unseen notifications`}
+                                    </p>
+                                </div>
+                            )
+                        }
+                    </div>
                     {notifications.length === 0 ? (
                         <p>No notifications yet!</p>
                     ) : (
@@ -247,11 +257,11 @@ export default function Notification() {
                                     {isRead ? "Switch to unseen" : "Switch to seen"}
                                 </button>
                             </div>
-                            {isRead == 0 ? (
+                            {isRead == false ? (
                                 <>
                                     <div className="notification-container">
                                         <div className="container-header">
-                                            <p>Notification history</p>
+                                            <p>Unseen Notification history</p>
                                             <button
                                                 className="mark-all-button"
                                                 onClick={markAllAsSeen}
@@ -308,7 +318,7 @@ export default function Notification() {
                                 <>
                                     <div className="notification-container">
                                         <div className="container-header">
-                                            <p>Notification history</p>
+                                            <p>Seen Notification history</p>
                                         </div>
                                         {countOfseen > 0 ? (
                                             <>
