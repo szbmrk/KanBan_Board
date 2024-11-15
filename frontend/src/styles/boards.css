@@ -106,8 +106,8 @@
 
 /* Styling for the add board button */
 .add-board {
-    background-color: #706c6c7a;
-    color: var(--dark-gray);
+    background-color: #706c6c00;
+    color: var(--light-gray);
     border: 2px dashed var(--dark-gray);
     border-radius: 8px;
     cursor: pointer;
@@ -170,4 +170,3 @@
         overflow-x: hidden;
     }
 }
-

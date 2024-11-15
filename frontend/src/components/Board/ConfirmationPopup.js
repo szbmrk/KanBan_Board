@@ -40,7 +40,7 @@ const ConfirmationPopup = ({ text, onCancel, onConfirm, action }) => {
                 <span className='close-btn' onClick={onCancel}>
                     {closeIcon}
                 </span>
-                <p className='confirmation-text'>Are you sure you want to {`${action.toLowerCase()}`} "{text}"?</p>
+                <p className='confirmation-text'>Are you sure you want to {`${action !== undefined ? action.toLowerCase() : ""}`} "{text}"?</p>
                 <div className='button-container'>
                     <button onClick={onCancel}>Cancel</button>
                     <button onClick={onConfirm}>{action}</button>

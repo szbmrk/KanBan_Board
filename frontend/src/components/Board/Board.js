@@ -2417,7 +2417,7 @@ const Board = () => {
         try {
             if (!boardIsFavourite) {
                 await axios.post("/favourite/boards", {
-                        board_id: board_id
+                    board_id: board_id
                 }, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -2890,9 +2890,9 @@ const Board = () => {
                                                     color:
                                                         isHoveredFavouriteTitleBar && boardIsFavourite
                                                             ? "yellow"
-                                                            : isHoveredFavouriteTitleBar 
-                                                                    ? "var(--off-white)"
-                                                                    : "var(--dark-gray)",
+                                                            : isHoveredFavouriteTitleBar
+                                                                ? "var(--off-white)"
+                                                                : "var(--dark-gray)",
                                                 }}
                                             >
                                                 {starIcon}
@@ -3774,6 +3774,7 @@ const Board = () => {
                     )}
                     {showDeleteTaskConfirmation && (
                         <ConfirmationPopup
+                            action="Delete"
                             text={taskToDelete.title}
                             onCancel={handleDeleteTaskCancel}
                             onConfirm={handleDeleteTaskConfirm}
@@ -3781,6 +3782,7 @@ const Board = () => {
                     )}
                     {showDeleteColumnConfirmation && (
                         <ConfirmationPopup
+                            action="Delete"
                             text={board.columns[columnToDeleteIndex]?.name}
                             onCancel={handleDeleteColumnCancel}
                             onConfirm={handleDeleteColumnConfirm}
@@ -3788,6 +3790,7 @@ const Board = () => {
                     )}
                     {showDeleteCodeReviewOrDocumentationConfirmation && (
                         <ConfirmationPopup
+                            action="Delete"
                             text={getCodeReviewOrDocumentationTypeLabel(
                                 codeReviewOrDocumentationToDelete
                             )}

@@ -42,7 +42,7 @@
 
 .addbtn {
     background-color: transparent;
-    color: var(--dark-gray);
+    color: var(--light-gray);
     border: 2px dashed var(--dark-gray);
     border-radius: 5px;
     cursor: pointer;
@@ -136,8 +136,8 @@
 .option {
     margin-right: auto;
     height: 40px;
-    background-color: var(--bg-dark);
-    border: 1px solid var(--dark-gray);
+    background-color: var(--dark-Sidebar);
+    border: 1px solid var(--off-white);
     border-radius: 8px;
     display: flex;
     flex-direction: row;
@@ -149,14 +149,15 @@
 }
 
 .option:hover {
-    background-color: var(--dark-gray);
+    background-color: #afacac;
     transform: translateX(10px);
+    border: none;
     cursor: pointer;
 }
 
 .option p {
     width: max-content;
-    color: var(--light-gray);
+    color: var(--button-hover);
     animation: none;
     cursor: pointer;
 }
@@ -164,6 +165,7 @@
 .option span {
     width: 30px;
     padding: 5px;
+    color: var(--button-hover);
 }
 
 .tags {
