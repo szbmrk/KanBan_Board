@@ -52,6 +52,7 @@ export default function Notification() {
     const webSocketCreateNotification = (data) => {
         const newNotificationData = [...notificationsRef.current, data.notification];
         newNotificationData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        console.log("CREATED NOTIFICATION", newNotificationData);
         setNotifications(newNotificationData);
         countUnseenAndSeenNotifications();
     };
@@ -63,6 +64,7 @@ export default function Notification() {
                 : currentNotification
         );
         newNotificationData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        console.log("UPDATED NOTIFICATION", newNotificationData);
         setNotifications(newNotificationData);
         countUnseenAndSeenNotifications();
     };
@@ -122,6 +124,7 @@ export default function Notification() {
             const sortedNotifications = res.data.sort((a, b) =>
                 new Date(b.created_at) - new Date(a.created_at)
             );
+            console.log("GOT NOTIFICATIONS", sortedNotifications);
             setNotifications(sortedNotifications);
             countUnseenAndSeenNotifications();
         } catch (e) {
