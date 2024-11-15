@@ -118,7 +118,7 @@ export default function Notification() {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            // Sort notifications by created_at in descending order
+
             const sortedNotifications = res.data.sort((a, b) =>
                 new Date(b.created_at) - new Date(a.created_at)
             );
@@ -141,23 +141,19 @@ export default function Notification() {
 
     const markAllAsSeen = async () => {
         try {
-            const notificationData = [...notificationsRef.current];
-            let changedNotificationData = [];
-            notificationData.forEach((currentNotification) => {
-                if (currentNotification.is_read === 0) {
-                    let clonedNotification = JSON.parse(
-                        JSON.stringify(currentNotification)
-                    );
-                    clonedNotification.is_read = 1;
-                    changedNotificationData.push(clonedNotification);
-                }
-            });
+            // Update notifications in the current state immediately
+            const updatedNotifications = notificationsRef.current.map((notification) => ({
+                ...notification,
+                is_read: 1,
+            }));
 
-            const res = await axios.put(
+            // Update the state immediately with modified notifications
+            setNotifications(updatedNotifications);
+            countUnseenAndSeenNotifications(); // Recount immediately
+
+            await axios.put(
                 `/notifications/multiple`,
-                {
-                    notifications: changedNotificationData,
-                },
+                { notifications: updatedNotifications },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -165,25 +161,24 @@ export default function Notification() {
                 }
             );
         } catch (e) {
-            window.log(e);
-            if (e?.response?.status === 401 || e?.response?.status === 500) {
-                setError({
-                    message: "You are not logged in! Redirecting to login page...",
-                });
-                setRedirect(true);
-            } else {
-                setError(e);
-            }
+            setError(e);
         }
     };
 
     const markAsSeen = async (notification) => {
         try {
-            const res = await axios.put(
+            const updatedNotifications = notificationsRef.current.map((n) =>
+                n.notification_id === notification.notification_id
+                    ? { ...n, is_read: 1 }
+                    : n
+            );
+
+            setNotifications(updatedNotifications);
+            countUnseenAndSeenNotifications();
+
+            await axios.put(
                 `/notifications/${notification.notification_id}`,
-                {
-                    is_read: 1,
-                },
+                { is_read: 1 },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -191,17 +186,10 @@ export default function Notification() {
                 }
             );
         } catch (e) {
-            window.log(e);
-            if (e?.response?.status === 401 || e?.response?.status === 500) {
-                setError({
-                    message: "You are not logged in! Redirecting to login page...",
-                });
-                setRedirect(true);
-            } else {
-                setError(e);
-            }
+            setError(e);
         }
     };
+
 
     const toggleSwitch = () => {
         setIsRead(!isRead);
