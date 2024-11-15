@@ -71,6 +71,7 @@ const Board = () => {
     const [permission, setPermission] = useState(false);
     const [error, setError] = useState(false);
     const [board, setBoard] = useState([]);
+    const [boardIsFavourite, setBoardIsFavourite] = useState(false);
     const [columnPositions, setColumnPositions] = useState([]);
     const [editingColumnIndex, setEditingColumnIndex] = useState(null);
     const [taskToDelete, setTaskToDelete] = useState(null);
@@ -972,6 +973,7 @@ const Board = () => {
             let tempColumns = tempBoard.columns;
 
             setBoardTitle(tempBoard.name);
+            setBoardIsFavourite(tempBoard.favourite);
 
             // Sort the columns and tasks by position
             tempColumns.map((column) =>
@@ -2413,7 +2415,7 @@ const Board = () => {
 
     const toggleFavourite = async () => {
         try {
-            if (!board.favourite) {
+            if (!boardIsFavourite) {
                 await axios.post("/favourite/boards", {
                         board_id: board_id
                 }, {
@@ -2433,9 +2435,7 @@ const Board = () => {
                     }
                 });
             }
-            let newBoard = { ...board };
-            newBoard.favourite = !newBoard.favourite;
-            setBoard(newBoard);
+            setBoardIsFavourite(!boardIsFavourite);
         } catch (err) {
             if (err?.response?.status === 401 || err?.response?.status === 500) {
                 setError({
@@ -2888,7 +2888,7 @@ const Board = () => {
                                                 className="log-button-on-title-bar"
                                                 style={{
                                                     color:
-                                                        isHoveredFavouriteTitleBar && board.favourite
+                                                        isHoveredFavouriteTitleBar && boardIsFavourite
                                                             ? "yellow"
                                                             : isHoveredFavouriteTitleBar 
                                                                     ? "var(--off-white)"
@@ -2897,7 +2897,7 @@ const Board = () => {
                                             >
                                                 {starIcon}
                                             </span>
-                                            <p>{board.favourite ? "Unfavourite" : "Favourite"}</p>
+                                            <p>{boardIsFavourite ? "Unfavourite" : "Favourite"}</p>
                                         </li>
                                         {isFilterActive && (
                                             <li
