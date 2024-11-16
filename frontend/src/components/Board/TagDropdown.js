@@ -78,16 +78,7 @@ const TagDropdown = ({
             backgroundColor: "var(--bg-dark)",
         }),
     };
-    const [darkTheme, setTheme] = useState(localStorage.getItem("darkMode"));
     useEffect(() => {
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"));
-        window.addEventListener("ChangingTheme", ResetTheme);
-
         const tagsAsOptions = allTags.map((option) => ({
             tagId: option.tag_id,
             value: option.name,
@@ -103,9 +94,6 @@ const TagDropdown = ({
             color: tag.color,
         }));
         setSelectedTags(selectedTagsArray);
-        return () => {
-            window.removeEventListener("ChangingTheme", ResetTheme);
-        };
     }, [allTags]);
 
     const theme = (theme) => ({

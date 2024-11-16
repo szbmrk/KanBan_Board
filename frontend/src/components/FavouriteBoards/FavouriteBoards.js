@@ -17,12 +17,12 @@ import {
 } from "../../api/config.js";
 
 export default function FavouriteBoards() {
-    const [ boards, setBoards ] = useState(null);
-    const [ theme, setTheme ] = useState(localStorage.getItem("darkMode"));
-    const [ error, setError ] = useState(null);
-    const [ redirect, setRedirect ] = useState(false);
-    const [ hoveredBoardId, setHoveredBoardId ] = useState(null);
-    const [ showUnfavouriteBoardConfirmation, setShowUnfavouriteBoardConfirmation ] =
+    const [boards, setBoards] = useState(null);
+
+    const [error, setError] = useState(null);
+    const [redirect, setRedirect] = useState(false);
+    const [hoveredBoardId, setHoveredBoardId] = useState(null);
+    const [showUnfavouriteBoardConfirmation, setShowUnfavouriteBoardConfirmation] =
         useState(false);
     const [selectedBoardId, setSelectedBoardId] = useState(null);
 
@@ -165,12 +165,6 @@ export default function FavouriteBoards() {
         document.title = "KanBan | Favourite Boards";
         fetchFavouriteBoards();
 
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
-
-        window.addEventListener("ChangingTheme", ResetTheme);
-
         window.Pusher = require("pusher-js");
         window.Pusher.logToConsole = true;
 
@@ -196,15 +190,10 @@ export default function FavouriteBoards() {
             },
             []
         );
-
-        return () => {
-            channel.unsubscribe();
-            window.removeEventListener("ChangingTheme", ResetTheme);
-        };
     });
 
     return (
-        <div className="content col-10" data-theme={theme}>
+        <div className="content col-10" >
             {boards === null ? (
                 error ? (
                     <Error error={error} redirect={redirect}></Error>
@@ -245,9 +234,9 @@ export default function FavouriteBoards() {
                                                 className="favourite-board-button"
                                                 style={{
                                                     visibility:
-                                                    hoveredBoardId === board.board_id
-                                                        ? "visible"
-                                                        : "hidden",
+                                                        hoveredBoardId === board.board_id
+                                                            ? "visible"
+                                                            : "hidden",
                                                     transition: "visibility 0.1s ease",
                                                     zIndex: "99",
                                                 }}

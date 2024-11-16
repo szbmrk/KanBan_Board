@@ -26,24 +26,12 @@ const Teams = () => {
     const [teams, setTeams] = useState(null);
     const teamsRef = useRef(teams);
     const [manageIsClicked, setManage] = useState(false);
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+
 
     useEffect(() => {
         document.title = "KanBan | Teams";
         ResetRoles();
         getTeams();
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"));
-        window.addEventListener("ChangingTheme", ResetTheme);
-
-        return () => {
-            window.removeEventListener("ChangingTheme", ResetTheme);
-        };
-        //eddig
     }, []);
 
     useEffect(() => {
@@ -464,7 +452,7 @@ const Teams = () => {
 
     return (
         <>
-            <div className="content col-10" data-theme={theme}>
+            <div className="content col-10" >
                 {teams === null ? (
                     error ? (
                         <Error error={error} redirect={redirect} />

@@ -12,31 +12,12 @@ const tableIcon = <FontAwesomeIcon icon={faTable} />;
 const AssignedTasksIcon = <FontAwesomeIcon icon={faListCheck} />;
 const PeopleGroup = <FontAwesomeIcon icon={faPeopleGroup} />;
 const HomeIcon = <FontAwesomeIcon icon={faHome} />;
-const permissions = JSON.parse(sessionStorage.getItem('permissions'));
 const Sidebar = () => {
     const location = useLocation();
     const isBoardActive = location.pathname.includes('/board');
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
-    const { isLoggedIn, onLogout } = React.useContext(AuthContext);
-    useEffect(() => {
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"))
-        }
-
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-        //eddig
-        window.log(permissions);
-    }, []);
 
     return (
-        <div className='sidebar col-2 sidebar-visible' data-theme={theme}>
+        <div className='sidebar col-2 sidebar-visible'>
             <div className='sidebar-menu'>
                 <ul>
                     <li className={location.pathname === '/dashboard' ? 'active' : ''}>

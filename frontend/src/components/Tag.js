@@ -18,25 +18,8 @@ const Tag = ({ name, color, extraClassName, enableClickBehavior, onClick }) => {
         }
     };
 
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
-    useEffect(() => {
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"))
-        }
-
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-        //eddig
-    }, []);
-
     return (
-        <div className={'tag ' + extraClassName} style={tagStyle} onClick={onClick} data-theme={theme}>
+        <div className={'tag ' + extraClassName} style={tagStyle} onClick={onClick} >
             <p
 
             /* TODO: enableClickbehavior === false ? név szerkesztése : semmi */

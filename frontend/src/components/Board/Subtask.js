@@ -60,22 +60,6 @@ export default function Subtask({
 
         subtaskZIndex === 1 ? setSubtaskZIndex(100) : setSubtaskZIndex(1);
     };
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
-    useEffect(() => {
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"))
-        }
-
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-        //eddig
-    }, []);
 
     const handleIsDoneChange = (e) => {
         changeIsDoneSubTask(e.target.checked);
@@ -95,7 +79,7 @@ export default function Subtask({
         <>
             <div
                 className='card subtask-card'
-                data-theme={theme}
+
                 onMouseEnter={() => handleMouseEnterOnSubtask(subTask.task_id)}
                 onMouseLeave={handleMouseLeaveOnSubtask}
                 onDoubleClick={() => setTaskAsInspectedTask(subTask.task_id)}

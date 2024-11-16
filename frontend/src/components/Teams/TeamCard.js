@@ -52,7 +52,7 @@ const TeamCard = ({
     const [profileImageUrl, setProfileImageUrl] = useState(
         "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
     );
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+
     const [ownPermissions, setOwnPermissions] = useState([]);
 
     useEffect(() => {
@@ -64,18 +64,6 @@ const TeamCard = ({
                 break;
             }
         }
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"));
-        window.addEventListener("ChangingTheme", ResetTheme);
-
-        return () => {
-            window.removeEventListener("ChangingTheme", ResetTheme);
-        };
-        //eddig
     }, []);
 
     function ManageTeam() {
@@ -154,7 +142,7 @@ const TeamCard = ({
     return data.team_members.length === 0 ? (
         <Loader />
     ) : (
-        <div className="teamcard" data-theme={theme}>
+        <div className="teamcard" >
             <div
                 className="teamcard-header"
                 onMouseEnter={() => handleMouseEnterOnTeam(data.team_id)}

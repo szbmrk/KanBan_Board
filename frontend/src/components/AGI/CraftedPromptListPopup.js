@@ -13,7 +13,7 @@ import { faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
 const CraftedPromptListPopup = ({ board_id, craftedPrompts, onCancel }) => {
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+
     const [error, setError] = useState(null);
 
     const [selectedCraftedPrompt, setSelectedCraftedPrompt] = useState(null);
@@ -61,7 +61,7 @@ const CraftedPromptListPopup = ({ board_id, craftedPrompts, onCancel }) => {
     };
 
     return (
-        <div className="overlay" data-theme={theme}>
+        <div className="overlay" >
             <div className="popup agi-popup">
                 <span className="close-btn" onClick={onCancel}>
                     {closeIcon}

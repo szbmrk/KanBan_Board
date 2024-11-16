@@ -27,23 +27,10 @@ const SimpleTextPopup = ({
         onCancel();
     };
 
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
-    useEffect(() => {
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
 
-        window.log("Darkmode: " + localStorage.getItem("darkMode"));
-        window.addEventListener("ChangingTheme", ResetTheme);
 
-        return () => {
-            window.removeEventListener("ChangingTheme", ResetTheme);
-        };
-        //eddig
-    }, []);
     return (
-        <div className="overlay" data-theme={theme}>
+        <div className="overlay" >
             <div className="popup agi-popup">
                 <span className="close-btn" onClick={onCancel}>
                     {closeIcon}

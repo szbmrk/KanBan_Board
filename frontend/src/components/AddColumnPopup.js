@@ -8,21 +8,8 @@ const AddColumnPopup = ({ onConfirm, minLength, maxLength, onCancel }) => {
     const [columnName, setColumnName] = useState("");
     const [inputValue, setInputValue] = useState("");
     const [isFinished, setIsFinished] = useState(false);
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
-    useEffect(() => {
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
 
-        window.log("Darkmode: " + localStorage.getItem("darkMode"));
-        window.addEventListener("ChangingTheme", ResetTheme);
 
-        return () => {
-            window.removeEventListener("ChangingTheme", ResetTheme);
-        };
-        //eddig
-    }, []);
 
     const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
@@ -54,7 +41,7 @@ const AddColumnPopup = ({ onConfirm, minLength, maxLength, onCancel }) => {
     };
 
     return (
-        <div className="overlay" data-theme={theme}>
+        <div className="overlay" >
             <div className="popup agi-popup">
                 <span className="close-btn" onClick={onCancel}>
                     {closeIcon}

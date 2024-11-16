@@ -11,10 +11,10 @@ import {
     faBars,
     faSignOutAlt,
     faUserPen,
-    faMagnifyingGlass,
-    faCircleHalfStroke,
-    faImage,
+    faMoon,
+    faSun,
 } from "@fortawesome/free-solid-svg-icons";
+
 import Echo from "laravel-echo";
 import {
     REACT_APP_PUSHER_KEY,
@@ -29,9 +29,8 @@ const profileIcon = <FontAwesomeIcon icon={faUser} />;
 const menuIcon = <FontAwesomeIcon icon={faBars} />;
 const signOutIcon = <FontAwesomeIcon icon={faSignOutAlt} />;
 const editProfileIcon = <FontAwesomeIcon icon={faUserPen} />;
-const searchIcon = <FontAwesomeIcon icon={faMagnifyingGlass} />;
-const displayModeIcon = <FontAwesomeIcon icon={faCircleHalfStroke} />;
-const backgroundChangeIcon = <FontAwesomeIcon icon={faImage} />;
+const moonIcon = <FontAwesomeIcon icon={faMoon} />;
+const sunIcon = <FontAwesomeIcon icon={faSun} />;
 
 const Navbar = () => {
     const { isLoggedIn, onLogout } = React.useContext(AuthContext);
@@ -93,35 +92,19 @@ const Navbar = () => {
         setUnreadNotificationCount(websocket.count);
     };
 
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+    const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+
+    const toggleTheme = () => {
+        setTheme(prevTheme => {
+            const newTheme = prevTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            return newTheme;
+        });
+    };
+
     useEffect(() => {
-        DarkMode();
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"));
-        window.addEventListener("ChangingTheme", ResetTheme);
-
-        return () => {
-            window.removeEventListener("ChangingTheme", ResetTheme);
-        };
-        //eddig
-    }, []);
-
-    function DarkMode() {
-        window.log(localStorage.getItem("darkMode"));
-        if (localStorage.getItem("darkMode") == "dark") {
-            window.log("Switching to light mode");
-            localStorage.setItem("darkMode", "light");
-        } else {
-            window.log("Switching to dark mode");
-            localStorage.setItem("darkMode", "dark");
-        }
-        const event = new Event("ChangingTheme");
-        window.dispatchEvent(event);
-    }
+        document.documentElement.setAttribute('data-theme', theme);
+    }, [theme]);
 
     const loadUnreadNotificationCount = async () => {
         try {
@@ -168,8 +151,6 @@ const Navbar = () => {
             sidebar.classList.remove("col-2");
             sidebar.style.display = "none";
         } else {
-            //sidebar.style.transition = "transform 0.5s ease-in-out";
-            //content.style.transition = "max-width 0.5s ease-in-out";
             setIsSidebarVisible(true);
             sidebar.style.display = "block";
             sidebar.classList.add("col-2");
@@ -232,15 +213,17 @@ const Navbar = () => {
 
     return (
         <>
-            <div className="navbar col-12" data-theme={theme}>
+            <div className="navbar col-12" >
                 <div className="navbar-menu">
                     <button id="menu-btn" onClick={handleClick}>
                         {menuIcon}
                     </button>
                     <ul>
-                        <li>
-                            <span onClick={DarkMode}>{displayModeIcon}</span>
-                        </li>
+                        <div className="toggle-switch" onClick={toggleTheme}>
+                            <span className={`slider ${theme === 'dark' ? 'dark' : 'light'}`}>
+                                {theme === 'dark' ? moonIcon : sunIcon}
+                            </span>
+                        </div>
                         <li>
                             <Link to="/notifications">
                                 <span>
@@ -258,7 +241,7 @@ const Navbar = () => {
                 </div>
             </div>
             {isOpen && (
-                <div className="profile-submenu" onMouseLeave={() => setIsOpen(false)} data-theme={theme}>
+                <div className="profile-submenu" onMouseLeave={() => setIsOpen(false)} >
                     <p className="profile-menu-title"> Profile </p>
                     <ul className="profile-menu">
                         <li>

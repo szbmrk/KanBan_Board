@@ -210,7 +210,7 @@ const Board = () => {
     const popupRef = useRef(null);
     const columnPositionsRef = useRef(columnPositions);
 
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+
 
     useEffect(() => {
         document.title = "KanBan | Board";
@@ -221,17 +221,6 @@ const Board = () => {
 
         reloadCodeReviewOrDocumentation();
         reloadCraftedPrompts();
-        //setOwnPermissions(team_member.teams.filter(team => team.team_id === data.team_id).map(permission => permission.permission_data));
-
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
-
-        window.addEventListener("ChangingTheme", ResetTheme);
-
-        return () => {
-            window.removeEventListener("ChangingTheme", ResetTheme);
-        };
     }, []);
 
     useEffect(() => {
@@ -2832,7 +2821,7 @@ const Board = () => {
                             <Loader />
                         </div>
                     ) : (
-                        <div className="content col-10" data-theme={theme}>
+                        <div className="content col-10" >
                             <div className="title-bar">
                                 <div>
                                     {showBoardTitleEdit === false && (
@@ -3281,7 +3270,7 @@ const Board = () => {
                                     setIsSortOpen(false);
                                 }}
                             ></div>
-                            <div className="sort-submenu" data-theme={theme}>
+                            <div className="sort-submenu" >
                                 <p className="sort-menu-title"> Sort menu </p>
                                 <ul className="sort-menu">
                                     <li
@@ -3347,7 +3336,7 @@ const Board = () => {
                                     setIsFilterOpen(false);
                                 }}
                             ></div>
-                            <div className="filter-submenu" data-theme={theme}>
+                            <div className="filter-submenu" >
                                 <p className="filter-menu-title"> Filter menu </p>
                                 <div className="filter-menu">
                                     <div className="filter-category">
@@ -3454,7 +3443,7 @@ const Board = () => {
                                     setIsAGIOpen(false);
                                 }}
                             ></div>
-                            <div className="agi-submenu" data-theme={theme}>
+                            <div className="agi-submenu" >
                                 <p className="agi-menu-title"> AI menu </p>
                                 <ul className="agi-menu">
                                     <li
@@ -3598,7 +3587,6 @@ const Board = () => {
                                 }}
                             ></div>
                             <LogComponent
-                                theme={theme}
                                 logs={logs}
                             />
                         </>
