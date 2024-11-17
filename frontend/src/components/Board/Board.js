@@ -3251,7 +3251,6 @@ const Board = () => {
                                                                             column
                                                                         )
                                                                     }
-                                                                    handleDeleteAttribute={deleteAttribute}
                                                                 />
                                                             ))
                                                     )}
