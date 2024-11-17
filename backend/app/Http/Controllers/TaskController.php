@@ -31,7 +31,6 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\BoardChange;
 use App\Events\AssignedTaskChange;
-use DateTime;
 use Illuminate\Support\Facades\Event;
 
 class TaskController extends Controller
