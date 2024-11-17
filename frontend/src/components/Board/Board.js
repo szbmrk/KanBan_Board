@@ -2170,6 +2170,30 @@ const Board = () => {
         columnZIndex === 1 ? setColumnZIndex(100) : setColumnZIndex(1);
     };
 
+    const deleteAttribute = async (attribute, task_id) => {
+        try {
+            await axios.delete(
+                `/boards/${board_id}/tasks/${task_id}/attributes`, {
+                    data: {
+                        attributes: [attribute]
+                    },
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+        } catch (err) {
+            if (err?.response?.status === 401 || err?.response?.status === 500) {
+                setError({
+                    message: "You are not logged in! Redirecting to login page...",
+                });
+                setRedirect(true);
+            } else {
+                setError(err);
+            }
+        }
+    };
+
     const handleModifyPriority = async (task_id, column_id, priority_id) => {
         try {
             const response = await axios.put(
@@ -3227,6 +3251,7 @@ const Board = () => {
                                                                             column
                                                                         )
                                                                     }
+                                                                    handleDeleteAttribute={deleteAttribute}
                                                                 />
                                                             ))
                                                     )}

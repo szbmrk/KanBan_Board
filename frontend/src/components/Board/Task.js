@@ -63,6 +63,7 @@ export const Task = forwardRef(
             zIndex,
             isFilterActive,
             handleTaskDoubleClick,
+            handleDeleteAttribute
         },
         ref
     ) => {
@@ -398,6 +399,18 @@ export const Task = forwardRef(
                         <div>
                             <span className="icon stopwatch-margin">{stopwatchIcon}</span>
                             <small>{task.due_date}</small>
+                            <span 
+                                className="icon trash-margin"
+                                style={{
+                                    visibility: hoveredCardId === id ? "visible" : "hidden",
+                                    transition: "visibility 0.1s ease",
+                                }}
+                                onClick={() => {
+                                    handleDeleteAttribute("due_date", id)
+                                }}
+                            > 
+                                {trashIcon}
+                            </span>
                         </div>
                     )}
                 </div>
