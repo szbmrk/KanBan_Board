@@ -328,7 +328,7 @@ class TaskController extends Controller
             'attributes.*' => 'string|in:priority_id,due_date'
         ]);
 
-        if (in_array('priority', $request->input('attributes'))) {
+        if (in_array('priority_id', $request->input('attributes'))) {
             if (!$task->priority_id) {
                 return response()->json(
                     ['error' => "The task doesn't have a priority_id attribute."],
