@@ -3860,6 +3860,7 @@ const Board = () => {
                     priorities={priorities}
                     modifyPriority={handleModifyPriority}
                     modifyDeadline={handleModifyDeadline}
+                    deleteAttribute={deleteAttribute}
                     addAttachment={handleAddAttachment}
                     deleteAttachment={handleDeleteAttachment}
                     addMember={handleAddMember}
