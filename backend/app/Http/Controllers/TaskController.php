@@ -31,6 +31,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\BoardChange;
 use App\Events\AssignedTaskChange;
+use DateTime;
 use Illuminate\Support\Facades\Event;
 
 class TaskController extends Controller
@@ -234,6 +235,140 @@ class TaskController extends Controller
         }
 
         return response()->json(['message' => 'Task updated successfully', 'task' => $taskWithSubtasksAndTags]);
+    }
+
+    public function attributeDelete(Request $request, int $board_id, int $task_id)
+    {
+        $user = auth()->user();
+        $board = Board::find($board_id);
+        $teamModel = new Team();
+        $teamId = $teamModel->findTeamIdByBoardId($board_id);
+
+        if (!$board) {
+            LogRequest::instance()
+                ->logAction(
+                    'BOARD NOT FOUND',
+                    $user->user_id,
+                    "Board not found. -> board_id: $board_id",
+                    null,
+                    null,
+                    null
+                );
+            return response()->json(['error' => 'Board not found'], 404);
+        }
+
+        if (!$user->isMemberOfBoard($board_id)) {
+            LogRequest::instance()
+                ->logAction(
+                    'NO PERMISSION',
+                    $user->user_id,
+                    "User is not a member of this board. -> board_id: $board_id",
+                    null,
+                    null,
+                    null
+                );
+            return response()->json(
+                ['error' => 'You are not a member of this board'],
+                403
+            );
+        }
+
+        $permissions = $user->getPermissions();
+
+        if (!in_array('system_admin', $permissions)) {
+            if (!$user->isMemberOfBoard($board->board_id)) {
+                LogRequest::instance()
+                    ->logAction('NO PERMISSION',
+                        $user->user_id,
+                        "User is not a member of the team that owns this board. -> board_id: $board_id",
+                        $teamId,
+                        $board_id,
+                        null
+                    );
+                return response()->json(
+                    ['error' => 'You are not a member of the team that owns this board.'],
+                    403
+                );
+            }
+
+            $rolesOnBoard = $user->getRoles($board_id);
+
+            $hasTaskManagementPermission =
+                collect($rolesOnBoard)->contains(function ($role) {
+                return in_array(
+                    'task_management',
+                    $role->permissions->pluck('name')->toArray()
+                );
+            });
+
+            if (!$hasTaskManagementPermission) {
+                LogRequest::instance()
+                    ->logAction(
+                        'NO PERMISSION',
+                        $user->user_id,
+                        "User does not have permission for task management.",
+                        $teamId,
+                        $board_id,
+                        null
+                    );
+                return response()->json(
+                    ['error' => 'You don\'t have permission to manage tasks on this board.'],
+                    403
+                );
+            }
+        }
+
+        $task = Task::where('board_id', $board_id)->find($task_id);
+
+        if (!$task) {
+            return response()->json(['error' => 'Task not found'], 404);
+        }
+
+        $this->validate($request, [
+            'attributes' => 'required|array',
+            'attributes.*' => 'string|in:priority_id,due_date'
+        ]);
+
+        if (in_array('priority', $request->input('attributes'))) {
+            if (!$task->priority_id) {
+                return response()->json(
+                    ['error' => "The task doesn't have a priority_id attribute."],
+                    400
+                );
+            }
+            $task->priority_id = null;
+        }
+        if (in_array('due_date', $request->input('attributes'))) {
+            if (!$task->due_date) {
+                return response()->json(
+                    ['error' => "The task doesn't have a due_date attribute."],
+                    400
+                );
+            }
+            $task->due_date = null;
+        }
+
+        $task->save();
+
+        $taskWithSubtasksAndTags =
+            Task::with(
+                'subtasks',
+                'tags',
+                'comments',
+                'priority',
+                'attachments',
+                'members'
+            )->find($task_id);
+
+        $data = [
+            'task' => $taskWithSubtasksAndTags
+        ];
+        broadcast(new BoardChange($board_id, "UPDATED_TASK", $data));
+
+        return response()->json([
+            'message' => 'Task updated successfully',
+            'task' => $taskWithSubtasksAndTags
+        ]);
     }
 
     public function taskDestroy(Request $request, $board_id, $task_id)
