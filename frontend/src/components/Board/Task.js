@@ -12,6 +12,7 @@ import {
     faLink,
     faListCheck,
     faStopwatch,
+    faNoteSticky,
     faTags,
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as faRegularStar } from "@fortawesome/free-regular-svg-icons";
@@ -35,6 +36,7 @@ export const attachmentLinkIcon = <FontAwesomeIcon icon={faLink} />;
 export const clipboardIcon = <FontAwesomeIcon icon={faClipboard} />;
 const subtaskIcon = <FontAwesomeIcon icon={faListCheck} />;
 const stopwatchIcon = <FontAwesomeIcon icon={faStopwatch} />;
+const noteStrickyIcon = <FontAwesomeIcon icon={faNoteSticky} />;
 
 export const Task = forwardRef(
     (
@@ -394,9 +396,15 @@ export const Task = forwardRef(
                             ))}
                         </div>
                     )}
+                    {task && task.description && (
+                        <div>
+                            <span className="icon icon-margin">{noteStrickyIcon}</span>
+                            <small>{"See more"}</small>
+                        </div>
+                    )}
                     {task && task.due_date && (
                         <div>
-                            <span className="icon stopwatch-margin">{stopwatchIcon}</span>
+                            <span className="icon icon-margin">{stopwatchIcon}</span>
                             <small>{task.due_date}</small>
                         </div>
                     )}
