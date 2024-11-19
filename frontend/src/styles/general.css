@@ -2,6 +2,7 @@
 
 :root {
     --dark-gray: rgb(64, 64, 64);
+    --dark-gray-dropdown: rgb(70, 70, 70);
     --dark-Navbar: rgb(64, 64, 64, 0.793);
     --dark-Sidebar: rgba(64, 64, 64, 0.695);
     --button-hover: rgb(43, 43, 43);

@@ -71,6 +71,7 @@ const Board = () => {
     const [permission, setPermission] = useState(false);
     const [error, setError] = useState(false);
     const [board, setBoard] = useState([]);
+    const [boardIsFavourite, setBoardIsFavourite] = useState(false);
     const [columnPositions, setColumnPositions] = useState([]);
     const [editingColumnIndex, setEditingColumnIndex] = useState(null);
     const [taskToDelete, setTaskToDelete] = useState(null);
@@ -209,9 +210,7 @@ const Board = () => {
     const popupRef = useRef(null);
     const columnPositionsRef = useRef(columnPositions);
 
-
-
-    useEffect(() => {
+    const reloadData = () => {
         document.title = "KanBan | Board";
 
         reloadPriorities();
@@ -220,7 +219,18 @@ const Board = () => {
 
         reloadCodeReviewOrDocumentation();
         reloadCraftedPrompts();
+    };
+
+
+    useEffect(() => {
+        reloadData();
     }, []);
+
+    useEffect(() => {
+        setBoard([]);
+        
+        reloadData();
+    }, [board_id]);
 
     useEffect(() => {
         window.Pusher = require("pusher-js");
@@ -961,6 +971,7 @@ const Board = () => {
             let tempColumns = tempBoard.columns;
 
             setBoardTitle(tempBoard.name);
+            setBoardIsFavourite(tempBoard.favourite);
 
             // Sort the columns and tasks by position
             tempColumns.map((column) =>
@@ -2168,6 +2179,30 @@ const Board = () => {
         columnZIndex === 1 ? setColumnZIndex(100) : setColumnZIndex(1);
     };
 
+    const deleteAttribute = async (attribute, task_id) => {
+        try {
+            await axios.delete(
+                `/boards/${board_id}/tasks/${task_id}/attributes`, {
+                    data: {
+                        attributes: [attribute]
+                    },
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+        } catch (err) {
+            if (err?.response?.status === 401 || err?.response?.status === 500) {
+                setError({
+                    message: "You are not logged in! Redirecting to login page...",
+                });
+                setRedirect(true);
+            } else {
+                setError(err);
+            }
+        }
+    };
+
     const handleModifyPriority = async (task_id, column_id, priority_id) => {
         try {
             const response = await axios.put(
@@ -2402,7 +2437,7 @@ const Board = () => {
 
     const toggleFavourite = async () => {
         try {
-            if (!board.favourite) {
+            if (!boardIsFavourite) {
                 await axios.post("/favourite/boards", {
                     board_id: board_id
                 }, {
@@ -2422,9 +2457,7 @@ const Board = () => {
                     }
                 });
             }
-            let newBoard = { ...board };
-            newBoard.favourite = !newBoard.favourite;
-            setBoard(newBoard);
+            setBoardIsFavourite(!boardIsFavourite);
         } catch (err) {
             if (err?.response?.status === 401 || err?.response?.status === 500) {
                 setError({
@@ -2877,7 +2910,7 @@ const Board = () => {
                                                 className="log-button-on-title-bar"
                                                 style={{
                                                     color:
-                                                        isHoveredFavouriteTitleBar && board.favourite
+                                                        isHoveredFavouriteTitleBar && boardIsFavourite
                                                             ? "yellow"
                                                             : isHoveredFavouriteTitleBar
                                                                 ? "var(--off-white)"
@@ -2886,7 +2919,7 @@ const Board = () => {
                                             >
                                                 {starIcon}
                                             </span>
-                                            <p>{board.favourite ? "Unfavourite" : "Favourite"}</p>
+                                            <p>{boardIsFavourite ? "Unfavourite" : "Favourite"}</p>
                                         </li>
                                         {isFilterActive && (
                                             <li
@@ -3835,6 +3868,7 @@ const Board = () => {
                     priorities={priorities}
                     modifyPriority={handleModifyPriority}
                     modifyDeadline={handleModifyDeadline}
+                    deleteAttribute={deleteAttribute}
                     addAttachment={handleAddAttachment}
                     deleteAttachment={handleDeleteAttachment}
                     addMember={handleAddMember}

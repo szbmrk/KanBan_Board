@@ -59,6 +59,7 @@ const Popup = (
         priorities,
         modifyPriority,
         modifyDeadline,
+        deleteAttribute,
         addAttachment,
         deleteAttachment,
         addMember,
@@ -545,27 +546,44 @@ const Popup = (
                     )}
                     {task.due_date && (
                         <div className="due-date">
-                            <span className="icon">{stopwatchIcon}</span>
-                            <DatePicker
-                                className="due-date-picker"
-                                selected={task.due_date ? new Date(task.due_date) : null}
-                                onSelect={(date) => setNewDeadlineDate(date)}
-                                onCalendarClose={handleOnDatePickerClose}
-                                dateFormat="yyyy-MM-dd"
-                            />
+                                <span className="icon">{stopwatchIcon}</span>
+                                <DatePicker
+                                    className="due-date-picker"
+                                    selected={task.due_date ? new Date(task.due_date) : null}
+                                    onSelect={(date) => setNewDeadlineDate(date)}
+                                    onCalendarClose={handleOnDatePickerClose}
+                                    dateFormat="yyyy-MM-dd"
+                                />
+                            <span
+                                className="delete-attribute"
+                                onClick={() => {
+                                    deleteAttribute("due_date", task.task_id);
+                                }}
+                            >
+                                {trashIcon}
+                            </span>
                         </div>
                     )}
                     {/* TODO: különböző színű icon megjelenítése az id helyett annak függvényében, hogy milyen a prioritása a feledatnak */}
                     {task.priority && (
-                        <>
+                        <div
+                            className="priority"
+                        >
                             <div
                                 onClick={handleOpenPriorityPicker}
                                 style={{ zIndex: priorityDropDownZIndex }}
-                                className="priority"
                             >
                                 {task.priority.priority}
                             </div>
-                        </>
+                            <span
+                                className="delete-attribute"
+                                onClick={() => {
+                                    deleteAttribute("priority_id", task.task_id);
+                                }}
+                            >
+                                {trashIcon}
+                            </span>
+                        </div>
                     )}
                     {task.parent_task_id === null ? (
                         <span className="close-btn" onClick={onClose}>
