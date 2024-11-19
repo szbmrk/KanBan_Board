@@ -210,9 +210,7 @@ const Board = () => {
     const popupRef = useRef(null);
     const columnPositionsRef = useRef(columnPositions);
 
-
-
-    useEffect(() => {
+    const reloadData = () => {
         document.title = "KanBan | Board";
 
         reloadPriorities();
@@ -221,7 +219,18 @@ const Board = () => {
 
         reloadCodeReviewOrDocumentation();
         reloadCraftedPrompts();
+    };
+
+
+    useEffect(() => {
+        reloadData();
     }, []);
+
+    useEffect(() => {
+        setBoard([]);
+        
+        reloadData();
+    }, [board_id]);
 
     useEffect(() => {
         window.Pusher = require("pusher-js");
