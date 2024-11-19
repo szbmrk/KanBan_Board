@@ -3423,9 +3423,12 @@ const Board = () => {
                                                     <label
                                                         className="tag-filter-label"
                                                         htmlFor={"tag: " + tag.tag_id}
-                                                        style={{ backgroundColor: tag.color }}
+                                                        style={{
+                                                            backgroundColor: tag.color,
+                                                        }}
                                                     >
-                                                        {tag.name}
+                                                        <p style={{margin: '2px 10px 2px 10px'}}
+                                                        >{tag.name}</p>
                                                     </label>
                                                 </div>
                                             ))}
