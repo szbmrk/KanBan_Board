@@ -8,6 +8,7 @@ import ProtectedRoute from "./auth/ProtectedRoute";
 import "./styles/general.css";
 import Navbar from './components/Navigation/NavBar';
 import AssignedTasks from './components/AssignedTasks/AssignedTasks';
+import FavouriteBoards from './components/FavouriteBoards/FavouriteBoards';
 import Teams from './components/Teams/Teams';
 import Board from './components/Board/Board';
 import ManageBoardPermissions from './components/Permissions/ManageBoardPermissions';
@@ -54,6 +55,12 @@ const App = () => {
                                 <Navbar />
                                 <Sidebar />
                                 <Boards />
+                            </ProtectedRoute>} />
+                        <Route exact path="/favourite_boards" element={
+                            <ProtectedRoute>
+                                <Navbar />
+                                <Sidebar />
+                                <FavouriteBoards />
                             </ProtectedRoute>} />
                         <Route exact path="/assigned_tasks" element={
                             <ProtectedRoute>

@@ -103,6 +103,7 @@ const CraftedPromptListPopup = ({ board_id, craftedPrompts, onCancel }) => {
             </div>
             {showDeleteCraftedPromptConfirmation && (
                 <ConfirmationPopup
+                    action="Delete"
                     text={selectedCraftedPrompt?.crafted_prompt_title}
                     onCancel={handleDeleteCraftedPromptCancel}
                     onConfirm={handleDeleteCraftedPromptConfirm}

@@ -5,7 +5,7 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
-const ConfirmationPopup = ({ text, onCancel, onConfirm }) => {
+const ConfirmationPopup = ({ text, onCancel, onConfirm, action }) => {
     const popupRef = useRef(null);
 
     const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
@@ -40,10 +40,10 @@ const ConfirmationPopup = ({ text, onCancel, onConfirm }) => {
                 <span className='close-btn' onClick={onCancel}>
                     {closeIcon}
                 </span>
-                <p className='confirmation-text'>Are you sure you want to delete "{text}"?</p>
+                <p className='confirmation-text'>Are you sure you want to {`${action !== undefined ? action.toLowerCase() : ""}`} "{text}"?</p>
                 <div className='button-container'>
                     <button onClick={onCancel}>Cancel</button>
-                    <button onClick={onConfirm}>Delete</button>
+                    <button onClick={onConfirm}>{action}</button>
                 </div>
             </div>
         </div>

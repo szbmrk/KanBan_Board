@@ -38,7 +38,7 @@ const TeamCard = ({
     const [manageIsClicked, setManage] = useState(false);
     const [deleteIsClicked, setDelete] = useState(false);
     const [addIsClicked, setAdd] = useState(false);
-    const [rolesIsClicked, setRoles] = useState(false);
+    const [rolesIsClicked, setRolesIsClicked] = useState(false);
     const [teamData, setTeamData] = useState([]);
     const [createdBy, setCreatedBy] = useState("");
     const [teamMemberId, setTeamMemberId] = useState();
@@ -53,6 +53,7 @@ const TeamCard = ({
         "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
     );
     const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+    const [ownPermissions, setOwnPermissions] = useState([]);
 
     useEffect(() => {
         document.title = "KanBan | Teams";
@@ -100,10 +101,12 @@ const TeamCard = ({
     }
     function handleRolesButton(team_members_id) {
         setTeamMemberId(team_members_id);
-        setRoles(!rolesIsClicked);
+        setRolesIsClicked(!rolesIsClicked);
     }
 
     const checkPermissionToDeleteRoles = (role) => {
+        const ownRoles = JSON.parse(sessionStorage.getItem('permissions'));
+
         for (let i = 0; i < role.permissions.length; i++) {
             if (
                 role.permissions[i].name === "team_member_management" ||
@@ -112,8 +115,21 @@ const TeamCard = ({
                 return false;
             }
         }
-        return true;
-    };
+
+        for (let i = 0; i < ownRoles.teams.length; i++) {
+            if (ownRoles.teams[i].team_members_id !== role.pivot.team_member_id && ownRoles.teams[i].permission === "board_management" &&
+                ownRoles.teams[i].board_id === role.board_id
+            ) {
+                return true;
+            }
+
+            if (ownRoles.teams[i].team_members_id === role.pivot.team_member_id) {
+                return false;
+            }
+        }
+
+        return false;
+    }
 
     const handleMouseEnterOnTeam = (teamId) => {
         setHoveredTeam(teamId);
@@ -224,24 +240,22 @@ const TeamCard = ({
                                                             ? role.name + " in " + role.board.name
                                                             : role.name}
                                                     </li>
-                                                    {checkPermisson(data.team_id, "team_management") && (
+                                                    {(checkPermisson(data.team_id, "team_member_role_management")) && checkPermissionToDeleteRoles(role) && (
                                                         <div>
-                                                            {checkPermissionToDeleteRoles(role) && (
-                                                                <span
-                                                                    className="trash-icon"
-                                                                    onClick={() =>
-                                                                        handleDeleteRole(
-                                                                            role.team_members_role_id,
-                                                                            role.board_id,
-                                                                            data.team_id,
-                                                                            member.user.user_id
-                                                                        )
-                                                                    }
-                                                                    data-hover="Delete role"
-                                                                >
-                                                                    {trashIcon}
-                                                                </span>
-                                                            )}
+                                                            <span
+                                                                className="trash-icon"
+                                                                onClick={() =>
+                                                                    handleDeleteRole(
+                                                                        role.team_members_role_id,
+                                                                        role.board_id,
+                                                                        data.team_id,
+                                                                        member.user.user_id
+                                                                    )
+                                                                }
+                                                                data-hover="Delete role"
+                                                            >
+                                                                {trashIcon}
+                                                            </span>
                                                         </div>
                                                     )}
                                                 </ul>
@@ -267,16 +281,17 @@ const TeamCard = ({
                                                     Remove user
                                                 </button>
                                             )}
-                                        {checkPermisson(data.team_id, "team_member_management") && (
-                                            <button
-                                                className="add-button"
-                                                onClick={() =>
-                                                    handleRolesButton(member.team_members_id)
-                                                }
-                                            >
-                                                Add role
-                                            </button>
-                                        )}
+                                        {(checkPermisson(data.team_id, "board_management")
+                                            || checkPermisson(data.team_id, "team_member_role_management")) && (
+                                                <button
+                                                    className="add-button"
+                                                    onClick={() =>
+                                                        handleRolesButton(member.team_members_id)
+                                                    }
+                                                >
+                                                    Add role
+                                                </button>
+                                            )}
                                     </div>
                                 </div>
                             </div>
