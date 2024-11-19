@@ -73,8 +73,6 @@ export default function FavouriteBoards() {
     function getBoardNameBySelectedTeamIdAndSelectedBoardId() {
         if (selectedBoardId < 0) return "";
 
-        console.error(selectedBoardId);
-
         const name = boards
             .filter(
                 (actualBoard) => actualBoard.board_id === selectedBoardId

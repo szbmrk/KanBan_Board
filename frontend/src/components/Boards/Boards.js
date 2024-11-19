@@ -229,11 +229,8 @@ export default function Boards() {
                 }
                 setTeams(teamData);
                 let newFavourites = favouriteBoards.splice();
-                console.error(teamData);
                 for (const team of teamData) {
-                    console.error(team.boards);
                     for (const board of team.boards) {
-                        console.error("board: " + board);
                         if (board.favourite) {
                             newFavourites.push(board.board_id);
                         }
