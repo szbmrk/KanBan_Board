@@ -21,28 +21,9 @@ export default function Comment({ comments, handlePostComment, deleteComment }) 
         setAddComment('');
     };
 
-
-
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
-    useEffect(() => {
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"))
-        }
-
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-        //eddig
-    }, []);
-
     return comments && comments.length > 0 ? (
         <>
-            <div className='comments' data-theme={theme}>
+            <div className='comments' >
                 <div class='previous-comments'>
                     {comments.map((comment, index) => (
                         <div

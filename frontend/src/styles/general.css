@@ -1,10 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,400;1,100;1,400&display=swap");
 
 :root {
-    --dark-gray: #404040;
-    --dark-Navbar: rgba(156, 156, 156, 0.767);
-    --dark-Sidebar: rgba(255, 255, 255, 0.793);
-    --dark-grayRGB: 64, 64, 64;
+    --dark-gray: rgb(64, 64, 64);
+    --dark-gray-dropdown: rgb(70, 70, 70);
+    --dark-Navbar: rgb(64, 64, 64, 0.793);
+    --dark-Sidebar: rgba(64, 64, 64, 0.695);
+    --button-hover: rgb(43, 43, 43);
     --light-gray: #cbcbcb;
     --light-grayRGB: 203, 203, 203;
     --off-white: #f0f0f0;
@@ -32,7 +33,7 @@
 
 [data-theme='light'] {
     --dark-gray: rgba(255, 255, 255, 0.767);
-    --dark-Navbar: rgba(255, 255, 255, 0.793);
+    --dark-Navbar: rgba(255, 255, 255, 0.695);
     --dark-Sidebar: rgba(255, 255, 255, 0.695);
     --button-hover: rgba(64, 64, 64);
     --light-gray: rgb(20, 20, 20);
@@ -60,12 +61,12 @@
 }
 
 [data-theme='dark'] {
-    --dark-gray: #404040;
-    --dark-Navbar: rgb(64, 64, 64, 0.793);
+    --dark-gray: rgb(64, 64, 64);
+    --dark-Navbar: rgb(64, 64, 64, 0.695);
     --dark-Sidebar: rgba(64, 64, 64, 0.695);
     --button-hover: rgb(43, 43, 43);
     --light-gray: #cbcbcb;
-    --light-grayRGB: 203, 203, 203;
+    --light-grayRGB: rgb(203, 203, 203);
     --off-white: #f0f0f0;
     --button: #3d506b;
     --important: rgba(255, 0, 0, 0.4);
@@ -77,8 +78,8 @@
     --edit: #fab45f;
     --attachment-link: #49b6ff;
     --scrollbar-hover: #555;
-    --bg-dark: rgba(var(--dark-grayRGB), 0.7);
-    --bg-light: rgba(var(--light-grayRGB), 0.5);
+    --bg-dark: rgba(64, 64, 64, 0.7);
+    --bg-light: rgba(203, 203, 203, 0.5);
     --bg-mostly-black: #1f1f1f;
     --notification-type: #7a7a7a;
     --title-bar: rgba(112, 104, 106, 0.3);
@@ -104,7 +105,6 @@ body {
     background-size: cover;
     height: 100vh;
     width: 100vw;
-    /*background-image: url("./imgs/background-regular.jpg");*/
 }
 
 .bg-regular {

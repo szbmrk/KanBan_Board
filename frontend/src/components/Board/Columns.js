@@ -50,26 +50,13 @@ export const Column = ({
 
     const opacity = isDragging ? 0.75 : 1;
     const display = "flex";
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
-    useEffect(() => {
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
 
-        window.log("Darkmode: " + localStorage.getItem("darkMode"));
-        window.addEventListener("ChangingTheme", ResetTheme);
 
-        return () => {
-            window.removeEventListener("ChangingTheme", ResetTheme);
-        };
-        //eddig
-    }, []);
 
     return (
         <div
             className="column"
-            data-theme={theme}
+
             ref={(node) => (canMove ? drag(drop(node)) : null)}
             style={{ opacity, display, zIndex: index === divIndex ? zIndex : 1 }}
             onMouseEnter={onMouseEnter}

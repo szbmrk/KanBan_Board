@@ -9,25 +9,6 @@ const TagDropdownItem = ({ data, onEdit, onDelete, onToggle, selectedTags }) => 
     const trashIcon = <FontAwesomeIcon icon={faTrash} />;
     const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 
-
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
-    useEffect(() => {
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"))
-        }
-
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-        //eddig
-    }, []);
-
-
     const itemStyle = {
         color: 'var(--off-white)',
         backgroundColor: color,
@@ -82,7 +63,7 @@ const TagDropdownItem = ({ data, onEdit, onDelete, onToggle, selectedTags }) => 
             >
                 {label}
             </span>
-            <div style={buttonStyle} data-theme={theme}>
+            <div style={buttonStyle} >
                 <span
                     onClick={(e) => {
                         e.stopPropagation();

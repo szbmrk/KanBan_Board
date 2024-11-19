@@ -7,7 +7,7 @@ const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 const TagEditorPopup = ({ onClose, onSave, tagToEdit }) => {
     const [tagName, setTagName] = useState(''); // State for tag name
     const [tagColor, setTagColor] = useState(''); // State for tag color
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+
     const colors = [
         '#bb0000',
         '#008000',
@@ -26,19 +26,6 @@ const TagEditorPopup = ({ onClose, onSave, tagToEdit }) => {
             setTagName(tagToEdit.value);
             setTagColor(tagToEdit.color);
         }
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"))
-        }
-
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-        //eddig
     }, [tagToEdit]);
 
     const handleColorClick = (color) => {
@@ -63,7 +50,7 @@ const TagEditorPopup = ({ onClose, onSave, tagToEdit }) => {
 
     return (
         <div className='overlay darken'>
-            <div className='popup popup-mini' data-theme={theme}>
+            <div className='popup popup-mini' >
                 <span className='close-btn' onClick={onClose}>
                     {closeIcon}
                 </span>

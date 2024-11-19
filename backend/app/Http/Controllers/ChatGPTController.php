@@ -141,6 +141,12 @@ class ChatGPTController extends Controller
 
             $formattedResponse = json_decode($cleanData, true);
 
+            if ($formattedResponse == null || $formattedResponse == "") {
+                return response()->json([
+                    'error' => 'Content generation failed. Please try again.',
+                ], 500);
+            }
+
             return $formattedResponse;
         } catch (\Exception $e) {
             return response()->json([
@@ -181,6 +187,12 @@ class ChatGPTController extends Controller
         $cleanData = str_replace("<Response [200]>", "", $response);
 
         //$formattedResponse = json_decode($response, true);    
+
+        if ($cleanData == null || $cleanData == "") {
+            return response()->json([
+                'error' => 'Content generation failed. Please try again.',
+            ], 500);
+        }
 
         return $cleanData;
         /*  return response()->json([

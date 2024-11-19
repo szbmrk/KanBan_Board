@@ -71,6 +71,7 @@ const Board = () => {
     const [permission, setPermission] = useState(false);
     const [error, setError] = useState(false);
     const [board, setBoard] = useState([]);
+    const [boardIsFavourite, setBoardIsFavourite] = useState(false);
     const [columnPositions, setColumnPositions] = useState([]);
     const [editingColumnIndex, setEditingColumnIndex] = useState(null);
     const [taskToDelete, setTaskToDelete] = useState(null);
@@ -209,9 +210,7 @@ const Board = () => {
     const popupRef = useRef(null);
     const columnPositionsRef = useRef(columnPositions);
 
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
-
-    useEffect(() => {
+    const reloadData = () => {
         document.title = "KanBan | Board";
 
         reloadPriorities();
@@ -220,18 +219,18 @@ const Board = () => {
 
         reloadCodeReviewOrDocumentation();
         reloadCraftedPrompts();
-        //setOwnPermissions(team_member.teams.filter(team => team.team_id === data.team_id).map(permission => permission.permission_data));
+    };
 
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
 
-        window.addEventListener("ChangingTheme", ResetTheme);
-
-        return () => {
-            window.removeEventListener("ChangingTheme", ResetTheme);
-        };
+    useEffect(() => {
+        reloadData();
     }, []);
+
+    useEffect(() => {
+        setBoard([]);
+        
+        reloadData();
+    }, [board_id]);
 
     useEffect(() => {
         window.Pusher = require("pusher-js");
@@ -972,6 +971,7 @@ const Board = () => {
             let tempColumns = tempBoard.columns;
 
             setBoardTitle(tempBoard.name);
+            setBoardIsFavourite(tempBoard.favourite);
 
             // Sort the columns and tasks by position
             tempColumns.map((column) =>
@@ -2179,6 +2179,30 @@ const Board = () => {
         columnZIndex === 1 ? setColumnZIndex(100) : setColumnZIndex(1);
     };
 
+    const deleteAttribute = async (attribute, task_id) => {
+        try {
+            await axios.delete(
+                `/boards/${board_id}/tasks/${task_id}/attributes`, {
+                    data: {
+                        attributes: [attribute]
+                    },
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+        } catch (err) {
+            if (err?.response?.status === 401 || err?.response?.status === 500) {
+                setError({
+                    message: "You are not logged in! Redirecting to login page...",
+                });
+                setRedirect(true);
+            } else {
+                setError(err);
+            }
+        }
+    };
+
     const handleModifyPriority = async (task_id, column_id, priority_id) => {
         try {
             const response = await axios.put(
@@ -2413,9 +2437,9 @@ const Board = () => {
 
     const toggleFavourite = async () => {
         try {
-            if (!board.favourite) {
+            if (!boardIsFavourite) {
                 await axios.post("/favourite/boards", {
-                        board_id: board_id
+                    board_id: board_id
                 }, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -2433,9 +2457,7 @@ const Board = () => {
                     }
                 });
             }
-            let newBoard = { ...board };
-            newBoard.favourite = !newBoard.favourite;
-            setBoard(newBoard);
+            setBoardIsFavourite(!boardIsFavourite);
         } catch (err) {
             if (err?.response?.status === 401 || err?.response?.status === 500) {
                 setError({
@@ -2832,7 +2854,7 @@ const Board = () => {
                             <Loader />
                         </div>
                     ) : (
-                        <div className="content col-10" data-theme={theme}>
+                        <div className="content col-10" >
                             <div className="title-bar">
                                 <div>
                                     {showBoardTitleEdit === false && (
@@ -2888,16 +2910,16 @@ const Board = () => {
                                                 className="log-button-on-title-bar"
                                                 style={{
                                                     color:
-                                                        isHoveredFavouriteTitleBar && board.favourite
+                                                        isHoveredFavouriteTitleBar && boardIsFavourite
                                                             ? "yellow"
-                                                            : isHoveredFavouriteTitleBar 
-                                                                    ? "var(--off-white)"
-                                                                    : "var(--dark-gray)",
+                                                            : isHoveredFavouriteTitleBar
+                                                                ? "var(--off-white)"
+                                                                : "var(--dark-gray)",
                                                 }}
                                             >
                                                 {starIcon}
                                             </span>
-                                            <p>{board.favourite ? "Unfavourite" : "Favourite"}</p>
+                                            <p>{boardIsFavourite ? "Unfavourite" : "Favourite"}</p>
                                         </li>
                                         {isFilterActive && (
                                             <li
@@ -3281,7 +3303,7 @@ const Board = () => {
                                     setIsSortOpen(false);
                                 }}
                             ></div>
-                            <div className="sort-submenu" data-theme={theme}>
+                            <div className="sort-submenu" >
                                 <p className="sort-menu-title"> Sort menu </p>
                                 <ul className="sort-menu">
                                     <li
@@ -3347,7 +3369,7 @@ const Board = () => {
                                     setIsFilterOpen(false);
                                 }}
                             ></div>
-                            <div className="filter-submenu" data-theme={theme}>
+                            <div className="filter-submenu" >
                                 <p className="filter-menu-title"> Filter menu </p>
                                 <div className="filter-menu">
                                     <div className="filter-category">
@@ -3454,7 +3476,7 @@ const Board = () => {
                                     setIsAGIOpen(false);
                                 }}
                             ></div>
-                            <div className="agi-submenu" data-theme={theme}>
+                            <div className="agi-submenu" >
                                 <p className="agi-menu-title"> AI menu </p>
                                 <ul className="agi-menu">
                                     <li
@@ -3598,7 +3620,6 @@ const Board = () => {
                                 }}
                             ></div>
                             <LogComponent
-                                theme={theme}
                                 logs={logs}
                             />
                         </>
@@ -3774,6 +3795,7 @@ const Board = () => {
                     )}
                     {showDeleteTaskConfirmation && (
                         <ConfirmationPopup
+                            action="Delete"
                             text={taskToDelete.title}
                             onCancel={handleDeleteTaskCancel}
                             onConfirm={handleDeleteTaskConfirm}
@@ -3781,6 +3803,7 @@ const Board = () => {
                     )}
                     {showDeleteColumnConfirmation && (
                         <ConfirmationPopup
+                            action="Delete"
                             text={board.columns[columnToDeleteIndex]?.name}
                             onCancel={handleDeleteColumnCancel}
                             onConfirm={handleDeleteColumnConfirm}
@@ -3788,6 +3811,7 @@ const Board = () => {
                     )}
                     {showDeleteCodeReviewOrDocumentationConfirmation && (
                         <ConfirmationPopup
+                            action="Delete"
                             text={getCodeReviewOrDocumentationTypeLabel(
                                 codeReviewOrDocumentationToDelete
                             )}
@@ -3844,6 +3868,7 @@ const Board = () => {
                     priorities={priorities}
                     modifyPriority={handleModifyPriority}
                     modifyDeadline={handleModifyDeadline}
+                    deleteAttribute={deleteAttribute}
                     addAttachment={handleAddAttachment}
                     deleteAttachment={handleDeleteAttachment}
                     addMember={handleAddMember}

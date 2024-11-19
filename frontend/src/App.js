@@ -15,13 +15,17 @@ import ManageBoardPermissions from './components/Permissions/ManageBoardPermissi
 import EditProfile from './components/Profile/EditProfile';
 import Notification from './components/Notification';
 import Permissiontable from './components/Permissions/Permissiontable';
+import Dashboard from './components/Dashboard/Dashboard';
+import { useEffect, useState } from 'react';
 
 const App = () => {
+
+
     return (
         <>
             <BrowserRouter basename="/agi-kanban">
                 <AuthProvider>
-                    <Routes>
+                    <Routes >
                         <Route path="/" element={<ProtectedRoute> <Navigate to="/boards" /> </ProtectedRoute>} />
                         <Route exact path="/login" element={<Login />} />
                         <Route exact path="/signup" element={<Signup />} />
@@ -42,6 +46,12 @@ const App = () => {
                                 <Navbar />
                                 <Sidebar />
                                 <Boards />
+                            </ProtectedRoute>} />
+                        <Route exact path="/dashboard" element={
+                            <ProtectedRoute>
+                                <Navbar />
+                                <Sidebar />
+                                <Dashboard />
                             </ProtectedRoute>} />
                         <Route exact path="/boards/:team_name" element={
                             <ProtectedRoute>

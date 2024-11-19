@@ -152,7 +152,16 @@
 }
 
 .priority {
-  width: 25%;
+    width: 19%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.delete-attribute {
+    margin-left: 5px;
 }
 
 .due-date-picker {
@@ -161,9 +170,10 @@
   border: none;
   box-shadow: none;
   outline: none;
-  width: 100%;
+  width: 110%;
 }
 
+.delete-attribute:hover,
 .priority:hover,
 .due-date-picker:hover {
   cursor: pointer;

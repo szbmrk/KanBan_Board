@@ -34,6 +34,8 @@ use App\Http\Controllers\ChangeIsDoneTaskController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\LogController;
 
+use Illuminate\Support\Facades\Password;
+
 /*
 
 | API Routes
@@ -59,6 +61,9 @@ Route::delete('/profile', [UserController::class, 'destroy'])->middleware('api')
 /* Test email & username */
 Route::post('/user/check-email', [UserController::class, 'checkEmail']);
 Route::post('/user/check-username', [UserController::class, 'checkUsername']);
+Route::post('/password/email', [UserController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::post('/password/reset', [UserController::class, 'resetPassword'])->name('password.update');
+Route::get('/reset-password/{token}', function ($token) {return view('auth.reset-password', ['token' => $token]);})->name('password.reset');
 
 Route::get('/boards', [BoardsController::class, 'index'])->middleware('api');
 Route::get('/boards/boards', [BoardsController::class, 'getAllBoards'])->middleware('api');
@@ -92,6 +97,7 @@ Route::delete('/boards/{board_id}/columns/{column_id}', [ColumnController::class
 
 Route::post('/boards/{board_id}/task', [TaskController::class, 'taskStore'])->middleware('api');
 Route::put('/boards/{board_id}/tasks/{task_id}', [TaskController::class, 'taskUpdate'])->middleware('api');
+Route::delete('/boards/{board_id}/tasks/{task_id}/attributes', [TaskController::class, 'attributeDelete'])->middleware('api');
 Route::post('/columns/{column_id}/tasks/positions', [TaskController::class, 'taskPositionUpdate'])->middleware('api');
 Route::delete('/boards/{board_id}/tasks/{task_id}', [TaskController::class, 'taskDestroy'])->middleware('api');
 Route::get('/boards/{board_id}/tasks/{task_id}/subtasks', [TaskController::class, 'showSubtasks'])->middleware('api');

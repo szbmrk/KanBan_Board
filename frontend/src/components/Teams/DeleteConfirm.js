@@ -8,30 +8,13 @@ const closeIcon = <FontAwesomeIcon icon={faXmark} />;
 
 
 const DeleteConfirm = ({ teamID, OnClose, DeleteTeam }) => {
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
-    useEffect(() => {
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"))
-        }
-
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-        //eddigS
-    }, []);
     function DeleteTeamConfirm(teamID) {
         DeleteTeam(teamID);
         OnClose();
     }
 
-
     return (
-        <div className='overlay' data-theme={theme}>
+        <div className='overlay' >
             <div className='popup popup-mini'>
                 <span className='close-btn' onClick={OnClose}>
                     {closeIcon}

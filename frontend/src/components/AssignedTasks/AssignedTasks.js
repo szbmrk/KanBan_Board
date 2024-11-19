@@ -13,7 +13,7 @@ import {
 } from "../../api/config.js";
 
 const AssignedTasks = () => {
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+
     const [tasks, setTasks] = useState(null);
     const tasksRef = useRef(tasks);
     const [redirect, setRedirect] = useState(false);
@@ -297,16 +297,6 @@ const AssignedTasks = () => {
     useEffect(() => {
         document.title = "KanBan | Assigned Tasks";
         getAssignedTasks();
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"));
-        window.addEventListener("ChangingTheme", ResetTheme);
-
-        return () => {
-            window.removeEventListener("ChangingTheme", ResetTheme);
-        };
     }, []);
 
     const getAssignedTasks = async () => {
@@ -338,7 +328,7 @@ const AssignedTasks = () => {
     };
 
     return (
-        <div className="content col-10" data-theme={theme}>
+        <div className="content col-10" >
             {tasks === null ? (
                 error ? (
                     <Error error={error} redirect={redirect} />

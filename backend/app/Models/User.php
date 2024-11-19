@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\AdjustTimestampsForHungaryTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Notifications\CustomResetPasswordNotification;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -151,5 +152,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->teamMembers->flatMap(function ($teamMember) {
             return $teamMember->roles->flatMap->permissions->pluck('name');
         })->unique()->all();
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomResetPasswordNotification($token, $this->email));
     }
 }

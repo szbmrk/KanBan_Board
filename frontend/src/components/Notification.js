@@ -23,82 +23,12 @@ export default function Notification() {
     const userId = sessionStorage.getItem("user_id");
     const [countOfUnseen, setCountOfUnseen] = useState(0);
     const [countOfseen, setCountOfseen] = useState(0);
-    const notificationsRef = useRef(notifications);
 
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
-
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
-
-    useEffect(() => {
-        notificationsRef.current = notifications;
-    }, [notifications]);
-
-    const handleWebSocket = async (websocket) => {
-        window.log("DATA");
-        window.log(websocket.data);
-        switch (websocket.changeType) {
-            case "CREATED_NOTIFICATION":
-                webSocketCreateNotification(websocket.data);
-                break;
-            case "UPDATED_NOTIFICATION":
-                webSocketUpdateNotification(websocket.data);
-                break;
-            case "UPDATED_MULTIPLE_NOTIFICATION":
-                webSocketUpdateMultipleNotification(websocket.data);
-                break;
-            default:
-                break;
-        }
-    };
-
-    const webSocketCreateNotification = (data) => {
-        const newNotificationData = [...notificationsRef.current];
-        newNotificationData.push(data.notification);
-        setNotifications(newNotificationData);
-        countUnseenAndSeenNotifications();
-    };
-
-    const webSocketUpdateNotification = (data) => {
-        const newNotificationData = [...notificationsRef.current];
-        newNotificationData.forEach((currentNotification, index) => {
-            if (
-                currentNotification.notification_id ===
-                data.notification.notification_id
-            ) {
-                newNotificationData[index] = data.notification;
-            }
-        });
-        setNotifications(newNotificationData);
-        countUnseenAndSeenNotifications();
-    };
-
-    const webSocketUpdateMultipleNotification = (data) => {
-        const newNotificationData = [...notificationsRef.current];
-        data.notifications.forEach((currentUpdatedNotification) => {
-            newNotificationData.forEach((currentNotification, index) => {
-                if (
-                    currentNotification.notification_id ===
-                    currentUpdatedNotification.notification_id
-                ) {
-                    newNotificationData[index] = currentUpdatedNotification;
-                }
-            });
-        });
-
-        setNotifications(newNotificationData);
-        countUnseenAndSeenNotifications();
-    };
 
     useEffect(() => {
         document.title = "KanBan | Notification";
         getNotifications();
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"));
-        window.addEventListener("ChangingTheme", ResetTheme);
 
         window.Pusher = require("pusher-js");
         window.Pusher.logToConsole = true;
@@ -126,13 +56,62 @@ export default function Notification() {
             []
         );
 
-        return () => {
-            window.removeEventListener("ChangingTheme", ResetTheme);
-            window.log("Cleanup");
-            channel.unsubscribe();
-        };
-        //eddig
     }, []);
+
+    const handleWebSocket = async (websocket) => {
+        window.log("DATA");
+        window.log(websocket.data);
+        switch (websocket.changeType) {
+            case "CREATED_NOTIFICATION":
+                webSocketCreateNotification(websocket.data);
+                break;
+            case "UPDATED_NOTIFICATION":
+                webSocketUpdateNotification(websocket.data);
+                break;
+            case "UPDATED_MULTIPLE_NOTIFICATION":
+                webSocketUpdateMultipleNotification(websocket.data);
+                break;
+            default:
+                break;
+        }
+    };
+
+    const notificationsRef = useRef([]);
+
+    const webSocketCreateNotification = (data) => {
+        const newNotificationData = notificationsRef.current;
+        newNotificationData.push(data.notification);
+        newNotificationData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setNotifications(newNotificationData);
+        notificationsRef.current = newNotificationData;
+        countUnseenAndSeenNotifications(newNotificationData);
+    };
+
+    const webSocketUpdateNotification = (data) => {
+        const cloneOfNotifications = notificationsRef.current;
+        const newNotificationData = cloneOfNotifications.map((currentNotification) =>
+            currentNotification.notification_id === data.notification.notification_id
+                ? data.notification
+                : currentNotification
+        );
+        newNotificationData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setNotifications(newNotificationData);
+        notificationsRef.current = newNotificationData;
+        countUnseenAndSeenNotifications(newNotificationData);
+    };
+
+    const webSocketUpdateMultipleNotification = (data) => {
+        const cloneOfNotifications = notificationsRef.current;
+        const newNotificationData = cloneOfNotifications.map((currentNotification) => {
+            const updatedNotification = data.notifications.find(
+                (notif) => notif.notification_id === currentNotification.notification_id
+            );
+            return updatedNotification || currentNotification;
+        });
+        newNotificationData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setNotifications(newNotificationData);
+        countUnseenAndSeenNotifications(newNotificationData);
+    };
 
     const getNotifications = async () => {
         try {
@@ -141,10 +120,13 @@ export default function Notification() {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            window.log("notifications");
-            window.log(res.data);
-            setNotifications(res.data);
-            countUnseenAndSeenNotifications();
+
+            const sortedNotifications = res.data.sort((a, b) =>
+                new Date(b.created_at) - new Date(a.created_at)
+            );
+            setNotifications(sortedNotifications);
+            notificationsRef.current = sortedNotifications;
+            countUnseenAndSeenNotifications(sortedNotifications);
         } catch (e) {
             window.log(e);
             if (e?.response?.status === 401 || e?.response?.status === 500) {
@@ -162,23 +144,18 @@ export default function Notification() {
 
     const markAllAsSeen = async () => {
         try {
-            const notificationData = [...notificationsRef.current];
-            let changedNotificationData = [];
-            notificationData.forEach((currentNotification) => {
-                if (currentNotification.is_read === 0) {
-                    let clonedNotification = JSON.parse(
-                        JSON.stringify(currentNotification)
-                    );
-                    clonedNotification.is_read = 1;
-                    changedNotificationData.push(clonedNotification);
-                }
-            });
+            const updatedNotifications = notifications.map((currentNotification) => ({
+                ...currentNotification,
+                is_read: 1,
+            }));
 
-            const res = await axios.put(
+            setNotifications(updatedNotifications);
+            notificationsRef.current = updatedNotifications;
+            countUnseenAndSeenNotifications(updatedNotifications);
+
+            await axios.put(
                 `/notifications/multiple`,
-                {
-                    notifications: changedNotificationData,
-                },
+                { notifications: updatedNotifications },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -186,25 +163,25 @@ export default function Notification() {
                 }
             );
         } catch (e) {
-            window.log(e);
-            if (e?.response?.status === 401 || e?.response?.status === 500) {
-                setError({
-                    message: "You are not logged in! Redirecting to login page...",
-                });
-                setRedirect(true);
-            } else {
-                setError(e);
-            }
+            setError(e);
         }
     };
 
     const markAsSeen = async (notification) => {
         try {
-            const res = await axios.put(
+            const updatedNotifications = notifications.map((currentNotification) =>
+                currentNotification.notification_id === notification.notification_id
+                    ? { ...currentNotification, is_read: 1 }
+                    : currentNotification
+            );
+
+            setNotifications(updatedNotifications);
+            notificationsRef.current = updatedNotifications;
+            countUnseenAndSeenNotifications(updatedNotifications);
+
+            await axios.put(
                 `/notifications/${notification.notification_id}`,
-                {
-                    is_read: 1,
-                },
+                { is_read: 1 },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -212,15 +189,7 @@ export default function Notification() {
                 }
             );
         } catch (e) {
-            window.log(e);
-            if (e?.response?.status === 401 || e?.response?.status === 500) {
-                setError({
-                    message: "You are not logged in! Redirecting to login page...",
-                });
-                setRedirect(true);
-            } else {
-                setError(e);
-            }
+            setError(e);
         }
     };
 
@@ -228,20 +197,17 @@ export default function Notification() {
         setIsRead(!isRead);
     };
 
-    const countUnseenAndSeenNotifications = async () => {
+    const countUnseenAndSeenNotifications = (notificationData) => {
+        const data = notificationData || notificationsRef.current;
         setCountOfUnseen(
-            notificationsRef.current === null
+            data === null
                 ? 0
-                : notificationsRef.current.filter(
-                    (currentNotification) => currentNotification.is_read === 0
-                ).length
+                : data.filter((currentNotification) => currentNotification.is_read == 0).length
         );
         setCountOfseen(
-            notificationsRef.current === null
+            data === null
                 ? 0
-                : notificationsRef.current.filter(
-                    (currentNotification) => currentNotification.is_read === 1
-                ).length
+                : data.filter((currentNotification) => currentNotification.is_read == 1).length
         );
     };
 
@@ -255,7 +221,7 @@ export default function Notification() {
     };
 
     return (
-        <div className="content col-10" data-theme={theme}>
+        <div className="content col-10" >
             {notifications === null ? (
                 error ? (
                     <Error error={error} redirect={redirect} />
@@ -268,6 +234,19 @@ export default function Notification() {
             ) : (
                 <>
                     <h1>Notifications</h1>
+                    <div>
+                        {
+                            notifications.length > 0 && (
+                                <div className="notification-count">
+                                    <p>
+                                        {isRead
+                                            ? `You have ${countOfseen} seen notifications`
+                                            : `You have ${countOfUnseen} unseen notifications`}
+                                    </p>
+                                </div>
+                            )
+                        }
+                    </div>
                     {notifications.length === 0 ? (
                         <p>No notifications yet!</p>
                     ) : (
@@ -277,11 +256,11 @@ export default function Notification() {
                                     {isRead ? "Switch to unseen" : "Switch to seen"}
                                 </button>
                             </div>
-                            {isRead === false ? (
+                            {isRead == false ? (
                                 <>
                                     <div className="notification-container">
                                         <div className="container-header">
-                                            <p>Notification history</p>
+                                            <p>Unseen Notification history</p>
                                             <button
                                                 className="mark-all-button"
                                                 onClick={markAllAsSeen}
@@ -296,7 +275,7 @@ export default function Notification() {
                                             <>
                                                 {notifications.map(
                                                     (notification) =>
-                                                        notification.is_read === 0 && (
+                                                        notification.is_read == false && (
                                                             <div
                                                                 key={notification.notification_id}
                                                                 className={`notification`}
@@ -338,13 +317,13 @@ export default function Notification() {
                                 <>
                                     <div className="notification-container">
                                         <div className="container-header">
-                                            <p>Notification history</p>
+                                            <p>Seen Notification history</p>
                                         </div>
                                         {countOfseen > 0 ? (
                                             <>
                                                 {notifications.map(
                                                     (notification) =>
-                                                        notification.is_read === 1 && (
+                                                        notification.is_read == true && (
                                                             <div
                                                                 key={notification.notification_id}
                                                                 className={`notification`}

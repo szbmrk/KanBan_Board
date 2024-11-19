@@ -59,3 +59,16 @@
     color: #333;
     /* Szövegszín */
 }
+
+.sidebar ul li.dropdown:hover {
+    background-color: var(--dark-gray-dropdown);
+}
+
+.sidebar ul li.active.dropdown {
+    background-color: #6f6f6f;
+    color: #000;
+}
+
+.toggle-icon {
+    cursor: pointer;
+}
