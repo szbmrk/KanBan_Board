@@ -952,7 +952,7 @@ const Popup = (
                                     onChange={(e) => setNewMember(e.target.value)}
                                     selected={notMembers[0].user_id}
                                 >
-                                    {notMembers.map((member, index) => (
+                                    {notMembers.sort().map((member, index) => (
                                         <option key={index} value={member.user_id}>
                                             {member.username}
                                         </option>
