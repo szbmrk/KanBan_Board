@@ -99,7 +99,7 @@ const AuthForm = ({
         }
     };
 
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+
     useEffect(() => {
         const onPageLoad = () => {
             setTimeout(() => {
@@ -109,19 +109,6 @@ const AuthForm = ({
         document.readyState === "complete"
             ? onPageLoad()
             : window.addEventListener("load", onPageLoad);
-
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"));
-        window.addEventListener("ChangingTheme", ResetTheme);
-
-        return () => {
-            window.removeEventListener("ChangingTheme", ResetTheme);
-        };
-        //eddig
     }, []);
 
     return (

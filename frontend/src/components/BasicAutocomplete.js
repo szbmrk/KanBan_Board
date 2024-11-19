@@ -5,22 +5,6 @@ const BasicAutocomplete = ({ placeholder, selectedValue, setSelectedValue, behav
     const [value, setValue] = useState(selectedValue);
     const [suggestions, setSuggestions] = useState([]);
     const [visibility, setVisibility] = useState(['hidden']);
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
-    useEffect(() => {
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"))
-        }
-
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-        //eddig
-    }, []);
 
     const handleInputChange = (e) => {
         const inputValue = e.target.value;
@@ -42,7 +26,7 @@ const BasicAutocomplete = ({ placeholder, selectedValue, setSelectedValue, behav
     };
 
     return (
-        <div data-theme={theme}>
+        <div >
             <input type='text' value={value} onChange={handleInputChange} placeholder={placeholder} />
             <ul
                 className='suggestions-list'

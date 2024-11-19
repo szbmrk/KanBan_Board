@@ -22,20 +22,10 @@ export default function RolesManager({
     const [board_id, setBoardID] = useState();
 
     const [error, setError] = useState(null);
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+
 
     useEffect(() => {
         getBoards();
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"));
-        window.addEventListener("ChangingTheme", ResetTheme);
-
-        return () => {
-            window.removeEventListener("ChangingTheme", ResetTheme);
-        };
     }, []);
 
     async function getBoards() {
@@ -104,7 +94,7 @@ export default function RolesManager({
     }
 
     return (
-        <div className="overlay" data-theme={theme}>
+        <div className="overlay" >
             <div className="popup popup-mini">
                 <span className="close-btn" onClick={OnClose}>
                     {closeIcon}

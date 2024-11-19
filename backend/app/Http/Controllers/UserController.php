@@ -21,6 +21,9 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\TeamChange;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rules;
 
 class UserController extends Controller
 {
@@ -266,5 +269,46 @@ class UserController extends Controller
         return response()->json(['exists' => false]);
     }
 
+    public function sendResetLinkEmail(Request $request)
+    {
+        // Validate the incoming request
+        $request->validate(['email' => 'required|email']);
+
+        // Attempt to send the reset link to this user
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        // Return response based on the result
+        return $status === Password::RESET_LINK_SENT
+            ? response()->json(['message' => __($status)], 200)
+            : response()->json(['email' => __($status)], 400);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        // Validate the form input
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        // Attempt to reset the password
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                // Set the new password
+                $user->forceFill([
+                    'password' => Hash::make($password),
+                ])->save();
+            }
+        );
+
+        // Return response based on the result
+        return $status === Password::PASSWORD_RESET
+            ? response()->json(['message' => __($status)], 200)
+            : response()->json(['email' => [__($status)]], 400);
+    }
 
 }

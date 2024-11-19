@@ -24,22 +24,8 @@ const commentsIcon = <FontAwesomeIcon icon={faComments} />;
 const subtaskIcon = <FontAwesomeIcon icon={faListCheck} />;
 
 const TaskCard = ({ task }) => {
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
-    useEffect(() => {
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"))
-        }
-
-
-        window.log("Darkmode: " + localStorage.getItem("darkMode"))
-        window.addEventListener('ChangingTheme', ResetTheme)
-
-        return () => {
-            window.removeEventListener('ChangingTheme', ResetTheme)
-        }
-    });
     return (
-        <div className='task-card' data-theme={theme}>
+        <div className='task-card' >
             <h2 className='card-title'>{task.title}</h2>
             <Link to={`/board/${task.board_id}/${task.column_id}/${task.task_id}`}>
                 <h2 className='opentask'>

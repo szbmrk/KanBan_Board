@@ -17,23 +17,11 @@ const deleteIcon = <FontAwesomeIcon icon={faXmark} />;
 
 export default function EditProfile() {
     const token = sessionStorage.getItem("token");
-    const [theme, setTheme] = useState(localStorage.getItem("darkMode"));
+
 
     useEffect(() => {
         document.title = "KanBan | Profile";
         getProfileData();
-
-        //ez
-        const ResetTheme = () => {
-            setTheme(localStorage.getItem("darkMode"));
-        };
-
-        window.addEventListener("ChangingTheme", ResetTheme);
-
-        return () => {
-            window.removeEventListener("ChangingTheme", ResetTheme);
-        };
-        //eddig
     }, []);
 
     const [formData, setFormData] = useState({
@@ -201,7 +189,7 @@ export default function EditProfile() {
     }
 
     return (
-        <div className="content col-10" data-theme={theme}>
+        <div className="content col-10" >
             {formData.username === "" ? (
                 error ? (
                     <Error error={error} redirect={redirect} />
