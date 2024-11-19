@@ -349,7 +349,7 @@ const AssignedTasks = () => {
                     />
                 )
             ) : (
-                <div className="scrollable-container">
+                <div className="grid-container">
                     {tasks.length === 0 ? (
                         <h2 className="no-data">No assigned task yet!</h2>
                     ) : (
