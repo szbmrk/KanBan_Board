@@ -514,6 +514,11 @@ const Popup = (
                                 value={editedText}
                                 onChange={handleChange}
                                 onBlur={handleBlurTitle}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        confirmTitleChange();
+                                    }
+                                }}
                             />
                             <div>
                                 <span
