@@ -228,6 +228,7 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: flex-end;
+    margin-top: 10  px;;
 }
 
 .members-oncard {
