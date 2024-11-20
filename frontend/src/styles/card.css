@@ -137,7 +137,7 @@
     margin-right: auto;
     height: 40px;
     background-color: var(--dark-Sidebar);
-    border: 1px solid var(--off-white);
+    border: 1px solid var(--dark-Sidebar);
     border-radius: 8px;
     display: flex;
     flex-direction: row;
@@ -157,7 +157,7 @@
 
 .option p {
     width: max-content;
-    color: var(--button-hover);
+    color: var(--light-gray);
     animation: none;
     cursor: pointer;
 }
@@ -165,7 +165,7 @@
 .option span {
     width: 30px;
     padding: 5px;
-    color: var(--button-hover);
+    color: var(--light-gray);
 }
 
 .tags {
@@ -228,6 +228,7 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: flex-end;
+    margin-top: 10px;;
 }
 
 .members-oncard {

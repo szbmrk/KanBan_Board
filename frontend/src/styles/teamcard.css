@@ -34,6 +34,7 @@
 .dots {
     align-self: center;
     cursor: pointer;
+    color: var(--light-gray)
 }
 
 .teamcard-subheader {
