@@ -199,7 +199,7 @@ export default function EditProfile() {
     }
 
     return (
-        <div className="content col-10" data-theme={theme}>
+        <div className="content col-10">
             {successfull ? (
                 error ? (
                     <Error error={error} redirect={redirect} />

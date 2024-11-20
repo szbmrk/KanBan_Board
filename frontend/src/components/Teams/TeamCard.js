@@ -474,7 +474,7 @@ const Teams = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
         </div>
-            <div className="content col-10" data-theme={theme}>
+            <div className="content col-10">
                 {teams === null ? (
                     error ? (
                         <Error error={error} redirect={redirect} />
