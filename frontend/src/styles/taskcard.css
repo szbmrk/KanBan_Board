@@ -95,14 +95,6 @@
     padding: 15px;
 }
 
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Three columns of equal width */
-    gap: 1rem; /* Spacing between items */
-    padding: 1rem; /* Optional padding for the grid container */
-}
-
-
 .attachment-text {
     display: block;
     overflow: hidden;
