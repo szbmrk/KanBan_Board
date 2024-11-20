@@ -1,404 +1,567 @@
-import React, { useEffect, useState } from "react";
-import TeamManager from "./TeamManager";
-import "../../styles/teamcard.css";
-import DeleteConfirm from "./DeleteConfirm";
-import AddUser from "./AddUser";
-import Loader from "../Loader";
-import RolesManager from "./RolesManager";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "../../api/axios";
-import { formatDate } from "../../utils/DateFormat";
-import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import TeamCard from "./TeamCard";
+import TeamManager from "./TeamManager";
+import Loader from "../Loader";
+import Error from "../Error";
+import { checkIfAdmin, SetRoles } from "../../roles/Roles";
+import ErrorWrapper from "../../ErrorWrapper";
+import Echo from "laravel-echo";
 import {
-    faTrash,
-    faEllipsis,
-    faPencil,
-    faUserPlus,
-} from "@fortawesome/free-solid-svg-icons";
-import { checkPermisson } from "../../roles/Roles";
+    REACT_APP_PUSHER_KEY,
+    REACT_APP_PUSHER_CLUSTER,
+    REACT_APP_PUSHER_PORT,
+    REACT_APP_PUSHER_HOST,
+    REACT_APP_PUSHER_PATH
+} from "../../api/config.js";
 
-const TeamCard = ({
-    data,
-    deleteUserFromTeam,
-    ChangeTeamName,
-    AddUsers,
-    DeleteTeam,
-    handleDeleteRole,
-    AddRoleToUser,
-}) => {
-    const trashIcon = <FontAwesomeIcon icon={faTrash} />;
-    const dotsIcon = <FontAwesomeIcon icon={faEllipsis} />;
-    const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
-    const addUserIcon = <FontAwesomeIcon icon={faUserPlus} />;
-
-    const [isHoveredEdit, setIsHoveredEdit] = useState(false);
-    const [isHoveredAddUser, setIsHoveredAddUser] = useState(false);
-    const [isHoveredDelete, setIsHoveredDelete] = useState(false);
-    const [teamZIndex, setTeamZIndex] = useState(1);
-    const [manageIsClicked, setManage] = useState(false);
-    const [deleteIsClicked, setDelete] = useState(false);
-    const [addIsClicked, setAdd] = useState(false);
-    const [rolesIsClicked, setRolesIsClicked] = useState(false);
-    const [teamData, setTeamData] = useState([]);
-    const [createdBy, setCreatedBy] = useState("");
-    const [teamMemberId, setTeamMemberId] = useState();
-    const user_id = parseInt(sessionStorage.getItem("user_id"));
-    const [hoveredTeam, setHoveredTeam] = useState(null);
-    const [showIconContainer, setShowIconContainer] = useState(false);
-    const [iconContainerPosition, setIconContainerPosition] = useState({
-        x: 0,
-        y: 0,
-    });
-    const [profileImageUrl, setProfileImageUrl] = useState(
-        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-    );
-
+const Teams = () => {
+    const token = sessionStorage.getItem("token");
+    const user_id = sessionStorage.getItem("user_id");
     const [ownPermissions, setOwnPermissions] = useState([]);
+    const [teamPermissions, setTeamPermissions] = useState([]);
+    const [redirect, setRedirect] = useState(false);
+    const [error, setError] = useState(false);
+
+    const [teams, setTeams] = useState(null);
+    const teamsRef = useRef(teams);
+    const [manageIsClicked, setManage] = useState(false);
+
 
     useEffect(() => {
         document.title = "KanBan | Teams";
-        window.log(data.team_members);
-        for (let i = 0; i < data.team_members.length; i++) {
-            if (data.team_members[i].user_id === data.created_by) {
-                setCreatedBy(data.team_members[i].user.username);
-                break;
-            }
-        }
+        ResetRoles();
+        getTeams();
     }, []);
 
-    function ManageTeam() {
-        setTeamData(data);
+    useEffect(() => {
+        teamsRef.current = teams;
+    }, [teams]);
+
+    useEffect(() => {
+        window.Pusher = require("pusher-js");
+        window.Pusher.logToConsole = true;
+
+        const echo = new Echo({
+            broadcaster: "pusher",
+            key: REACT_APP_PUSHER_KEY,
+            cluster: REACT_APP_PUSHER_CLUSTER,
+            wsHost: REACT_APP_PUSHER_HOST || window.location.hostname,
+            wsPort: REACT_APP_PUSHER_PORT || 6001,
+            wssPort: 443,
+            wsPath: REACT_APP_PUSHER_PATH || '',
+            enableStats: false,
+            forceTLS: false,
+            enabledTransports: ["ws", "wss"],
+        });
+
+
+        const channel = echo.channel(`TeamChange`);
+
+        channel.listen(
+            `.user.${user_id}`,
+            (e) => {
+                handleWebSocket(e);
+            },
+            []
+        );
+
+        return () => {
+            window.log("Cleanup");
+            channel.unsubscribe();
+        };
+    }, []);
+
+    const handleWebSocket = async (websocket) => {
+        window.log("DATA");
+        window.log(websocket.data);
+        window.log(websocket.changeType);
+        switch (websocket.changeType) {
+            case "THIS_USER_ADDED_TO_TEAM":
+                webSocketThisUserAddedToTeam(websocket.data);
+                break;
+            case "USER_ADDED_TO_TEAM":
+                webSocketUserAddedToTeam(websocket.data);
+                break;
+            case "THIS_USER_DELETED_FROM_TEAM":
+                webSocketThisUserDeletedFromTeam(websocket.data);
+                break;
+            case "USER_DELETED_FROM_TEAM":
+                webSocketUserDeletedFromTeam(websocket.data);
+                break;
+            case "CREATED_TEAM":
+                webSocketCreateTeam(websocket.data);
+                break;
+            case "UPDATED_TEAM":
+                webSocketUpdateTeam(websocket.data);
+                break;
+            case "DELETED_TEAM":
+                webSocketDeleteTeam(websocket.data);
+                break;
+            case "CREATED_USER_ROLE":
+                webSocketCreateUserRole(websocket.data);
+                break;
+            case "DELETED_USER_ROLE":
+                webSocketDeleteUserRole(websocket.data);
+                break;
+            case "DELETED_USER":
+                webSocketDeleteUser(websocket.data);
+                break;
+            default:
+                break;
+        }
+    };
+
+    const webSocketThisUserAddedToTeam = (data) => {
+        window.log("TEAM");
+        window.log(teamsRef.current);
+        window.log(data);
+        let newTeamData = [...teamsRef.current];
+        newTeamData.push(data.team);
+        setTeams(newTeamData);
+    };
+
+    const webSocketUserAddedToTeam = (data) => {
+        let newTeamData = [...teamsRef.current];
+        newTeamData.forEach((currentTeam) => {
+            if (currentTeam.team_id === data.team.team_id) {
+                currentTeam.team_members.push(data.user);
+            }
+        });
+        setTeams(newTeamData);
+    };
+
+    const webSocketThisUserDeletedFromTeam = (data) => {
+        let newTeamData = [...teamsRef.current];
+        newTeamData = newTeamData.filter(
+            (currentTeam) => currentTeam.team_id !== data.team.team_id
+        );
+        setTeams(newTeamData);
+    };
+
+    const webSocketUserDeletedFromTeam = (data) => {
+        let newTeamData = [...teamsRef.current];
+        newTeamData.forEach((currentTeam) => {
+            if (currentTeam.team_id === data.team.team_id) {
+                currentTeam.team_members = currentTeam.team_members.filter(
+                    (currentTeamMember) => currentTeamMember.user_id !== data.user.user_id
+                );
+            }
+        });
+        setTeams(newTeamData);
+    };
+
+    const webSocketCreateTeam = (data) => {
+        let newTeamData = [...teamsRef.current];
+        newTeamData.push(data.team);
+        setTeams(newTeamData);
+    };
+
+    const webSocketUpdateTeam = (data) => {
+        let newTeamData = [...teamsRef.current];
+        newTeamData.forEach((currentTeam) => {
+            if (currentTeam.team_id === data.team.team_id) {
+                currentTeam.name = data.team.name;
+            }
+        });
+        setTeams(newTeamData);
+    };
+
+    const webSocketDeleteTeam = (data) => {
+        let newTeamData = [...teamsRef.current];
+        newTeamData = newTeamData.filter(
+            (currentTeam) => currentTeam.team_id !== data.team.team_id
+        );
+        setTeams(newTeamData);
+    };
+
+    const webSocketCreateUserRole = (data) => {
+        let newTeamData = [...teamsRef.current];
+        newTeamData.forEach((currentTeam) => {
+            if (currentTeam.team_id === data.teamMember.team_id) {
+                currentTeam.team_members.forEach((currentTeamMember) => {
+                    if (
+                        currentTeamMember.team_members_id ===
+                        data.teamMember.team_members_id
+                    ) {
+                        currentTeamMember.roles = data.teamMember.roles;
+                    }
+                });
+            }
+        });
+        setTeams(newTeamData);
+    };
+
+    const webSocketDeleteUserRole = (data) => {
+        let newTeamData = [...teamsRef.current];
+        newTeamData.forEach((currentTeam) => {
+            if (currentTeam.team_id === data.teamMember.team_id) {
+                currentTeam.team_members.forEach((currentTeamMember) => {
+                    if (
+                        currentTeamMember.team_members_id ===
+                        data.teamMember.team_members_id
+                    ) {
+                        currentTeamMember.roles = currentTeamMember.roles.filter(
+                            (currentRole) =>
+                                currentRole.team_members_role_id !==
+                                data.teamMemberRole.team_members_role_id
+                        );
+                    }
+                });
+            }
+        });
+        setTeams(newTeamData);
+    };
+
+    const webSocketDeleteUser = (data) => {
+        let newTeamData = [...teamsRef.current];
+        newTeamData.forEach((currentTeam) => {
+            currentTeam.team_members = currentTeam.team_members.filter(
+                (currentTeamMember) => currentTeamMember.user_id !== data.user.user_id
+            );
+        });
+        setTeams(newTeamData);
+    };
+
+    async function ResetRoles() {
+        await SetRoles(token);
+    }
+
+    function addTeam() {
         setManage(!manageIsClicked);
-        setIsHoveredEdit(false);
     }
 
-    function ManageTeam() {
-        setTeamData(data);
-        setManage(!manageIsClicked);
-        setIsHoveredEdit(false);
+    async function DeleteTeam(teamId) {
+        try {
+            await axios.delete(`/boards/teams/${teamId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+        } catch (e) {
+            window.log(e.response);
+            if (e?.response?.status === 401 || e?.response?.status === 500) {
+                setError({
+                    message: "You are not logged in! Redirecting to login page...",
+                });
+                setRedirect(true);
+            } else {
+                setError(e);
+            }
+        }
     }
 
-    function handleDeleteButton() {
-        setDelete(!deleteIsClicked);
-        setIsHoveredDelete(false);
-    }
-
-    function handleAddButton() {
-        setAdd(!addIsClicked);
-        setIsHoveredAddUser(false);
-    }
-    function handleRolesButton(team_members_id) {
-        setTeamMemberId(team_members_id);
-        setRolesIsClicked(!rolesIsClicked);
-    }
-
-    const checkPermissionToDeleteRoles = (role) => {
-        const ownRoles = JSON.parse(sessionStorage.getItem('permissions'));
-
-        for (let i = 0; i < role.permissions.length; i++) {
+    async function AddUsers(user_ids, team_id) {
+        try {
+            const response = await axios.post(
+                `/team/${team_id}/management`,
+                { user_ids: user_ids },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+        } catch (e) {
+            window.log(e.response);
             if (
-                role.permissions[i].name === "team_member_management" ||
-                role.permissions[i].name === "system_admin"
+                e.response &&
+                (e?.response?.status === 401 || e?.response?.status === 500)
             ) {
-                return false;
+                setError({
+                    message: "You are not logged in! Redirecting to login page...",
+                });
+                setRedirect(true);
+            } else {
+                setError(e);
             }
         }
-
-        for (let i = 0; i < ownRoles.teams.length; i++) {
-            if (ownRoles.teams[i].team_members_id !== role.pivot.team_member_id && ownRoles.teams[i].permission === "board_management" &&
-                ownRoles.teams[i].board_id === role.board_id
-            ) {
-                return true;
-            }
-
-            if (ownRoles.teams[i].team_members_id === role.pivot.team_member_id) {
-                return false;
-            }
-        }
-
-        return false;
     }
 
-    const handleMouseEnterOnTeam = (teamId) => {
-        setHoveredTeam(teamId);
+    async function AddTeam(teamName) {
+        try {
+            const response = await axios.post(
+                `/boards/teams/`,
+                { name: teamName },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+        } catch (e) {
+            window.log(e.response);
+            if (e?.response?.status === 401 || e?.response?.status === 500) {
+                setError({
+                    message: "You are not logged in! Redirecting to login page...",
+                });
+                setRedirect(true);
+            } else {
+                setError(e);
+            }
+        }
+    }
+
+    async function ChangeTeamName(team_id, name) {
+        try {
+            const response = await axios.put(
+                `/boards/teams/${team_id}`,
+                { name: name },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            const newTeamData = teams.map((team) => {
+                if (team.team_id === team_id) {
+                    team.name = name;
+                }
+                return team;
+            });
+            setTeams(newTeamData);
+            window.log(response);
+        } catch (e) {
+            window.log(e.response);
+            window.log(e);
+            if (e.response?.status === 401 || e.response?.status === 500) {
+                setError({
+                    message: "You are not logged in! Redirecting to login page...",
+                });
+                setRedirect(true);
+            } else {
+                setError(e);
+            }
+        }
+    }
+
+    async function deleteUserFromTeam(team_id, user_id) {
+        const token = sessionStorage.getItem("token");
+        try {
+            await axios.delete(`/team/${team_id}/management/${user_id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+        } catch (e) {
+            window.log(e.response);
+            if (e.response?.status === 401 || e.response?.status === 500) {
+                setError({
+                    message: "You are not logged in! Redirecting to login page...",
+                });
+                setRedirect(true);
+            } else {
+                setError(e);
+            }
+        }
+    }
+
+    const getTeams = async () => {
+        try {
+            await SetRoles(token);
+            if (checkIfAdmin()) {
+                const response = await axios.get(`/teams`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const tempData = response.data.teams;
+                window.log("TEAMS");
+                window.log(response.data.teams);
+                setTeams(tempData);
+            }
+            else {
+                const response = await axios.get(`/user/${user_id}/teams`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const tempData = response.data.teams;
+                window.log("TEAMS");
+                window.log(response.data.teams);
+                setTeams(tempData);
+            }
+        } catch (error) {
+            setError(error?.response?.data);
+        }
     };
 
-    const handleMouseLeaveOnTeam = () => {
-        setHoveredTeam(null);
+    const handleDeleteRole = async (role_id, board_id, team_id, user_id) => {
+        const token = sessionStorage.getItem("token");
+        try {
+            const response = await axios.delete(
+                `/boards/${board_id}/team-member-roles/${role_id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            window.log(response);
+            const newTeamData = teams.map((team) => {
+                if (team.team_id === team_id) {
+                    const newTeamMembers = team.team_members.map((member) => {
+                        if (member.user_id === user_id) {
+                            const newRoles = member.roles.filter(
+                                (role) => role.team_members_role_id !== role_id
+                            );
+                            member.roles = newRoles;
+                        }
+                        return member;
+                    });
+                    team.team_members = newTeamMembers;
+                }
+                return team;
+            });
+            setTeams(newTeamData);
+        } catch (error) {
+            setError(error?.response?.data);
+        }
     };
 
-    const handleDotsClick = (event, teamID) => {
-        const buttonRect = event.target.getBoundingClientRect();
-        const newX = buttonRect.right + 20;
-        const newY = buttonRect.top;
+    async function AddRoleToUser(board_id, team_member_id, role_id) {
+        try {
+            const response = await axios.post(
+                `/boards/${board_id}/team-member-roles`,
+                { team_member_id: team_member_id, role_id: role_id },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            window.log(response);
+            const newTeamMember = response.data.team_member;
+            const newTeamData = teams.map((team) => {
+                if (team.team_id === newTeamMember.team_id) {
+                    const newTeamMembers = team.team_members.map((member) => {
+                        if (member.user_id === newTeamMember.user_id) {
+                            member.roles = newTeamMember.roles;
+                        }
+                        return member;
+                    });
+                    team.team_members = newTeamMembers;
+                }
+                return team;
+            });
+            setTeams(newTeamData);
+        } catch (error) {
+            setError(error?.response?.data);
+        }
+    }
 
-        // Set the icon-container's position and show it
-        setIconContainerPosition({ x: newX, y: newY });
-        setShowIconContainer(!showIconContainer);
+    const isTeamInSearch = (searchTerm,team_name) => {
+        if (!searchTerm) return true; 
+        if (!team_name) return false; 
 
-        teamZIndex === 1 ? setTeamZIndex(100) : setTeamZIndex(1);
-    };
+        const normalizedSearch = searchTerm.toLowerCase().trim();
+        const normalizedTeamName = team_name.toLowerCase().trim();
 
-    return data.team_members.length === 0 ? (
-        <Loader />
-    ) : (
-        <div className="teamcard" >
-            <div
-                className="teamcard-header"
-                onMouseEnter={() => handleMouseEnterOnTeam(data.team_id)}
-                onMouseLeave={handleMouseLeaveOnTeam}
-            >
+  
+        return normalizedTeamName.includes(normalizedSearch);
+    }
+   const [searchTerm, setSearchTerm] = useState("");
 
-                <div
-                    className="team-name-container"
-                    style={{
-                        zIndex: teamZIndex,
-                    }}
-                >
-                    <h2>{data.name}</h2>
-                </div>
-                <Link to={`/boards/${data.name}`}>
-                    <p className="team-card-go-to">Go to Board</p>
-                </Link>
-                {(checkPermisson(data.team_id, "team_management") ||
-                    checkPermisson(data.team_id, "team_member_management")) && (
-                        <span
-                            className="dots"
-                            onClick={(e) => handleDotsClick(e, data.team_id)}
-                            style={{
-                                visibility: hoveredTeam === data.team_id ? "visible" : "hidden",
-                                transition: "visibility 0.1s ease",
-                            }}
-                        >
-                            {dotsIcon}
-                        </span>
-                    )}
-                <div className="teamcard-subheader">
-                    <p>Created by: {createdBy}</p>
-                    <p>Created at: {formatDate(data.created_at)}</p>
-                </div>
-            </div>
-            <div className="teamcard-body">
-                <div className="team-members">
-                    {data.team_members.map((member) => (
-                        <div className="team-member-card">
-                            <div className="team-member-image-container">
-                                <img
-                                    className="team-member-image"
-                                    src={
-                                        profileImageUrl
-                                    }
-                                    alt="profile"
-                                />
+   
+
+    return (
+        <>
+        <div className="search-container">
+                <input
+                    type="text"
+                    placeholder="Search for a team..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+        </div>
+            <div className="content col-10">
+                {teams === null ? (
+                    error ? (
+                        <Error error={error} redirect={redirect} />
+                    ) : (
+                        <Loader data_to_load={teams} text_if_cant_load={"No teams yet!"} />
+                    )
+                ) : (
+                    <div className="teams-container">
+                        {teams.length === 0 ? (
+                            <div>
+                                No teams yet
+                                <div className="board add-board" onClick={() => addTeam()}>
+                                    <span>Add new team</span>
+                                </div>
+                                {manageIsClicked && (
+                                    <TeamManager
+                                        teamData={[]}
+                                        onClose={addTeam}
+                                        ChangeTeamName={ChangeTeamName}
+                                        addTeam={AddTeam}
+                                    />
+                                )}
                             </div>
-                            <p>{member.user.username}</p>
-                            <div className="team-member-card-body">
-                                <div className="team-member-card-body-data">
-                                    {/*<div className="data">
-                                        <p>Name: </p>
-                                        <p>
-                                            {member.user.first_name} {member.user.last_name}
-                                        </p>
-                                    </div>
-                                    <div className="data">
-                                        <p>Birth date: </p>
-                                        <p>{member.user.birth_date}</p>
-                                    </div>
-                                    <div className="data">
-                                        <p>Address: </p>
-                                        <p>{member.user.address}</p>
-                                    </div>*/}
-                                    <div className="data">
-                                        <p>Email: </p>
-                                        <p>{member.user.email}</p>
-                                    </div>
-                                    {/*<div className="data">
-                                        <p>Phone number: </p>
-                                        <p>{member.user.phone_number}</p>
-                                    </div>*/}
+                        ) : (
+                            <>
+                               {searchTerm == "" ? 
+                                teams.map((team, index) => (
+                                    
+                                    <TeamCard
+                                        key={index}
+                                        data={team}
+                                        deleteUserFromTeam={deleteUserFromTeam}
+                                        ChangeTeamName={ChangeTeamName}
+                                        AddUsers={AddUsers}
+                                        DeleteTeam={DeleteTeam}
+                                        ownPermissions={ownPermissions}
+                                        teamPermissions={teamPermissions}
+                                        AddRoleToUser={AddRoleToUser}
+                                        handleDeleteRole={handleDeleteRole}
+                                        
+                                    /> 
+                                  
+                                )) : 
+                                teams.map((team, index) => (
+                                    isTeamInSearch(searchTerm,team.name) && (
+                                    <TeamCard
+                                        key={index}
+                                        data={team}
+                                        deleteUserFromTeam={deleteUserFromTeam}
+                                        ChangeTeamName={ChangeTeamName}
+                                        AddUsers={AddUsers}
+                                        DeleteTeam={DeleteTeam}
+                                        ownPermissions={ownPermissions}
+                                        teamPermissions={teamPermissions}
+                                        AddRoleToUser={AddRoleToUser}
+                                        handleDeleteRole={handleDeleteRole}
+                                        
+                                    /> 
+                                )))}
+        
+
+                                <div className="board add-board" onClick={() => addTeam()}>
+                                    <span>Add new team</span>
                                 </div>
-                                <div className="team-member-card-body-roles-container">
-                                    <p>Roles:</p>
-                                    <div className="team-member-card-body-roles">
-                                        {member.roles.length !== 0 ? (
-                                            member.roles.map((role) => (
-                                                <ul className="role" key={role.team_members_role_id}>
-                                                    <li>
-                                                        {role.board_id !== null
-                                                            ? role.name + " in " + role.board.name
-                                                            : role.name}
-                                                    </li>
-                                                    {(checkPermisson(data.team_id, "team_member_role_management")) && checkPermissionToDeleteRoles(role) && (
-                                                        <div>
-                                                            <span
-                                                                className="trash-icon"
-                                                                onClick={() =>
-                                                                    handleDeleteRole(
-                                                                        role.team_members_role_id,
-                                                                        role.board_id,
-                                                                        data.team_id,
-                                                                        member.user.user_id
-                                                                    )
-                                                                }
-                                                                data-hover="Delete role"
-                                                            >
-                                                                {trashIcon}
-                                                            </span>
-                                                        </div>
-                                                    )}
-                                                </ul>
-                                            ))
-                                        ) : (
-                                            <p>No roles</p>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="team-member-card-body-actions-container">
-                                    <div className="teamcard-actions">
-                                        {checkPermisson(data.team_id, "team_member_management") &&
-                                            parseInt(member.user.user_id) !== user_id && (
-                                                <button
-                                                    className="delete-button"
-                                                    onClick={() =>
-                                                        deleteUserFromTeam(
-                                                            data.team_id,
-                                                            member.user.user_id
-                                                        )
-                                                    }
-                                                >
-                                                    Remove user
-                                                </button>
-                                            )}
-                                        {(checkPermisson(data.team_id, "board_management")
-                                            || checkPermisson(data.team_id, "team_member_role_management")) && (
-                                                <button
-                                                    className="add-button"
-                                                    onClick={() =>
-                                                        handleRolesButton(member.team_members_id)
-                                                    }
-                                                >
-                                                    Add role
-                                                </button>
-                                            )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                    {checkPermisson(data.team_id, "team_member_management") && (
-                        <div className="board add-board" onClick={handleAddButton}>
-                            <span>Add new Users</span>
-                        </div>
-                    )}
-                </div>
-                {showIconContainer && (
-                    <div
-                        className="overlay darken"
-                        onClick={() => {
-                            setShowIconContainer(false);
-                            setTeamZIndex(1);
-                        }}
-                    >
-                        <div
-                            className="icon-container"
-                            style={{
-                                position: "fixed",
-                                left: iconContainerPosition.x + "px",
-                                top: iconContainerPosition.y + "px",
-                            }}
-                        >
-                            {checkPermisson(data.team_id, "team_management") && (
-                                <div
-                                    className="option"
-                                    onMouseEnter={() => setIsHoveredEdit(true)}
-                                    onMouseLeave={() => setIsHoveredEdit(false)}
-                                    onClick={ManageTeam}
-                                >
-                                    <>
-                                        <span
-                                            className="edit-button"
-                                            style={{
-                                                animation: isHoveredEdit ? "rotate 0.5s" : "none",
-                                            }}
-                                        >
-                                            {pencilIcon}
-                                        </span>
-                                        <p>Edit Name</p>
-                                    </>
-                                </div>
-                            )}
-                            {checkPermisson(data.team_id, "team_member_management") && (
-                                <div
-                                    className="option"
-                                    onMouseEnter={() => setIsHoveredAddUser(true)}
-                                    onMouseLeave={() => setIsHoveredAddUser(false)}
-                                    onClick={handleAddButton}
-                                >
-                                    <span
-                                        className="add-user-button"
-                                        style={{
-                                            color: isHoveredAddUser ? "var(--light-blue)" : "",
-                                        }}
-                                    >
-                                        {addUserIcon}
-                                    </span>
-                                    <p>Add Users</p>
-                                </div>
-                            )}
-                            {checkPermisson(data.team_id, "team_management") && (
-                                <div
-                                    className="option"
-                                    onMouseEnter={() => setIsHoveredDelete(true)}
-                                    onMouseLeave={() => setIsHoveredDelete(false)}
-                                    onClick={handleDeleteButton}
-                                >
-                                    <>
-                                        <span
-                                            className="delete-task-button"
-                                            style={{
-                                                color: isHoveredDelete ? "var(--important)" : "",
-                                            }}
-                                        >
-                                            {trashIcon}
-                                        </span>
-                                        <p>Delete Team</p>
-                                    </>
-                                </div>
-                            )}
-                        </div>
+                                {manageIsClicked && (
+                                    <TeamManager
+                                        teamData={[]}
+                                        onClose={addTeam}
+                                        ChangeTeamName={ChangeTeamName}
+                                        addTeam={AddTeam}
+                                    />
+                                )}
+                            </>
+                        )}
                     </div>
                 )}
             </div>
-            {manageIsClicked && (
-                <TeamManager
-                    teamData={teamData}
-                    onClose={ManageTeam}
-                    ChangeTeamName={ChangeTeamName}
+            {error && (
+                <ErrorWrapper
+                    originalError={error}
+                    onClose={() => {
+                        setError(null);
+                    }}
                 />
             )}
-            {deleteIsClicked && (
-                <DeleteConfirm
-                    teamID={data.team_id}
-                    OnClose={handleDeleteButton}
-                    DeleteTeam={DeleteTeam}
-                />
-            )}
-            {addIsClicked && (
-                <AddUser
-                    teamID={data.team_id}
-                    OnClose={handleAddButton}
-                    AddUsers={AddUsers}
-                />
-            )}
-            {rolesIsClicked && (
-                <RolesManager
-                    OnClose={handleRolesButton}
-                    team_id={data.team_id}
-                    team_member_id={teamMemberId}
-                    AddRoleToUser={AddRoleToUser}
-                />
-            )}
-        </div>
+        </>
     );
-};
-export default TeamCard;
+
+}
+export default Teams;

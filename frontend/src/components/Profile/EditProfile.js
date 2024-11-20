@@ -12,6 +12,7 @@ import bgDarkBlue from "../../styles/imgs/background-darkblue.jpg";
 import bgGray from "../../styles/imgs/background-gray.jpg";
 import bgGreen from "../../styles/imgs/background-green.jpg";
 import bgPurple from "../../styles/imgs/background-purple.jpg";
+import { formatDate } from "../../utils/DateFormat";
 
 const deleteIcon = <FontAwesomeIcon icon={faXmark} />;
 
@@ -86,6 +87,15 @@ export default function EditProfile() {
     async function handleSubmit(e) {
         e.preventDefault();
         window.log(formData);
+
+        if (!formData.username) {
+        setDisplay("block");
+        setError({ message: "All fields are required!" });
+        setTimeout(() => {
+            setSuccessfull(false);
+        }, 8000);
+        return;
+    }
         if (formData.newPassword === "" && formData.confirmPassword === "")
             try {
                 const response = await axios.put(
@@ -189,8 +199,8 @@ export default function EditProfile() {
     }
 
     return (
-        <div className="content col-10" >
-            {formData.username === "" ? (
+        <div className="content col-10">
+            {successfull ? (
                 error ? (
                     <Error error={error} redirect={redirect} />
                 ) : (
