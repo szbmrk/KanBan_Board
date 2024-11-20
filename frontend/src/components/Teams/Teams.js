@@ -450,8 +450,29 @@ const Teams = () => {
         }
     }
 
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const isTeamInSearch = (searchTerm, team_name) => {
+        if (!searchTerm) return true;
+        if (!team_name) return false;
+
+        const normalizedSearch = searchTerm.toLowerCase().trim();
+        const normalizedTeamName = team_name.toLowerCase().trim();
+
+
+        return normalizedTeamName.includes(normalizedSearch);
+    }
+
     return (
         <>
+            <div className="search-container">
+                <input
+                    type="text"
+                    placeholder="Search for a team..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
             <div className="content col-10" >
                 {teams === null ? (
                     error ? (
@@ -479,6 +500,7 @@ const Teams = () => {
                         ) : (
                             <>
                                 {teams.map((team, index) => (
+                                    isTeamInSearch(searchTerm, team.name) &&
                                     <TeamCard
                                         key={index}
                                         data={team}
