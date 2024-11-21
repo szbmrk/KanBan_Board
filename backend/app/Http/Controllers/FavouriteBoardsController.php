@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\FavouriteBoardsChange;
 use Illuminate\Http\Request;
 
 use App\Models\Board;
@@ -90,6 +91,8 @@ class FavouriteBoardsController extends Controller
         $favouriteBoard->board_id = $board_id;
         $favouriteBoard->save();
 
+        $this->broadcastAllBoards($user);
+
         return response()->json(
             ['message' => 'Board added to favorite boards successfully'],
             201
@@ -140,9 +143,32 @@ class FavouriteBoardsController extends Controller
         }
         $favouriteBoard->delete();
 
+        $this->broadcastAllBoards($user);
+
         return response()->json(
             ['message' => 'Board removed from favorite boards successfully'],
             200
         );
+    }
+
+    private function broadcastAllBoards($user)
+    {
+        $favourites = $user->favouriteBoards()
+            ->with('board')
+            ->get()
+            ->map(function($favourite) {
+                  return [
+                    'id' => $favourite->id,
+                    'user_id' => $favourite->user_id,
+                    'board_id' => $favourite->board->board_id,
+                    'team_id' => $favourite->board->team_id,
+                    'board_name' => $favourite->board->name,
+                  ];
+            });
+
+        foreach ($favourites as $favourite)
+        {
+            broadcast(new FavouriteBoardsChange($favourite));
+        }
     }
 }
