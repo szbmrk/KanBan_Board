@@ -9,14 +9,14 @@ class FavouriteBoardsChange
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $favouriteBoards;
+    public $board;
 
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct($board)
     {
-        //
+        $this->board = $board;
     }
 
     /**
@@ -38,6 +38,6 @@ class FavouriteBoardsChange
      */
     public function broadcastAs()
     {
-        return 'favouriteBoards.' . $this->favouriteBoards;
+        return 'favouriteBoards.' . $this->board;
     }
 }
