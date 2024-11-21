@@ -9,13 +9,15 @@ class FavouriteBoardsChange
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $changeType;
     public $board;
 
     /**
      * Create a new event instance.
      */
-    public function __construct($board)
+    public function __construct($changeType, $board)
     {
+        $this->changeType = $changeType;
         $this->board = $board;
     }
 

@@ -91,7 +91,7 @@ class FavouriteBoardsController extends Controller
         $favouriteBoard->board_id = $board_id;
         $favouriteBoard->save();
 
-        $this->broadcastAllBoards($user);
+        $this->broadcastAllBoards($user, "ADD_FAVOURITE_BOARD");
 
         return response()->json(
             ['message' => 'Board added to favorite boards successfully'],
@@ -143,7 +143,7 @@ class FavouriteBoardsController extends Controller
         }
         $favouriteBoard->delete();
 
-        $this->broadcastAllBoards($user);
+        $this->broadcastAllBoards($user, "REMOVE_FAVOURITE_BOARD");
 
         return response()->json(
             ['message' => 'Board removed from favorite boards successfully'],
@@ -151,7 +151,7 @@ class FavouriteBoardsController extends Controller
         );
     }
 
-    private function broadcastAllBoards($user)
+    private function broadcastAllBoards($user, $changeType)
     {
         $favourites = $user->favouriteBoards()
             ->with('board')
@@ -168,7 +168,7 @@ class FavouriteBoardsController extends Controller
 
         foreach ($favourites as $favourite)
         {
-            broadcast(new FavouriteBoardsChange($favourite));
+            broadcast(new FavouriteBoardsChange($changeType, $favourite));
         }
     }
 }
