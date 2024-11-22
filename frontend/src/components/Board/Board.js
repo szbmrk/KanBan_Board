@@ -400,6 +400,12 @@ const Board = () => {
             case "DELETED_PROMPT":
                 webSocketDeletePrompt(websocket.data);
                 break;
+            case "FAVOURITE":
+                setBoardIsFavourite(true);
+                break;
+            case "UNFAVOURITE":
+                setBoardIsFavourite(false);
+                break;
             default:
                 break;
         }
@@ -914,6 +920,14 @@ const Board = () => {
         );
         setCraftedPromptsTask(craftedPromptsTaskRef.current);
     };
+
+    const webSocketFavouriteBoard = (data) => {
+        setBoardIsFavourite(true);
+    }
+    
+    const webSocketUnfavouriteBoard = (data) => {
+        setBoardIsFavourite(false);
+    }
 
     function formatTimestamp(timestamp) {
         const date = new Date(timestamp);
