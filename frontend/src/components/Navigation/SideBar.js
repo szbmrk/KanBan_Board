@@ -28,7 +28,7 @@ const Sidebar = () => {
     const isBoardActive = location.pathname.includes('/board');
 
     const [showFavouriteBoards, setShowFavouriteBoards] = useState(false);
-    const [favouriteBoards, setFavouriteBoards] = useState(null);
+    const [favouriteBoards, setFavouriteBoards] = useState([]);
 
     const userId = sessionStorage.getItem("user_id");
     const token = sessionStorage.getItem("token");
