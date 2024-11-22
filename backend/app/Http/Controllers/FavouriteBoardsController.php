@@ -168,7 +168,7 @@ class FavouriteBoardsController extends Controller
 
         foreach ($favourites as $favourite)
         {
-            broadcast(new FavouriteBoardsChange($changeType, $favourite));
+            broadcast(new FavouriteBoardsChange($changeType, $user->user_id, $favourite));
         }
     }
 }
