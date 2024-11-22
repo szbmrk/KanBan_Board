@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\FavouriteBoard;
 use App\Events\FavouriteBoardsChange;
 use App\Events\BoardChange;
+use App\Events\BoardsChange;
 
 class FavouriteBoardsController extends Controller
 {
@@ -94,6 +95,13 @@ class FavouriteBoardsController extends Controller
 
         $this->broadcastAllBoards($user, "ADD_FAVOURITE_BOARD");
         broadcast(new BoardChange($board_id, "FAVOURITE", []));
+        broadcast(new BoardsChange($user->user_id, "FAVOURITE_BOARD", [
+            'id' => $favouriteBoard->id,
+            'user_id' => $favouriteBoard->user_id,
+            'board_id' => $board->board_id,
+            'team_id' => $board->team_id,
+            'board_name' => $board->name,
+        ]));
 
         return response()->json(
             ['message' => 'Board added to favorite boards successfully'],
@@ -147,6 +155,13 @@ class FavouriteBoardsController extends Controller
 
         $this->broadcastAllBoards($user, "REMOVE_FAVOURITE_BOARD");
         broadcast(new BoardChange($board_id, "UNFAVOURITE", []));
+        broadcast(
+            new BoardsChange(
+                $user->user_id,
+                "UNFAVOURITE_BOARD",
+                ["board_id" => $board_id]
+            )
+        );
 
         return response()->json(
             ['message' => 'Board removed from favorite boards successfully'],
