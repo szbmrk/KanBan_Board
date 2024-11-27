@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, createRef } from "react";
 import "../../styles/boards.css";
 import axios from "../../api/axios";
 import { Link, useParams } from "react-router-dom";
@@ -37,6 +37,7 @@ export default function Boards() {
     const [showDeleteBoardConfirmation, setShowDeleteBoardConfirmation] =
         useState(false);
     const [favouriteBoards, setFavouriteBoards] = useState([]);
+    const favouriteBoardsRef = useRef(favouriteBoards.map((item) => createRef(item)));
 
     const token = sessionStorage.getItem("token");
     const user_id = sessionStorage.getItem("user_id");
@@ -194,27 +195,23 @@ export default function Boards() {
     };
 
     const webSocketHandleFavouriteBoard = async (data) => {
-        if (favouriteBoards) {
-            let newFavouriteBoards = [...favouriteBoards];
-            newFavouriteBoards.push(Number(data.board_id));
-            setFavouriteBoards(newFavouriteBoards);
-        } else {
-            setFavouriteBoards([Number(data.board_id)]);
-        }
+        let newFavouriteBoards = [...favouriteBoardsRef.current];
+        newFavouriteBoards.push(Number(data.board_id));
+        setFavouriteBoards(newFavouriteBoards);
     };
 
     useEffect(() => {
         console.error("updated favouriteBoards: " + favouriteBoards);
+        favouriteBoardsRef.current = favouriteBoards;
     }, [favouriteBoards]);
 
     const webSocketHandleUnfavouriteBoard = async (data) => {
-        if (favouriteBoards) {
-            let newFavouriteBoards = favouriteBoards.filter((board) => {
-                console.error(data.board_id == board);
-                return board != Number(data.board_id);
-            });
-            setFavouriteBoards(newFavouriteBoards);
-        }
+        let newFavouriteBoards = [...favouriteBoardsRef.current];
+        newFavouriteBoards = newFavouriteBoards.filter((board) => {
+            console.error(data.board_id == board);
+            return board != Number(data.board_id);
+        });
+        setFavouriteBoards(newFavouriteBoards);
     };
 
     async function ResetRoles() {
