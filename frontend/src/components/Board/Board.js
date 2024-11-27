@@ -254,7 +254,6 @@ const Board = () => {
         channel.listen(
             `.board.${board_id}`,
             (e) => {
-                window.log("DADAATAT");
                 handleWebSocket(e);
             },
             []
@@ -973,7 +972,6 @@ const Board = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            window.log("BÓÓÓÓD");
             window.log(response);
 
             setPermission(true);

@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faPlus,
     faPencil,
+    faUserPlus,
     faTrash,
     faStar as faSolidStar,
     faEllipsis,
@@ -27,6 +28,7 @@ export const plusIcon = <FontAwesomeIcon icon={faPlus} />;
 export const pencilIcon = <FontAwesomeIcon icon={faPencil} />;
 export const trashIcon = <FontAwesomeIcon icon={faTrash} />;
 export const regularStarIcon = <FontAwesomeIcon icon={faRegularStar} />;
+export const addUserIcon = <FontAwesomeIcon icon={faUserPlus} />;
 export const regularStarIconBouncing = (
     <FontAwesomeIcon icon={faRegularStar} bounce />
 );
@@ -227,6 +229,15 @@ export const Task = forwardRef(
                 icon: pencilIcon,
                 hoveredIcon: pencilIcon,
                 label: "Edit task",
+            },
+            {
+                onClick: () => {},
+                animation: "rotate 0.5s",
+                iconClassName: "edit-button",
+                hoverColor: "var(--edit)",
+                icon: addUserIcon,
+                hoveredIcon: addUserIcon,
+                label: "Add yourself (WIP)",
             },
             {
                 onClick: () => handleDocumentation(),
