@@ -17,7 +17,7 @@ import {
 } from "../../api/config.js";
 
 export default function FavouriteBoards() {
-    const [boards, setBoards] = useState(null);
+    const [boards, setBoards] = useState([]);
 
     const [error, setError] = useState(null);
     const [redirect, setRedirect] = useState(false);
@@ -124,6 +124,12 @@ export default function FavouriteBoards() {
             case "THIS_USER_DELETED_FROM_TEAM":
                 webSocketUserDeletedFromTeam(websocket.data);
                 break;
+            case "FAVOURITE_BOARD":
+                webSocketHandleFavouriteBoard(websocket.data);
+                break;
+            case "UNFAVOURITE_BOARD":
+                webSocketHandleUnfavouriteBoard(websocket.data);
+                break;
             default:
                 break;
         }
@@ -159,6 +165,19 @@ export default function FavouriteBoards() {
             (board) => board.team_id !== data.team.team_id
         );
         setBoards(newBoards);
+    }
+
+    function webSocketHandleFavouriteBoard(data) {
+        let newFavouriteBoards = [...boards];
+        newFavouriteBoards.push(data);
+        setBoards(newFavouriteBoards);
+    }
+
+    function webSocketHandleUnfavouriteBoard(data) {
+        let newFavouriteBoards = boards.filter((board) => {
+            return board.board_id != data;
+        });
+        setBoards(newFavouriteBoards);
     }
 
     useEffect(() => {

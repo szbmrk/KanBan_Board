@@ -6,6 +6,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClapperboard, faStar, faTable, faSignOutAlt, faListCheck, faPeopleGroup, faHome, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { AuthContext } from '../../auth/AuthContext';
 import axios from "../../api/axios";
+import Echo from "laravel-echo";
+import {
+    REACT_APP_PUSHER_KEY,
+    REACT_APP_PUSHER_CLUSTER,
+    REACT_APP_PUSHER_PORT,
+    REACT_APP_PUSHER_HOST,
+    REACT_APP_PUSHER_PATH
+} from "../../api/config.js";
 
 const BoardsIcon = <FontAwesomeIcon icon={faClapperboard} />
 const FavouriteIcon = <FontAwesomeIcon icon={faStar} />
@@ -20,7 +28,7 @@ const Sidebar = () => {
     const isBoardActive = location.pathname.includes('/board');
 
     const [showFavouriteBoards, setShowFavouriteBoards] = useState(false);
-    const [favouriteBoards, setFavouriteBoards] = useState(null);
+    const [favouriteBoards, setFavouriteBoards] = useState([]);
 
     const userId = sessionStorage.getItem("user_id");
     const token = sessionStorage.getItem("token");
@@ -41,6 +49,55 @@ const Sidebar = () => {
     useEffect(() => {
         fetchFavouriteBoards();
     })
+
+    function handleWebSocket(websocket) {
+        let newFavouriteBoards;
+        switch (websocket.changeType) {
+            case "ADD_FAVOURITE_BOARD":
+                newFavouriteBoards = [...favouriteBoards];
+                newFavouriteBoards.push(websocket.data);
+                setFavouriteBoards(newFavouriteBoards);
+                break;
+            case "REMOVE_FAVOURITE_BOARD":
+                newFavouriteBoards = favouriteBoards.filter((board) => {
+                    return board != websocket.data;
+                });
+                setFavouriteBoards(newFavouriteBoards);
+                break;
+        }
+    }
+
+    useEffect(() => {
+        window.Pusher = require("pusher-js");
+        window.Pusher.logToConsole = true;
+
+        const echo = new Echo({
+            broadcaster: "pusher",
+            key: REACT_APP_PUSHER_KEY,
+            cluster: REACT_APP_PUSHER_CLUSTER,
+            wsHost: REACT_APP_PUSHER_HOST || window.location.hostname,
+            wsPort: REACT_APP_PUSHER_PORT || 6001,
+            wssPort: 443,
+            wsPath: REACT_APP_PUSHER_PATH || '',
+            enableStats: false,
+            forceTLS: false,
+            enabledTransports: ["ws", "wss"],
+        });
+
+        const channel = echo.channel(`FavouriteBoardsChange`);
+
+        channel.listen(
+            `.favouriteBoards.${userId}`,
+            (e) => {
+                handleWebSocket(e);
+            },
+            []
+        );
+
+        return () => {
+            channel.unsubscribe();
+        };
+    }, []);
 
     return (
         <div className='sidebar col-2 sidebar-visible'>
@@ -86,6 +143,7 @@ const Sidebar = () => {
                                     ? "active"
                                     : ""
                                 )}
+                                key={board.board_id}
                             >
                                 <Link 
                                     to={`/board/${board.board_id}`} 

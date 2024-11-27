@@ -277,3 +277,4 @@ class ColumnController extends Controller
     }
 
 }
+

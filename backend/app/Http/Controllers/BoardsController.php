@@ -123,7 +123,8 @@ class BoardsController extends Controller
                 'board' => $board
             ];
 
-            foreach ($user_ids as $user_id) {
+            foreach ($user_ids as $user_id)
+            {
                 broadcast(new BoardsChange($user_id, "CREATED_BOARD", $data));
             }
 

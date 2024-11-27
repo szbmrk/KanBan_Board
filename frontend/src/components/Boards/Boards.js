@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, createRef } from "react";
 import "../../styles/boards.css";
 import axios from "../../api/axios";
 import { Link, useParams } from "react-router-dom";
@@ -37,6 +37,7 @@ export default function Boards() {
     const [showDeleteBoardConfirmation, setShowDeleteBoardConfirmation] =
         useState(false);
     const [favouriteBoards, setFavouriteBoards] = useState([]);
+    const favouriteBoardsRef = useRef(favouriteBoards.map((item) => createRef(item)));
 
     const token = sessionStorage.getItem("token");
     const user_id = sessionStorage.getItem("user_id");
@@ -76,8 +77,7 @@ export default function Boards() {
         channel.listen(
             `.user.${user_id}`,
             (e) => {
-                handleWebSocket(e);
-            },
+                handleWebSocket(e); },
             []
         );
 
@@ -111,6 +111,12 @@ export default function Boards() {
                 break;
             case "THIS_USER_DELETED_FROM_TEAM":
                 webSocketUserDeletedToTeam(websocket.data);
+                break;
+            case "FAVOURITE_BOARD":
+                webSocketHandleFavouriteBoard(websocket.data);
+                break;
+            case "UNFAVOURITE_BOARD":
+                webSocketHandleUnfavouriteBoard(websocket.data);
                 break;
             default:
                 break;
@@ -188,6 +194,24 @@ export default function Boards() {
         setTeams(newTeamData);
     };
 
+    const webSocketHandleFavouriteBoard = async (data) => {
+        let newFavouriteBoards = [...favouriteBoardsRef.current];
+        newFavouriteBoards.push(Number(data.board_id));
+        setFavouriteBoards(newFavouriteBoards);
+    };
+
+    useEffect(() => {
+        favouriteBoardsRef.current = favouriteBoards;
+    }, [favouriteBoards]);
+
+    const webSocketHandleUnfavouriteBoard = async (data) => {
+        let newFavouriteBoards = [...favouriteBoardsRef.current];
+        newFavouriteBoards = newFavouriteBoards.filter((board) => {
+            return board != Number(data.board_id);
+        });
+        setFavouriteBoards(newFavouriteBoards);
+    };
+
     async function ResetRoles() {
         await SetRoles(token);
     }
@@ -208,7 +232,7 @@ export default function Boards() {
                     teamData = teamData.filter((T) => T.name == team_name);
                 }
                 setTeams(teamData);
-                let newFavourites = favouriteBoards.splice();
+                let newFavourites = [...favouriteBoards];
                 for (const board in teamData.boards) {
                     if (board.favourite) {
                         newFavourites.push(board.board_id);
@@ -228,7 +252,7 @@ export default function Boards() {
                     teamData = teamData.filter((T) => T.name == team_name);
                 }
                 setTeams(teamData);
-                let newFavourites = favouriteBoards.splice();
+                let newFavourites = [...favouriteBoards];
                 for (const team of teamData) {
                     for (const board of team.boards) {
                         if (board.favourite) {
@@ -378,9 +402,6 @@ export default function Boards() {
                     "Content-Type": "application/json"
                 },
             });
-            let newFavourites = favouriteBoards.slice();
-            newFavourites.push(boardId);
-            setFavouriteBoards(newFavourites);
         } catch (err) {
             if (err?.response?.status === 401 || err?.response?.status === 500) {
                 setError({
@@ -404,8 +425,6 @@ export default function Boards() {
                     board_id: boardId
                 }
             });
-            let newFavourites = favouriteBoards.filter((faveBoardId) => faveBoardId != boardId);
-            setFavouriteBoards(newFavourites);
         } catch (err) {
             if (err?.response?.status === 401 || err?.response?.status === 500) {
                 setError({

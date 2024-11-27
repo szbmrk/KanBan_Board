@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Board;
 use App\Models\User;
 use App\Models\FavouriteBoard;
+use App\Events\FavouriteBoardsChange;
+use App\Events\BoardChange;
+use App\Events\BoardsChange;
 
 class FavouriteBoardsController extends Controller
 {
@@ -90,6 +93,16 @@ class FavouriteBoardsController extends Controller
         $favouriteBoard->board_id = $board_id;
         $favouriteBoard->save();
 
+        $this->broadcastAllBoards($user, "ADD_FAVOURITE_BOARD");
+        broadcast(new BoardChange($board_id, "FAVOURITE", ["user_id" => $user->user_id]));
+        broadcast(new BoardsChange($favouriteBoard->user_id, "FAVOURITE_BOARD", [
+            'id' => $favouriteBoard->id,
+            'user_id' => $favouriteBoard->user_id,
+            'board_id' => $favouriteBoard->board_id,
+            'team_id' => $board->team_id,
+            'board_name' => $board->name,
+        ]));
+
         return response()->json(
             ['message' => 'Board added to favorite boards successfully'],
             201
@@ -140,9 +153,40 @@ class FavouriteBoardsController extends Controller
         }
         $favouriteBoard->delete();
 
+        $this->broadcastAllBoards($user, "REMOVE_FAVOURITE_BOARD");
+        broadcast(new BoardChange($board_id, "UNFAVOURITE", ["user_id" => $user->user_id]));
+        broadcast(
+            new BoardsChange(
+                $favouriteBoard->user_id,
+                "UNFAVOURITE_BOARD",
+                ["board_id" => $board_id]
+            )
+        );
+
         return response()->json(
             ['message' => 'Board removed from favorite boards successfully'],
             200
         );
+    }
+
+    private function broadcastAllBoards($user, $changeType)
+    {
+        $favourites = $user->favouriteBoards()
+            ->with('board')
+            ->get()
+            ->map(function($favourite) {
+                  return [
+                    'id' => $favourite->id,
+                    'user_id' => $favourite->user_id,
+                    'board_id' => $favourite->board->board_id,
+                    'team_id' => $favourite->board->team_id,
+                    'board_name' => $favourite->board->name,
+                  ];
+            });
+
+        foreach ($favourites as $favourite)
+        {
+            broadcast(new FavouriteBoardsChange($changeType, $user->user_id, $favourite));
+        }
     }
 }

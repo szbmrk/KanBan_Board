@@ -400,6 +400,16 @@ const Board = () => {
             case "DELETED_PROMPT":
                 webSocketDeletePrompt(websocket.data);
                 break;
+            case "FAVOURITE":
+                if (websocket.data.user_id == user_id) {
+                    setBoardIsFavourite(true);
+                }
+                break;
+            case "UNFAVOURITE":
+                if (websocket.data.user_id == user_id) {
+                    setBoardIsFavourite(false);
+                }
+                break;
             default:
                 break;
         }
