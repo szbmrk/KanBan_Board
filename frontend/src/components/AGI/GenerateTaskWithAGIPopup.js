@@ -147,7 +147,6 @@ const GenerateTaskWithAGIPopup = ({ board_id, column, tasks, onCancel }) => {
                 setEditedTasks(res.data);
             }
         } catch (e) {
-            window.log("We got an error. YAAAY");
             window.log(e);
             setShowAIGeneratingLoaderPopup(false);
             setError(e?.response?.data);
