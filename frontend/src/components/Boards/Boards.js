@@ -203,7 +203,6 @@ export default function Boards() {
                     },
                 });
                 let teamData = response.data.teams;
-                console.error("TEAM NAME:" + team_name);
                 if (team_name) {
                     teamData = teamData.filter((T) => T.name == team_name);
                 }
@@ -223,7 +222,6 @@ export default function Boards() {
                     },
                 });
                 let teamData = response.data.teams;
-                console.error("TEAM NAME:" + team_name);
                 if (team_name) {
                     teamData = teamData.filter((T) => T.name == team_name);
                 }
