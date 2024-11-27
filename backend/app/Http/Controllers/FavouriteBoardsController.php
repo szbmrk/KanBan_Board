@@ -154,7 +154,7 @@ class FavouriteBoardsController extends Controller
         $favouriteBoard->delete();
 
         $this->broadcastAllBoards($user, "REMOVE_FAVOURITE_BOARD");
-        broadcast(new BoardChange($board_id, "UNFAVOURITE", []));
+        broadcast(new BoardChange($board_id, "UNFAVOURITE", ["user_id" => $user->user_id]));
         broadcast(
             new BoardsChange(
                 $favouriteBoard->user_id,
