@@ -201,14 +201,12 @@ export default function Boards() {
     };
 
     useEffect(() => {
-        console.error("updated favouriteBoards: " + favouriteBoards);
         favouriteBoardsRef.current = favouriteBoards;
     }, [favouriteBoards]);
 
     const webSocketHandleUnfavouriteBoard = async (data) => {
         let newFavouriteBoards = [...favouriteBoardsRef.current];
         newFavouriteBoards = newFavouriteBoards.filter((board) => {
-            console.error(data.board_id == board);
             return board != Number(data.board_id);
         });
         setFavouriteBoards(newFavouriteBoards);
