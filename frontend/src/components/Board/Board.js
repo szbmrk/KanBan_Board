@@ -401,10 +401,14 @@ const Board = () => {
                 webSocketDeletePrompt(websocket.data);
                 break;
             case "FAVOURITE":
-                setBoardIsFavourite(true);
+                if (websocket.data.user_id == user_id) {
+                    setBoardIsFavourite(true);
+                }
                 break;
             case "UNFAVOURITE":
-                setBoardIsFavourite(false);
+                if (websocket.data.user_id == user_id) {
+                    setBoardIsFavourite(false);
+                }
                 break;
             default:
                 break;

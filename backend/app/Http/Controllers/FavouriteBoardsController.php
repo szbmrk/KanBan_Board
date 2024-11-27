@@ -94,11 +94,11 @@ class FavouriteBoardsController extends Controller
         $favouriteBoard->save();
 
         $this->broadcastAllBoards($user, "ADD_FAVOURITE_BOARD");
-        broadcast(new BoardChange($board_id, "FAVOURITE", []));
-        broadcast(new BoardsChange($user->user_id, "FAVOURITE_BOARD", [
+        broadcast(new BoardChange($board_id, "FAVOURITE", ["user_id" => $user->user_id]));
+        broadcast(new BoardsChange($favouriteBoard->user_id, "FAVOURITE_BOARD", [
             'id' => $favouriteBoard->id,
             'user_id' => $favouriteBoard->user_id,
-            'board_id' => $board->board_id,
+            'board_id' => $favouriteBoard->board_id,
             'team_id' => $board->team_id,
             'board_name' => $board->name,
         ]));
@@ -157,7 +157,7 @@ class FavouriteBoardsController extends Controller
         broadcast(new BoardChange($board_id, "UNFAVOURITE", []));
         broadcast(
             new BoardsChange(
-                $user->user_id,
+                $favouriteBoard->user_id,
                 "UNFAVOURITE_BOARD",
                 ["board_id" => $board_id]
             )
