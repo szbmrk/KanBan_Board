@@ -143,6 +143,7 @@ const Sidebar = () => {
                                     ? "active"
                                     : ""
                                 )}
+                                key={board.board_id}
                             >
                                 <Link 
                                     to={`/board/${board.board_id}`} 
