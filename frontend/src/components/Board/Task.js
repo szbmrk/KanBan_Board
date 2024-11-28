@@ -67,6 +67,7 @@ export const Task = forwardRef(
             zIndex,
             isFilterActive,
             handleTaskDoubleClick,
+            handleAddMember,
         },
         ref
     ) => {
@@ -231,7 +232,7 @@ export const Task = forwardRef(
                 label: "Edit task",
             },
             {
-                onClick: () => {},
+                onClick: () => handleAddMember(task.task_id, task.column_id, sessionStorage.getItem("user_id")),
                 animation: "rotate 0.5s",
                 iconClassName: "edit-button",
                 hoverColor: "var(--edit)",

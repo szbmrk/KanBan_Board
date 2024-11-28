@@ -3268,6 +3268,7 @@ const Board = () => {
                                                                             column
                                                                         )
                                                                     }
+                                                                    handleAddMember={handleAddMember}
                                                                 />
                                                             ))
                                                     )}

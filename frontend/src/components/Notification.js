@@ -27,7 +27,7 @@ export default function Notification() {
     const checkIcon = <FontAwesomeIcon icon={faCheck} />;
 
     useEffect(() => {
-        document.title = "KanBan | Notification";
+        document.title = "KanBan | Notifications";
         getNotifications();
 
         window.Pusher = require("pusher-js");
