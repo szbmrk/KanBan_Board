@@ -19,6 +19,7 @@
     font-family: var(--basic-font);
     font-size: 2em;
     margin: 20px;
+    color: var(--button-hover) !important;
 }
 
 .title-name-input {
