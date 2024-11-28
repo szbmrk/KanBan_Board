@@ -4,7 +4,6 @@ import "./styles/errorWrapper.css";
 
 const ErrorWrapper = ({ originalError, onClose }) => {
     const errorText = () => {
-        window.log("IT APPEARED");
         return "error";
     };
 

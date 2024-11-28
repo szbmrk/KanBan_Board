@@ -59,7 +59,6 @@ export default function Notification() {
     }, []);
 
     const handleWebSocket = async (websocket) => {
-        window.log("DATA");
         window.log(websocket.data);
         switch (websocket.changeType) {
             case "CREATED_NOTIFICATION":
