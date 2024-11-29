@@ -49,6 +49,8 @@ const Login = () => {
       display={display}
       isLoading={isLoading}
       buttonText="Sign In"
+      forgotPasswordLinkText="Forgot password?"
+      forgotPasswordLinkTo="/password/email"
       linkText="Don't have an account?"
       linkTo="/signup"
     />

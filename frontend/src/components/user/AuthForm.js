@@ -15,6 +15,8 @@ const AuthForm = ({
   display,
   isLoading,
   buttonText,
+  forgotPasswordLinkText,
+  forgotPasswordLinkTo,
   linkText,
   linkTo,
   textToTermsAndConditions,
@@ -307,6 +309,11 @@ const AuthForm = ({
           >
             {buttonText}
           </button>
+          {forgotPasswordLinkTo && (
+            <Link to={forgotPasswordLinkTo} onClick={handleChangeKeyState}>
+              {forgotPasswordLinkText}
+            </Link>
+          )}
           <Link to={linkTo} onClick={handleChangeKeyState}>
             {linkText}
           </Link>
