@@ -35,6 +35,8 @@ use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\LogController;
 
 use Illuminate\Support\Facades\Password;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Models\User;
 
 /*
 
@@ -50,6 +52,35 @@ use Illuminate\Support\Facades\Password;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+// Email verification routes
+Route::middleware(['auth:sanctum'])->get('/email/verify', function (Request $request) {
+    return $request->user()->hasVerifiedEmail()
+        ? response()->json(['message' => 'Email already verified.'])
+        : response()->json(['message' => 'Email verification required.']);
+})->name('verification.notice');
+
+Route::middleware('signed')->get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+
+    return response()->json(['message' => 'Email verified successfully.']);
+})->name('verification.verify');
+
+Route::middleware(['auth:sanctum', 'throttle:6,1'])->post('/email/resend', function (Request $request) {
+    if ($request->user()->hasVerifiedEmail()) {
+        return response()->json(['message' => 'Email already verified.']);
+    }
+
+    $request->user()->sendEmailVerificationNotification();
+
+    return response()->json(['message' => 'Verification email sent.']);
+})->name('verification.send');
+
+// Routes that require email verification
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    Route::get('/protected-route', function () {
+        return response()->json(['message' => 'You have access to this route because your email is verified.']);
+    });
+});
 
 Route::get('/user/permissions', [UserController::class, 'showPermissions'])->middleware('api');
 Route::post('/user/signup', [UserController::class, 'signup']);
@@ -64,6 +95,23 @@ Route::post('/user/check-username', [UserController::class, 'checkUsername']);
 Route::post('/password/email', [UserController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::post('/password/reset', [UserController::class, 'resetPassword'])->name('password.update');
 Route::get('/reset-password/{token}', function ($token) {return view('auth.reset-password', ['token' => $token]);})->name('password.reset');
+Route::get('/api/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
+    $user = User::findOrFail($id);
+
+    // Verify the signature
+    if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+        return response()->json(['error' => 'Invalid verification link'], 403);
+    }
+
+    if ($user->hasVerifiedEmail()) {
+        return response()->json(['message' => 'Email already verified']);
+    }
+
+    $user->markEmailAsVerified();
+
+    return response()->json(['message' => 'Email verified successfully']);
+})->middleware(['signed'])->name('verification.verify');
+
 
 Route::get('/boards', [BoardsController::class, 'index'])->middleware('api');
 Route::get('/boards/boards', [BoardsController::class, 'getAllBoards'])->middleware('api');

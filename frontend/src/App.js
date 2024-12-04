@@ -17,6 +17,7 @@ import ManageBoardPermissions from "./components/Permissions/ManageBoardPermissi
 import EditProfile from "./components/Profile/EditProfile";
 import Notification from "./components/Notification";
 import Permissiontable from "./components/Permissions/Permissiontable";
+import VerifyEmail from "./components/user/VerifyEmail";
 import Dashboard from "./components/Dashboard/Dashboard";
 import { useEffect, useState } from "react";
 
@@ -43,6 +44,7 @@ const App = () => {
               path="/password/reset/:token"
               element={<ResetPassword />}
             />
+            <Route exact path="/verify-email" element={<VerifyEmail />} />
             <Route
               exact
               path="/board/:board_id"

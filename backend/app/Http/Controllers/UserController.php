@@ -45,79 +45,90 @@ class UserController extends Controller
 
     public function signup(Request $request)
     {
+        // Check if the email or username already exists
         $emailExists = \App\Models\User::where('email', $request->email)->count();
-
         if ($emailExists > 0) {
             return response()->json(['error' => 'Email already exists'], 400);
         }
-
+    
         $usernameExists = \App\Models\User::where('username', $request->username)->count();
         if ($usernameExists > 0) {
             return response()->json(['error' => 'Username already exists'], 400);
         }
-
+    
+        // Create the user
         $user = new \App\Models\User;
         $user->username = $request->username;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
-
+    
         try {
             $user->save();
-
-            // Felhasználó hozzáadása a team_members táblához
+    
+            // Add user to the team_members table
             $teamMember = new TeamMember();
             $teamMember->user_id = $user->user_id;
             $teamMember->save();
-
+    
+            // Attach roles and permissions
             $userRole = Role::where('name', 'User')->first();
             if ($userRole) {
-                // Attaching the role to the team member using Eloquent
                 $teamMember->roles()->attach($userRole->role_id);
-
-                // Engedély hozzárendelési logika (opcionális)
+    
                 $userPermission = Permission::where('name', 'user_permission')->first();
                 if ($userPermission && !$userRole->permissions->contains($userPermission->id)) {
                     $userRole->permissions()->attach($userPermission->id);
                 }
             }
-
+    
+            // Send email verification
+            $user->sendEmailVerificationNotification();
+    
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['error' => 'Signup failed', 'details' => $e->getMessage()], 500);
         }
-
-        return response()->json(['message' => 'Signup successful']);
+    
+        return response()->json(['message' => 'Signup successful! Please verify your email address.']);
     }
+
     public function login(Request $request)
     {
         $emailOrUsername = $request->input('email');
         $password = $request->input('password');
-
+    
         // Check if the provided email looks like an email address
         $isEmail = filter_var($emailOrUsername, FILTER_VALIDATE_EMAIL);
-
+    
         // Construct the credentials array based on whether it's an email or username
-        if ($isEmail) {
-            $credentials = ['email' => $emailOrUsername, 'password' => $password];
-        } else {
-            $credentials = ['username' => $emailOrUsername, 'password' => $password];
-        }
-
+        $credentials = $isEmail
+            ? ['email' => $emailOrUsername, 'password' => $password]
+            : ['username' => $emailOrUsername, 'password' => $password];
+    
         try {
+            // Check if the credentials are correct
             if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json(['error' => 'Incorrect email address, username, or password'], 400);
             }
-
+    
+            // Retrieve the authenticated user
             $user = JWTAuth::user();
-
+    
+            // Check if the user has verified their email
+            if (is_null($user->email_verified_at)) {
+                return response()->json(['error' => 'Your email address is not verified. Please check your email for the verification link.'], 403);
+            }
+    
+            // Fetch user roles and permissions
             $roles = $user->getRoles();
             $permissions = $user->getPermissions();
-
+    
         } catch (JWTException $e) {
             return response()->json(['error' => 'could_not_create_token'], 500);
         }
-
+    
         return response()->json(['token' => $token, 'user' => $user]);
     }
+    
     public function show()
     {
         $user = auth()->user();
@@ -309,6 +320,28 @@ class UserController extends Controller
         return $status === Password::PASSWORD_RESET
             ? response()->json(['message' => __($status)], 200)
             : response()->json(['email' => [__($status)]], 400);
+    }
+
+    public function verify(Request $request, $id, $hash)
+    {
+        $user = User::findOrFail($id);
+
+        // Verify that the hash in the URL matches the user's email hash
+        if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+            return response()->json(['message' => 'Invalid verification link.'], 403);
+        }
+
+        // If the user is already verified
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email already verified.'], 200);
+        }
+
+        // Mark the user's email as verified
+        $user->markEmailAsVerified();
+
+        event(new Verified($user));
+
+        return response()->json(['message' => 'Email verified successfully.'], 200);
     }
 
 }

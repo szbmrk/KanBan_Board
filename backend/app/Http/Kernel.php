@@ -71,4 +71,11 @@ class Kernel extends HttpKernel
       	],
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     ];
+
+    protected $routeMiddleware = [
+        // Other middleware...
+        'auth' => \App\Http\Middleware\Authenticate::class,
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'ignore-expiration' => \App\Http\Middleware\IgnoreExpiration::class,
+    ];
 }

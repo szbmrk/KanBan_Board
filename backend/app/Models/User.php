@@ -10,8 +10,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\AdjustTimestampsForHungaryTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\CustomResetPasswordNotification;
+use App\Notifications\CustomVerifyEmailNotification;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
     use HasApiTokens, Notifiable, SoftDeletes;
     use AdjustTimestampsForHungaryTrait;
@@ -157,5 +159,10 @@ class User extends Authenticatable implements JWTSubject
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new CustomResetPasswordNotification($token, $this->email));
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new CustomVerifyEmailNotification());
     }
 }
