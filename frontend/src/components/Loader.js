@@ -4,12 +4,10 @@ import "../styles/loader.css";
 const Loader = ({ data_to_load, text_if_cant_load }) => {
     const [loading, setLoading] = useState(true);
 
-
-
     useEffect(() => {
         setTimeout(() => {
             setLoading(false);
-        }, 5000);
+        }, 15000);
     }, [data_to_load]);
 
     return loading

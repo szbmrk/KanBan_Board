@@ -238,7 +238,7 @@ export const Task = forwardRef(
                 hoverColor: "var(--edit)",
                 icon: addUserIcon,
                 hoveredIcon: addUserIcon,
-                label: "Add yourself (WIP)",
+                label: "Add yourself",
             },
             {
                 onClick: () => handleDocumentation(),
