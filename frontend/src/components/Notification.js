@@ -220,7 +220,7 @@ export default function Notification() {
     };
 
     return (
-        <div className="content col-10" >
+        <div className="notifications-submenu">
             {notifications === null ? (
                 error ? (
                     <Error error={error} redirect={redirect} />
@@ -232,133 +232,109 @@ export default function Notification() {
                 )
             ) : (
                 <>
-                    <h1>Notifications</h1>
-                    <div>
-                        {
-                            notifications.length > 0 && (
-                                <div className="notification-count">
-                                    <p>
-                                        {isRead
-                                            ? `You have ${countOfseen} seen notifications`
-                                            : `You have ${countOfUnseen} unseen notifications`}
-                                    </p>
-                                </div>
-                            )
-                        }
+                    <div className="notification-header">
+                        <p className="notification-menu-title">Notifications</p>
+                        <button className="notification-switch" onClick={toggleSwitch}>
+                            {isRead ? "Switch to unseen" : "Switch to seen"}
+                        </button>
                     </div>
-                    {notifications.length === 0 ? (
-                        <p>No notifications yet!</p>
-                    ) : (
-                        <div>
-                            <div className="switch-container">
-                                <button className="switch" onClick={toggleSwitch}>
-                                    {isRead ? "Switch to unseen" : "Switch to seen"}
-                                </button>
+
+                    <div className="notification-content">
+                        {notifications.length === 0 ? (
+                            <p>No notifications yet!</p>
+                        ) : isRead === false ? (
+                            <div className="notification-container">
+                                <div className="container-header">
+                                    <p>Unseen Notification History</p>
+                                    {countOfUnseen > 0 && (
+                                        <button className="mark-all-button" onClick={markAllAsSeen}>
+                                            Mark all as seen
+                                        </button>
+                                    )}
+                                </div>
+                                {countOfUnseen > 0 ? (
+                                    notifications.map(
+                                        (notification) =>
+                                            !notification.is_read && (
+                                                <div
+                                                    key={notification.notification_id}
+                                                    className="notification-item"
+                                                >
+                                                    <div className="notification-details">
+                                                        <p className="notification-type">
+                                                            {notification.type}
+                                                        </p>
+                                                        <p className="notification-content">
+                                                            {notification.content}
+                                                        </p>
+                                                    </div>
+                                                    <div className="notification-meta">
+                                                        <p className="created-at">
+                                                            {new Date(
+                                                                notification.created_at
+                                                            ).toLocaleString(
+                                                                "en-US",
+                                                                dateFormatOptions
+                                                            )}
+                                                        </p>
+                                                        <button
+                                                            className="mark-seen-button"
+                                                            onClick={() =>
+                                                                markAsSeen(notification)
+                                                            }
+                                                        >
+                                                            Mark as seen
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )
+                                    )
+                                ) : (
+                                    <p>No unseen notifications found!</p>
+                                )}
                             </div>
-                            {isRead == false ? (
-                                <>
-                                    <div className="notification-container">
-                                        <div className="container-header">
-                                            <p>Unseen Notification history</p>
-                                            <button
-                                                className="mark-all-button"
-                                                onClick={markAllAsSeen}
-                                                style={{
-                                                    display: countOfUnseen > 0 ? "block" : "none",
-                                                }}
-                                            >
-                                                {checkIcon} Mark all as seen
-                                            </button>
-                                        </div>
-                                        {countOfUnseen > 0 ? (
-                                            <>
-                                                {notifications.map(
-                                                    (notification) =>
-                                                        notification.is_read == false && (
-                                                            <div
-                                                                key={notification.notification_id}
-                                                                className={`notification`}
-                                                            >
-                                                                <div className="notification-header">
-                                                                    <span className="created-at">
-                                                                        {new Date(
-                                                                            notification.created_at
-                                                                        ).toLocaleString(
-                                                                            "en-US",
-                                                                            dateFormatOptions
-                                                                        )}
-                                                                    </span>
-                                                                    <span className="notification-type">
-                                                                        {notification.type}
-                                                                    </span>
-                                                                </div>
-                                                                <p className="notification-content">
-                                                                    {notification.content}
-                                                                </p>
-                                                                <button
-                                                                    className="mark-seen-button"
-                                                                    onClick={() => markAsSeen(notification)}
-                                                                >
-                                                                    {checkIcon} Mark as seen
-                                                                </button>
-                                                            </div>
-                                                        )
-                                                )}
-                                            </>
-                                        ) : (
-                                            <p className="not-found-message">
-                                                No unseen notifications found!
-                                            </p>
-                                        )}
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <div className="notification-container">
-                                        <div className="container-header">
-                                            <p>Seen Notification history</p>
-                                        </div>
-                                        {countOfseen > 0 ? (
-                                            <>
-                                                {notifications.map(
-                                                    (notification) =>
-                                                        notification.is_read == true && (
-                                                            <div
-                                                                key={notification.notification_id}
-                                                                className={`notification`}
-                                                            >
-                                                                <div className="notification-header">
-                                                                    <span className="created-at">
-                                                                        {new Date(
-                                                                            notification.created_at
-                                                                        ).toLocaleString(
-                                                                            "en-US",
-                                                                            dateFormatOptions
-                                                                        )}
-                                                                    </span>
-                                                                    <span className="notification-type">
-                                                                        {notification.type}
-                                                                    </span>
-                                                                </div>
-                                                                <p className="notification-content">
-                                                                    {notification.content}
-                                                                </p>
-                                                            </div>
-                                                        )
-                                                )}
-                                            </>
-                                        ) : (
-                                            <p className="not-found-message">
-                                                No seen notifications found!
-                                            </p>
-                                        )}
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    )}
+                        ) : (
+                            <div className="notification-container">
+                                <div className="container-header">
+                                    <p>Seen Notification History</p>
+                                </div>
+                                {countOfseen > 0 ? (
+                                    notifications.map(
+                                        (notification) =>
+                                            notification.is_read && (
+                                                <div
+                                                    key={notification.notification_id}
+                                                    className="notification-item"
+                                                >
+                                                    <div className="notification-details">
+                                                        <p className="notification-type">
+                                                            {notification.type}
+                                                        </p>
+                                                        <p className="notification-content">
+                                                            {notification.content}
+                                                        </p>
+                                                    </div>
+                                                    <div className="notification-meta">
+                                                        <p className="created-at">
+                                                            {new Date(
+                                                                notification.created_at
+                                                            ).toLocaleString(
+                                                                "en-US",
+                                                                dateFormatOptions
+                                                            )}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            )
+                                    )
+                                ) : (
+                                    <p>No seen notifications found!</p>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </>
             )}
         </div>
     );
-}
+};

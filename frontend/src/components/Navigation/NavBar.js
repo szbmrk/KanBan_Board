@@ -23,6 +23,7 @@ import {
     REACT_APP_PUSHER_HOST,
     REACT_APP_PUSHER_PATH
 } from "../../api/config.js";
+import Notification from "../Notification.js";
 
 const notificationIcon = <FontAwesomeIcon icon={faBell} />;
 const profileIcon = <FontAwesomeIcon icon={faUser} />;
@@ -201,6 +202,11 @@ const Navbar = () => {
     }, [isSidebarOnTop]);
 
     const [isOpen, setIsOpen] = useState(false);
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+
+    const handleNotificationClick = () => {
+        setIsNotificationOpen(!isNotificationOpen);
+    };
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
@@ -225,14 +231,14 @@ const Navbar = () => {
                             </span>
                         </div>
                         <li>
-                            <Link to="/notifications">
+                            <span onClick={handleNotificationClick}>
                                 <span>
                                     {notificationIcon}
                                     <span className="unread-notification-count">
                                         {unreadNotificationCount > 0 ? unreadNotificationCount : ""}
                                     </span>
                                 </span>
-                            </Link>
+                            </span>
                         </li>
                         <li>
                             <span onClick={toggleDropdown}>{profileIcon}</span>
@@ -258,6 +264,17 @@ const Navbar = () => {
                         </li>
                     </ul>
                 </div>
+            )}
+            {isNotificationOpen && (
+                <>
+                    <div
+                        className="overlay3"
+                        onClick={() => {
+                            setIsNotificationOpen(false);
+                        }}
+                    ></div>
+                    <Notification onMouseLeave={() => setIsNotificationOpen(false)} />
+                </>
             )}
         </>
     );
