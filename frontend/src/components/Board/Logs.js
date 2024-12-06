@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { formatDate } from '../../utils/DateFormat';
+import Loader from '../Loader';
 
 const LogComponent = ({ logs }) => {
     const [selectedUser, setSelectedUser] = useState('All');
@@ -72,93 +73,102 @@ const LogComponent = ({ logs }) => {
     }
 
     return (
-        <div className="log-submenu" >
-            <div className="log-header">
-                <p className="log-menu-title">Log</p>
-
-                {/* Filter dropdown */}
-                <div className="log-filter">
-                    <label htmlFor="userFilter">Filter by user: </label>
-                    <select
-                        id="userFilter"
-                        className='user-filter-select'
-                        value={selectedUser}
-                        onChange={(e) => setSelectedUser(e.target.value)}
-                    >
-                        <option value="All">All</option>
-                        {[...new Set(logs.map((log) => log.user.username))].map((user, index) => (
-                            <option key={index} value={user}>
-                                {user}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                {/* Activity count */}{selectedUser === 'All' ?
-                    <table className='log-table'>
-                        <thead>
-                            <tr>
-                                <th className='log-th'>Username</th>
-                                <th className='log-th'>Created-Task</th>
-                                <th className='log-th'>Moved-Task</th>
-                                <th className='log-th'>Finished-Task</th>
-                                <th className='log-th'>Deleted-Task</th>
-                                <th className='log-th'>Created-Column</th>
-                                <th className='log-th'>Moved-Column</th>
-                                <th className='log-th'>Deleted-Column</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {users.map((user, index) => (
-                                <tr key={index}>
-                                    <td className="log-td">{user}</td>
-                                    <td className="log-td">{getLogCountsForUser(user).CreatedTask}</td>
-                                    <td className="log-td">{getLogCountsForUser(user).MovedTask}</td>
-                                    <td className="log-td">{getLogCountsForUser(user).FinishedTask}</td>
-                                    <td className="log-td">{getLogCountsForUser(user).DeletedTask}</td>
-                                    <td className="log-td">{getLogCountsForUser(user).CreatedColumn}</td>
-                                    <td className="log-td">{getLogCountsForUser(user).MovedColumn}</td>
-                                    <td className="log-td">{getLogCountsForUser(user).DeletedColumn}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    :
-                    <div>
-                        <p className="log-activity-count">
-
-                            {`Logs by ${selectedUser}: ${filteredLogs.length}`}
-                        </p>
-                        <p className="log-activity-count">
-                            Tasks - Created: {createdTaskCount} | Moved: {movedTaskCount} | Finished: {finishedTaskCount} | Deleted: {deletedTaskCount}
-                        </p>
-                        <p className="log-activity-count">
-                            Columns - Created: {createdColumnCount} | Moved: {movedColumnCount} | Deleted: {deletedColumnCount}
-                        </p>
-                    </div>}
-
-
-                <div className="log-info">
-                    <p>Username</p>
-                    <p>Details</p>
-                    <p>Created at</p>
-                </div>
-            </div>
-
-            {filteredLogs && filteredLogs.length > 0 ? (
-                <ul className="log-container">
-                    {filteredLogs.map((log, index) => (
-                        <li key={index} className="log-item">
-                            <div className="log">
-                                <p className="log-creator">{log.user.username}:</p>
-                                <p className="log-details">{log.details}</p>
-                                <p className="log-date">{formatDate(log.created_at)}</p>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
+        <div className="log-submenu">
+            {logs.length === 0 ? (
+                <Loader data_to_load={logs} text_if_cant_load={"No logs yet!"} />
             ) : (
-                <p>No logs available for the selected user.</p>
+                <>
+                    {/* Fixed Header */}
+                    <div className="log-header">
+                        <p className="log-menu-title">Log</p>
+                        <div className="log-filter">
+                            <label htmlFor="userFilter">Filter by user: </label>
+                            <select
+                                id="userFilter"
+                                className="user-filter-select"
+                                value={selectedUser}
+                                onChange={(e) => setSelectedUser(e.target.value)}
+                            >
+                                <option value="All">All</option>
+                                {[...new Set(logs.map((log) => log.user.username))].map((user, index) => (
+                                    <option key={index} value={user}>
+                                        {user}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Scrollable Content */}
+                    <div className="log-content">
+                        {selectedUser === "All" ? (
+                            <table className="log-table">
+                                <thead>
+                                    <tr>
+                                        <th className="log-th">Username</th>
+                                        <th className="log-th">Created-Task</th>
+                                        <th className="log-th">Moved-Task</th>
+                                        <th className="log-th">Finished-Task</th>
+                                        <th className="log-th">Deleted-Task</th>
+                                        <th className="log-th">Created-Column</th>
+                                        <th className="log-th">Moved-Column</th>
+                                        <th className="log-th">Deleted-Column</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {users.map((user, index) => (
+                                        <tr key={index}>
+                                            <td className="log-td">{user}</td>
+                                            <td className="log-td">{getLogCountsForUser(user).CreatedTask}</td>
+                                            <td className="log-td">{getLogCountsForUser(user).MovedTask}</td>
+                                            <td className="log-td">{getLogCountsForUser(user).FinishedTask}</td>
+                                            <td className="log-td">{getLogCountsForUser(user).DeletedTask}</td>
+                                            <td className="log-td">{getLogCountsForUser(user).CreatedColumn}</td>
+                                            <td className="log-td">{getLogCountsForUser(user).MovedColumn}</td>
+                                            <td className="log-td">{getLogCountsForUser(user).DeletedColumn}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <div>
+                                <p className="log-activity-count">
+                                    {`Logs by ${selectedUser}: ${filteredLogs.length}`}
+                                </p>
+                                <p className="log-activity-count">
+                                    Tasks - Created: {createdTaskCount} | Moved: {movedTaskCount} | Finished: {finishedTaskCount} | Deleted: {deletedTaskCount}
+                                </p>
+                                <p className="log-activity-count">
+                                    Columns - Created: {createdColumnCount} | Moved: {movedColumnCount} | Deleted: {deletedColumnCount}
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Log Details */}
+                        <div className="log-header log-header-details">
+                            <div className="log-info">
+                                <p>Username</p>
+                                <p>Details</p>
+                                <p>Created at</p>
+                            </div>
+                        </div>
+                        {filteredLogs && filteredLogs.length > 0 ? (
+                            <ul className="log-container">
+                                {filteredLogs.map((log, index) => (
+                                    <li key={index} className="log-item">
+                                        <div className="log">
+                                            <p className="log-creator">{log.user.username}:</p>
+                                            <p className="log-details">{log.details}</p>
+                                            <p className="log-date">{formatDate(log.created_at)}</p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>No logs available for the selected user.</p>
+                        )}
+                    </div>
+                </>
             )}
         </div>
     );
