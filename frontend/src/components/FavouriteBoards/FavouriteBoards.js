@@ -17,7 +17,7 @@ import {
 } from "../../api/config.js";
 
 export default function FavouriteBoards() {
-    const [boards, setBoards] = useState([]);
+    const [boards, setBoards] = useState(null);
 
     const [error, setError] = useState(null);
     const [redirect, setRedirect] = useState(false);
