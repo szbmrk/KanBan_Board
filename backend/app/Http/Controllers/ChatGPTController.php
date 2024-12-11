@@ -49,7 +49,7 @@ class ChatGPTController extends Controller
             }
 
             if ($craftedPrompt->action == "GENERATEATTACHMENTLINK") {
-                $prompt = "You are now a backend, which only responds with JSON structure. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
+                $prompt = "You are now a backend, which only responds within a valid JSON structure as an array. Generate me a JSON structure list with $taskCounter element(s) with 'description' and 'link' attributes without wrapping for useful attachment links for this task: '$taskPrompt'";
                 return $prompt;
 
             }
@@ -59,7 +59,7 @@ class ChatGPTController extends Controller
 
 
         // Construct the prompt for the current iteration
-        $prompt = "$behavior Generate $taskCounter kanban tickets in JSON structure in an array with title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as an array) attributes for this ticket: '$taskPrompt'";
+        $prompt = "$behavior You are now a backend that generates valid JSON responses. Create a JSON structure containing exactly $taskCounter kanban tickets. Each ticket must include:'title' (a string), 'description' (a string), 'due_date' (a string in the format 'yyyy-MM-dd HH:mm:ss', assuming the current start date is '$currentTime') and 'tags' (an array of strings with at least one tag) for this ticket: '$taskPrompt'.The output must be wrapped inside an object with a key called tasks. Ensure the output is valid JSON, properly formatted, and contains no escaped characters or additional formatting. Do not return the JSON as a string or include backslashes. Return only valid JSON data.";
 
         return $prompt;
 
@@ -90,7 +90,7 @@ class ChatGPTController extends Controller
         // Loop through the desired number of times based on ResponseCounter
         for ($i = 1; $i <= $responseCounter; $i++) {
             // Construct the prompt for the current iteration
-            $prompt = "Generate $taskCounter task kanban board tickets. JSON structure in a list. title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list). '$taskPrompt'. ";
+            $prompt = "You are now a backend that generates valid JSON responses. Create a JSON structure containing exactly $taskCounter kanban tickets. Each ticket must include:'title' (a string), 'description' (a string), 'due_date' (a string in the format 'yyyy-MM-dd HH:mm:ss', assuming the current start date is '$currentTime') and 'tags' (an array of strings with at least one tag) for this ticket: '$taskPrompt'.The output must be wrapped inside an object with a key called tasks. Ensure the output is valid JSON, properly formatted, and contains no escaped characters or additional formatting. Do not return the JSON as a string or include backslashes. Return only valid JSON data.";
 
             // Call the Python script and get the formatted response
             $formattedResponse = self::CallPythonAndFormatResponse($prompt);
@@ -112,7 +112,7 @@ class ChatGPTController extends Controller
         $currentTime = Carbon::now('GMT+2')->format('Y-m-d H:i:s');
 
         // Prepare the prompt to be sent to the Python script
-        $prompt = "Generate $taskCounter subtask kanban tickets in JSON structure in a list with title, description, due_date (if the start date is now '$currentTime' in yyyy-MM-dd HH:mm:ss) and tags (as a list) attributes for this ticket: '$taskPrompt'";
+        $prompt = "You are now a backend that generates valid JSON responses. Create a JSON structure containing exactly $taskCounter kanban tickets. Each ticket must include:'title' (a string), 'description' (a string), 'due_date' (a string in the format 'yyyy-MM-dd HH:mm:ss', assuming the current start date is '$currentTime') and 'tags' (an array of strings with at least one tag) for this ticket: '$taskPrompt'.The output must be wrapped inside an object with a key called tasks. Ensure the output is valid JSON, properly formatted, and contains no escaped characters or additional formatting. Do not return the JSON as a string or include backslashes. Return only valid JSON data.";
         // Construct the Python command with the required arguments and path to the script
 
         return self::CallPythonAndFormatResponse($prompt);
@@ -143,7 +143,7 @@ class ChatGPTController extends Controller
 
             if ($formattedResponse == null || $formattedResponse == "") {
                 return response()->json([
-                    'error' => 'Content generation failed. Please try again.',
+                    'error' => 'Content generation failed. Please try again. response: \n'.$response,
                 ], 500);
             }
 
