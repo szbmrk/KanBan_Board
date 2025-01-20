@@ -465,15 +465,15 @@ const Teams = () => {
 
     return (
         <>
-            <div className="search-container">
-                <input
-                    type="text"
-                    placeholder="Search for a team..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-            </div>
             <div className="content col-10" >
+                <div className="search-container">
+                    <input
+                        type="text"
+                        placeholder="Search for a team..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
                 {teams === null ? (
                     error ? (
                         <Error error={error} redirect={redirect} />
