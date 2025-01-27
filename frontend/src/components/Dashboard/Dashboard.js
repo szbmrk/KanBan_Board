@@ -17,7 +17,13 @@ export default function Dashboard() {
 
     const fetchData = async () => {
         try {
-
+            const response = await axios.get(`/dashboard`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const tempData = response.data;
+            setData(tempData);
         } catch (error) {
             setError(error?.response?.data);
         }
@@ -33,7 +39,9 @@ export default function Dashboard() {
                         <Loader data_to_load={data} text_if_cant_load={"No dashboard data available!"} />
                     )
                 ) : (
-                    <></>
+                    <div className="dashboard-container">
+
+                    </div>
                 )}
             </div>
         </>
