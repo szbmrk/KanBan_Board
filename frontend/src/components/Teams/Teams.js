@@ -27,7 +27,6 @@ const Teams = () => {
     const teamsRef = useRef(teams);
     const [manageIsClicked, setManage] = useState(false);
 
-
     useEffect(() => {
         document.title = "KanBan | Teams";
         ResetRoles();
