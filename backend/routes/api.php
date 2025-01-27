@@ -33,6 +33,7 @@ use App\Http\Controllers\FavouriteBoardsController;
 use App\Http\Controllers\ChangeIsDoneTaskController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\DashboardController;
 
 use Illuminate\Support\Facades\Password;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -94,7 +95,8 @@ Route::post('/user/check-email', [UserController::class, 'checkEmail']);
 Route::post('/user/check-username', [UserController::class, 'checkUsername']);
 Route::post('/password/email', [UserController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::post('/password/reset', [UserController::class, 'resetPassword'])->name('password.update');
-Route::get('/reset-password/{token}', function ($token) {return view('auth.reset-password', ['token' => $token]);})->name('password.reset');
+Route::get('/reset-password/{token}', function ($token) {
+    return view('auth.reset-password', ['token' => $token]); })->name('password.reset');
 Route::get('/api/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
     $user = User::findOrFail($id);
 
@@ -251,6 +253,7 @@ Route::post('/boards/{boardId}/Behaviors', [AgiBehaviorController::class, 'Store
 Route::put('/boards/{boardId}/Behaviors/{behaviorId}', [AgiBehaviorController::class, 'UpdateBehavior'])->middleware('api');
 Route::delete('/boards/{boardId}/Behaviors/{behaviorId}', [AgiBehaviorController::class, 'DestroyBehavior'])->middleware('api');
 
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('api');
 
 Route::get('/AGI/taskDocumentation/boards/{boardId}', [AGIAnswersController::class, 'indexTaskDocumentation'])->middleware('api');
 Route::post('/AGI/taskDocumentation/boards/{boardId}', [AGIAnswersController::class, 'storePerBoard'])->middleware('api');
