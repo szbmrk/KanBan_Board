@@ -10,53 +10,51 @@ export default function ManageBoardPermissions() {
     const [userID, setUserID] = useState(null);
     const [teams, setTeams] = useState(null);
     const [error, setError] = useState(false);
+    const token = sessionStorage.getItem("token");
+    const user_id = sessionStorage.getItem("user_id");
 
 
     useEffect(() => {
         document.title = "KanBan | Permissions";
-        const token = sessionStorage.getItem("token");
-        const user_id = sessionStorage.getItem("user_id");
-        if (user_id) {
-            setUserID(user_id);
-        }
-
-        const fetchBoardsData = async () => {
-            try {
-                await SetRoles(token);
-
-                if (checkIfAdmin()) {
-                    const response = await axios.get("/boards/boards", {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
-                    const teamData = response.data.teams;
-                    setTeams(teamData);
-                }
-
-                else {
-                    const response = await axios.get("/boards", {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
-                    const teamData = response.data.teams;
-                    setTeams(teamData);
-                }
-            } catch (e) {
-                handleFetchError(e);
-            }
-        };
-
-        const handleFetchError = (e) => {
-            console.error(e);
-            const errorMessage =
-                e?.response?.status === 401 || e?.response?.status === 500
-                    ? "You are not logged in! Redirecting to login page..."
-                    : e;
-            setError(errorMessage);
-        };
+        fetchBoardsData();
     }, []);
+
+    const fetchBoardsData = async () => {
+        try {
+            await SetRoles(token);
+
+            if (checkIfAdmin()) {
+                const response = await axios.get("/boards/boards", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const teamData = response.data.teams;
+                setTeams(teamData);
+            }
+
+            else {
+                const response = await axios.get("/boards", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const teamData = response.data.teams;
+                setTeams(teamData);
+            }
+        } catch (e) {
+            handleFetchError(e);
+        }
+    };
+
+    const handleFetchError = (e) => {
+        console.error(e);
+        const errorMessage =
+            e?.response?.status === 401 || e?.response?.status === 500
+                ? "You are not logged in! Redirecting to login page..."
+                : e;
+        setError(errorMessage);
+    };
 
     const renderBoards = () => {
         if (!teams) {
