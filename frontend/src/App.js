@@ -23,7 +23,7 @@ import { useEffect, useState } from "react";
 const App = () => {
     return (
         <>
-            <BrowserRouter basename="/agi-kanban">
+            <BrowserRouter basename="/">
                 <AuthProvider>
                     <Routes>
                         <Route
