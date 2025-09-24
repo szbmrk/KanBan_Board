@@ -82,7 +82,7 @@ class UserController extends Controller
             }
 
             // Send email verification
-            $user->sendEmailVerificationNotification();
+            //$user->sendEmailVerificationNotification();
 
             // TEMPORARY
             $user->email_verified_at = now();
