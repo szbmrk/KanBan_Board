@@ -49,7 +49,7 @@ class CustomVerifyEmailNotification extends Notification
 
     protected function verificationUrl($notifiable)
     {
-        $frontendUrl = env('FRONTEND_URL') . '/agi-kanban/verify-email';
+        $frontendUrl = env('FRONTEND_URL') . '/verify-email';
 
         // Generate a temporary signed URL that includes the user's ID and hash
         $url = URL::temporarySignedRoute(

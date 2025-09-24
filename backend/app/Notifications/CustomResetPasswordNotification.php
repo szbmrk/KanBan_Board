@@ -51,7 +51,7 @@ class CustomResetPasswordNotification extends Notification
     {
         $baseUrl = env('APP_URL');
         // Create the new URL with the desired format
-        return "{$baseUrl}/agi-kanban/password/reset/{$token}?email={$this->email}";
+        return "{$baseUrl}/password/reset/{$token}?email={$this->email}";
     }
 
     /**

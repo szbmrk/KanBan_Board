@@ -65,7 +65,7 @@ export default function Boards() {
             cluster: REACT_APP_PUSHER_CLUSTER,
             wsHost: REACT_APP_PUSHER_HOST || window.location.hostname,
             wsPort: REACT_APP_PUSHER_PORT || 6001,
-            wssPort: 443,
+            wssPort: REACT_APP_PUSHER_PORT || 443,
             wsPath: REACT_APP_PUSHER_PATH || '',
             enableStats: false,
             forceTLS: false,

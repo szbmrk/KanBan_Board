@@ -14,13 +14,14 @@ const VerifyEmail = () => {
     const params = new URLSearchParams(location.search);
     const verificationUrl = params.get("verification_url");
     setIsLoading(true);
-
+    console.log(verificationUrl)
     if (verificationUrl) {
       // Make a request to the backend to verify the email
       axios
         .get(verificationUrl)
         .then((response) => {
           setIsLoading(false);
+	  console.log(response)
           setMessage("Email verified successfully! You can now log in.");
         })
         .catch((error) => {
