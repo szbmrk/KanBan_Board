@@ -50,11 +50,6 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
-    public function routeNotificationForMail(Notification $notification): array|string
-    {
-        return $this->email;
-    }
-
     public function getJWTIdentifier()
     {
         return $this->getKey();
