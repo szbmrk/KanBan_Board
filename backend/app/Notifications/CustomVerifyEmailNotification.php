@@ -51,16 +51,20 @@ class CustomVerifyEmailNotification extends Notification
     {
         $frontendUrl = env('FRONTEND_URL') . '/verify-email';
 
-        $url = URL::temporarySignedRoute(
+        $signedUrl = URL::temporarySignedRoute(
             'verification.verify',
-            Carbon::now()->addMinutes(60), // expire after 60 mins
+            now()->addMinutes(60),
             [
                 'id' => $notifiable->getKey(),
                 'hash' => sha1($notifiable->getEmailForVerification()),
             ]
         );
 
-        return $frontendUrl . '?verification_url=' . urlencode($url);
+        $backendPrefix = '/agi-kanban-api';
+        $signedUrl = str_replace(url('/'), url($backendPrefix), $signedUrl);
+
+
+        return $frontendUrl . '?verification_url=' . urlencode($signedUrl);
     }
 
     /**
