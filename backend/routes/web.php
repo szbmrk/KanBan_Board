@@ -18,7 +18,7 @@ Route::get('/', function () {
 });
 
 
-Route::prefix('agi-kanban-api')->group(function () {
+Route::prefix('/agi-kanban-api')->group(function () {
     Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
         $user = User::findOrFail($id);
 
