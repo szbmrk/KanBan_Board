@@ -96,12 +96,12 @@ Route::post('/user/check-username', [UserController::class, 'checkUsername']);
 Route::post('/password/email', [UserController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::post('/password/reset', [UserController::class, 'resetPassword'])->name('password.update');
 Route::get('/reset-password/{token}', function ($token) {
-    return view('auth.reset-password', ['token' => $token]); })->name('password.reset');
+    return view('auth.reset-password', ['token' => $token]);
+})->name('password.reset');
 Route::get('/api/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
     $user = User::findOrFail($id);
 
-    // Verify the signature
-    if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+    if (!hash_equals($hash, sha1($user->getEmailForVerification()))) {
         return response()->json(['error' => 'Invalid verification link'], 403);
     }
 
@@ -109,7 +109,9 @@ Route::get('/api/email/verify/{id}/{hash}', function (Request $request, $id, $ha
         return response()->json(['message' => 'Email already verified']);
     }
 
-    $user->markEmailAsVerified();
+    if ($user->markEmailAsVerified()) {
+        event(new \Illuminate\Auth\Events\Verified($user));
+    }
 
     return response()->json(['message' => 'Email verified successfully']);
 })->middleware(['signed'])->name('verification.verify');
