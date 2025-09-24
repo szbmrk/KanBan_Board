@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Carbon;
 use Illuminate\Auth\Notifications\VerifyEmail;
 
@@ -59,10 +60,10 @@ class CustomVerifyEmailNotification extends Notification
                 'hash' => sha1($notifiable->getEmailForVerification()),
             ]
         );
-
         $backendPrefix = '/agi-kanban-api';
-        $signedUrl = str_replace(url('/'), url($backendPrefix), $signedUrl);
-
+        $appUrl = Config::get('app.url');
+        $backendUrl = rtrim($appUrl, '/') . $backendPrefix;
+        $signedUrl = str_replace($appUrl, $backendUrl, $signedUrl);
 
         return $frontendUrl . '?verification_url=' . urlencode($signedUrl);
     }
