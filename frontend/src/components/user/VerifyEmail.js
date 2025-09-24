@@ -18,7 +18,7 @@ const VerifyEmail = () => {
         if (verificationUrl) {
             // Make a request to the backend to verify the email
             axios
-                .post(verificationUrl)
+                .get(verificationUrl)
                 .then((response) => {
                     setIsLoading(false);
                     console.log(response)

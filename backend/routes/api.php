@@ -98,7 +98,7 @@ Route::post('/password/reset', [UserController::class, 'resetPassword'])->name('
 Route::get('/reset-password/{token}', function ($token) {
     return view('auth.reset-password', ['token' => $token]);
 })->name('password.reset');
-Route::post('/api/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
+Route::post('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
     $user = User::findOrFail($id);
 
     if (!hash_equals($hash, sha1($user->getEmailForVerification()))) {
@@ -109,9 +109,7 @@ Route::post('/api/email/verify/{id}/{hash}', function (Request $request, $id, $h
         return response()->json(['message' => 'Email already verified']);
     }
 
-    if ($user->markEmailAsVerified()) {
-        event(new \Illuminate\Auth\Events\Verified($user));
-    }
+    $user->markEmailAsVerified();
 
     return response()->json(['message' => 'Email verified successfully']);
 })->middleware(['signed'])->name('verification.verify');
