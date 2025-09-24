@@ -57,7 +57,7 @@ class CustomVerifyEmailNotification extends Notification
             now()->addMinutes(1440), // URL expiry time
             [
                 'id' => $notifiable->getKey(),
-                'hash' => sha1($notifiable->getEmailForVerification()),
+                'hash' => sha1($notifiable->email),
             ]
         );
 
