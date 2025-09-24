@@ -52,7 +52,7 @@ class CustomVerifyEmailNotification extends Notification
         $frontendUrl = env('FRONTEND_URL') . '/verify-email';
 
         // Generate a temporary signed URL that includes the user's ID and hash
-        $url = URL::temporarySignedRoute(
+        $url = URL::signedRoute(
             'verification.verify', // This is the name of the route
             now()->addMinutes(1440), // URL expiry time
             [

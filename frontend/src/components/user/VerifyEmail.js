@@ -13,7 +13,6 @@ const VerifyEmail = () => {
         // Extract `verification_url` from query parameters
         const params = new URLSearchParams(location.search);
         let verificationUrl = params.get("verification_url");
-        verificationUrl = verificationUrl.replace("/api/", "/agi-kanban-api/");
         setIsLoading(true);
         console.log(verificationUrl)
         if (verificationUrl) {
