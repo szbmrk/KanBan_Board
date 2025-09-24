@@ -116,6 +116,13 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return $this->hasMany(TeamMember::class, 'user_id', 'user_id');
     }
 
+    public function markEmailAsVerified()
+    {
+        return $this->forceFill([
+            'email_verified_at' => $this->freshTimestamp(),
+        ])->save();
+    }
+
     public function roles()
     {
         return $this->hasManyThrough(
