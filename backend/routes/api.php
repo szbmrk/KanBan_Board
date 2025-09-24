@@ -98,7 +98,7 @@ Route::post('/password/reset', [UserController::class, 'resetPassword'])->name('
 Route::get('/reset-password/{token}', function ($token) {
     return view('auth.reset-password', ['token' => $token]);
 })->name('password.reset');
-Route::post('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
+Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
     $user = User::findOrFail($id);
 
     if (!hash_equals($hash, sha1($user->getEmailForVerification()))) {
