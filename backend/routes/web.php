@@ -16,3 +16,20 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
+    $user = User::findOrFail($id);
+
+    if (!hash_equals($hash, sha1($user->getEmailForVerification()))) {
+        return response()->json(['error' => 'Invalid verification link'], 403);
+    }
+
+    if ($user->hasVerifiedEmail()) {
+        return response()->json(['message' => 'Email already verified']);
+    }
+
+    $user->markEmailAsVerified();
+
+    return response()->json(['message' => 'Email verified successfully']);
+})->middleware(['signed'])->name('verification.verify');

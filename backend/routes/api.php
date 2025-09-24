@@ -98,11 +98,6 @@ Route::post('/password/reset', [UserController::class, 'resetPassword'])->name('
 Route::get('/reset-password/{token}', function ($token) {
     return view('auth.reset-password', ['token' => $token]);
 })->name('password.reset');
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
-
-    return response()->json(['message' => 'Email verified successfully']);
-})->middleware(['signed'])->name('verification.verify');
 
 
 Route::get('/boards', [BoardsController::class, 'index'])->middleware('api');
