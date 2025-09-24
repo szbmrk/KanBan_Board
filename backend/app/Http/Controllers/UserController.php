@@ -86,6 +86,7 @@ class UserController extends Controller
 
             // TEMPORARY
             $user->email_verified_at = now();
+            $user->save();
 
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['error' => 'Signup failed', 'details' => $e->getMessage()], 500);
