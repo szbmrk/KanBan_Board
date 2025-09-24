@@ -26,6 +26,8 @@ const VerifyEmail = () => {
                     setMessage("Email verified successfully! You can now log in.");
                 })
                 .catch((error) => {
+                    setIsLoading(false);
+                    console.error("Error verifying email:", error);
                     setMessage(
                         "Email verification failed. The link may have expired or is invalid."
                     );
