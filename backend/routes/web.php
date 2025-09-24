@@ -18,18 +18,21 @@ Route::get('/', function () {
 });
 
 
-Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
-    $user = User::findOrFail($id);
+Route::prefix('agi-kanban-api')->group(function () {
+    Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
+        $user = User::findOrFail($id);
 
-    if (!hash_equals($hash, sha1($user->getEmailForVerification()))) {
-        return response()->json(['error' => 'Invalid verification link'], 403);
-    }
+        if (!hash_equals($hash, sha1($user->getEmailForVerification()))) {
+            return response()->json(['error' => 'Invalid verification link'], 403);
+        }
 
-    if ($user->hasVerifiedEmail()) {
-        return response()->json(['message' => 'Email already verified']);
-    }
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email already verified']);
+        }
 
-    $user->markEmailAsVerified();
+        $user->markEmailAsVerified();
 
-    return response()->json(['message' => 'Email verified successfully']);
-})->middleware(['signed'])->name('verification.verify');
+        return response()->json(['message' => 'Email verified successfully']);
+    })->middleware(['signed'])->name('verification.verify');
+});
+

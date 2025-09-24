@@ -60,10 +60,6 @@ class CustomVerifyEmailNotification extends Notification
                 'hash' => sha1($notifiable->getEmailForVerification()),
             ]
         );
-        $backendPrefix = '/agi-kanban-api';
-        $appUrl = Config::get('app.url');
-        $backendUrl = rtrim($appUrl, '/') . $backendPrefix;
-        $signedUrl = str_replace($appUrl, $backendUrl, $signedUrl);
 
         return $frontendUrl . '?verification_url=' . urlencode($signedUrl);
     }
